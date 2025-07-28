@@ -7,27 +7,32 @@
     {% get_current_language as language_code %}
     {% get_available_languages as languages %}
 
-    <h4>{% trans 'Change language' %}</h4>
+    <div class="avant-section avant-bg-left flex-center min-h-70vh">
+        <div class="avant-card max-w-520 m-2-auto text-center">
+            <div class="avant-card-title mb-1-2 fs-2-1">{% trans 'Change language' %}</div>
 
-    <form action="{% url 'set_language' %}" method="post">
+            <form action="{% url 'set_language' %}" method="post" class="text-left">
+                {% csrf_token %}
+                <input name="next" type="hidden" value="{{ redirect_to }}"/>
 
-        {% csrf_token %}
+                <div class="mb-1-5">
+                    <label class="avant-label mb-0-5 display-block" for="language-field">
+                        {% trans 'Select your preferred language' %}
+                    </label>
+                    <select name="language" class="avant-select w-full" id="language-field">
+                        {% for code, name in languages %}
+                            <option value="{{ code }}" {% if code == language_code %} selected="selected"{% endif %}>
+                                {{ name }} ({{ code }})
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
 
-        <input name="next" type="hidden" value="{{ redirect_to }}"/>
-
-        <div class="form-group">
-            <label class="form-control-label" for="language-field">{% trans 'Select the language' %}</label>
-            <select name="language" class="form-control" id="language-field">
-                {% for code, name in languages %}
-                    <option value="{{ code }}" {% if code == language_code %} selected="selected"{% endif %}>
-                        {{ name }} ({{ code }})
-                    </option>
-                {% endfor %}
-            </select>
+                <div class="text-center">
+                    <button type="submit" class="avant-btn">{% trans 'Change' %}</button>
+                </div>
+            </form>
         </div>
-
-        <button class="btn btn-success">{% trans 'Change' %}</button>
-
-    </form>
+    </div>
 
 {% endblock %}

@@ -113,10 +113,20 @@ LANGUAGE_CODE = 'en'
 LANGUAGES = [
     ('en', _('English')),
     ('ru', _('Russian')),
-    ('zh-Hans', _('Simplified Chinese')),
+    ('zh-hans', _('Simplified Chinese')),
     ('fr', _('French')),
     ('es', _('Spanish')),
+    ('de', _('German')),
+    ('it', _('Italian')),
 ]
+
+# Language detection settings
+LANGUAGE_COOKIE_NAME = 'django_language'
+LANGUAGE_COOKIE_AGE = None  # Session cookie
+LANGUAGE_COOKIE_DOMAIN = None
+LANGUAGE_COOKIE_SECURE = False
+LANGUAGE_COOKIE_HTTPONLY = False
+LANGUAGE_COOKIE_SAMESITE = 'Lax'
 
 TIME_ZONE = 'UTC'
 USE_TZ = True

@@ -1,0 +1,77 @@
+{% extends 'layouts/default/page.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block content %}
+<div class="avant-section avant-bg-right flex-center min-h-70vh">
+  <div class="avant-card max-w-480 m-2-5-auto">
+    <div class="avant-header text-center mb-1-2">{% trans 'Scan a Stone' %}</div>
+    
+    {% if messages %}
+      {% for message in messages %}
+        <div class="text-center mb-1 {% if message.tags == 'error' %}text-error{% else %}text-success{% endif %}">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+    
+    {% if lock_message %}
+      <div class="text-error text-center mb-1">{{ lock_message }}</div>
+    {% endif %}
+    
+    <form class="stone-scan-form flex-column gap-0-7" method="post" enctype="multipart/form-data" autocomplete="off">
+      {% csrf_token %}
+      
+      <label class="avant-label" for="id_PK_stone">{% trans 'Stone Name' %}*</label>
+      <input type="text" name="PK_stone" id="id_PK_stone" maxlength="10" required class="avant-input" value="{{ stone_name|default:'' }}" {% if locked %}readonly{% endif %}>
+      
+      <label class="avant-label" for="id_comment">{% trans 'Comment (optional)' %}</label>
+      <textarea name="comment" id="id_comment" rows="4" maxlength="500" class="avant-input" placeholder="{% trans 'Tell us about your stone adventure...' %}"></textarea>
+      
+      <label class="avant-label" for="id_image">{% trans 'Photo (optional)' %}</label>
+      <input type="file" name="image" id="id_image" accept="image/*" class="avant-input">
+      
+      <label class="avant-label" for="id_latitude">{% trans 'Latitude' %}*</label>
+      <input type="number" name="latitude" id="id_latitude" step="any" required class="avant-input" value="{{ latitude|default:'' }}">
+      
+      <label class="avant-label" for="id_longitude">{% trans 'Longitude' %}*</label>
+      <input type="number" name="longitude" id="id_longitude" step="any" required class="avant-input" value="{{ longitude|default:'' }}">
+      
+      <div id="scan-map" class="w-full h-260 border-radius-12 mb-1 mt-0-5"></div>
+      
+      <button type="submit" class="avant-btn mt-1-2" {% if locked %}disabled{% endif %}>{% trans 'Submit Scan' %}</button>
+    </form>
+  </div>
+</div>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" crossorigin=""/>
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" crossorigin=""></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var map = L.map('scan-map').setView([20, 0], 2);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '\u00a9 OpenStreetMap'
+  }).addTo(map);
+  var marker = L.marker([20, 0], {draggable:true}).addTo(map);
+  function setLatLng(lat, lng) {
+    marker.setLatLng([lat, lng]);
+    document.getElementById('id_latitude').value = lat;
+    document.getElementById('id_longitude').value = lng;
+  }
+  marker.on('dragend', function(e) {
+    var pos = marker.getLatLng();
+    setLatLng(pos.lat, pos.lng);
+  });
+  map.on('click', function(e) {
+    setLatLng(e.latlng.lat, e.latlng.lng);
+  });
+  // Try to get user location
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(function(pos) {
+      setLatLng(pos.coords.latitude, pos.coords.longitude);
+      map.setView([pos.coords.latitude, pos.coords.longitude], 13);
+    });
+  }
+  // Set initial values
+  setLatLng(20, 0);
+});
+</script>
+{% endblock %} 

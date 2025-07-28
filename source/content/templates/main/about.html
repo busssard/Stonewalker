@@ -1,0 +1,68 @@
+{% extends 'layouts/default/page.html' %}
+{% load static %}
+{% load i18n %}
+{% block content %}
+<div class="avant-section avant-bg-left flex-center min-h-80vh">
+  <div class="avant-card max-w-600 m-2-auto position-relative">
+    <div class="avant-card-title fs-2-4 fw-600 mb-1-8 text-dark text-center">{% trans 'About StoneWalker' %}</div>
+    
+    <!-- Decorative background elements -->
+    <div class="position-absolute top-neg-60 right-neg-60 w-120 h-120 bg-gradient-decor-1 border-radius-50 z-0"></div>
+    <div class="position-absolute bottom-neg-40 left-neg-40 w-90 h-90 bg-gradient-decor-2 border-radius-50 z-0"></div>
+    
+    <div class="position-relative z-1 fs-1-2 line-height-1-7 text-dark-gray mb-2">
+      {% trans 'StoneWalker is a unique platform that combines the joy of geocaching with the beauty of collaborative art. Our mission is to create a global community of stone travelers who paint, hide, and track beautiful stones as they journey around the world.' %}
+    </div>
+    
+    <div class="avant-fact-box mb-2">
+      <div class="avant-fact-text">
+       <img src="{% static 'cave_painting.png' %}" alt="Cave painting of the Warty Pig in Indonesia" class="avant-about-fact-img" />
+        <strong>{% trans 'Did you know:' %}</strong> {% trans 'One of the oldest known cave paintings, found in Indonesia, is over 45,000 years old. This shows that humans have always been drawn to creating art in unexpected places.' %}
+      </div>
+      <div class="avant-fact-text">
+        <a href="https://www.theguardian.com/science/2021/jan/13/worlds-oldest-known-cave-painting-found-in-indonesia" class="text-dark fw-bold text-decoration-none" target="_blank" rel="noopener noreferrer">
+          {% trans 'Read more about this discovery →' %}
+        </a>
+      </div>
+    </div>
+    
+    <div class="avant-fact-box mb-2">
+      <ul class="avant-about-list">
+
+        <strong><u>{% trans 'How it works:' %}</u></strong>
+        <li>
+          <img src="{% static 'arrow_right.png' %}" alt="arrow" class="avant-about-list-arrow">
+          {% trans 'Pick up a brush and paint a stone.' %}
+        </li>
+        <li>
+          <img src="{% static 'arrow_right.png' %}" alt="arrow" class="avant-about-list-arrow">
+          {% trans 'Click the "Create a Stone" button and follow the instructions.' %}
+        </li>
+        <li>
+          <img src="{% static 'arrow_right.png' %}" alt="arrow" class="avant-about-list-arrow">
+          {% trans 'Glue the custom QR code on the back of the stone.' %}
+        </li>
+        <li>
+          <img src="{% static 'arrow_right.png' %}" alt="arrow" class="avant-about-list-arrow">
+          {% trans 'Set it free and watch it travel the world.' %}
+        </li>
+      </ul>
+    </div>
+    
+    <div class="avant-fact-box mb-2">
+      <ul class="avant-about-list">
+        <strong><u>{% trans 'Community Guidelines:' %}</u></strong>
+        <li>{% trans 'Use non-toxic, weather-resistant paint, like acrylic.' %}</li>
+        <li>{% trans 'Don\'t place stones in protected areas or private property!' %}</li>
+        <li>{% trans 'Be kind and respectful to other community members!' %}</li>
+        <li>{% trans 'Don\'t limit your creativity, go wild!' %}</li>
+      
+      <p> <strong> {% trans 'You never know where it might go, or who it might inspire along the way!' %} </strong></p>
+    </ul> </div>
+    
+    <div class="flex-center">
+      <a href="{% url 'stonewalker_start' %}" class="avant-btn">{% trans 'Start Your Journey' %}</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

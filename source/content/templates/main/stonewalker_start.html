@@ -1,0 +1,521 @@
+{% extends 'layouts/default/page.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block content %}
+<!-- Welcome Modal for Guests -->
+{% if show_welcome_modal %}
+<div id="welcome-modal-overlay" class="profile-modal-overlay">
+  <div id="welcome-modal-content" class="avant-card">
+    <span id="welcome-modal-close" class="profile-modal-close">&times;</span>
+    <div class="avant-header">{% trans 'Welcome to StoneWalker!' %}</div>
+    <div class="avant-card-desc">
+      <span class="avant-header accent">{% trans 'You are a guest.' %}</span><br>
+      <span class="avant-header secondary">{% trans 'Sign up to start creating, finding, and sharing stones around the world!' %}</span>
+    </div>
+    <div class="avant-card-btns">
+      <a href="{% url 'accounts:sign_up' %}" class="avant-btn">{% trans 'Create an Account' %}</a>
+      <a href="{% url 'accounts:log_in' %}" class="avant-btn">{% trans 'Log In' %}</a>
+    </div>
+  </div>
+</div>
+<script>
+(function() {
+  var lastVisitKey = 'stonewalker_guest_last_visit';
+  var now = Date.now();
+  var lastVisit = parseInt(localStorage.getItem(lastVisitKey) || '0', 10);
+  var oneHour = 60 * 60 * 1000;
+  var overlay = document.getElementById('welcome-modal-overlay');
+  if (!lastVisit || now - lastVisit > oneHour) {
+    overlay.style.display = 'flex';
+    document.getElementById('welcome-modal-close').onclick = function() {
+      overlay.style.display = 'none';
+      localStorage.setItem(lastVisitKey, Date.now().toString());
+    };
+    overlay.onclick = function(e) {
+      if (e.target === overlay) {
+        overlay.style.display = 'none';
+        localStorage.setItem(lastVisitKey, Date.now().toString());
+      }
+    };
+  } else {
+    overlay.style.display = 'none';
+  }
+})();
+</script>
+{% endif %}
+<!-- Responsive Map Frame Wrapper -->
+<div class="h-map-wrapper">
+  <div class="main-map-flex-root h-map-container flex-column">
+    <div class="avant-card avant-card-map flex-1-auto flex-column">
+      <div id="map-container" class="avant-bg-right avant-shadow flex-1-auto">
+        <div id="map" class="flex-1-auto"></div>
+      </div>
+      <div id="stone-details" class="avant-card display-none">
+        <!-- Stone details content -->
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Floating action buttons (styled, side by side, bottom right) -->
+<div class="floating-action-bar">
+  <button id="add-stone-fab" title="{% trans 'Add new stone' %}" class="avant-btn floating-action-btn primary">
+    <img src="{% static 'hold_stone.png' %}" alt="{% trans 'Add new stone' %}" />
+    <span>{% trans 'Create New Stone' %}</span>
+  </button>
+  <a href="{% url 'stone_scan' %}" id="scan-stone-fab" title="{% trans 'I found a stone' %}" class="avant-btn floating-action-btn secondary">
+    <img id="scan-stone-icon" src="{% static 'found_stone.png' %}" alt="{% trans 'Scan Stone' %}" />
+    <span id="scan-stone-text">{% trans 'Scan a Stone' %}</span>
+  </a>
+</div>
+<script>
+// Highlight add-stone-fab in a random color on hover
+const addStoneFab = document.getElementById('add-stone-fab');
+const originalBg = addStoneFab.style.background;
+const randomColors = [
+  '#ff9800', '#ffb300', '#4CAF50', '#3fa7ff', '#e91e63', '#9c27b0', '#00bcd4', '#8bc34a', '#ffc107', '#ff5722'
+];
+addStoneFab.addEventListener('mouseenter', function() {
+  const color = randomColors[Math.floor(Math.random() * randomColors.length)];
+  addStoneFab.style.background = color;
+});
+addStoneFab.addEventListener('mouseleave', function() {
+  addStoneFab.style.background = originalBg;
+});
+// Scan button hover: change border, text, and icon color
+const scanBtn = document.getElementById('scan-stone-fab');
+const scanText = document.getElementById('scan-stone-text');
+const scanIcon = document.getElementById('scan-stone-icon');
+const scanDefaultColor = '#ff9800';
+let scanOriginalBorder = scanBtn.style.borderColor;
+let scanOriginalText = scanText.style.color;
+let scanOriginalFilter = scanIcon.style.filter;
+scanBtn.addEventListener('mouseenter', function() {
+  const color = randomColors[Math.floor(Math.random() * randomColors.length)];
+  scanBtn.style.borderColor = color;
+  scanText.style.color = color;
+  scanIcon.style.filter = `drop-shadow(0 0 0 ${color}) brightness(0) saturate(100%) sepia(1) hue-rotate(0deg)`;
+});
+scanBtn.addEventListener('mouseleave', function() {
+  scanBtn.style.borderColor = scanDefaultColor;
+  scanText.style.color = scanDefaultColor;
+  scanIcon.style.filter = scanOriginalFilter;
+});
+</script>
+
+<!-- Add New Stone Modal -->
+<div id="add-stone-modal" class="modal display-none position-fixed z-2000 left-0 top-0 w-100vw h-100vh bg-modal-overlay flex-center">
+  <div class="avant-modal max-w-600 min-w-320 w-40vw m-auto p-2 position-relative display-grid grid-template-rows-auto gap-1-5">
+    <span id="add-stone-close" class="close position-absolute top-1 right-1 fs-2 cursor-pointer">&times;</span>
+    <h2 class="avant-header mb-1">{% trans 'Add New Stone' %}</h2>
+    <form id="add-stone-form" enctype="multipart/form-data" autocomplete="off" method="post" action="{% url 'add_stone' %}" class="flex-column gap-1-2 h-full">
+      {% csrf_token %}
+      <div id="add-stone-step1" class="flex-column gap-1-2">
+        <!-- Stone type selector -->
+        <label class="avant-label">{% trans 'Stone Type' %}
+          <select name="stone_type" id="stone-type-input" class="avant-select ml-1 w-auto display-inline-block">
+            <option value="hidden">{% trans 'Hidden (no location, must be found by scanning)' %}</option>
+            <option value="hunted">{% trans 'Hunted (placed at a location, must be found at that spot)' %}</option>
+          </select>
+        </label>
+        <div id="stone-type-flavor" class="fs-0-98 text-muted mb-0-5">
+          {% trans 'Hidden stones do not have a known location. Hunted stones are placed at a specific spot and must be found there.' %}
+        </div>
+        <!-- Image upload -->
+                  <label class="avant-label">{% trans 'Picture' %}
+            <input type="file" name="image" accept="image/*" id="stone-image-input" class="avant-input display-block mt-0-5">
+          </label>
+        <!-- Profile picture shape preview -->
+        <div id="stone-shape-preview-container" class="mt-0-5 mb-0">
+          <div id="stone-shape-preview" class="w-120 h-120 m-auto"></div>
+        </div>
+        <!-- Name with checkmark -->
+        <label class="avant-label flex-center gap-0-5 mt-0-5">{% trans 'Stone Name' %}*
+          <input type="text" name="PK_stone" id="stone-name-input" maxlength="10" required class="avant-input flex-1 ml-0-5">
+          <span id="checkmark" class="js-checkmark js-checkmark-neutral">✔️</span>
+        </label>
+        <div id="name-check-result" aria-live="polite" class="js-result-text js-result-neutral"></div>
+        <!-- Description -->
+        <div class="w-full">
+          <label class="avant-label flex-column w-full">{% trans 'Description' %}
+            <textarea name="description" id="stone-desc-input" rows="6" maxlength="500" class="avant-input w-full mt-0-5 resize-vertical display-block p-2" placeholder="{% trans 'Say something about your stone (max 500 chars)' %}"></textarea>
+            <span id="desc-char-count" class="js-char-count">0/500</span>
+          </label>
+        </div>
+        <!-- Marker options side-by-side -->
+        <div class="flex gap-1 mt-1 flex-wrap">
+          <!-- Marker Color -->
+          <label class="avant-label flex-1 min-w-120 flex-center gap-0-5">
+            {% trans 'Marker Color' %}
+            <input type="color" name="color" id="stone-color-input" value="#4CAF50" class="ml-auto w-48 h-32 border-none border-radius-6">
+          </label>
+          <!-- Marker Shape -->
+          <label class="avant-label flex-2 min-w-160 flex-center gap-0-5">
+            {% trans 'Marker Shape' %}
+            <select name="shape" id="stone-shape-input" class="avant-select flex-1 p-0-4">
+              <option value="circle">{% trans 'Circle' %}</option>
+              <option value="square">{% trans 'Square' %}</option>
+              <option value="star">{% trans 'Star' %}</option>
+              <option value="triangle">{% trans 'Triangle' %}</option>
+            </select>
+          </label>
+        </div>
+        <!-- Next/Cancel -->
+        <div class="flex gap-1 mt-2 justify-end">
+          <button type="button" id="add-stone-cancel" class="avant-btn bg-gray text-dark">{% trans 'Cancel' %}</button>
+          <button type="button" id="add-stone-next" class="avant-btn">{% trans 'Next' %}</button>
+        </div>
+      </div>
+      <!-- Step 2: Map -->
+      <div id="add-stone-step2" class="display-none flex-column items-center gap-1-2">
+        <div id="location-flavor" class="mb-1 text-muted fs-0-98"></div>
+        <div id="add-stone-map" class="w-full h-300 border-radius-12 mb-1"></div>
+        <div class="flex gap-1 justify-end">
+          <button type="button" id="add-stone-back" class="avant-btn bg-gray text-dark">{% trans 'Back' %}</button>
+          <button type="submit" class="avant-btn">{% trans 'Save' %}</button>
+        </div>
+      </div>
+      <input type="hidden" name="latitude" id="add-stone-lat">
+      <input type="hidden" name="longitude" id="add-stone-lng">
+    </form>
+  </div>
+</div>
+  
+<script id="stones-data" type="application/json">{{ stones_json|safe }}</script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" crossorigin=""/>
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" crossorigin=""></script>
+<script type="module">
+  const stones = JSON.parse(document.getElementById('stones-data').textContent || '[]');
+  document.addEventListener('DOMContentLoaded', function() {
+    var map = L.map('map').setView([20, 0], 3);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '\u00a9 OpenStreetMap'
+    }).addTo(map);
+    // Helper to create a custom icon with image and shape
+    function createStoneIcon(imgUrl, shape, color) {
+      let html = '';
+      if (!imgUrl) {
+        html = `<div class="w-48 h-48 bg-transparent border-radius-50 border-2-5" style="border-color: ${color};"></div>`;
+      } else if (shape === 'circle' || !shape) {
+        html = `<div class="w-48 h-48 bg-transparent border-radius-50 overflow-hidden flex-center border-2-5" style="border-color: ${color};">
+          <img src="${imgUrl}" class="w-full h-full object-fit-cover"/>
+        </div>`;
+      } else if (shape === 'square') {
+        html = `<div class="w-48 h-48 bg-transparent border-radius-0 overflow-hidden flex-center border-2-5" style="border-color: ${color};">
+          <img src="${imgUrl}" class="w-full h-full object-fit-cover"/>
+        </div>`;
+      } else if (shape === 'star') {
+        html = `<svg width="48" height="48" viewBox="0 0 120 120"><defs><clipPath id="star"><path d="M60,5 L73,45 L115,45 L80,70 L93,110 L60,85 L27,110 L40,70 L5,45 L47,45 Z"/></clipPath></defs><rect width="120" height="120" fill="transparent"/><image href="${imgUrl}" width="120" height="120" clip-path="url(#star)" preserveAspectRatio="xMidYMid slice"/><path d="M60,5 L73,45 L115,45 L80,70 L93,110 L60,85 L27,110 L40,70 L5,45 L47,45 Z" fill="none" stroke="${color}" stroke-width="6"/></svg>`;
+      } else if (shape === 'triangle') {
+        html = `<svg width="48" height="48" viewBox="0 0 120 120"><defs><clipPath id="tri"><path d="M60,10 L110,110 L10,110 Z"/></clipPath></defs><rect width="120" height="120" fill="transparent"/><image href="${imgUrl}" width="120" height="120" clip-path="url(#tri)" preserveAspectRatio="xMidYMid slice"/><path d="M60,10 L110,110 L10,110 Z" fill="none" stroke="${color}" stroke-width="6"/></svg>`;
+      }
+      return L.divIcon({
+        html: html,
+        iconSize: [48, 48],
+        iconAnchor: [24, 48],
+        className: 'stone-map-icon'
+      });
+    }
+    // Group stones by PK_stone
+    const markerMap = {};
+    const stonesData = stones.map(stone => ({
+      PK_stone: stone.PK_stone,
+      description: stone.description,
+      image: stone.image || "{% static 'stone.png' %}",
+      created_at: stone.created_at ? new Date(stone.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '',
+      username: stone.user || '',
+      user_picture: stone.user_picture || "{% static 'user_picture.png' %}",
+      distance_km: stone.distance_km || 0,
+      moves: (stone.moves || []).map(m => ({
+        comment: m.comment,
+        image: m.image || '',
+        timestamp: m.timestamp || '',
+        timestamp_display: m.timestamp_display || '',
+        username: m.user || '',
+        user_picture: m.user_picture || "{% static 'user_picture.png' %}"
+      }))
+    }));
+    stones.forEach(function(stone) {
+      const latlngs = [];
+      let color = stone.color || '#4CAF50';
+      let shape = stone.shape || 'circle';
+      (stone.moves || []).forEach(function(move) {
+        latlngs.push([move.latitude, move.longitude]);
+      });
+      if (latlngs.length > 0) {
+        // Draw journey line
+        L.polyline(latlngs, { color: color, weight: 3, opacity: 0.5 }).addTo(map);
+        // Place marker at latest location
+        const latest = latlngs[latlngs.length - 1];
+        const marker = L.marker(latest, {
+          icon: createStoneIcon(stone.image || "{% static 'stone.png' %}", shape, color)
+        }).addTo(map);
+        markerMap[stone.PK_stone] = marker;
+        marker.on('click', function() {
+          import('/static/js/stone-modal.js').then(mod => {
+            mod.openStoneModal(stone.PK_stone, color, stonesData);
+          });
+        });
+      }
+    });
+    // Focus on stone if ?focus=PK_stone in URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const focusStone = urlParams.get('focus');
+    if (focusStone && markerMap[focusStone]) {
+      const marker = markerMap[focusStone];
+      map.setView(marker.getLatLng(), 10, { animate: true });
+      setTimeout(() => marker.fire('click'), 400);
+    }
+  });
+</script>
+<script>
+// Floating button opens modal
+const fab = document.getElementById('add-stone-fab');
+const modal = document.getElementById('add-stone-modal');
+const closeBtn = document.getElementById('add-stone-close');
+const cancelBtn = document.getElementById('add-stone-cancel');
+fab.onclick = () => { modal.style.display = 'flex'; };
+closeBtn.onclick = cancelBtn.onclick = () => { modal.style.display = 'none'; };
+window.onclick = (e) => { if (e.target === modal) modal.style.display = 'none'; };
+
+// Image preview
+const imgInput = document.getElementById('stone-image-input');
+// --- SHAPE PROFILE PICTURE PREVIEW ---
+const shapePreview = document.getElementById('stone-shape-preview');
+const shapeInput = document.getElementById('stone-shape-input');
+let previewImgDataUrl = '';
+
+function updateShapePreview() {
+  const shape = shapeInput.value;
+  shapePreview.innerHTML = '';
+  if (!previewImgDataUrl) return;
+  if (shape === 'circle' || shape === 'square') {
+    // Use div with border-radius for circle, none for square
+    const div = document.createElement('div');
+    div.className = 'js-shape-preview-div';
+    div.style.background = '#eee';
+    div.style.borderRadius = shape === 'circle' ? '50%' : '0';
+    const img = document.createElement('img');
+    img.src = previewImgDataUrl;
+    img.className = 'js-shape-preview-img';
+    div.appendChild(img);
+    shapePreview.appendChild(div);
+  } else if (shape === 'star' || shape === 'triangle') {
+    // Use SVG mask
+    let maskPath = '';
+    if (shape === 'star') {
+      maskPath = 'M60,5 L73,45 L115,45 L80,70 L93,110 L60,85 L27,110 L40,70 L5,45 L47,45 Z';
+    } else if (shape === 'triangle') {
+      maskPath = 'M60,10 L110,110 L10,110 Z';
+    }
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('width', '120');
+    svg.setAttribute('height', '120');
+    svg.setAttribute('viewBox', '0 0 120 120');
+    svg.innerHTML = `
+      <defs>
+        <clipPath id="stone-shape-clip">
+          <path d="${maskPath}" />
+        </clipPath>
+      </defs>
+      <image href="${previewImgDataUrl}" width="120" height="120" clip-path="url(#stone-shape-clip)" preserveAspectRatio="xMidYMid slice"/>
+      <rect width="120" height="120" fill="none" stroke="#bbb" stroke-width="2" clip-path="url(#stone-shape-clip)"/>
+    `;
+    shapePreview.appendChild(svg);
+  }
+}
+
+imgInput.addEventListener('change', function() {
+  if (this.files && this.files[0]) {
+    const reader = new FileReader();
+    reader.onload = e => {
+      previewImgDataUrl = e.target.result;
+      updateShapePreview();
+    };
+    reader.readAsDataURL(this.files[0]);
+  } else {
+    previewImgDataUrl = '';
+    updateShapePreview();
+  }
+});
+shapeInput.addEventListener('change', updateShapePreview);
+
+// AJAX name uniqueness check
+const checkBtn = document.getElementById('check-name-btn');
+const nameInput = document.getElementById('stone-name-input');
+const nameResult = document.getElementById('name-check-result');
+const checkmark = document.getElementById('checkmark');
+const nextBtn = document.getElementById('add-stone-next');
+let nameValid = false;
+
+function validateStoneName() {
+  const name = nameInput.value.trim();
+  if (!name) {
+    checkmark.textContent = '✔️';
+    checkmark.className = 'js-checkmark js-checkmark-neutral';
+    nameResult.textContent = 'Please enter a name.';
+    nameResult.className = 'js-result-text js-result-neutral';
+    nameValid = false;
+    nextBtn.disabled = true;
+    return;
+  }
+  if (/\s/.test(name)) {
+    checkmark.textContent = '❌';
+    checkmark.className = 'js-checkmark js-checkmark-invalid';
+    nameResult.textContent = 'No whitespace allowed.';
+    nameResult.className = 'js-result-text js-result-invalid';
+    nameValid = false;
+    nextBtn.disabled = true;
+    return;
+  }
+  nameResult.textContent = 'Checking...';
+  nameResult.className = 'js-result-text js-result-checking';
+  checkmark.textContent = '...';
+  checkmark.className = 'js-checkmark js-checkmark-checking';
+  fetch(`/api/check_stone_name/?PK_stone=${encodeURIComponent(name)}`)
+    .then(r => r.json())
+    .then(data => {
+      if (data.taken) {
+        checkmark.textContent = '❌';
+        checkmark.className = 'js-checkmark js-checkmark-invalid';
+        nameResult.textContent = 'Name is already taken.';
+        nameResult.className = 'js-result-text js-result-invalid';
+        nameValid = false;
+        nextBtn.disabled = true;
+      } else {
+        checkmark.textContent = '✅';
+        checkmark.className = 'js-checkmark js-checkmark-valid';
+        nameResult.textContent = 'Name is available!';
+        nameResult.className = 'js-result-text js-result-valid';
+        nameValid = true;
+        nextBtn.disabled = false;
+      }
+    })
+    .catch((err) => {
+      checkmark.textContent = '❌';
+      checkmark.className = 'js-checkmark js-checkmark-invalid';
+      nameResult.textContent = 'Could not check name (server error).';
+      nameResult.className = 'js-result-text js-result-invalid';
+      nameValid = false;
+      nextBtn.disabled = true;
+    });
+}
+nameInput.addEventListener('blur', validateStoneName);
+nameInput.addEventListener('input', function() {
+  if (!nameInput.value.trim()) {
+    checkmark.textContent = '✔️';
+    checkmark.className = 'js-checkmark js-checkmark-neutral';
+    nameResult.className = 'js-result-text js-result-neutral';
+  } else {
+    checkmark.textContent = '✔️';
+    checkmark.className = 'js-checkmark js-checkmark-checking';
+    nameResult.className = 'js-result-text js-result-checking';
+  }
+  nameResult.textContent = '';
+  nameValid = false;
+  nextBtn.disabled = true;
+});
+
+const step1 = document.getElementById('add-stone-step1');
+const step2 = document.getElementById('add-stone-step2');
+const backBtn = document.getElementById('add-stone-back');
+const form = document.getElementById('add-stone-form');
+const latInput = document.getElementById('add-stone-lat');
+const lngInput = document.getElementById('add-stone-lng');
+let addStoneMap, addStoneMarker;
+
+const stoneTypeInput = document.getElementById('stone-type-input');
+const stoneTypeFlavor = document.getElementById('stone-type-flavor');
+const locationFlavor = document.getElementById('location-flavor');
+
+function updateStoneTypeFlavor() {
+  if (stoneTypeInput.value === 'hidden') {
+    stoneTypeFlavor.textContent = 'Hidden stones do not have a known location. When found, the finder will be asked to add the location.';
+    locationFlavor.textContent = 'Location is optional for hidden stones. You may leave it blank.';
+  } else {
+    stoneTypeFlavor.textContent = 'Hunted stones are placed at a specific spot and must be found there.';
+    locationFlavor.textContent = 'Location is required for hunted stones. Please pick a spot on the map.';
+  }
+}
+stoneTypeInput.addEventListener('change', updateStoneTypeFlavor);
+updateStoneTypeFlavor();
+
+nextBtn.onclick = function() {
+  // Validate required fields (name, description, etc.)
+  if (!nameInput.value.trim()) {
+    nameResult.textContent = 'Please enter a name.';
+    nameResult.className = 'js-result-text js-result-invalid';
+    nameInput.focus();
+    return;
+  }
+  if (nameResult.textContent === 'Name is already taken.') {
+    nameInput.focus();
+    return;
+  }
+  if (!document.getElementById('stone-desc-input').value.trim()) {
+    alert('Please enter a description.');
+    return;
+  }
+  // Go to step 2
+  step1.style.display = 'none';
+  step2.style.display = 'flex';
+  setTimeout(() => {
+    if (!addStoneMap) {
+      addStoneMap = L.map('add-stone-map').setView([20, 0], 2);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '© OpenStreetMap'
+      }).addTo(addStoneMap);
+      addStoneMarker = L.marker([20, 0], {draggable:true}).addTo(addStoneMap);
+      addStoneMarker.on('dragend', function(e) {
+        const pos = addStoneMarker.getLatLng();
+        latInput.value = pos.lat;
+        lngInput.value = pos.lng;
+      });
+      addStoneMap.on('click', function(e) {
+        addStoneMarker.setLatLng(e.latlng);
+        latInput.value = e.latlng.lat;
+        lngInput.value = e.latlng.lng;
+      });
+      // Set initial values
+      latInput.value = '';
+      lngInput.value = '';
+    }
+    addStoneMap.invalidateSize();
+  }, 200);
+  updateStoneTypeFlavor();
+};
+backBtn.onclick = function() {
+  step2.style.display = 'none';
+  step1.style.display = 'block';
+};
+form.onsubmit = function(e) {
+  if (stoneTypeInput.value === 'hunted') {
+    if (!latInput.value || !lngInput.value) {
+      alert('Please pick a position on the map for a hunted stone.');
+      e.preventDefault();
+      return false;
+    }
+  }
+  // For hidden stones, location is optional
+  // Allow form to submit (to be handled by backend)
+};
+
+const descInput = document.getElementById('stone-desc-input');
+const descCharCount = document.getElementById('desc-char-count');
+
+descInput.addEventListener('input', function() {
+  const len = descInput.value.length;
+  descCharCount.textContent = len + '/500';
+  if (len > 500) {
+    descCharCount.className = 'js-char-count js-char-count-over';
+    nextBtn.disabled = true;
+  } else {
+    descCharCount.className = 'js-char-count';
+    // Only enable next if name is valid and not over char limit
+    if (nameValid) nextBtn.disabled = false;
+  }
+});
+</script>
+{% endblock %} 

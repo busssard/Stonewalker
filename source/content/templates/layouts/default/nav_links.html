@@ -1,0 +1,23 @@
+{% load i18n %}
+{% comment %} DRY, centralized navigation links for both main and burger nav. All logic is here. {% endcomment %}
+<nav id="main-nav" class="header-main-nav{% if burger %} header-burger-nav-list{% endif %}" aria-label="Main Navigation">
+  <a class="nav-link avant-btn header-nav-btn" href="{% url 'about' %}">{% trans 'About' %}</a>
+  <a class="nav-link avant-btn header-nav-btn" href="{% url 'shop' %}">{% trans 'Shop' %}</a>
+  <a class="nav-link avant-btn header-nav-btn" href="{% url 'forum' %}">{% trans 'Forum' %}</a>
+  <a class="nav-link avant-btn header-nav-btn" href="{% url 'change_language' %}">{% trans 'Change language' %}</a>
+  {% if burger %}
+    {% if request.user.is_authenticated %}
+      <a class="nav-link avant-btn header-nav-btn" href="{% url 'my_stones' %}">{% trans 'My Stones' %}</a>
+      <a class="nav-link avant-btn header-nav-btn" href="{% url 'accounts:change_profile' %}">{% trans 'Edit Profile' %}</a>
+      <a class="nav-link avant-btn header-nav-btn" href="{% url 'accounts:log_out_confirm' %}">{% trans 'Log out' %}</a>
+    {% else %}
+      <a class="nav-link avant-btn header-nav-btn" href="{% url 'accounts:log_in' %}">{% trans 'Log in' %}</a>
+      <a class="nav-link avant-btn header-nav-btn" href="{% url 'accounts:sign_up' %}">{% trans 'Sign up' %}</a>
+    {% endif %}
+  {% else %}
+    {% if not request.user.is_authenticated %}
+      <a class="nav-link avant-btn header-nav-btn" href="{% url 'accounts:log_in' %}">{% trans 'Log in' %}</a>
+      <a class="nav-link avant-btn header-nav-btn" href="{% url 'accounts:sign_up' %}">{% trans 'Sign up' %}</a>
+    {% endif %}
+  {% endif %}
+</nav> 
