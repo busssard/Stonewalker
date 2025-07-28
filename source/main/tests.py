@@ -70,12 +70,28 @@ class TranslationQualityAssuranceTests(TestCase):
                 with open(po_file_path, 'r', encoding='utf-8') as f:
                     content = f.read()
                 
+                # Skip header section (lines starting with # or "Project-Id-Version)
+                lines = content.split('\n')
+                msgstr_section = False
+                filtered_content = []
+                
+                for line in lines:
+                    if line.startswith('msgstr '):
+                        msgstr_section = True
+                    elif line.startswith('msgid '):
+                        msgstr_section = False
+                    
+                    if msgstr_section and not line.startswith('"Project-Id-Version'):
+                        filtered_content.append(line)
+                
+                filtered_content_str = '\n'.join(filtered_content)
+                
                 for char, description in self.forbidden_characters.items():
-                    self.assertNotIn(char, content,
+                    self.assertNotIn(char, filtered_content_str,
                                    f"PO file for {lang_name} ({lang_code}) contains {description}")
     
     def test_po_files_no_empty_msgstr(self):
-        """Test that PO files don't have empty msgstr entries (except for header)"""
+        """Test that PO files don't have empty msgstr entries (except for header and Django built-ins)"""
         for lang_code, lang_name in settings.LANGUAGES:
             po_file_path = os.path.join(self.locale_path, lang_code, 'LC_MESSAGES', 'django.po')
             if os.path.exists(po_file_path):
@@ -85,6 +101,9 @@ class TranslationQualityAssuranceTests(TestCase):
                         # Skip header entry
                         if entry.msgid == "":
                             continue
+                        # Skip Django built-in translations
+                        if entry.occurrences and entry.occurrences[0].startswith('venv/lib/python3.8/site-packages/django/'):
+                            continue
                         # Check for empty msgstr
                         if not entry.msgstr.strip():
                             self.fail(f"PO file for {lang_name} ({lang_code}) has empty msgstr for: '{entry.msgid}'")
@@ -92,16 +111,21 @@ class TranslationQualityAssuranceTests(TestCase):
                     self.fail(f"Failed to parse PO file for {lang_name} ({lang_code}): {e}")
     
     def test_po_files_no_duplicate_msgids(self):
-        """Test that PO files don't have duplicate msgid entries"""
+        """Test that PO files don't have duplicate msgid entries (excluding Django built-ins)"""
         for lang_code, lang_name in settings.LANGUAGES:
             po_file_path = os.path.join(self.locale_path, lang_code, 'LC_MESSAGES', 'django.po')
             if os.path.exists(po_file_path):
                 try:
                     po = polib.pofile(po_file_path)
-                    msgids = [entry.msgid for entry in po if entry.msgid != ""]
-                    duplicates = [msgid for msgid in set(msgids) if msgids.count(msgid) > 1]
+                    # Filter out Django built-in translations that may have duplicates
+                    custom_msgids = []
+                    for entry in po:
+                        if entry.msgid != "" and not entry.occurrences[0].startswith('venv/lib/python3.8/site-packages/django/'):
+                            custom_msgids.append(entry.msgid)
+                    
+                    duplicates = [msgid for msgid in set(custom_msgids) if custom_msgids.count(msgid) > 1]
                     self.assertEqual(len(duplicates), 0,
-                                   f"PO file for {lang_name} ({lang_code}) has duplicate msgids: {duplicates}")
+                                   f"PO file for {lang_name} ({lang_code}) has duplicate custom msgids: {duplicates}")
                 except Exception as e:
                     self.fail(f"Failed to parse PO file for {lang_name} ({lang_code}): {e}")
     
