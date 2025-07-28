@@ -119,6 +119,7 @@ class NavigationUITests(TestCase):
         self.assertContains(response, 'Shop')
         self.assertContains(response, 'Forum')
         self.assertContains(response, 'Change language')
+        # Log in and Sign up are only shown in burger menu or when not authenticated in main nav
         self.assertContains(response, 'Log in')
         self.assertContains(response, 'Sign up')
         # Header logo and walker icon
@@ -134,6 +135,7 @@ class NavigationUITests(TestCase):
         self.assertContains(response, 'Shop')
         self.assertContains(response, 'Forum')
         self.assertContains(response, 'Change language')
+        # My Stones, Edit Profile, and Log out are only shown in burger menu for authenticated users
         self.assertContains(response, 'My Stones')
         self.assertContains(response, 'Edit Profile')
         self.assertContains(response, 'Log out')
