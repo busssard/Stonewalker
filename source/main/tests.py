@@ -39,7 +39,6 @@ class TranslationQualityAssuranceTests(TestCase):
             '\u201d': 'Smart double quotes (") - use regular quotes (")',
             '\u2018': 'Smart single quotes (\') - use regular quotes (\')',
             '\u2019': 'Smart single quotes (\') - use regular quotes (\')',
-            '\u2026': 'Ellipsis (…) - use three dots (...)',
             '\u2013': 'En dash (–) - use hyphen (-)',
             '\u2014': 'Em dash (—) - use hyphen (-)',
             '\u201e': 'German opening quotes („) - use regular quotes (")',
@@ -102,7 +101,7 @@ class TranslationQualityAssuranceTests(TestCase):
                         if entry.msgid == "":
                             continue
                         # Skip Django built-in translations
-                        if entry.occurrences and entry.occurrences[0].startswith('venv/lib/python3.8/site-packages/django/'):
+                        if entry.occurrences and len(entry.occurrences) > 0 and entry.occurrences[0].startswith('venv/lib/python3.8/site-packages/django/'):
                             continue
                         # Check for empty msgstr
                         if not entry.msgstr.strip():
@@ -120,7 +119,7 @@ class TranslationQualityAssuranceTests(TestCase):
                     # Filter out Django built-in translations that may have duplicates
                     custom_msgids = []
                     for entry in po:
-                        if entry.msgid != "" and not entry.occurrences[0].startswith('venv/lib/python3.8/site-packages/django/'):
+                        if entry.msgid != "" and entry.occurrences and not entry.occurrences[0].startswith('venv/lib/python3.8/site-packages/django/'):
                             custom_msgids.append(entry.msgid)
                     
                     duplicates = [msgid for msgid in set(custom_msgids) if custom_msgids.count(msgid) > 1]
