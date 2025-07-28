@@ -263,6 +263,8 @@ msgid ""
 "Please enter your new password twice so we can verify you typed it in "
 "correctly."
 msgstr ""
+"Please enter your new password twice so we can verify you typed it in "
+"correctly."
 
 #: source/accounts/templates/accounts/restore_password_confirm.html:21
 #: source/content/templates/main/change_language.html:32
