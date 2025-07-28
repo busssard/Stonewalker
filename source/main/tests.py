@@ -37,15 +37,15 @@ class TranslationQualityAssuranceTests(TestCase):
         self.forbidden_characters = {
             '\u201c': 'Smart double quotes (") - use regular quotes (")',
             '\u201d': 'Smart double quotes (") - use regular quotes (")',
-            '\u2018': 'Smart single quotes (') - use regular quotes (')',
-            '\u2019': 'Smart single quotes (') - use regular quotes (')',
+            '\u2018': 'Smart single quotes (\') - use regular quotes (\')',
+            '\u2019': 'Smart single quotes (\') - use regular quotes (\')',
             '\u2026': 'Ellipsis (…) - use three dots (...)',
             '\u2013': 'En dash (–) - use hyphen (-)',
             '\u2014': 'Em dash (—) - use hyphen (-)',
             '\u201e': 'German opening quotes („) - use regular quotes (")',
             '\u201d': 'German closing quotes (") - use regular quotes (")',
-            '\u201a': 'German opening single quotes (‚) - use regular quotes (')',
-            '\u2019': 'German closing single quotes (') - use regular quotes (')',
+            '\u201a': 'German opening single quotes (‚) - use regular quotes (\')',
+            '\u2019': 'German closing single quotes (\') - use regular quotes (\')',
         }
     
     def test_po_files_have_proper_headers(self):
