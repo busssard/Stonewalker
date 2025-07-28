@@ -1,33 +1,24 @@
 {% extends 'layouts/default/page.html' %}
-
-{% load bootstrap4 %}
+{% load static %}
 {% load i18n %}
-
 {% block content %}
-
-    <h4>{% trans 'Log in' %}</h4>
-
+<div class="avant-section avant-bg-left flex-center min-h-80vh">
+  <div class="avant-card max-w-420 w-full m-3-auto">
+    <div class="avant-header text-center mb-2">{% trans 'Log in' %}</div>
     <form method="post">
-
-        {% csrf_token %}
-        {% bootstrap_form form %}
-
-        <button class="btn btn-primary">{% trans 'Log in' %}</button>
-
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button class="avant-btn w-full mt-1-2">{% trans 'Log in' %}</button>
     </form>
-
-    <hr>
-
-    <ul>
-        <li>
-            <a href="{% url 'accounts:restore_password' %}">{% trans 'Forgot your password?' %}</a>
-        </li>
-        <li>
-            <a href="{% url 'accounts:remind_username' %}">{% trans 'Forgot your username?' %}</a>
-        </li>
-        <li>
-            <a href="{% url 'accounts:resend_activation_code' %}">{% trans 'Resend an activation code' %}</a>
-        </li>
+    <div class="text-center mt-1-5 fs-0-98 text-muted">
+      {% trans "Don't have an account?" %}
+      <a href="{% url 'accounts:sign_up' %}" class="avant-btn ml-0-7">{% trans 'Sign up' %}</a>
+    </div>
+    <hr class="mt-2 mb-1-2">
+    <ul class="pl-1-2">
+      <li><a href="{% url 'accounts:restore_password' %}">{% trans 'Forgot your password?' %}</a></li>
+      <li><a href="{% url 'accounts:remind_username' %}">{% trans 'Forgot your username?' %}</a></li>
     </ul>
-
+  </div>
+</div>
 {% endblock %}

@@ -1,19 +1,182 @@
 {% extends 'layouts/default/page.html' %}
 
-{% load bootstrap4 %}
 {% load i18n %}
+{% load static %}
 
 {% block content %}
-
-    <h4>{% trans 'Change profile' %}</h4>
-
-    <form method="post">
-
+{% if not modal %}
+<div class="max-w-480 m-2-5-auto p-2-5 bg-white border-radius-18 shadow-medium">
+  <form method="post" enctype="multipart/form-data" id="profile-form" autocomplete="off">
+    {% csrf_token %}
+    {% if form.non_field_errors %}
+      <div class="text-error fs-1-05 mb-1 text-center">
+        {% for error in form.non_field_errors %}{{ error }}<br>{% endfor %}
+      </div>
+    {% endif %}
+    <div class="flex-center gap-1-5 mb-2-2">
+      <!-- Upload Button (left, triangle) -->
+      <div class="flex-column items-center">
+        <label for="id_profile_picture" class="cursor-pointer flex-center w-48 h-48 bg-transparent border-none outline-none">
+          <svg width="38" height="38" viewBox="0 0 38 38"><polygon points="19,4 34,34 4,34" fill="#222"/><polygon points="19,10 29,32 9,32" fill="#4CAF50"/></svg>
+          <input type="file" name="profile_picture" id="id_profile_picture" accept="image/*" class="display-none">
+        </label>
+        <span class="fs-0-98 text-muted mt-0-2">Upload Pic</span>
+      </div>
+      <!-- Profile Picture -->
+      <div class="display-inline-block w-128 h-128 border-radius-50 bg-gradient-profile shadow-light border-3-5 overflow-hidden position-relative">
+        <img id="profile-picture-preview" src="{% if user.profile.profile_picture %}{{ user.profile.profile_picture.url }}{% else %}{% static 'user_picture.png' %}{% endif %}" class="w-full h-full object-fit-cover border-radius-50 filter-contrast transition-filter" alt="Profile picture"/>
+      </div>
+      <!-- Clear Button (right, triangle) -->
+      <div class="flex-column items-center">
+        {% if user.profile.profile_picture %}
+        <input type="hidden" name="profile_picture-clear" id="profile_picture_clear" value="">
+        <button type="button" onclick="clearProfilePicture()" class="bg-transparent border-none outline-none cursor-pointer flex-center w-48 h-48" title="Clear picture">
+          <svg width="38" height="38" viewBox="0 0 38 38"><polygon points="19,34 34,4 4,4" fill="#c00"/><polygon points="19,28 29,6 9,6" fill="#fff"/></svg>
+        </button>
+        <span class="fs-0-98 text-muted mt-0-2">Delete Pic</span>
+        {% else %}
+        <span class="w-48 h-48 display-inline-block"></span>
+        <span class="fs-0-98 text-muted mt-0-2">Delete Pic</span>
+        {% endif %}
+      </div>
+    </div>
+    <div class="mb-2">
+      <label for="id_username" class="font-serif fs-1-1 text-dark">{% trans 'Username' %}</label>
+      <div class="flex-center gap-0-7 mt-0-3">
+        <input type="text" name="username" id="id_username" maxlength="150" required class="form-control fs-1-08 border-radius-7 border-1-5 p-0-7 border-gray" value="{{ form.username.value|default:user.username }}">
+        <span id="username-checkmark" class="js-checkmark js-checkmark-neutral">✔️</span>
+      </div>
+      <div id="username-check-result" aria-live="polite" class="js-result-text js-result-neutral"></div>
+    </div>
+    <div class="mb-2">
+      <label for="id_email" class="font-serif fs-1-1 text-dark">{% trans 'Email' %}</label>
+      <input type="email" name="email" id="id_email" maxlength="254" required class="form-control fs-1-08 border-radius-7 border-1-5 p-0-7 border-gray" value="{{ form.email.value|default:user.email }}" {% if user.email_state and not user.email_state.is_confirmed %}disabled{% endif %}>
+      {% for error in form.email.errors %}
+        <div class="text-error fs-0-95">{{ error }}</div>
+      {% endfor %}
+    </div>
+    <div class="mb-2">
+      <label for="id_password1" class="font-serif fs-1-1 text-dark">{% trans 'New password' %}</label>
+      <input type="password" name="password1" id="id_password1" class="form-control fs-1-08 border-radius-7 border-1-5 p-0-7 border-gray">
+    </div>
+    <div class="mb-2">
+      <label for="id_password2" class="font-serif fs-1-1 text-dark">{% trans 'Confirm new password' %}</label>
+      <input type="password" name="password2" id="id_password2" class="form-control fs-1-08 border-radius-7 border-1-5 p-0-7 border-gray">
+    </div>
+    <div class="flex gap-1-2 items-center justify-center">
+      <button class="btn btn-dark font-serif fs-1-13 p-0-7 border-radius-1-2 letter-spacing-0-03">{% trans 'Save profile' %}</button>
+      <button type="button" onclick="window.history.back()" class="btn btn-secondary fs-1-08 border-radius-7 border-1-5 p-0-7 outline-none cursor-pointer transition-2 shadow-light">{% trans 'Cancel' %}</button>
+    </div>
+  </form>
+  {% if user.email_state and not user.email_state.is_confirmed %}
+    <div class="bg-warning text-warning-dark border border-warning-light p-1 border-radius-7 mb-1-5 text-center bg-warning-light text-warning-dark border-warning-light">
+      <b>Your email address ({{ user.email_state.email }}) is not confirmed.</b><br>
+      Please check your inbox and click the confirmation link. If you do not confirm soon, your email will be reset.<br>
+      <form method="post" action="{% url 'accounts:resend_email_activation' %}" class="display-inline">
         {% csrf_token %}
-        {% bootstrap_form form %}
+        <button type="submit" class="avant-btn mt-0-7">Resend activation code</button>
+      </form>
+      <form method="post" action="{% url 'accounts:cancel_email_change' %}" class="display-inline ml-1">
+        {% csrf_token %}
+        <button type="submit" class="avant-btn mt-0-7 bg-gray text-dark">Cancel email change</button>
+      </form>
+    </div>
+  {% endif %}
+</div>
+<script>
+const originalProfilePic = document.getElementById('profile-picture-preview').src;
+const fileInput = document.getElementById('id_profile_picture');
+const previewImg = document.getElementById('profile-picture-preview');
+const cancelBtn = document.getElementById('cancel-preview-btn');
 
-        <button class="btn btn-success">{% trans 'Change' %}</button>
+function clearProfilePicture() {
+  document.getElementById('profile_picture_clear').value = 'on';
+  previewImg.src = "{% static 'user_picture.png' %}";
+  fileInput.value = '';
+  cancelBtn.style.display = 'none';
+  document.getElementById('profile-form').submit();
+}
 
-    </form>
+fileInput.addEventListener('change', function(e) {
+  const file = e.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function(ev) {
+      previewImg.src = ev.target.result;
+      previewImg.style.filter = 'contrast(1.08) brightness(1.04) drop-shadow(0 0 8px #4CAF50)';
+      cancelBtn.style.display = 'inline-flex';
+    };
+    reader.readAsDataURL(file);
+  }
+});
 
+function cancelProfilePreview() {
+  previewImg.src = originalProfilePic;
+  previewImg.style.filter = 'contrast(1.08) brightness(1.04)';
+  fileInput.value = '';
+  cancelBtn.style.display = 'none';
+}
+
+// Username live check
+const usernameInput = document.getElementById('id_username');
+const checkmark = document.getElementById('username-checkmark');
+const checkResult = document.getElementById('username-check-result');
+const currentUsername = "{{ user.username|escapejs }}";
+let usernameCheckTimeout = null;
+
+function checkUsernameAvailability() {
+  const username = usernameInput.value.trim();
+  if (!username) {
+    checkmark.textContent = '';
+    checkResult.textContent = 'Username cannot be empty.';
+    checkResult.className = 'js-result-text js-result-neutral';
+    return;
+  }
+  if (username === currentUsername) {
+    checkmark.textContent = '';
+    checkResult.textContent = 'You can change your username';
+    checkResult.className = 'js-result-text js-result-neutral';
+    return;
+  }
+  fetch('/accounts/api/check_username/?username=' + encodeURIComponent(username))
+    .then(r => r.json())
+    .then(data => {
+      if (data.taken) {
+        if (data.reason === 'whitespace') {
+          checkmark.textContent = '';
+          checkResult.textContent = 'No spaces allowed.';
+          checkResult.className = 'js-result-text js-result-invalid';
+        } else if (data.reason === 'taken') {
+          checkmark.textContent = '❌';
+          checkmark.className = 'js-checkmark js-checkmark-invalid';
+          checkResult.textContent = 'This username is already taken.';
+          checkResult.className = 'js-result-text js-result-invalid';
+        } else if (data.reason === 'empty') {
+          checkmark.textContent = '';
+          checkResult.textContent = 'Username cannot be empty.';
+          checkResult.className = 'js-result-text js-result-neutral';
+        } else {
+          checkmark.textContent = '';
+          checkResult.textContent = 'Not available.';
+          checkResult.className = 'js-result-text js-result-invalid';
+        }
+      } else {
+        checkmark.textContent = '✔️';
+        checkmark.className = 'js-checkmark js-checkmark-valid';
+        checkResult.className = 'js-result-text js-result-valid';
+        checkResult.textContent = 'This username is available!';
+      }
+    });
+}
+
+usernameInput.addEventListener('input', function() {
+  checkmark.textContent = '';
+  checkResult.textContent = '';
+  checkResult.className = 'js-result-text js-result-neutral';
+  if (usernameCheckTimeout) clearTimeout(usernameCheckTimeout);
+  usernameCheckTimeout = setTimeout(checkUsernameAvailability, 350);
+});
+window.addEventListener('DOMContentLoaded', checkUsernameAvailability);
+</script>
+{% endif %}
 {% endblock %}

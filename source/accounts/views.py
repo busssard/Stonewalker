@@ -19,6 +19,9 @@ from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
 from django.views.generic import View, FormView
 from django.conf import settings
+from django.http import JsonResponse
+from django.contrib.auth.models import User
+import re
 
 from .utils import (
     send_activation_email, send_reset_password_email, send_forgotten_username_email, send_activation_change_email,
@@ -26,9 +29,13 @@ from .utils import (
 from .forms import (
     SignInViaUsernameForm, SignInViaEmailForm, SignInViaEmailOrUsernameForm, SignUpForm,
     RestorePasswordForm, RestorePasswordViaEmailOrUsernameForm, RemindUsernameForm,
-    ResendActivationCodeForm, ResendActivationCodeViaEmailForm, ChangeProfileForm, ChangeEmailForm,
+    ResendActivationCodeForm, ResendActivationCodeViaEmailForm, CombinedProfileForm,
 )
-from .models import Activation
+from .models import Activation, EmailAddressState
+from .models import EmailChangeAttempt
+from django.utils import timezone
+from datetime import timedelta
+from django.contrib.auth.decorators import login_required
 
 
 class GuestOnlyView(View):
@@ -105,6 +112,8 @@ class SignUpView(GuestOnlyView, FormView):
 
         # Create a user record
         user.save()
+        # Add email state (unconfirmed)
+        EmailAddressState.objects.create(user=user, email=user.email, is_confirmed=False)
 
         # Change the username to the "user_ID" form
         if settings.DISABLE_USERNAME:
@@ -143,6 +152,14 @@ class ActivateView(View):
         user = act.user
         user.is_active = True
         user.save()
+
+        # Confirm email in EmailAddressState
+        try:
+            email_state = EmailAddressState.objects.get(user=user)
+            email_state.is_confirmed = True
+            email_state.save()
+        except EmailAddressState.DoesNotExist:
+            pass
 
         # Remove the activation record
         act.delete()
@@ -205,85 +222,6 @@ class RestorePasswordView(GuestOnlyView, FormView):
         return redirect('accounts:restore_password_done')
 
 
-class ChangeProfileView(LoginRequiredMixin, FormView):
-    template_name = 'accounts/profile/change_profile.html'
-    form_class = ChangeProfileForm
-
-    def get_initial(self):
-        user = self.request.user
-        initial = super().get_initial()
-        initial['first_name'] = user.first_name
-        initial['last_name'] = user.last_name
-        return initial
-
-    def form_valid(self, form):
-        user = self.request.user
-        user.first_name = form.cleaned_data['first_name']
-        user.last_name = form.cleaned_data['last_name']
-        user.save()
-
-        messages.success(self.request, _('Profile data has been successfully updated.'))
-
-        return redirect('accounts:change_profile')
-
-
-class ChangeEmailView(LoginRequiredMixin, FormView):
-    template_name = 'accounts/profile/change_email.html'
-    form_class = ChangeEmailForm
-
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        kwargs['user'] = self.request.user
-        return kwargs
-
-    def get_initial(self):
-        initial = super().get_initial()
-        initial['email'] = self.request.user.email
-        return initial
-
-    def form_valid(self, form):
-        user = self.request.user
-        email = form.cleaned_data['email']
-
-        if settings.ENABLE_ACTIVATION_AFTER_EMAIL_CHANGE:
-            code = get_random_string(20)
-
-            act = Activation()
-            act.code = code
-            act.user = user
-            act.email = email
-            act.save()
-
-            send_activation_change_email(self.request, email, code)
-
-            messages.success(self.request, _('To complete the change of email address, click on the link sent to it.'))
-        else:
-            user.email = email
-            user.save()
-
-            messages.success(self.request, _('Email successfully changed.'))
-
-        return redirect('accounts:change_email')
-
-
-class ChangeEmailActivateView(View):
-    @staticmethod
-    def get(request, code):
-        act = get_object_or_404(Activation, code=code)
-
-        # Change the email
-        user = act.user
-        user.email = act.email
-        user.save()
-
-        # Remove the activation record
-        act.delete()
-
-        messages.success(request, _('You have successfully changed your email!'))
-
-        return redirect('accounts:change_email')
-
-
 class RemindUsernameView(GuestOnlyView, FormView):
     template_name = 'accounts/remind_username.html'
     form_class = RemindUsernameForm
@@ -295,21 +233,6 @@ class RemindUsernameView(GuestOnlyView, FormView):
         messages.success(self.request, _('Your username has been successfully sent to your email.'))
 
         return redirect('accounts:remind_username')
-
-
-class ChangePasswordView(BasePasswordChangeView):
-    template_name = 'accounts/profile/change_password.html'
-
-    def form_valid(self, form):
-        # Change the password
-        user = form.save()
-
-        # Re-authentication
-        login(self.request, user)
-
-        messages.success(self.request, _('Your password was changed.'))
-
-        return redirect('accounts:change_password')
 
 
 class RestorePasswordConfirmView(BasePasswordResetConfirmView):
@@ -334,3 +257,191 @@ class LogOutConfirmView(LoginRequiredMixin, TemplateView):
 
 class LogOutView(LoginRequiredMixin, BaseLogoutView):
     template_name = 'accounts/log_out.html'
+
+
+def check_username(request):
+    username = request.GET.get('username', '').strip()
+    taken = False
+    reason = None
+    if not username:
+        taken = True
+        reason = 'empty'
+    elif re.search(r'\s', username):
+        taken = True
+        reason = 'whitespace'
+    elif User.objects.filter(username=username).exists():
+        taken = True
+        reason = 'taken'
+    return JsonResponse({'taken': taken, 'reason': reason, 'username': username})
+
+
+class ChangeProfileView(LoginRequiredMixin, FormView):
+    template_name = 'accounts/profile/change_profile.html'
+    form_class = CombinedProfileForm
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
+
+    def get_initial(self):
+        initial = super().get_initial()
+        user = self.request.user
+        from accounts.models import Profile
+        profile, created = Profile.objects.get_or_create(user=user)
+        initial['profile_picture'] = profile.profile_picture
+        initial['username'] = user.username
+        # Ensure EmailAddressState exists for this user
+        from .models import EmailAddressState
+        if not hasattr(user, 'email_state'):
+            EmailAddressState.objects.create(user=user, email=user.email, is_confirmed=True)
+        # If there is a pending email change, use the pending email in the form
+        email_state = user.email_state
+        if not email_state.is_confirmed:
+            initial['email'] = email_state.email
+        else:
+            initial['email'] = user.email
+        initial['user_id'] = user.id
+        return initial
+
+    def get_template_names(self):
+        if self.request.GET.get('modal') == '1':
+            return ['accounts/profile/change_profile_form.html']
+        return [self.template_name]
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['modal'] = self.request.GET.get('modal') == '1'
+        return context
+
+    def form_valid(self, form):
+        user = self.request.user
+        from accounts.models import Profile
+        profile, created = Profile.objects.get_or_create(user=user)
+        # Username
+        user.username = form.cleaned_data['username']
+        # Email
+        new_email = form.cleaned_data['email']
+        if new_email != user.email:
+            # Check if new email is already in use in EmailAddressState or User
+            print("Checking for existing email in auth_user:", User.objects.filter(email__iexact=new_email).exclude(pk=user.pk).exists())
+            from .models import EmailAddressState, EmailChangeAttempt
+            if EmailAddressState.objects.filter(email__iexact=new_email).exclude(user=user).exists() or \
+               User.objects.filter(email__iexact=new_email).exclude(pk=user.pk).exists():
+                # Log the attempt
+                EmailChangeAttempt.objects.create(user=user, email=new_email)
+                messages.error(self.request, _('This email address is already in use by another account.'))
+                return self.form_invalid(form)
+            # Rate limit: max 3 attempts per 15 minutes
+            recent_attempts = EmailChangeAttempt.objects.filter(user=user, attempted_at__gte=timezone.now()-timedelta(minutes=15)).count()
+            if recent_attempts >= 3:
+                messages.error(self.request, _('You have reached the maximum number of email change attempts. Please try again later.'))
+                return self.form_invalid(form)
+            # Log this attempt
+            EmailChangeAttempt.objects.create(user=user, email=new_email)
+            if getattr(settings, 'ENABLE_ACTIVATION_AFTER_EMAIL_CHANGE', False):
+                code = get_random_string(20)
+                act = Activation()
+                act.code = code
+                act.user = user
+                act.email = new_email
+                act.save()
+                # Update or create EmailAddressState for new email, store old_email for rollback
+                EmailAddressState.objects.update_or_create(
+                    user=user,
+                    defaults={'email': new_email, 'is_confirmed': False, 'old_email': user.email}
+                )
+                send_activation_change_email(self.request, new_email, code)
+                messages.success(self.request, _('To complete the change of email address, click on the link sent to it.'))
+            else:
+                # Immediate change (should not happen if activation is required)
+                user.email = new_email
+                user.save()
+                EmailAddressState.objects.update_or_create(user=user, defaults={'email': new_email, 'is_confirmed': True, 'old_email': None})
+                messages.success(self.request, _('Email successfully changed.'))
+        else:
+            user.save()
+        # Profile picture
+        if self.request.POST.get('profile_picture-clear') == 'on':
+            profile.profile_picture = None
+        elif self.request.FILES.get('profile_picture'):
+            profile.profile_picture = self.request.FILES['profile_picture']
+        profile.save()
+        # Password
+        password1 = form.cleaned_data.get('password1')
+        if password1:
+            user.set_password(password1)
+            user.save()
+            login(self.request, user)
+            messages.success(self.request, _('Your password was changed.'))
+        if not (new_email != user.email and getattr(settings, 'ENABLE_ACTIVATION_AFTER_EMAIL_CHANGE', False)):
+            messages.success(self.request, _('Profile data has been successfully updated.'))
+        return self.form_valid_redirect()
+
+    def form_valid_redirect(self):
+        from django.shortcuts import redirect
+        return redirect('accounts:change_profile')
+
+class ChangeEmailActivateView(View):
+    @staticmethod
+    def get(request, code):
+        act = get_object_or_404(Activation, code=code)
+        # Change the email
+        user = act.user
+        # Confirm new email in EmailAddressState and update user model
+        from .models import EmailAddressState
+        try:
+            email_state = EmailAddressState.objects.get(user=user)
+            user.email = email_state.email
+            user.save()
+            email_state.is_confirmed = True
+            email_state.old_email = None
+            email_state.save()
+        except EmailAddressState.DoesNotExist:
+            pass
+        # Remove the activation record
+        act.delete()
+        messages.success(request, _('You have successfully changed your email!'))
+        from django.shortcuts import redirect
+        return redirect('accounts:change_profile')
+
+
+class ResendEmailActivationView(View):
+    @method_decorator(login_required)
+    def post(self, request):
+        user = request.user
+        from .models import EmailAddressState, Activation
+        email_state = getattr(user, 'email_state', None)
+        if not email_state or email_state.is_confirmed:
+            messages.error(request, _('No pending email confirmation to resend.'))
+            return redirect('accounts:change_profile')
+        # Find or create activation
+        act = Activation.objects.filter(user=user, email=email_state.email).first()
+        if not act:
+            from django.utils.crypto import get_random_string
+            code = get_random_string(20)
+            act = Activation.objects.create(user=user, email=email_state.email, code=code)
+        send_activation_change_email(request, email_state.email, act.code)
+        messages.success(request, _('A new activation link has been sent to your email address.'))
+        return redirect('accounts:change_profile')
+
+
+class CancelEmailChangeView(View):
+    @method_decorator(login_required)
+    def post(self, request):
+        user = request.user
+        from .models import EmailAddressState
+        email_state = getattr(user, 'email_state', None)
+        if email_state and not email_state.is_confirmed and email_state.old_email:
+            # Rollback to old email
+            email_state.email = email_state.old_email
+            email_state.is_confirmed = True
+            user.email = email_state.old_email
+            user.save()
+            email_state.old_email = None
+            email_state.save()
+            messages.success(request, _('Email change cancelled and reverted.'))
+        else:
+            messages.error(request, _('No pending email change to cancel.'))
+        from django.shortcuts import redirect
+        return redirect('accounts:change_profile')

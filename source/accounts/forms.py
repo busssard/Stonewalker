@@ -1,4 +1,5 @@
 from datetime import timedelta
+import re
 
 from django import forms
 from django.forms import ValidationError
@@ -8,6 +9,8 @@ from django.contrib.auth.forms import UserCreationForm
 from django.utils import timezone
 from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError as DjangoValidationError
 
 
 class UserCacheMixin:
@@ -189,8 +192,17 @@ class RestorePasswordViaEmailOrUsernameForm(EmailOrUsernameForm):
 
 
 class ChangeProfileForm(forms.Form):
-    first_name = forms.CharField(label=_('First name'), max_length=30, required=False)
-    last_name = forms.CharField(label=_('Last name'), max_length=150, required=False)
+    username = forms.CharField(label=_('Username'), max_length=150, required=True)
+
+    def clean_username(self):
+        username = self.cleaned_data['username']
+        if not username:
+            raise ValidationError(_('Username cannot be empty.'))
+        if re.search(r'\s', username):
+            raise ValidationError(_('Username cannot contain whitespace.'))
+        if User.objects.filter(username=username).exclude(pk=self.initial.get('user_id')).exists():
+            raise ValidationError(_('This username is already taken.'))
+        return username
 
 
 class ChangeEmailForm(forms.Form):
@@ -215,3 +227,63 @@ class ChangeEmailForm(forms.Form):
 
 class RemindUsernameForm(EmailForm):
     pass
+
+
+class CombinedProfileForm(forms.Form):
+    username = forms.CharField(label=_('Username'), max_length=150, required=True)
+    email = forms.EmailField(label=_('Email'), required=True)
+    profile_picture = forms.ImageField(label=_('Profile picture'), required=False)
+    password1 = forms.CharField(label=_('New password'), widget=forms.PasswordInput, required=False)
+    password2 = forms.CharField(label=_('Confirm new password'), widget=forms.PasswordInput, required=False)
+
+    def __init__(self, user, *args, **kwargs):
+        self.user = user
+        super().__init__(*args, **kwargs)
+        self.fields['username'].initial = user.username
+        self.fields['email'].initial = user.email
+        # Profile picture initial handled in view
+
+    def clean_username(self):
+        username = self.cleaned_data['username']
+        if not username:
+            raise ValidationError(_('Username cannot be empty.'))
+        if re.search(r'\s', username):
+            raise ValidationError(_('Username cannot contain whitespace.'))
+        if User.objects.filter(username=username).exclude(pk=self.user.pk).exists():
+            raise ValidationError(_('This username is already taken.'))
+        return username
+
+    def clean_email(self):
+        email = self.cleaned_data['email']
+        if email == self.user.email:
+            return email
+        from accounts.models import EmailAddressState, EmailChangeAttempt
+        from django.utils import timezone
+        from datetime import timedelta
+        # Rate limit: max 3 attempts per 15 minutes
+        recent_attempts = EmailChangeAttempt.objects.filter(
+            user=self.user,
+            attempted_at__gte=timezone.now() - timedelta(minutes=15)
+        ).count()
+        if recent_attempts >= 3:
+            raise ValidationError(_('You have made too many email change attempts. Please wait 15 minutes and try again.'))
+        # Check if email is already used by another EmailAddressState or User
+        if EmailAddressState.objects.filter(email__iexact=email).exclude(user=self.user).exists() or \
+           User.objects.filter(email__iexact=email).exclude(pk=self.user.pk).exists():
+            # Log the attempt
+            EmailChangeAttempt.objects.create(user=self.user, email=email)
+            raise ValidationError(_('This email address is already in use by another account.'))
+        return email
+
+    def clean(self):
+        cleaned_data = super().clean()
+        password1 = cleaned_data.get('password1')
+        password2 = cleaned_data.get('password2')
+        if password1 or password2:
+            if password1 != password2:
+                raise ValidationError(_('Passwords do not match.'))
+            try:
+                validate_password(password1, self.user)
+            except DjangoValidationError as e:
+                self.add_error('password1', e)
+        return cleaned_data

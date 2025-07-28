@@ -1,18 +1,23 @@
 {% extends 'layouts/default/page.html' %}
 
 {% load i18n %}
+{% load static %}
 
 {% block content %}
-
-    <h4>{% trans 'Log out' %}</h4>
-
-    <p>
-        {% trans 'Confirm this action:' %}
-    </p>
-
-    <form action="{% url 'accounts:log_out' %}" method="post">
-        {% csrf_token %}
-        <button class="btn btn-success">{% trans 'Log out' %}</button>
+<div class="avant-section avant-bg-left flex-center min-h-80vh bg-gradient-right">
+  <div class="avant-card max-w-420 w-full m-3-auto shadow-medium">
+    <div class="text-center mb-1-2">
+      <img src="{% static 'walker_no_text.png' %}" alt="StoneWalker Logo" class="h-48 w-auto mb-0-5 filter-drop-shadow">
+      <div class="avant-header fs-1-7">{% trans 'Log out' %}</div>
+      <div class="fs-1-08 text-muted mb-0-7">{% trans 'Are you sure you want to log out?' %}</div>
+    </div>
+    <form action="{% url 'accounts:log_out' %}" method="post" class="text-center">
+      {% csrf_token %}
+      <button class="avant-btn w-full fs-1-13 letter-spacing-0-03 bg-accent text-white">{% trans 'Log out' %}</button>
     </form>
-
+    <div class="text-center mt-1-2 fs-0-98 text-muted">
+      <a href="{% url 'index' %}" class="text-accent underline">{% trans 'Cancel and return home' %}</a>
+    </div>
+  </div>
+</div>
 {% endblock %}

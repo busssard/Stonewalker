@@ -2,18 +2,24 @@
 
 {% load bootstrap4 %}
 {% load i18n %}
+{% load static %}
 
 {% block content %}
-
-    <h4>{% trans 'Create an account' %}</h4>
-
-    <form method="post">
-
-        {% csrf_token %}
-        {% bootstrap_form form %}
-
-        <button class="btn btn-success">{% trans 'Create' %}</button>
-
+<div class="avant-section avant-bg-right flex-center min-h-80vh bg-gradient-left">
+  <div class="avant-card max-w-440 w-full m-3-auto shadow-medium">
+    <div class="text-center mb-1-2">
+      <img src="{% static 'main_logo2.png' %}" alt="StoneWalker Logo" class="h-54 w-auto mb-0-5 filter-drop-shadow">
+      <div class="avant-header fs-2">{% trans 'Create an account' %}</div>
+      <div class="fs-1-08 text-muted mb-0-7">{% trans "Join the journey! Track, share, and discover painted stones around the world." %}</div>
+    </div>
+    <form method="post" class="mt-1-2">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button class="avant-btn w-full mt-1-2 bg-accent text-white fs-1-13 letter-spacing-0-03">{% trans 'Create' %}</button>
     </form>
-
+    <div class="text-center mt-1-5 fs-0-98 text-muted">
+      {% trans "Already have an account?" %} <a href="{% url 'accounts:log_in' %}" class="text-accent underline">{% trans 'Log in' %}</a>
+    </div>
+  </div>
+</div>
 {% endblock %}

@@ -1,0 +1,458 @@
+{% extends 'layouts/default/page.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block content %}
+<style>
+#creations-title, #interactions-title {
+  font-family: var(--font-title);
+  font-size: 2.1rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: #3b3b3b;
+  text-shadow: 0 2px 8px rgba(60,60,60,0.07);
+  margin-bottom: 1rem;
+}
+.stone-sort-dropdown {
+  font-family: var(--font-main);
+  font-size: 1.15rem;
+  color: #ff9800;
+  background: #fffbe7;
+  border: 2.5px solid #ffb300;
+  border-radius: 16px;
+  padding: 0.5rem 1.2rem;
+  margin-bottom: 1.2rem;
+  margin-top: 0.2rem;
+  box-shadow: 0 2px 8px rgba(255,179,0,0.07);
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+.stone-sort-dropdown:focus {
+  border-color: #ff9800;
+  box-shadow: 0 4px 16px rgba(255,152,0,0.13);
+}
+.stone-sort-row {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  gap: 1rem;
+}
+.stone-sort-label {
+  font-family: var(--font-title);
+  font-size: 1.1rem;
+  color: #ff9800;
+  margin-right: 0.5rem;
+}
+.my-stones-split {
+  display: flex;
+  min-height: 80vh;
+  position: relative;
+  background: none;
+}
+.my-stones-left, .my-stones-right {
+  flex: 1;
+  padding: 2.5rem 2rem 2rem 2rem;
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+.my-stones-left {
+  background: linear-gradient(135deg, #ffe7d1 0%, #fff6e9 100%);
+  min-height: 400px;
+  max-height: 100vh;
+  overflow: hidden;
+}
+.my-stones-right {
+  background: linear-gradient(135deg, #e3f0ff 0%, #f0f7ff 100%);
+}
+.stone-header {
+  position: sticky;
+  top: 0;
+  background: inherit;
+  z-index: 10;
+  padding-bottom: 0.5rem;
+}
+.stone-header.right {
+  text-align: right;
+}
+.stone-list {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  align-items: stretch;
+  width: 100%;
+}
+.stone-list-item {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.07);
+  border: 3px solid var(--stone-color, #4CAF50);
+  padding: 1.1rem 1.2rem;
+  cursor: pointer;
+  transition: box-shadow 0.2s, transform 0.2s;
+  max-width: 600px;
+  margin: 0 auto;
+  overflow: hidden;
+}
+.stone-list-item:hover {
+  box-shadow: 0 8px 32px rgba(0,0,0,0.13);
+  transform: translateY(-2px) scale(1.01);
+}
+.stone-list-img {
+  width: 72px;
+  height: 72px;
+  border-radius: 12px;
+  object-fit: cover;
+  border: 2.5px solid var(--stone-color, #4CAF50);
+  margin-right: 1.2rem;
+  background: #fff;
+  flex-shrink: 0;
+}
+.stone-list-info {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+.stone-list-title-row {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  font-size: 1.15rem;
+  font-family: var(--font-serif);
+  font-weight: bold;
+}
+.stone-list-title {
+  font-family: var(--font-title) !important;
+  font-size: 1.25rem;
+  color: #3b3b3b;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+.stone-list-distance {
+  color: #ff9800;
+  font-size: 1.08rem;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 0.3em;
+}
+.stone-list-distance svg {
+  width: 1.1em;
+  height: 1.1em;
+  vertical-align: middle;
+}
+.stone-list-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  font-size: 0.98rem;
+  color: #888;
+  font-weight: 500;
+}
+.page-arrows {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2rem;
+  margin-top: 1.2rem;
+}
+.arrow-btn {
+  background: #fffbe7;
+  border: 2.5px solid #ffb300;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  font-size: 2rem;
+  color: #ffb300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(255,179,0,0.13);
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+  position: relative;
+}
+.arrow-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  background: #f5f5f5;
+  color: #ccc;
+  border-color: #eee;
+}
+.arrow-btn img {
+  width: 28px;
+  height: 28px;
+  display: block;
+}
+@media (max-width: 900px) {
+  .my-stones-left, .my-stones-right { min-height: 300px; }
+  .stone-list-item { max-width: 98vw; }
+}
+@media (max-width: 600px) {
+  .my-stones-left, .my-stones-right { min-height: 200px; }
+  .stone-list-item { max-width: 99vw; padding: 0.7rem 0.5rem; }
+  .stone-list-img { width: 48px; height: 48px; margin-right: 0.7rem; }
+}
+</style>
+<div class="my-stones-split">
+  <div class="my-stones-left">
+    <div class="stone-header flex-center gap-1-5 justify-between">
+      <h2 id="creations-title" class="mb-0">{% trans 'My CREATIONS' %}</h2>
+      <div class="stone-sort-row mb-0">
+        <label class="stone-sort-label" for="creations-sort">{% trans 'Sort by:' %}</label>
+        <select id="creations-sort" class="stone-sort-dropdown">
+          <option value="distance_min">{% trans 'Distance traveled (min)' %}</option>
+          <option value="distance_max">{% trans 'Distance traveled (max)' %}</option>
+          <option value="moves_min">{% trans 'Number of moves (min)' %}</option>
+          <option value="moves_max">{% trans 'Number of moves (max)' %}</option>
+          <option value="youngest">{% trans 'Youngest' %}</option>
+          <option value="oldest">{% trans 'Oldest' %}</option>
+        </select>
+      </div>
+    </div>
+    <div class="stone-list" id="creations-list"></div>
+    <div class="page-arrows">
+      <button class="arrow-btn" id="creations-prev" disabled title="{% trans 'Previous page' %}"><img src="{% static 'arrow_left.png' %}" alt="{% trans 'Previous' %}"></button>
+      <span id="creations-page-info" class="fs-1-1"></span>
+      <button class="arrow-btn" id="creations-next" disabled title="{% trans 'Next page' %}"><img src="{% static 'arrow_right.png' %}" alt="{% trans 'Next' %}"></button>
+    </div>
+  </div>
+  <div class="my-stones-right">
+    <div class="stone-header right flex-center gap-1-5 justify-between">
+      <h2 id="interactions-title" class="mb-0">{% trans 'MY INTERACTIONS' %}</h2>
+      <div class="stone-sort-row mb-0">
+        <label class="stone-sort-label" for="interactions-sort">{% trans 'Sort by:' %}</label>
+        <select id="interactions-sort" class="stone-sort-dropdown">
+          <option value="distance_min">{% trans 'Distance traveled (min)' %}</option>
+          <option value="distance_max">{% trans 'Distance traveled (max)' %}</option>
+          <option value="moves_min">{% trans 'Number of moves (min)' %}</option>
+          <option value="moves_max">{% trans 'Number of moves (max)' %}</option>
+          <option value="youngest">{% trans 'Youngest' %}</option>
+          <option value="oldest">{% trans 'Oldest' %}</option>
+        </select>
+      </div>
+    </div>
+    <div class="stone-list" id="interactions-list"></div>
+    <div class="page-arrows">
+      <button class="arrow-btn" id="interactions-prev" disabled title="{% trans 'Previous page' %}"><img src="{% static 'arrow_left.png' %}" alt="{% trans 'Previous' %}"></button>
+      <span id="interactions-page-info" class="fs-1-1"></span>
+      <button class="arrow-btn" id="interactions-next" disabled title="{% trans 'Next page' %}"><img src="{% static 'arrow_right.png' %}" alt="{% trans 'Next' %}"></button>
+    </div>
+  </div>
+</div>
+<!-- Gallery modal placeholder -->
+<div id="stone-gallery-modal" class="display-none position-fixed top-0 left-0 w-100vw h-100vh bg-modal-overlay flex-center z-3000">
+  <div id="stone-gallery-content" class="bg-white border-radius-18 max-w-600 w-90vw m-auto p-2 position-relative shadow-heavy">
+    <span id="stone-gallery-close" class="position-absolute top-1 right-1 fs-2 cursor-pointer">&times;</span>
+    <div id="stone-gallery-body"></div>
+  </div>
+</div>
+<script>
+// Prepare data arrays for client-side pagination
+const creationsData = [
+  {% for stone in my_stones %}
+    {
+      PK_stone: "{{ stone.PK_stone }}",
+      description: `{{ stone.description|escapejs }}`,
+      image: "{% if stone.image %}{{ stone.image.url }}{% else %}{% static 'stone.png' %}{% endif %}",
+      created_at: "{{ stone.created_at|date:'c' }}",
+      color: "{{ stone.color|default:'#4CAF50' }}",
+      shape: "{{ stone.shape|default:'circle' }}",
+      distance_km: {{ stone.distance_km|default:0|floatformat:1 }},
+      username: "{{ stone.FK_user.username|escapejs }}",
+      moves: [
+        {% for move in stone.moves.all %}
+        {
+          latitude: {{ move.latitude|default:'null' }},
+          longitude: {{ move.longitude|default:'null' }},
+          timestamp: "{{ move.timestamp|date:'c' }}",
+          timestamp_display: "{{ move.timestamp|date:'M d, Y' }}",
+          image: "{% if move.image %}{{ move.image.url }}{% else %}{% static 'stone.png' %}{% endif %}",
+          comment: `{{ move.comment|escapejs }}`,
+          username: "{{ move.FK_user.username|escapejs }}",
+          user_picture: "{% if move.FK_user.profile.profile_picture %}{{ move.FK_user.profile.profile_picture.url }}{% else %}{% static 'user_picture.png' %}{% endif %}"
+        }{% if not forloop.last %},{% endif %}
+        {% endfor %}
+      ]
+    }{% if not forloop.last %},{% endif %}
+  {% endfor %}
+];
+const interactionsData = [
+  {% for stone in my_interactions %}
+    {
+      PK_stone: "{{ stone.PK_stone }}",
+      description: `{{ stone.description|escapejs }}`,
+      image: "{% if stone.image %}{{ stone.image.url }}{% else %}{% static 'stone.png' %}{% endif %}",
+      created_at: "{{ stone.created_at|date:'c' }}",
+      color: "{{ stone.color|default:'#4CAF50' }}",
+      shape: "{{ stone.shape|default:'circle' }}",
+      distance_km: {{ stone.distance_km|default:0|floatformat:1 }},
+      username: "{{ stone.FK_user.username|escapejs }}",
+      moves: [
+        {% for move in stone.moves.all %}
+        {
+          latitude: {{ move.latitude|default:'null' }},
+          longitude: {{ move.longitude|default:'null' }},
+          timestamp: "{{ move.timestamp|date:'c' }}",
+          timestamp_display: "{{ move.timestamp|date:'M d, Y' }}",
+          image: "{% if move.image %}{{ move.image.url }}{% else %}{% static 'stone.png' %}{% endif %}",
+          comment: `{{ move.comment|escapejs }}`,
+          username: "{{ move.FK_user.username|escapejs }}",
+          user_picture: "{% if move.FK_user.profile.profile_picture %}{{ move.FK_user.profile.profile_picture.url }}{% else %}{% static 'user_picture.png' %}{% endif %}"
+        }{% if not forloop.last %},{% endif %}
+        {% endfor %}
+      ]
+    }{% if not forloop.last %},{% endif %}
+  {% endfor %}
+];
+
+function renderStonesList(listId, data, page, perPage) {
+  const list = document.getElementById(listId);
+  list.innerHTML = '';
+  if (!data.length) {
+    list.innerHTML = `<div class='text-muted'>You have not ${listId === 'creations-list' ? 'added any stones yet.' : 'interacted with any stones yet. Go scan a stone to see it here!'}</div>`;
+    return;
+  }
+  const start = page * perPage;
+  const end = Math.min(start + perPage, data.length);
+  for (let i = start; i < end; i++) {
+    const stone = data[i];
+    const item = document.createElement('div');
+    item.className = 'stone-list-item';
+    item.style.setProperty('--stone-color', stone.color || '#4CAF50');
+    item.setAttribute('data-pk', stone.PK_stone);
+    item.innerHTML = `
+      <img class="stone-list-img" src="${stone.image}" alt="${stone.PK_stone}">
+      <div class="stone-list-info">
+        <div class="stone-list-title-row">
+          <span class="stone-list-title">${stone.PK_stone}</span>
+          <span class="stone-list-distance">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+            ${stone.distance_km ? stone.distance_km + ' km' : '0 km'}
+            <a href="/stone/${stone.PK_stone}/qr/" target="_blank" title="QR code for this stone" class="ml-1 fs-1-2 text-decoration-none">🔗 QR</a>
+          </span>
+        </div>
+        <div class="stone-list-meta-row">
+          <span>Age: ${getAgeString(stone.created_at)}</span>
+          <span>Moves: ${stone.moves ? stone.moves.length : 0}</span>
+        </div>
+      </div>
+    `;
+    item.onclick = function() {
+      console.log('Opening modal for', stone.PK_stone, stone, data);
+      import('/static/js/stone-modal.js').then(mod => {
+        mod.openStoneModal(stone.PK_stone, stone.color, data);
+      });
+    };
+    list.appendChild(item);
+  }
+}
+
+// Sorting logic
+function sortStones(data, sortKey) {
+  const arr = [...data];
+  switch (sortKey) {
+    case 'distance_min':
+      arr.sort((a, b) => (a.distance_km || 0) - (b.distance_km || 0));
+      break;
+    case 'distance_max':
+      arr.sort((a, b) => (b.distance_km || 0) - (a.distance_km || 0));
+      break;
+    case 'moves_min':
+      arr.sort((a, b) => (a.moves ? a.moves.length : 0) - (b.moves ? b.moves.length : 0));
+      break;
+    case 'moves_max':
+      arr.sort((a, b) => (b.moves ? b.moves.length : 0) - (a.moves ? a.moves.length : 0));
+      break;
+    case 'youngest':
+      arr.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+      break;
+    case 'oldest':
+      arr.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+      break;
+    default:
+      break;
+  }
+  return arr;
+}
+
+function setupPagination(section) {
+  let data = section === 'creations' ? creationsData : interactionsData;
+  let page = 0;
+  // Calculate how many fit: estimate by container height and item height, fallback to 8
+  let perPage = 8;
+  function calcPerPage() {
+    const container = document.getElementById(section + '-list');
+    if (!container) return 8;
+    const test = document.createElement('div');
+    test.className = 'stone-list-item';
+    test.style.visibility = 'hidden';
+    test.innerHTML = '<img class="stone-list-img" src="" alt=""><div class="stone-list-info"><div class="stone-list-title-row"><span class="stone-list-title"></span><span class="stone-list-distance"></span></div><div class="stone-list-meta-row"><span></span><span></span></div></div>';
+    container.appendChild(test);
+    const itemHeight = test.offsetHeight || 96;
+    container.removeChild(test);
+    const available = container.offsetHeight || 600;
+    return Math.max(2, Math.floor(available / itemHeight));
+  }
+  function update() {
+    sortKey = document.getElementById(`${section}-sort`).value;
+    const sorted = sortStones(data, sortKey);
+    perPage = calcPerPage();
+    renderStonesList(section + '-list', sorted, page, perPage);
+    document.getElementById(section + '-prev').disabled = page === 0;
+    document.getElementById(section + '-next').disabled = (page + 1) * perPage >= sorted.length;
+    document.getElementById(section + '-page-info').textContent = sorted.length ? `Page ${page + 1} of ${Math.ceil(sorted.length / perPage)}` : '';
+  }
+  document.getElementById(`${section}-sort`).onchange = () => { page = 0; update(); };
+  document.getElementById(section + '-prev').onclick = () => { if (page > 0) { page--; update(); } };
+  document.getElementById(section + '-next').onclick = () => { if ((page + 1) * perPage < data.length) { page++; update(); } };
+  window.addEventListener('resize', () => { page = 0; update(); });
+  update();
+}
+function getAgeString(created_at) {
+  // created_at is in ISO format
+  const created = new Date(created_at);
+  if (isNaN(created.getTime())) return '';
+  const now = new Date();
+  const diffMs = now - created;
+  const diffDays = diffMs / (1000 * 60 * 60 * 24);
+  if (diffDays < 7) {
+    return `${diffDays.toFixed(1)} days`;
+  } else if (diffDays < 28) {
+    const weeks = diffDays / 7;
+    return `${weeks.toFixed(1)} weeks`;
+  } else if (diffDays < 365) {
+    const months = diffDays / 30.4375;
+    return `${months.toFixed(1)} months`;
+  } else {
+    const years = diffDays / 365.25;
+    return `${years.toFixed(1)} years`;
+  }
+}
+document.addEventListener('DOMContentLoaded', function() {
+  setupPagination('creations');
+  setupPagination('interactions');
+  // Update titles with counts and correct pluralization
+  const c = creationsData.length;
+  const i = interactionsData.length;
+  document.getElementById('creations-title').textContent =
+    c === 0 ? 'NO CREATIONS' : (c === 1 ? 'MY CREATION' : `MY ${c} CREATIONS`);
+  document.getElementById('interactions-title').textContent =
+    i === 0 ? 'NO INTERACTIONS' : (i === 1 ? 'MY INTERACTION' : `MY ${i} INTERACTIONS`);
+});
+</script>
+<script type="module" src="{% static 'js/stone-modal.js' %}"></script>
+{% endblock %} 

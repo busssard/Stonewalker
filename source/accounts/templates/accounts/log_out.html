@@ -1,17 +1,22 @@
 {% extends 'layouts/default/page.html' %}
 
 {% load i18n %}
+{% load static %}
 
 {% block content %}
-
-    <h4>{% trans 'Logged out' %}</h4>
-
-    <p>
-        {% trans 'Thanks for spending some quality time with the site today.' %}
-    </p>
-
-    <p>
-        <a href="{% url 'accounts:log_in' %}">{% trans 'Log in again' %}</a>
-    </p>
-
+<div class="avant-section avant-bg-left flex-center min-h-80vh bg-gradient-right">
+  <div class="avant-card max-w-440 w-full m-3-auto shadow-medium">
+    <div class="text-center mb-1-2">
+      <img src="{% static 'walker_no_text.png' %}" alt="StoneWalker Logo" class="h-54 w-auto mb-0-5 filter-drop-shadow">
+      <div class="avant-header fs-2">{% trans 'Logged out' %}</div>
+      <div class="fs-1-08 text-muted mb-0-7">{% trans "Thanks for spending some quality time with StoneWalker today!" %}</div>
+    </div>
+    <div class="text-center mt-1-5">
+      <a class="avant-btn w-full fs-1-13 letter-spacing-0-03 bg-accent text-white" href="{% url 'accounts:log_in' %}">{% trans 'Log in again' %}</a>
+      <div class="mt-1-2 fs-0-98 text-muted">
+        <a href="{% url 'index' %}" class="text-accent underline">{% trans 'Return to StoneWalker Home' %}</a>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}

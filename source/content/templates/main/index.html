@@ -1,17 +1,16 @@
 {% extends 'layouts/default/page.html' %}
-
+{% load static %}
 {% load i18n %}
-
 {% block content %}
-
-    {% if request.user.is_authenticated %}
-
-        {% trans 'Your username is' %} <b>{{ request.user.username }}</b>.
-
-    {% else %}
-
-        {% trans 'You are a guest.' %}
-
-    {% endif %}
-
+<div class="avant-section avant-bg-left flex-center min-h-70vh">
+  <div class="avant-card max-w-520 m-2-auto text-center">
+    <div class="avant-header mb-0-7 fs-2-1 font-main">{% trans 'Welcome to StoneWalker' %}</div>
+    <div class="fs-1-18 text-primary mb-1-5">{% trans 'Track the journey of painted stones around the world' %}</div>
+    <div class="text-muted mb-1-5">{% trans 'Join our community of stone travelers and discover amazing stories from around the globe.' %}</div>
+    <div class="flex-center gap-1-2 flex-wrap">
+      <a href="{% url 'stonewalker_start' %}" class="avant-btn">{% trans 'Start Exploring' %}</a>
+      <a href="{% url 'about' %}" class="avant-btn">{% trans 'Learn More' %}</a>
+    </div>
+  </div>
+</div>
 {% endblock %}
