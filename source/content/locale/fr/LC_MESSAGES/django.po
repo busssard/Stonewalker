@@ -1,2045 +1,1037 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
 msgid ""
 msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-07-26 17:36+0000\n"
-"PO-Revision-Date: 2021-07-13 10:52+1\n"
-"Last-Translator: TIDJANE Mohammed <tidji31@gmail.com>\n"
+"POT-Creation-Date: 2025-01-27 18:03+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: FR <fr@li.org>\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: source/accounts/forms.py:21
-msgid "Password"
-msgstr "Mot de passe"
-
-#: source/accounts/forms.py:27
-msgid "Remember me"
-msgstr "Se souvenir de moi"
-
-#: source/accounts/forms.py:36
-msgid "You entered an invalid password."
-msgstr "Mot de passe incorrect."
-
-#: source/accounts/forms.py:42 source/accounts/forms.py:195
-#: source/accounts/forms.py:233
-#: source/accounts/templates/accounts/profile/change_profile.html:44
-msgid "Username"
-msgstr "Nom d'utilisateur"
-
-#: source/accounts/forms.py:55
-msgid "You entered an invalid username."
-msgstr "Nom d'utilisateur incorrect."
-
-#: source/accounts/forms.py:58 source/accounts/forms.py:76
-#: source/accounts/forms.py:102
-msgid "This account is not active."
-msgstr "Votre compte n'est pas encore activé."
-
-#: source/accounts/forms.py:66 source/accounts/forms.py:122
-#: source/accounts/forms.py:161 source/accounts/forms.py:209
-#: source/accounts/forms.py:234
-#: source/accounts/templates/accounts/profile/change_profile.html:52
-msgid "Email"
-msgstr "E-mail"
-
-#: source/accounts/forms.py:73 source/accounts/forms.py:168
-msgid "You entered an invalid email address."
-msgstr "E-mail incorrect."
-
-#: source/accounts/forms.py:92 source/accounts/forms.py:135
-msgid "Email or Username"
-msgstr "E-mail ou Nom d'utilisateur"
-
-#: source/accounts/forms.py:99 source/accounts/forms.py:142
-msgid "You entered an invalid email address or username."
-msgstr "E-mail ou nom d'utilisateur incorrect"
-
-#: source/accounts/forms.py:122
-msgid "Required. Enter an existing email address."
-msgstr "L'e-mail est requis.Saisissez une adresse e-mail existante"
-
-#: source/accounts/forms.py:129
-msgid "You can not use this email address."
-msgstr "Vous ne pouvez pas utiliser cette adresse e-mail."
-
-#: source/accounts/forms.py:145 source/accounts/forms.py:171
-msgid "This account has already been activated."
-msgstr "Ce compte est déja confirmé."
-
-#: source/accounts/forms.py:149 source/accounts/forms.py:175
-msgid "Activation code not found."
-msgstr "Le code d'activationest introuvable"
-
-#: source/accounts/forms.py:153 source/accounts/forms.py:179
-msgid ""
-"Activation code has already been sent. You can request a new code in 24 "
-"hours."
-msgstr ""
-"Le code d'activation est envoyé. Vous devrez patienter 24 heures pour "
-"demander un nouveau code."
-
-#: source/accounts/forms.py:200 source/accounts/forms.py:249
-msgid "Username cannot be empty."
-msgstr ""
-
-#: source/accounts/forms.py:202 source/accounts/forms.py:251
-msgid "Username cannot contain whitespace."
-msgstr ""
-
-#: source/accounts/forms.py:204 source/accounts/forms.py:253
-#, fuzzy
-#| msgid "This account has already been activated."
-msgid "This username is already taken."
-msgstr "Ce compte est déja confirmé."
-
-#: source/accounts/forms.py:219
-msgid "Please enter another email."
-msgstr "Veuillez entrer une autre adresse e-mail"
-
-#: source/accounts/forms.py:223
-msgid "You can not use this mail."
-msgstr "Vous ne pouvez pas utiliser cette adresse e-mail"
-
-#: source/accounts/forms.py:235
-#, fuzzy
-#| msgid "Profile activation"
-msgid "Profile picture"
-msgstr "Activation de profil"
-
-#: source/accounts/forms.py:236
-#: source/accounts/templates/accounts/profile/change_profile.html:59
-#, fuzzy
-#| msgid "Change password"
-msgid "New password"
-msgstr "Modifier votre mot de passe"
-
-#: source/accounts/forms.py:237
-#: source/accounts/templates/accounts/profile/change_profile.html:63
-#, fuzzy
-#| msgid "Change password"
-msgid "Confirm new password"
-msgstr "Modifier votre mot de passe"
-
-#: source/accounts/forms.py:269
-msgid ""
-"You have made too many email change attempts. Please wait 15 minutes and try "
-"again."
-msgstr ""
-
-#: source/accounts/forms.py:275 source/accounts/views.py:333
-msgid "This email address is already in use by another account."
-msgstr ""
-
-#: source/accounts/forms.py:284
-msgid "Passwords do not match."
-msgstr ""
-
-#: source/accounts/templates/accounts/emails/activate_profile.html:15
-#: source/accounts/templates/accounts/emails/activate_profile.txt:3
-msgid "To activate your profile, please follow this link:"
-msgstr "Pour activer votre profil, veuillez suivre ce lien"
-
-#: source/accounts/templates/accounts/emails/change_email.html:15
-#: source/accounts/templates/accounts/emails/change_email.txt:3
-msgid "To change your current email address, please follow the link:"
-msgstr ""
-"Pour modifier l'adresse e-mail associée à votre compte, veuillez suivre ce "
-"lien:"
-
-#: source/accounts/templates/accounts/emails/forgotten_username.html:15
-#: source/accounts/templates/accounts/emails/forgotten_username.txt:3
-msgid "Your username is:"
-msgstr "Votre nom d'utilisateur est:"
-
-#: source/accounts/templates/accounts/emails/restore_password_email.html:15
-#: source/accounts/templates/accounts/emails/restore_password_email.txt:3
-msgid ""
-"You received this email because you requested a password reset for your user "
-"account."
-msgstr ""
-"Vous avez reçu l'e-mail car vous avez demandé la réinitialisation du mot de "
-"passe de votre compte."
-
-#: source/accounts/templates/accounts/emails/restore_password_email.html:19
-#: source/accounts/templates/accounts/emails/restore_password_email.txt:5
-msgid "Please, go to the following page and choose a new password:"
-msgstr "Veuillez rendre sur la page suivante pour changer le mot de passe:"
-
-#: source/accounts/templates/accounts/log_in.html:7
-#: source/accounts/templates/accounts/log_in.html:11
-#: source/accounts/templates/accounts/remind_username.html:23
-#: source/accounts/templates/accounts/resend_activation_code.html:23
-#: source/accounts/templates/accounts/restore_password.html:23
-#: source/accounts/templates/accounts/sign_up.html:21
-#: source/content/templates/layouts/default/nav_links.html:15
-#: source/content/templates/layouts/default/nav_links.html:20
-#: source/content/templates/layouts/default/page.html:109
-msgid "Log in"
-msgstr "Connexion"
-
-#: source/accounts/templates/accounts/log_in.html:14
-#, fuzzy
-#| msgid "Create an account"
-msgid "Don't have an account?"
-msgstr "Créer un compte"
-
-#: source/accounts/templates/accounts/log_in.html:15
-#: source/content/templates/layouts/default/nav_links.html:16
-#: source/content/templates/layouts/default/nav_links.html:21
-msgid "Sign up"
-msgstr ""
-
-#: source/accounts/templates/accounts/log_in.html:19
-msgid "Forgot your password?"
-msgstr "Mot de passe oublié ?"
-
-#: source/accounts/templates/accounts/log_in.html:20
-msgid "Forgot your username?"
-msgstr "Nom d'utilisateure oublié ?"
-
-#: source/accounts/templates/accounts/log_out.html:11
-msgid "Logged out"
-msgstr "Déconnecté"
-
-#: source/accounts/templates/accounts/log_out.html:12
-#, fuzzy
-#| msgid "Thanks for spending some quality time with the site today."
-msgid "Thanks for spending some quality time with StoneWalker today!"
-msgstr "Merci de passer des précieux moment dans notre site"
-
-#: source/accounts/templates/accounts/log_out.html:15
-msgid "Log in again"
-msgstr "Se connecter à nouveau"
-
-#: source/accounts/templates/accounts/log_out.html:17
-msgid "Return to StoneWalker Home"
-msgstr ""
-
-#: source/accounts/templates/accounts/log_out_confirm.html:11
-#: source/accounts/templates/accounts/log_out_confirm.html:16
-#: source/content/templates/layouts/default/nav_links.html:13
-#: source/content/templates/layouts/default/page.html:99
-msgid "Log out"
-msgstr "Déconnecté"
-
-#: source/accounts/templates/accounts/log_out_confirm.html:12
-msgid "Are you sure you want to log out?"
-msgstr ""
-
-#: source/accounts/templates/accounts/log_out_confirm.html:19
-msgid "Cancel and return home"
-msgstr ""
-
-#: source/accounts/templates/accounts/profile/change_profile.html:67
-#, fuzzy
-#| msgid "Change profile"
-msgid "Save profile"
-msgstr "Changer le profil"
-
-#: source/accounts/templates/accounts/profile/change_profile.html:68
-#: source/content/templates/main/stonewalker_start.html:165
-msgid "Cancel"
-msgstr ""
-
-#: source/accounts/templates/accounts/remind_username.html:8
-msgid "Remind a username"
-msgstr "Retrouver votre nom d'utilisateur"
-
-#: source/accounts/templates/accounts/remind_username.html:15
-#: source/accounts/templates/accounts/resend_activation_code.html:15
-#: source/accounts/templates/accounts/restore_password.html:15
-#: source/content/templates/main/my_stones.html:230
-#: source/content/templates/main/my_stones.html:252
-#: source/content/templates/main/stonewalker_start.html:166
-msgid "Next"
-msgstr "Suivant"
-
-#: source/accounts/templates/accounts/resend_activation_code.html:8
-msgid "Resend an activation code"
-msgstr "Renvoyer le code d'activation"
-
-#: source/accounts/templates/accounts/restore_password.html:8
-#: source/accounts/templates/accounts/restore_password_confirm.html:8
-#: source/accounts/templates/accounts/restore_password_done.html:7
-#: source/accounts/utils.py:37
-msgid "Restore password"
-msgstr "Réinitialiser votre mot de passe"
-
-#: source/accounts/templates/accounts/restore_password_confirm.html:13
-msgid ""
-"Please enter your new password twice so we can verify you typed it in "
-"correctly."
-msgstr ""
-"Veuillez entrez votre nouveau mot de passe deux fois, afin que nous "
-"puissions vérifier que vous l'avezbien siasi."
-
-#: source/accounts/templates/accounts/restore_password_confirm.html:21
-#: source/content/templates/main/change_language.html:32
-#: venv/lib/python3.8/site-packages/django/forms/widgets.py:465
-msgid "Change"
-msgstr "Modifier"
-
-#: source/accounts/templates/accounts/restore_password_confirm.html:28
-msgid ""
-"The password reset link was invalid, possibly because it has already been "
-"used. Please request a new password reset."
-msgstr ""
-"Réinitialisation de mot de passe incorrect, il est possible que le lien "
-"envoyé est déja utilisé, Veuillez réinitialiser votre mot de passe à nouveau."
-
-#: source/accounts/templates/accounts/restore_password_done.html:10
-msgid ""
-"We've emailed you instructions for setting your password, if an account "
-"exists with the email you entered."
-msgstr ""
-"Nous vous avons envoyé par e-mail des instructions pour réinitialiser votre "
-"mot de passe, si un compte existe avecl'email que vous avez entré"
-
-#: source/accounts/templates/accounts/restore_password_done.html:11
-msgid "You should receive them shortly."
-msgstr "Vous devriez les recevoir dans les plus brefs délais"
-
-#: source/accounts/templates/accounts/restore_password_done.html:15
-msgid ""
-"If you don't receive an email, please make sure you've entered the address "
-"you signed up with, and check your spam folder."
-msgstr ""
-"Si vous ne recevez pas d'e-mail, assurez-vous de saisir l'adresse e-mail "
-"avec laquelle vous vous êtes inscrit, et vérifiez votre dossier Spam."
-
-#: source/accounts/templates/accounts/sign_up.html:12
-msgid "Create an account"
-msgstr "Créer un compte"
-
-#: source/accounts/templates/accounts/sign_up.html:13
-msgid ""
-"Join the journey! Track, share, and discover painted stones around the world."
-msgstr ""
-
-#: source/accounts/templates/accounts/sign_up.html:18
-msgid "Create"
-msgstr "Créer"
-
-#: source/accounts/templates/accounts/sign_up.html:21
-#, fuzzy
-#| msgid "Create an account"
-msgid "Already have an account?"
-msgstr "Créer un compte"
-
-#: source/accounts/utils.py:19
-msgid "Profile activation"
-msgstr "Activation de profil"
-
-#: source/accounts/utils.py:28
-msgid "Change email"
-msgstr "Changer e-mail"
-
-#: source/accounts/utils.py:47
-msgid "Your username"
-msgstr "Votre nom d'utilisateur"
-
-#: source/accounts/views.py:134
-msgid ""
-"You are signed up. To activate the account, follow the link sent to the mail."
-msgstr ""
-"Vous êtes inscrit. Veuillez suivre le lien envoyé à votre adresse e-mail, "
-"Pour activer votre compte."
-
-#: source/accounts/views.py:141
-msgid "You are successfully signed up!"
-msgstr "Vous êtes inscrit avec succès!"
-
-#: source/accounts/views.py:167
-msgid "You have successfully activated your account!"
-msgstr "Votre compte a été activé avec succès!"
-
-#: source/accounts/views.py:197
+msgid "%(from)s-%(to)s relationship"
+msgstr "Relation %(from)s-%(to)s"
+
+msgid "%(from)s-%(to)s relationships"
+msgstr "Relations %(from)s-%(to)s"
+
+msgid "%(model)s instance with %(field)s %(value)r does not exist."
+msgstr "L'instance %(model)s avec %(field)s %(value)r n'existe pas !"
+
+msgid "%(model_name)s with this %(field_label)s already exists."
+msgstr "Un %(model_name)s avec ce %(field_label)s existe déjà !"
+
+msgid "%(model_name)s with this %(field_labels)s already exists."
+msgstr "Un %(model_name)s avec ces %(field_labels)s existe déjà !"
+
+msgid "%(path)s does not exist"
+msgstr "%(path)s n'existe pas."
+
+msgid "%(pk)s is not a valid value."
+msgstr "%(pk)s n'est pas une valeur valide."
+
+msgid "%(truncated_text)s..."
+msgstr "%(truncated_text)s..."
+
+msgid "%(value)s value must be either True"
+msgstr "False oder nix sein!\""
+
+msgid "%(value)s value must be either True or False."
+msgstr "La valeur \"%(value)s\" doit être Vrai ou Faux."
+
+msgid "%s GB"
+msgstr "%s Go"
+
+msgid "%s KB"
+msgstr "%s Ko"
+
+msgid "%s MB"
+msgstr "%s Mo"
+
+msgid "%s PB"
+msgstr "%s Po"
+
+msgid "%s TB"
+msgstr "%s To"
+
+msgid "(Hidden field %(name)s) %(error)s"
+msgstr "(Champ caché %(name)s) %(error)s"
+
+msgid "A JSON object"
+msgstr "Un objet JSON"
+
 msgid "A new activation code has been sent to your email address."
 msgstr "Un nouveau code d'activation a été envoyé à votre adresse e-mail."
 
-#: source/accounts/views.py:233
-msgid "Your username has been successfully sent to your email."
-msgstr ""
-"Votre nom d'utilisateur a été envoyé à votre adresse e-mail avec succès."
-
-#: source/accounts/views.py:245
-msgid "Your password has been set. You may go ahead and log in now."
-msgstr ""
-"Votre mot de passe a été modifié avec succès. Vous pouvez connecter "
-"maintenant."
-
-#: source/accounts/views.py:338
-msgid ""
-"You have reached the maximum number of email change attempts. Please try "
-"again later."
-msgstr ""
-
-#: source/accounts/views.py:355
-msgid "To complete the change of email address, click on the link sent to it."
-msgstr ""
-"Pour completer le changement de votre adresse e-mail, clicker sur le lien "
-"envoyé, à cette nouvelle adresse."
-
-#: source/accounts/views.py:361
-msgid "Email successfully changed."
-msgstr "Votre e-mail a été modifié avec succès"
-
-#: source/accounts/views.py:376
-msgid "Your password was changed."
-msgstr "Votre mot de passe a été modifié."
-
-#: source/accounts/views.py:378
-msgid "Profile data has been successfully updated."
-msgstr "Votre profil a été modifié avec succès"
-
-#: source/accounts/views.py:404
-msgid "You have successfully changed your email!"
-msgstr "Vous avez bien modifié votre e-mail!"
-
-#: source/accounts/views.py:416
-msgid "No pending email confirmation to resend."
-msgstr ""
-
-#: source/accounts/views.py:425
-#, fuzzy
-#| msgid "A new activation code has been sent to your email address."
 msgid "A new activation link has been sent to your email address."
-msgstr "Un nouveau code d'activation a été envoyé à votre adresse e-mail."
+msgstr "Un nouveau lien d'activation a été envoyé à votre adresse e-mail."
 
-#: source/accounts/views.py:443
+msgid "AM"
+msgstr "Matin"
+
+msgid "About"
+msgstr "Nous concernant"
+
+msgid "About StoneWalker"
+msgstr "Tout sur StoneWalker"
+
+msgid "Activation code not found."
+msgstr "Le code d'activation est introuvable."
+
+msgid "Add New Stone"
+msgstr "Ajouter une nouvelle pierre"
+
+msgid "Add new stone"
+msgstr "Ajouter une nouvelle pierre"
+
+msgid "Already have an account?"
+msgstr "Vous avez déjà un compte ?"
+
+msgid "April"
+msgstr "Avril"
+
+msgid "Are you sure you want to log out?"
+msgstr "Êtes-vous sûr de vouloir vous déconnecter ?"
+
+msgid "Aug."
+msgstr "Août"
+
+msgid "August"
+msgstr "Août"
+
+msgid "Back"
+msgstr "Retour"
+
+msgid "Be kind and respectful to other community members!"
+msgstr "Soyez gentil et respectueux avec les autres !"
+
+msgid "Big (8 byte) integer"
+msgstr "Grand entier (8 octets)"
+
+msgid "Boolean (Either True or False)"
+msgstr "Booléen (Vrai ou Faux)"
+
+msgid "Boolean (Either True, False or None)"
+msgstr "Booléen (Vrai  Faux ou Rien)"
+
+msgid "CSRF verification failed. Request aborted."
+msgstr "CSRF verification failed. Request aborted."
+
+msgid "Cancel"
+msgstr "Annuler"
+
+msgid "Cancel and return home"
+msgstr "Annuler et retourner à l'accueil"
+
+msgid "Change"
+msgstr "Modifier"
+
+msgid "Change email"
+msgstr "Changer l'e-mail"
+
+msgid "Change language"
+msgstr "Changer de langue"
+
+msgid "Change password"
+msgstr "Changer de mot de passe"
+
+msgid "Change profile"
+msgstr "Modifier le profil"
+
+msgid "Circle"
+msgstr "Cercle"
+
+msgid "Clear"
+msgstr "Effacer"
+
+msgid "Click the \\\\"
+msgstr "Cliquez sur \\\\"
+
+msgid "Comma-separated integers"
+msgstr "Entiers séparés par des virgules"
+
+msgid "Comment (optional)"
+msgstr "Commentaire (facultatif)"
+
+msgid "Community Guidelines:"
+msgstr "Règles de la communauté :"
+
+msgid "Confirm new password"
+msgstr "Confirmez le nouveau mot de passe"
+
+msgid "Confirm this action:"
+msgstr "Confirmez cette action :"
+
+msgid "Connect, get help, or contribute"
+msgstr "Connectez-vous  obtenez de l'aide ou contribuez!"
+
+msgid "Constraint \"%(name)s\" is violated."
+msgstr "La contrainte \"%(name)s\" est violée."
+
+msgid "Constraint \\\\"
+msgstr "Constraint \\\\"
+
+msgid "Create"
+msgstr "Créer"
+
+msgid "Create New Stone"
+msgstr "Créer une nouvelle pierre"
+
+msgid "Create an account"
+msgstr "Créer un compte"
+
+msgid "Currently"
+msgstr "Actuellement"
+
+msgid "Date (with time)"
+msgstr "Date (avec heure)"
+
+msgid "Date (without time)"
+msgstr "Date (sans heure)"
+
+msgid "Date out of range"
+msgstr "Date out of range"
+
+msgid "Dec."
+msgstr "Déc."
+
+msgid "December"
+msgstr "Décembre"
+
+msgid "Decimal number"
+msgstr "Nombre décimal"
+
+msgid "Delete"
+msgstr "Supprimer"
+
+msgid "Description"
+msgstr "Description"
+
+msgid "Did you know:"
+msgstr "Saviez-vous que :"
+
+msgid "Directory indexes are not allowed here."
+msgstr "Les index de répertoires ne sont pas autorisés ici."
+
+msgid "Distance traveled (max)"
+msgstr "Distance parcourue (max)"
+
+msgid "Distance traveled (min)"
+msgstr "Distance parcourue (min)"
+
+msgid "Django Community"
+msgstr "Communauté Django"
+
+msgid "Django Documentation"
+msgstr "Documentation Django"
+
+msgid "Django administration"
+msgstr "Administration de Django"
+
+msgid "Don't have an account?"
+msgstr "Vous n'avez pas de compte ?"
+
+msgid "Don't place stones in protected areas or private property!"
+msgstr "Ne placez pas de pierres dans des zones protégées ou privées !"
+
+msgid "Don\\\\\\\\"
+msgstr "Don\\\\\\\\"
+
+msgid "Duration"
+msgstr "Duration"
+
+msgid "Edit Profile"
+msgstr "Modifier le profil"
+
+msgid "Email"
+msgstr "E-mail"
+
+msgid "Email address"
+msgstr "Adresse e-mail"
+
 msgid "Email change cancelled and reverted."
-msgstr ""
+msgstr "Changement d'e-mail annulé et rétabli."
 
-#: source/accounts/views.py:445
-msgid "No pending email change to cancel."
-msgstr ""
+msgid "Email or Username"
+msgstr "E-mail ou Nom d'utilisateur"
 
-#: source/app/conf/development/settings.py:115
-#: source/app/conf/production/settings.py:114
+msgid "Email successfully changed."
+msgstr "E-mail modifié avec succès."
+
+msgid "Empty list and \"%(class_name)s.allow_empty\" is False."
+msgstr "La liste est vide et \"%(class_name)s.allow_empty\" est Faux."
+
+msgid "Empty list and \\\\"
+msgstr "Empty list and \\\\"
+
 msgid "English"
 msgstr "Anglais"
 
-#: source/app/conf/development/settings.py:116
-#: source/app/conf/production/settings.py:115
-msgid "Russian"
-msgstr "Russe"
+msgid "Ensure this value is %(limit_value)s (it is %(show_value)s)."
+msgstr "Ensure this value is %(limit_value)s (it is %(show_value)s)."
 
-#: source/app/conf/development/settings.py:117
-#: source/app/conf/production/settings.py:116
-msgid "Simplified Chinese"
-msgstr "Chinois simplifié"
+msgid "Ensure this value is a multiple of step size %(limit_value)s."
+msgstr "La valeur doit être un multiple de %(limit_value)s."
 
-#: source/app/conf/development/settings.py:118
-#: source/app/conf/production/settings.py:117
+msgid "Ensure this value is greater than or equal to %(limit_value)s."
+msgstr "La valeur doit être supérieure ou égale à %(limit_value)s."
+
+msgid "Ensure this value is less than or equal to %(limit_value)s."
+msgstr "La valeur doit être inférieure ou égale à %(limit_value)s."
+
+msgid "Enter a complete value."
+msgstr "Entrez une valeur complète."
+
+msgid "Enter a list of values."
+msgstr "Entrez une liste de valeurs."
+
+msgid "Enter a number."
+msgstr "Enter a number."
+
+msgid "Enter a valid IPv4 address."
+msgstr "Entrez une adresse IPv4 valide."
+
+msgid "Enter a valid IPv4 or IPv6 address."
+msgstr "Entrez une adresse IPv4 ou IPv6 valide."
+
+msgid "Enter a valid IPv6 address."
+msgstr "Entrez une adresse IPv6 valide."
+
+msgid "Enter a valid JSON."
+msgstr "Entrez un JSON valide."
+
+msgid "Enter a valid URL."
+msgstr "Entrez une URL valide."
+
+msgid "Enter a valid UUID."
+msgstr "Entrez un UUID valide."
+
+msgid "Enter a valid date."
+msgstr "Entrez une date valide."
+
+msgid "Enter a valid date/time."
+msgstr "Entrez une date/heure valide."
+
+msgid "Enter a valid duration."
+msgstr "Entrez une durée valide."
+
+msgid "Enter a valid email address."
+msgstr "Enter a valid email address."
+
+msgid "Enter a valid integer."
+msgstr "Entrez un entier valide."
+
+msgid "Enter a valid time."
+msgstr "Entrez une heure valide."
+
+msgid "Enter a valid value."
+msgstr "Enter a valid value."
+
+msgid "Enter a whole number."
+msgstr "Entrez un nombre entier."
+
+msgid "Enter only digits separated by commas."
+msgstr "Entrez uniquement des chiffres séparés par des virgules."
+
+msgid "Feb."
+msgstr "Févr."
+
+msgid "February"
+msgstr "Février"
+
+msgid "Field of type: %(field_type)s"
+msgstr "Champ de type : %(field_type)s"
+
+msgid "File"
+msgstr "Fichier"
+
+msgid "File path"
+msgstr "Chemin du fichier"
+
+msgid "First name"
+msgstr "Nom"
+
+msgid "Floating point number"
+msgstr "Nombre à virgule"
+
+msgid "Forbidden"
+msgstr "Forbidden"
+
+msgid "Foreign Key (type determined by related field)"
+msgstr "Clé étrangère (type déterminé par le champ lié)"
+
+msgid "Forgot your password?"
+msgstr "Mot de passe oublié ?"
+
+msgid "Forgot your username?"
+msgstr "Nom d'utilisateur oublié ?"
+
+msgid "Forum"
+msgstr "Forum"
+
 msgid "French"
 msgstr "Français"
 
-#: source/app/conf/development/settings.py:119
-#: source/app/conf/production/settings.py:118
+msgid "Fri"
+msgstr "Vend."
+
+msgid "Friday"
+msgstr "Vendredi"
+
+msgid "German"
+msgstr "German"
+
+msgid "Get started with Django"
+msgstr "Commencez avec Django"
+
+msgid "Glue the custom QR code on the back of the stone."
+msgstr "Collez le code QR spécial à l'arrière de la pierre."
+
+msgid "Hidden (no location, must be found by scanning)"
+msgstr "Caché (pas de position  doit être scanné)"
+
+msgid "Home"
+msgstr "Accueil"
+
+msgid "How it works:"
+msgstr "Comment ça marche :"
+
+msgid "Hunted (placed at a location, must be found at that spot)"
+msgstr "Chassé (placé à un endroit  doit être trouvé là)"
+
+msgid "I found a stone"
+msgstr "J'ai trouvé une pierre !"
+
+msgid "IP address"
+msgstr "Adresse IP"
+
+msgid "IPv4 address"
+msgstr "Adresse IPv4"
+
+msgid "Image"
+msgstr "Image"
+
+msgid "Index of %(directory)s"
+msgstr "Index de %(directory)s"
+
+msgid "Integer"
+msgstr "Entier"
+
+msgid "Invalid date string \"%(datestr)s\" given format \"%(format)s\""
+msgstr "La date \"%(datestr)s\" ne correspond pas au format \"%(format)s\"."
+
+msgid "Invalid date string \\\\"
+msgstr "Invalid date string \\\\"
+
+msgid "Invalid page (%(page_number)s): %(message)s"
+msgstr "Page invalide (%(page_number)s) : %(message)s"
+
+msgid "Italian"
+msgstr "Italian"
+
+msgid "Jan."
+msgstr "Janv."
+
+msgid "January"
+msgstr "Janvier"
+
+msgid "July"
+msgstr "Juillet"
+
+msgid "June"
+msgstr "Juin"
+
+msgid "Last name"
+msgstr "Prénom"
+
+msgid "Latitude"
+msgstr "Latitude"
+
+msgid "Learn More"
+msgstr "En savoir plus"
+
+msgid "Log In"
+msgstr "Log In"
+
+msgid "Log in"
+msgstr "Se connecter"
+
+msgid "Log in again"
+msgstr "Se reconnecter"
+
+msgid "Log out"
+msgstr "Se déconnecter"
+
+msgid "Logged out"
+msgstr "Déconnecté"
+
+msgid "Longitude"
+msgstr "Longitude"
+
+msgid "MY INTERACTIONS"
+msgstr "MES INTERACTIONS"
+
+msgid "Many-to-many relationship"
+msgstr "Relation plusieurs à plusieurs"
+
+msgid "March"
+msgstr "Mars"
+
+msgid "Marker Color"
+msgstr "Couleur du marqueur"
+
+msgid "Marker Shape"
+msgstr "Forme du marqueur"
+
+msgid "May"
+msgstr "Mai"
+
+msgid "Messages"
+msgstr "Messages"
+
+msgid "Mon"
+msgstr "Lun."
+
+msgid "Monday"
+msgstr "Lundi"
+
+msgid "More information is available with DEBUG=True."
+msgstr "More information is available with DEBUG=True."
+
+msgid "My CREATIONS"
+msgstr "MES CRÉATIONS"
+
+msgid "My Stones"
+msgstr "Mes pierres"
+
+msgid "New password"
+msgstr "Nouveau mot de passe"
+
+msgid "Next"
+msgstr "Suivant"
+
+msgid "Next page"
+msgstr "Page suivante"
+
+msgid "No"
+msgstr "Non"
+
+msgid "No %(verbose_name)s found matching the query"
+msgstr "Aucun %(verbose_name)s correspondant trouvé."
+
+msgid "No %(verbose_name_plural)s available"
+msgstr "Aucun %(verbose_name_plural)s disponible."
+
+msgid "No day specified"
+msgstr "Aucun jour spécifié."
+
+msgid "No file was submitted."
+msgstr "Aucun fichier soumis."
+
+msgid "No file was submitted. Check the encoding type on the form."
+msgstr "Aucun fichier soumis. Vérifiez le type d'encodage du formulaire."
+
+msgid "No month specified"
+msgstr "Aucun mois spécifié."
+
+msgid "No pending email change to cancel."
+msgstr "Aucun changement d'e-mail à annuler."
+
+msgid "No pending email confirmation to resend."
+msgstr "Aucune confirmation d'e-mail à renvoyer."
+
+msgid "No week specified"
+msgstr "Aucune semaine spécifiée."
+
+msgid "No year specified"
+msgstr "Aucune année spécifiée."
+
+msgid "Nov."
+msgstr "Nov."
+
+msgid "November"
+msgstr "Novembre"
+
+msgid "Null characters are not allowed."
+msgstr "Les caractères nuls ne sont pas autorisés."
+
+msgid "Number of moves (max)"
+msgstr "Nombre de mouvements (max)"
+
+msgid "Number of moves (min)"
+msgstr "Nombre de mouvements (min)"
+
+msgid "Oct."
+msgstr "Oct."
+
+msgid "October"
+msgstr "Octobre"
+
+msgid "Oldest"
+msgstr "Le plus ancien"
+
+msgid "One-to-one relationship"
+msgstr "Relation un à un"
+
+msgid "Order"
+msgstr "Ordre"
+
+msgid "PM"
+msgstr "Après-midi"
+
+msgid "Page is not \\\\"
+msgstr "Page is not \\\\"
+
+msgid "Password"
+msgstr "Mot de passe"
+
+msgid "Passwords do not match."
+msgstr "Les mots de passe ne correspondent pas !"
+
+msgid "Photo (optional)"
+msgstr "Photo (facultatif)"
+
+msgid "Pick up a brush and paint a stone."
+msgstr "Prenez un pinceau et peignez une pierre."
+
+msgid "Picture"
+msgstr "Photo"
+
+msgid "Please correct the duplicate data for %(field)s, which must be unique."
+msgstr "Please correct the duplicate data for %(field)s, which must be unique."
+
+msgid "Please correct the duplicate data for %(field)s."
+msgstr "Corrigez les données dupliquées pour %(field)s."
+
+msgid "Please correct the duplicate values below."
+msgstr "Corrigez les valeurs dupliquées ci-dessous."
+
+msgid "Please either submit a file or check the clear checkbox, not both."
+msgstr "Please either submit a file or check the clear checkbox, not both."
+
+msgid "Please enter another email."
+msgstr "Veuillez entrer une autre adresse e-mail."
+
+msgid "Please, go to the following page and choose a new password:"
+msgstr "Veuillez vous rendre sur la page suivante pour changer le mot de passe:"
+
+msgid "Positive big integer"
+msgstr "Grand entier positif"
+
+msgid "Positive integer"
+msgstr "Entier positif"
+
+msgid "Positive small integer"
+msgstr "Petit entier positif"
+
+msgid "Previous"
+msgstr "Précédent"
+
+msgid "Previous page"
+msgstr "Page précédente"
+
+msgid "Profile activation"
+msgstr "Activation de profil"
+
+msgid "Profile data has been successfully updated."
+msgstr "Votre profil a été modifié avec succès."
+
+msgid "Profile picture"
+msgstr "Photo de profil"
+
+msgid "Raw binary data"
+msgstr "Données binaires brutes"
+
+msgid "Read more about this discovery →"
+msgstr "En savoir plus sur cette découverte →"
+
+msgid "Remember me"
+msgstr "Se souvenir de moi"
+
+msgid "Remind a username"
+msgstr "Rappeler un nom d'utilisateur"
+
+msgid "Required. Enter an existing email address."
+msgstr "Requis. Entrez une adresse e-mail existante."
+
+msgid "Resend an activation code"
+msgstr "Renvoyer un code d'activation"
+
+msgid "Restore password"
+msgstr "Réinitialiser le mot de passe"
+
+msgid "Return to StoneWalker Home"
+msgstr "Retour à l'accueil de StoneWalker"
+
+msgid "Russian"
+msgstr "Russe"
+
+msgid "Sat"
+msgstr "Sam."
+
+msgid "Saturday"
+msgstr "Samedi"
+
+msgid "Save"
+msgstr "Sauvegarder"
+
+msgid "Save profile"
+msgstr "Sauvegarder le profil"
+
+msgid "Say something about your stone (max 500 chars)"
+msgstr "Dites quelque chose sur votre pierre (max. 500 caractères)"
+
+msgid "Scan Stone"
+msgstr "Scanner une pierre"
+
+msgid "Scan a Stone"
+msgstr "Scanner une pierre"
+
+msgid "Select a valid choice. %(value)s is not one of the available choices."
+msgstr "Select a valid choice. %(value)s is not one of the available choices."
+
+msgid "Select a valid choice. That choice is not one of the available choices."
+msgstr "Select a valid choice. That choice is not one of the available choices."
+
+msgid "Select the language"
+msgstr "Sélectionner la langue"
+
+msgid "Select your preferred language"
+msgstr "Choisissez votre langue préférée"
+
+msgid "Sept."
+msgstr "Sept."
+
+msgid "September"
+msgstr "Septembre"
+
+msgid "Set it free and watch it travel the world."
+msgstr "Libérez-le et regardez-le voyager à travers le monde !"
+
+msgid "Shop"
+msgstr "Boutique"
+
+msgid "Sign up"
+msgstr "Inscrivez-vous"
+
+msgid "Simplified Chinese"
+msgstr "Chinois simplifié"
+
+msgid "Site Maps"
+msgstr "Site Maps"
+
+msgid "Slug (up to %(max_length)s)"
+msgstr "Slug (jusqu'à %(max_length)s caractères)"
+
+msgid "Small integer"
+msgstr "Petit entier"
+
+msgid "Sort by:"
+msgstr "Trier par :"
+
 msgid "Spanish"
 msgstr "Espagnol"
 
-#: source/app/conf/development/settings.py:120
-msgid "German"
-msgstr ""
+msgid "Square"
+msgstr "Carré"
 
-#: source/content/templates/layouts/default/nav_links.html:5
-#: source/content/templates/layouts/default/page.html:88
-msgid "About"
-msgstr ""
+msgid "Star"
+msgstr "Étoile"
 
-#: source/content/templates/layouts/default/nav_links.html:6
-#: source/content/templates/layouts/default/page.html:89
-#: source/content/templates/main/shop.html:7
-msgid "Shop"
-msgstr ""
-
-#: source/content/templates/layouts/default/nav_links.html:7
-#: source/content/templates/layouts/default/page.html:90
-#: source/content/templates/main/forum.html:7
-msgid "Forum"
-msgstr ""
-
-#: source/content/templates/layouts/default/nav_links.html:8
-#: source/content/templates/layouts/default/page.html:91
-#: source/content/templates/main/change_language.html:12
-msgid "Change language"
-msgstr "Changer la langue"
-
-#: source/content/templates/layouts/default/nav_links.html:11
-#: source/content/templates/layouts/default/page.html:97
-msgid "My Stones"
-msgstr ""
-
-#: source/content/templates/layouts/default/nav_links.html:12
-#: source/content/templates/layouts/default/page.html:98
-msgid "Edit Profile"
-msgstr ""
-
-#: source/content/templates/main/about.html:7
-msgid "About StoneWalker"
-msgstr ""
-
-#: source/content/templates/main/about.html:14
-msgid ""
-"StoneWalker is a unique platform that combines the joy of geocaching with "
-"the beauty of collaborative art. Our mission is to create a global community "
-"of stone travelers who paint, hide, and track beautiful stones as they "
-"journey around the world."
-msgstr ""
-
-#: source/content/templates/main/about.html:20
-msgid "Did you know:"
-msgstr ""
-
-#: source/content/templates/main/about.html:20
-msgid ""
-"One of the oldest known cave paintings, found in Indonesia, is over 45,000 "
-"years old. This shows that humans have always been drawn to creating art in "
-"unexpected places."
-msgstr ""
-
-#: source/content/templates/main/about.html:24
-msgid "Read more about this discovery →"
-msgstr ""
-
-#: source/content/templates/main/about.html:32
-msgid "How it works:"
-msgstr ""
-
-#: source/content/templates/main/about.html:35
-msgid "Pick up a brush and paint a stone."
-msgstr ""
-
-#: source/content/templates/main/about.html:39
-msgid "Click the \"Create a Stone\" button and follow the instructions."
-msgstr ""
-
-#: source/content/templates/main/about.html:43
-msgid "Glue the custom QR code on the back of the stone."
-msgstr ""
-
-#: source/content/templates/main/about.html:47
-msgid "Set it free and watch it travel the world."
-msgstr ""
-
-#: source/content/templates/main/about.html:54
-msgid "Community Guidelines:"
-msgstr ""
-
-#: source/content/templates/main/about.html:55
-msgid "Use non-toxic, weather-resistant paint, like acrylic."
-msgstr ""
-
-#: source/content/templates/main/about.html:56
-#: source/content/templates/main/about.html:58
-msgid "Don\\"
-msgstr ""
-
-#: source/content/templates/main/about.html:57
-msgid "Be kind and respectful to other community members!"
-msgstr ""
-
-#: source/content/templates/main/about.html:60
-msgid ""
-"You never know where it might go, or who it might inspire along the way!"
-msgstr ""
-
-#: source/content/templates/main/about.html:64
-msgid "Start Your Journey"
-msgstr ""
-
-#: source/content/templates/main/change_language.html:20
-#, fuzzy
-#| msgid "Select the language"
-msgid "Select your preferred language"
-msgstr "Sélectionner la langue"
-
-#: source/content/templates/main/forum.html:8
-msgid "The StoneWalker forum is coming soon. Stay tuned!"
-msgstr ""
-
-#: source/content/templates/main/index.html:7
-msgid "Welcome to StoneWalker"
-msgstr ""
-
-#: source/content/templates/main/index.html:8
-msgid "Track the journey of painted stones around the world"
-msgstr ""
-
-#: source/content/templates/main/index.html:9
-msgid ""
-"Join our community of stone travelers and discover amazing stories from "
-"around the globe."
-msgstr ""
-
-#: source/content/templates/main/index.html:11
 msgid "Start Exploring"
-msgstr ""
+msgstr "Commencez à explorer !"
 
-#: source/content/templates/main/index.html:12
-msgid "Learn More"
-msgstr ""
+msgid "Start Your Journey"
+msgstr "Commencez votre aventure !"
 
-#: source/content/templates/main/my_stones.html:213
-msgid "My CREATIONS"
-msgstr ""
+msgid "Static Files"
+msgstr "Static Files"
 
-#: source/content/templates/main/my_stones.html:215
-#: source/content/templates/main/my_stones.html:237
-msgid "Sort by:"
-msgstr ""
-
-#: source/content/templates/main/my_stones.html:217
-#: source/content/templates/main/my_stones.html:239
-msgid "Distance traveled (min)"
-msgstr ""
-
-#: source/content/templates/main/my_stones.html:218
-#: source/content/templates/main/my_stones.html:240
-msgid "Distance traveled (max)"
-msgstr ""
-
-#: source/content/templates/main/my_stones.html:219
-#: source/content/templates/main/my_stones.html:241
-msgid "Number of moves (min)"
-msgstr ""
-
-#: source/content/templates/main/my_stones.html:220
-#: source/content/templates/main/my_stones.html:242
-msgid "Number of moves (max)"
-msgstr ""
-
-#: source/content/templates/main/my_stones.html:221
-#: source/content/templates/main/my_stones.html:243
-msgid "Youngest"
-msgstr ""
-
-#: source/content/templates/main/my_stones.html:222
-#: source/content/templates/main/my_stones.html:244
-msgid "Oldest"
-msgstr ""
-
-#: source/content/templates/main/my_stones.html:228
-#: source/content/templates/main/my_stones.html:250
-msgid "Previous page"
-msgstr ""
-
-#: source/content/templates/main/my_stones.html:228
-#: source/content/templates/main/my_stones.html:250
-msgid "Previous"
-msgstr ""
-
-#: source/content/templates/main/my_stones.html:230
-#: source/content/templates/main/my_stones.html:252
-#, fuzzy
-#| msgid "Next"
-msgid "Next page"
-msgstr "Suivant"
-
-#: source/content/templates/main/my_stones.html:235
-msgid "MY INTERACTIONS"
-msgstr ""
-
-#: source/content/templates/main/shop.html:8
-msgid "The StoneWalker shop is coming soon. Stay tuned!"
-msgstr ""
-
-#: source/content/templates/main/stone_scan.html:8
-#: source/content/templates/main/stonewalker_start.html:68
-msgid "Scan a Stone"
-msgstr ""
-
-#: source/content/templates/main/stone_scan.html:23
-#: source/content/templates/main/stonewalker_start.html:133
 msgid "Stone Name"
-msgstr ""
+msgstr "Nom de la pierre"
 
-#: source/content/templates/main/stone_scan.html:26
-msgid "Comment (optional)"
-msgstr ""
+msgid "Stone Type"
+msgstr "Type de pierre"
 
-#: source/content/templates/main/stone_scan.html:27
-msgid "Tell us about your stone adventure..."
-msgstr ""
+msgid "String (unlimited)"
+msgstr "Texte (illimité)"
 
-#: source/content/templates/main/stone_scan.html:29
-msgid "Photo (optional)"
-msgstr ""
+msgid "String (up to %(max_length)s)"
+msgstr "Texte (jusqu'à %(max_length)s caractères)"
 
-#: source/content/templates/main/stone_scan.html:32
-msgid "Latitude"
-msgstr ""
-
-#: source/content/templates/main/stone_scan.html:35
-msgid "Longitude"
-msgstr ""
-
-#: source/content/templates/main/stone_scan.html:40
 msgid "Submit Scan"
-msgstr ""
+msgstr "Envoyer le scan"
 
-#: source/content/templates/main/stonewalker_start.html:11
+msgid "Sun"
+msgstr "Dim."
+
+msgid "Sunday"
+msgstr "Dimanche"
+
+msgid "Syndication"
+msgstr "Syndication"
+
+msgid "Tell us about your stone adventure..."
+msgstr "Racontez-nous votre aventure avec la pierre..."
+
+msgid "Text"
+msgstr "Texte"
+
+msgid "Thanks for spending some quality time with StoneWalker today!"
+msgstr "Merci d'avoir passé un super moment avec StoneWalker aujourd'hui !"
+
+msgid "That page contains no results"
+msgstr "That page contains no results"
+
+msgid "That page number is less than 1"
+msgstr "That page number is less than 1"
+
+msgid "That page number is not an integer"
+msgstr "That page number is not an integer"
+
+msgid "The StoneWalker forum is coming soon. Stay tuned!"
+msgstr "Le forum StoneWalker arrive bientôt. Restez à l'écoute !"
+
+msgid "The StoneWalker shop is coming soon. Stay tuned!"
+msgstr "La boutique StoneWalker arrive bientôt. Restez à l'écoute !"
+
+msgid "The inline value did not match the parent instance."
+msgstr "La valeur en ligne ne correspond pas à l'instance principale."
+
+msgid "The install worked successfully! Congratulations!"
+msgstr "L'installation a réussi ! Félicitations !"
+
+msgid "The number of days must be between {min_days} and {max_days}."
+msgstr "Le nombre de jours doit être entre {min_days} et {max_days}."
+
+msgid "The submitted file is empty."
+msgstr "Le fichier soumis est vide."
+
+msgid "This account has already been activated."
+msgstr "Ce compte est déjà activé."
+
+msgid "This account is not active."
+msgstr "Ce compte n'est pas actif."
+
+msgid "This email address is already in use by another account."
+msgstr "Cette adresse e-mail est déjà utilisée par un autre compte."
+
+msgid "This field cannot be blank."
+msgstr "Ce champ ne peut pas être vide."
+
+msgid "This field cannot be null."
+msgstr "Ce champ ne peut pas être nul."
+
+msgid "This field is required."
+msgstr "Ce champ est requis."
+
+msgid "This is not a valid IPv6 address."
+msgstr "Ce n'est pas une adresse IPv6 valide."
+
+msgid "This username is already taken."
+msgstr "Ce nom d'utilisateur est déjà pris."
+
+msgid "Thu"
+msgstr "Jeu."
+
+msgid "Thursday"
+msgstr "Jeudi"
+
+msgid "Time"
+msgstr "Heure"
+
+msgid "To activate your profile, please follow this link:"
+msgstr "Pour activer votre profil, veuillez suivre ce lien :"
+
+msgid "To change your current email address, please follow the link:"
+msgstr "Pour changer votre adresse e-mail actuelle, veuillez suivre ce lien :"
+
+msgid "To complete the change of email address, click on the link sent to it."
+msgstr "Pour finaliser le changement d'e-mail, cliquez sur le lien envoyé."
+
+msgid "Topics, references, &amp; how-to's"
+msgstr "Topics, references, &amp; how-to's"
+
+msgid "Track the journey of painted stones around the world"
+msgstr "Suivez le voyage des pierres peintes à travers le monde"
+
+msgid "Triangle"
+msgstr "Triangle"
+
+msgid "Tue"
+msgstr "Mar."
+
+msgid "Tuesday"
+msgstr "Mardi"
+
+msgid "Tutorial: A Polling App"
+msgstr "Tutoriel : Une application de sondage"
+
+msgid "URL"
+msgstr "URL"
+
+msgid "Universally unique identifier"
+msgstr "Identifiant unique universel"
+
+msgid "Unknown"
+msgstr "Inconnu"
+
+msgid "Use non-toxic, weather-resistant paint, like acrylic."
+msgstr "Utilisez une peinture non toxique et résistante aux intempéries comme l'acrylique."
+
+msgid "Username"
+msgstr "Nom d'utilisateur"
+
+msgid "Username cannot be empty."
+msgstr "Le nom d'utilisateur ne peut pas être vide."
+
+msgid "Username cannot contain whitespace."
+msgstr "Le nom d'utilisateur ne peut pas contenir d'espaces."
+
+msgid "Value %(value)r is not a valid choice."
+msgstr "La valeur %(value)r n'est pas un choix valide."
+
+msgid "Value must be valid JSON."
+msgstr "La valeur doit être un JSON valide."
+
+msgid "Wed"
+msgstr "Mer."
+
+msgid "Wednesday"
+msgstr "Mercredi"
+
+msgid "Welcome to StoneWalker"
+msgstr "Bienvenue à StoneWalker"
+
 msgid "Welcome to StoneWalker!"
-msgstr ""
+msgstr "Bienvenue à StoneWalker !"
 
-#: source/content/templates/main/stonewalker_start.html:13
+msgid "Yes"
+msgstr "Oui"
+
 msgid "You are a guest."
 msgstr "Vous êtes connecté en mode invité."
 
-#: source/content/templates/main/stonewalker_start.html:14
-msgid ""
-"Sign up to start creating, finding, and sharing stones around the world!"
-msgstr ""
+msgid "You are successfully signed up!"
+msgstr "Vous vous êtes inscrit avec succès !"
 
-#: source/content/templates/main/stonewalker_start.html:17
-#, fuzzy
-#| msgid "Create an account"
-msgid "Create an Account"
-msgstr "Créer un compte"
+msgid "You can not use this email address."
+msgstr "Vous ne pouvez pas utiliser cette adresse e-mail."
 
-#: source/content/templates/main/stonewalker_start.html:18
-#, fuzzy
-#| msgid "Log in"
-msgid "Log In"
-msgstr "Connexion"
+msgid "You can not use this mail."
+msgstr "Vous ne pouvez pas utiliser cet e-mail."
 
-#: source/content/templates/main/stonewalker_start.html:62
-#: source/content/templates/main/stonewalker_start.html:63
-msgid "Add new stone"
-msgstr ""
+msgid "You entered an invalid email address or username."
+msgstr "E-mail ou nom d'utilisateur incorrect."
 
-#: source/content/templates/main/stonewalker_start.html:64
-#, fuzzy
-#| msgid "Create an account"
-msgid "Create New Stone"
-msgstr "Créer un compte"
+msgid "You entered an invalid email address."
+msgstr "Adresse e-mail incorrecte."
 
-#: source/content/templates/main/stonewalker_start.html:66
-msgid "I found a stone"
-msgstr ""
+msgid "You entered an invalid password."
+msgstr "Mot de passe incorrect."
 
-#: source/content/templates/main/stonewalker_start.html:67
-msgid "Scan Stone"
-msgstr ""
-
-#: source/content/templates/main/stonewalker_start.html:110
-msgid "Add New Stone"
-msgstr ""
-
-#: source/content/templates/main/stonewalker_start.html:115
-msgid "Stone Type"
-msgstr ""
-
-#: source/content/templates/main/stonewalker_start.html:117
-msgid "Hidden (no location, must be found by scanning)"
-msgstr ""
-
-#: source/content/templates/main/stonewalker_start.html:118
-msgid "Hunted (placed at a location, must be found at that spot)"
-msgstr ""
-
-#: source/content/templates/main/stonewalker_start.html:122
-msgid ""
-"Hidden stones do not have a known location. Hunted stones are placed at a "
-"specific spot and must be found there."
-msgstr ""
-
-#: source/content/templates/main/stonewalker_start.html:125
-msgid "Picture"
-msgstr ""
-
-#: source/content/templates/main/stonewalker_start.html:140
-msgid "Description"
-msgstr ""
-
-#: source/content/templates/main/stonewalker_start.html:141
-msgid "Say something about your stone (max 500 chars)"
-msgstr ""
-
-#: source/content/templates/main/stonewalker_start.html:149
-msgid "Marker Color"
-msgstr ""
-
-#: source/content/templates/main/stonewalker_start.html:154
-msgid "Marker Shape"
-msgstr ""
-
-#: source/content/templates/main/stonewalker_start.html:156
-msgid "Circle"
-msgstr ""
-
-#: source/content/templates/main/stonewalker_start.html:157
-msgid "Square"
-msgstr ""
-
-#: source/content/templates/main/stonewalker_start.html:158
-msgid "Star"
-msgstr ""
-
-#: source/content/templates/main/stonewalker_start.html:159
-msgid "Triangle"
-msgstr ""
-
-#: source/content/templates/main/stonewalker_start.html:174
-msgid "Back"
-msgstr ""
-
-#: source/content/templates/main/stonewalker_start.html:175
-msgid "Save"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/bootstrap4/components.py:17
-#: venv/lib/python3.8/site-packages/bootstrap4/templates/bootstrap4/form_errors.html:3
-#: venv/lib/python3.8/site-packages/bootstrap4/templates/bootstrap4/messages.html:4
-msgid "close"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/contrib/messages/apps.py:15
-msgid "Messages"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/contrib/sitemaps/apps.py:8
-msgid "Site Maps"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/contrib/staticfiles/apps.py:9
-msgid "Static Files"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/contrib/syndication/apps.py:7
-msgid "Syndication"
-msgstr ""
-
-#. Translators: String used to replace omitted page numbers in elided page
-#. range generated by paginators, e.g. [1, 2, '…', 5, 6, 7, '…', 9, 10].
-#: venv/lib/python3.8/site-packages/django/core/paginator.py:30
-msgid "…"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/core/paginator.py:50
-msgid "That page number is not an integer"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/core/paginator.py:52
-msgid "That page number is less than 1"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/core/paginator.py:54
-msgid "That page contains no results"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/core/validators.py:22
-#, fuzzy
-#| msgid "You entered an invalid username."
-msgid "Enter a valid value."
+msgid "You entered an invalid username."
 msgstr "Nom d'utilisateur incorrect."
 
-#: venv/lib/python3.8/site-packages/django/core/validators.py:104
-#: venv/lib/python3.8/site-packages/django/forms/fields.py:752
-msgid "Enter a valid URL."
-msgstr ""
+msgid "You have successfully activated your account!"
+msgstr "Vous avez activé votre compte avec succès !"
 
-#: venv/lib/python3.8/site-packages/django/core/validators.py:165
-msgid "Enter a valid integer."
-msgstr ""
+msgid "You have successfully changed your email!"
+msgstr "Vous avez changé votre e-mail avec succès !"
 
-#: venv/lib/python3.8/site-packages/django/core/validators.py:176
-#, fuzzy
-#| msgid "You entered an invalid email address."
-msgid "Enter a valid email address."
-msgstr "E-mail incorrect."
+msgid "You should receive them shortly."
+msgstr "Vous devriez les recevoir bientôt."
 
-#. Translators: "letters" means latin letters: a-z and A-Z.
-#: venv/lib/python3.8/site-packages/django/core/validators.py:259
-msgid ""
-"Enter a valid “slug” consisting of letters, numbers, underscores or hyphens."
-msgstr ""
+msgid "Youngest"
+msgstr "Le plus jeune"
 
-#: venv/lib/python3.8/site-packages/django/core/validators.py:267
-msgid ""
-"Enter a valid “slug” consisting of Unicode letters, numbers, underscores, or "
-"hyphens."
-msgstr ""
+msgid "Your password has been set. You may go ahead and log in now."
+msgstr "Votre mot de passe est défini. Vous pouvez maintenant vous connecter."
 
-#: venv/lib/python3.8/site-packages/django/core/validators.py:281
-#: venv/lib/python3.8/site-packages/django/core/validators.py:289
-#: venv/lib/python3.8/site-packages/django/core/validators.py:318
-#, fuzzy
-#| msgid "You entered an invalid email address."
-msgid "Enter a valid IPv4 address."
-msgstr "E-mail incorrect."
+msgid "Your password was changed."
+msgstr "Votre mot de passe a été changé."
 
-#: venv/lib/python3.8/site-packages/django/core/validators.py:298
-#: venv/lib/python3.8/site-packages/django/core/validators.py:319
-#, fuzzy
-#| msgid "You entered an invalid email address."
-msgid "Enter a valid IPv6 address."
-msgstr "E-mail incorrect."
+msgid "Your username"
+msgstr "Votre nom d'utilisateur"
 
-#: venv/lib/python3.8/site-packages/django/core/validators.py:310
-#: venv/lib/python3.8/site-packages/django/core/validators.py:317
-#, fuzzy
-#| msgid "You entered an invalid email address."
-msgid "Enter a valid IPv4 or IPv6 address."
-msgstr "E-mail incorrect."
+msgid "Your username has been successfully sent to your email."
+msgstr "Votre nom d'utilisateur a été envoyé à votre e-mail."
 
-#: venv/lib/python3.8/site-packages/django/core/validators.py:353
-msgid "Enter only digits separated by commas."
-msgstr ""
+msgid "Your username is"
+msgstr "Votre nom d'utilisateur est"
 
-#: venv/lib/python3.8/site-packages/django/core/validators.py:359
-#, python-format
-msgid "Ensure this value is %(limit_value)s (it is %(show_value)s)."
-msgstr ""
+msgid "Your username is:"
+msgstr "Votre nom d'utilisateur est:"
 
-#: venv/lib/python3.8/site-packages/django/core/validators.py:394
-#, python-format
-msgid "Ensure this value is less than or equal to %(limit_value)s."
-msgstr ""
+msgid "\\\\"
+msgstr "\\\\"
 
-#: venv/lib/python3.8/site-packages/django/core/validators.py:403
-#, python-format
-msgid "Ensure this value is greater than or equal to %(limit_value)s."
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/core/validators.py:412
-#, python-format
-msgid "Ensure this value is a multiple of step size %(limit_value)s."
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/core/validators.py:422
-#, python-format
-msgid ""
-"Ensure this value has at least %(limit_value)d character (it has "
-"%(show_value)d)."
-msgid_plural ""
-"Ensure this value has at least %(limit_value)d characters (it has "
-"%(show_value)d)."
-msgstr[0] ""
-msgstr[1] ""
-
-#: venv/lib/python3.8/site-packages/django/core/validators.py:440
-#, python-format
-msgid ""
-"Ensure this value has at most %(limit_value)d character (it has "
-"%(show_value)d)."
-msgid_plural ""
-"Ensure this value has at most %(limit_value)d characters (it has "
-"%(show_value)d)."
-msgstr[0] ""
-msgstr[1] ""
-
-#: venv/lib/python3.8/site-packages/django/core/validators.py:463
-#: venv/lib/python3.8/site-packages/django/forms/fields.py:347
-#: venv/lib/python3.8/site-packages/django/forms/fields.py:386
-msgid "Enter a number."
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/core/validators.py:465
-#, python-format
-msgid "Ensure that there are no more than %(max)s digit in total."
-msgid_plural "Ensure that there are no more than %(max)s digits in total."
-msgstr[0] ""
-msgstr[1] ""
-
-#: venv/lib/python3.8/site-packages/django/core/validators.py:470
-#, python-format
-msgid "Ensure that there are no more than %(max)s decimal place."
-msgid_plural "Ensure that there are no more than %(max)s decimal places."
-msgstr[0] ""
-msgstr[1] ""
-
-#: venv/lib/python3.8/site-packages/django/core/validators.py:475
-#, python-format
-msgid ""
-"Ensure that there are no more than %(max)s digit before the decimal point."
-msgid_plural ""
-"Ensure that there are no more than %(max)s digits before the decimal point."
-msgstr[0] ""
-msgstr[1] ""
-
-#: venv/lib/python3.8/site-packages/django/core/validators.py:546
-#, python-format
-msgid ""
-"File extension “%(extension)s” is not allowed. Allowed extensions are: "
-"%(allowed_extensions)s."
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/core/validators.py:607
-msgid "Null characters are not allowed."
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/db/models/base.py:1423
-#: venv/lib/python3.8/site-packages/django/forms/models.py:893
-msgid "and"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/db/models/base.py:1425
-#, python-format
-msgid "%(model_name)s with this %(field_labels)s already exists."
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/db/models/constraints.py:17
-#, python-format
-msgid "Constraint “%(name)s” is violated."
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/db/models/fields/__init__.py:128
-#, python-format
-msgid "Value %(value)r is not a valid choice."
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/db/models/fields/__init__.py:129
-msgid "This field cannot be null."
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/db/models/fields/__init__.py:130
-msgid "This field cannot be blank."
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/db/models/fields/__init__.py:131
-#, python-format
-msgid "%(model_name)s with this %(field_label)s already exists."
-msgstr ""
-
-#. Translators: The 'lookup_type' is one of 'date', 'year' or
-#. 'month'. Eg: "Title must be unique for pub_date year"
-#: venv/lib/python3.8/site-packages/django/db/models/fields/__init__.py:135
-#, python-format
-msgid ""
-"%(field_label)s must be unique for %(date_field_label)s %(lookup_type)s."
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/db/models/fields/__init__.py:173
-#, python-format
-msgid "Field of type: %(field_type)s"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/db/models/fields/__init__.py:1094
-#, python-format
-msgid "“%(value)s” value must be either True or False."
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/db/models/fields/__init__.py:1095
-#, python-format
-msgid "“%(value)s” value must be either True, False, or None."
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/db/models/fields/__init__.py:1097
-msgid "Boolean (Either True or False)"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/db/models/fields/__init__.py:1147
-#, python-format
-msgid "String (up to %(max_length)s)"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/db/models/fields/__init__.py:1149
-msgid "String (unlimited)"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/db/models/fields/__init__.py:1253
-msgid "Comma-separated integers"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/db/models/fields/__init__.py:1354
-#, python-format
-msgid ""
-"“%(value)s” value has an invalid date format. It must be in YYYY-MM-DD "
-"format."
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/db/models/fields/__init__.py:1358
-#: venv/lib/python3.8/site-packages/django/db/models/fields/__init__.py:1493
-#, python-format
-msgid ""
-"“%(value)s” value has the correct format (YYYY-MM-DD) but it is an invalid "
-"date."
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/db/models/fields/__init__.py:1362
-msgid "Date (without time)"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/db/models/fields/__init__.py:1489
-#, python-format
-msgid ""
-"“%(value)s” value has an invalid format. It must be in YYYY-MM-DD HH:MM[:ss[."
-"uuuuuu]][TZ] format."
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/db/models/fields/__init__.py:1497
-#, python-format
-msgid ""
-"“%(value)s” value has the correct format (YYYY-MM-DD HH:MM[:ss[.uuuuuu]]"
-"[TZ]) but it is an invalid date/time."
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/db/models/fields/__init__.py:1502
-msgid "Date (with time)"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/db/models/fields/__init__.py:1626
-#, python-format
-msgid "“%(value)s” value must be a decimal number."
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/db/models/fields/__init__.py:1628
-msgid "Decimal number"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/db/models/fields/__init__.py:1789
-#, python-format
-msgid ""
-"“%(value)s” value has an invalid format. It must be in [DD] [[HH:]MM:]ss[."
-"uuuuuu] format."
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/db/models/fields/__init__.py:1793
-msgid "Duration"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/db/models/fields/__init__.py:1845
-msgid "Email address"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/db/models/fields/__init__.py:1870
-msgid "File path"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/db/models/fields/__init__.py:1948
-#, python-format
-msgid "“%(value)s” value must be a float."
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/db/models/fields/__init__.py:1950
-msgid "Floating point number"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/db/models/fields/__init__.py:1990
-#, python-format
-msgid "“%(value)s” value must be an integer."
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/db/models/fields/__init__.py:1992
-msgid "Integer"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/db/models/fields/__init__.py:2088
-msgid "Big (8 byte) integer"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/db/models/fields/__init__.py:2105
-msgid "Small integer"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/db/models/fields/__init__.py:2113
-msgid "IPv4 address"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/db/models/fields/__init__.py:2144
-msgid "IP address"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/db/models/fields/__init__.py:2237
-#: venv/lib/python3.8/site-packages/django/db/models/fields/__init__.py:2238
-#, python-format
-msgid "“%(value)s” value must be either None, True or False."
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/db/models/fields/__init__.py:2240
-msgid "Boolean (Either True, False or None)"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/db/models/fields/__init__.py:2291
-msgid "Positive big integer"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/db/models/fields/__init__.py:2306
-msgid "Positive integer"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/db/models/fields/__init__.py:2321
-msgid "Positive small integer"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/db/models/fields/__init__.py:2337
-#, python-format
-msgid "Slug (up to %(max_length)s)"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/db/models/fields/__init__.py:2373
-msgid "Text"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/db/models/fields/__init__.py:2448
-#, python-format
-msgid ""
-"“%(value)s” value has an invalid format. It must be in HH:MM[:ss[.uuuuuu]] "
-"format."
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/db/models/fields/__init__.py:2452
-#, python-format
-msgid ""
-"“%(value)s” value has the correct format (HH:MM[:ss[.uuuuuu]]) but it is an "
-"invalid time."
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/db/models/fields/__init__.py:2456
-msgid "Time"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/db/models/fields/__init__.py:2564
-msgid "URL"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/db/models/fields/__init__.py:2588
-msgid "Raw binary data"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/db/models/fields/__init__.py:2653
-#, python-format
-msgid "“%(value)s” is not a valid UUID."
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/db/models/fields/__init__.py:2655
-msgid "Universally unique identifier"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/db/models/fields/files.py:232
-msgid "File"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/db/models/fields/files.py:393
-msgid "Image"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/db/models/fields/json.py:26
-msgid "A JSON object"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/db/models/fields/json.py:28
-msgid "Value must be valid JSON."
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/db/models/fields/related.py:919
-#, python-format
-msgid "%(model)s instance with %(field)s %(value)r does not exist."
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/db/models/fields/related.py:921
-msgid "Foreign Key (type determined by related field)"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/db/models/fields/related.py:1212
-msgid "One-to-one relationship"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/db/models/fields/related.py:1269
-#, python-format
-msgid "%(from)s-%(to)s relationship"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/db/models/fields/related.py:1271
-#, python-format
-msgid "%(from)s-%(to)s relationships"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/db/models/fields/related.py:1319
-msgid "Many-to-many relationship"
-msgstr ""
-
-#. Translators: If found as last label character, these punctuation
-#. characters will prevent the default label_suffix to be appended to the label
-#: venv/lib/python3.8/site-packages/django/forms/boundfield.py:184
-msgid ":?.!"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/forms/fields.py:91
-msgid "This field is required."
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/forms/fields.py:298
-msgid "Enter a whole number."
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/forms/fields.py:467
-#: venv/lib/python3.8/site-packages/django/forms/fields.py:1241
-#, fuzzy
-#| msgid "You entered an invalid username."
-msgid "Enter a valid date."
-msgstr "Nom d'utilisateur incorrect."
-
-#: venv/lib/python3.8/site-packages/django/forms/fields.py:490
-#: venv/lib/python3.8/site-packages/django/forms/fields.py:1242
-#, fuzzy
-#| msgid "You entered an invalid username."
-msgid "Enter a valid time."
-msgstr "Nom d'utilisateur incorrect."
-
-#: venv/lib/python3.8/site-packages/django/forms/fields.py:517
-#, fuzzy
-#| msgid "You entered an invalid username."
-msgid "Enter a valid date/time."
-msgstr "Nom d'utilisateur incorrect."
-
-#: venv/lib/python3.8/site-packages/django/forms/fields.py:551
-#, fuzzy
-#| msgid "You entered an invalid username."
-msgid "Enter a valid duration."
-msgstr "Nom d'utilisateur incorrect."
-
-#: venv/lib/python3.8/site-packages/django/forms/fields.py:552
-#, python-brace-format
-msgid "The number of days must be between {min_days} and {max_days}."
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/forms/fields.py:621
-msgid "No file was submitted. Check the encoding type on the form."
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/forms/fields.py:622
-msgid "No file was submitted."
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/forms/fields.py:623
-msgid "The submitted file is empty."
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/forms/fields.py:625
-#, python-format
-msgid "Ensure this filename has at most %(max)d character (it has %(length)d)."
-msgid_plural ""
-"Ensure this filename has at most %(max)d characters (it has %(length)d)."
-msgstr[0] ""
-msgstr[1] ""
-
-#: venv/lib/python3.8/site-packages/django/forms/fields.py:630
-msgid "Please either submit a file or check the clear checkbox, not both."
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/forms/fields.py:694
-msgid ""
-"Upload a valid image. The file you uploaded was either not an image or a "
-"corrupted image."
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/forms/fields.py:857
-#: venv/lib/python3.8/site-packages/django/forms/fields.py:949
-#: venv/lib/python3.8/site-packages/django/forms/models.py:1566
-#, python-format
-msgid "Select a valid choice. %(value)s is not one of the available choices."
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/forms/fields.py:951
-#: venv/lib/python3.8/site-packages/django/forms/fields.py:1070
-#: venv/lib/python3.8/site-packages/django/forms/models.py:1564
-msgid "Enter a list of values."
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/forms/fields.py:1071
-msgid "Enter a complete value."
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/forms/fields.py:1313
-msgid "Enter a valid UUID."
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/forms/fields.py:1343
-msgid "Enter a valid JSON."
-msgstr ""
-
-#. Translators: This is the default suffix added to form field labels
-#: venv/lib/python3.8/site-packages/django/forms/forms.py:98
-msgid ":"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/forms/forms.py:244
-#: venv/lib/python3.8/site-packages/django/forms/forms.py:328
-#, python-format
-msgid "(Hidden field %(name)s) %(error)s"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/forms/formsets.py:63
-#, python-format
-msgid ""
-"ManagementForm data is missing or has been tampered with. Missing fields: "
-"%(field_names)s. You may need to file a bug report if the issue persists."
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/forms/formsets.py:67
-#, python-format
-msgid "Please submit at most %(num)d form."
-msgid_plural "Please submit at most %(num)d forms."
-msgstr[0] ""
-msgstr[1] ""
-
-#: venv/lib/python3.8/site-packages/django/forms/formsets.py:72
-#, python-format
-msgid "Please submit at least %(num)d form."
-msgid_plural "Please submit at least %(num)d forms."
-msgstr[0] ""
-msgstr[1] ""
-
-#: venv/lib/python3.8/site-packages/django/forms/formsets.py:484
-#: venv/lib/python3.8/site-packages/django/forms/formsets.py:491
-msgid "Order"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/forms/formsets.py:499
-msgid "Delete"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/forms/models.py:886
-#, python-format
-msgid "Please correct the duplicate data for %(field)s."
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/forms/models.py:891
-#, python-format
-msgid "Please correct the duplicate data for %(field)s, which must be unique."
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/forms/models.py:898
-#, python-format
-msgid ""
-"Please correct the duplicate data for %(field_name)s which must be unique "
-"for the %(lookup)s in %(date_field)s."
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/forms/models.py:907
-msgid "Please correct the duplicate values below."
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/forms/models.py:1338
-msgid "The inline value did not match the parent instance."
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/forms/models.py:1429
-msgid "Select a valid choice. That choice is not one of the available choices."
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/forms/models.py:1568
-#, python-format
-msgid "“%(pk)s” is not a valid value."
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/forms/utils.py:226
-#, python-format
-msgid ""
-"%(datetime)s couldn’t be interpreted in time zone %(current_timezone)s; it "
-"may be ambiguous or it may not exist."
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/forms/widgets.py:463
-msgid "Clear"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/forms/widgets.py:464
-msgid "Currently"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/forms/widgets.py:794
-msgid "Unknown"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/forms/widgets.py:795
-msgid "Yes"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/forms/widgets.py:796
-msgid "No"
-msgstr ""
-
-#. Translators: Please do not add spaces around commas.
-#: venv/lib/python3.8/site-packages/django/template/defaultfilters.py:874
-msgid "yes,no,maybe"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/template/defaultfilters.py:904
-#: venv/lib/python3.8/site-packages/django/template/defaultfilters.py:921
-#, python-format
-msgid "%(size)d byte"
-msgid_plural "%(size)d bytes"
-msgstr[0] ""
-msgstr[1] ""
-
-#: venv/lib/python3.8/site-packages/django/template/defaultfilters.py:923
-#, python-format
-msgid "%s KB"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/template/defaultfilters.py:925
-#, python-format
-msgid "%s MB"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/template/defaultfilters.py:927
-#, python-format
-msgid "%s GB"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/template/defaultfilters.py:929
-#, python-format
-msgid "%s TB"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/template/defaultfilters.py:931
-#, python-format
-msgid "%s PB"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/utils/dateformat.py:73
-msgid "p.m."
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/utils/dateformat.py:74
 msgid "a.m."
-msgstr ""
+msgstr "Matin"
 
-#: venv/lib/python3.8/site-packages/django/utils/dateformat.py:79
-msgid "PM"
-msgstr ""
+msgid "and"
+msgstr "et"
 
-#: venv/lib/python3.8/site-packages/django/utils/dateformat.py:80
-msgid "AM"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/utils/dateformat.py:152
-msgid "midnight"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/utils/dateformat.py:154
-msgid "noon"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/utils/dates.py:7
-msgid "Monday"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/utils/dates.py:8
-msgid "Tuesday"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/utils/dates.py:9
-msgid "Wednesday"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/utils/dates.py:10
-msgid "Thursday"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/utils/dates.py:11
-msgid "Friday"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/utils/dates.py:12
-msgid "Saturday"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/utils/dates.py:13
-msgid "Sunday"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/utils/dates.py:16
-msgid "Mon"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/utils/dates.py:17
-msgid "Tue"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/utils/dates.py:18
-msgid "Wed"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/utils/dates.py:19
-msgid "Thu"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/utils/dates.py:20
-msgid "Fri"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/utils/dates.py:21
-msgid "Sat"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/utils/dates.py:22
-msgid "Sun"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/utils/dates.py:25
-msgid "January"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/utils/dates.py:26
-msgid "February"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/utils/dates.py:27
-msgid "March"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/utils/dates.py:28
-msgid "April"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/utils/dates.py:29
-msgid "May"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/utils/dates.py:30
-msgid "June"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/utils/dates.py:31
-msgid "July"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/utils/dates.py:32
-msgid "August"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/utils/dates.py:33
-#, fuzzy
-#| msgid "Remember me"
-msgid "September"
-msgstr "Se souvenir de moi"
-
-#: venv/lib/python3.8/site-packages/django/utils/dates.py:34
-msgid "October"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/utils/dates.py:35
-msgid "November"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/utils/dates.py:36
-#, fuzzy
-#| msgid "Remember me"
-msgid "December"
-msgstr "Se souvenir de moi"
-
-#: venv/lib/python3.8/site-packages/django/utils/dates.py:39
-msgid "jan"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/utils/dates.py:40
-msgid "feb"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/utils/dates.py:41
-msgid "mar"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/utils/dates.py:42
 msgid "apr"
-msgstr ""
+msgstr "avril"
 
-#: venv/lib/python3.8/site-packages/django/utils/dates.py:43
-msgid "may"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/utils/dates.py:44
-msgid "jun"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/utils/dates.py:45
-msgid "jul"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/utils/dates.py:46
 msgid "aug"
-msgstr ""
+msgstr "août"
 
-#: venv/lib/python3.8/site-packages/django/utils/dates.py:47
-msgid "sep"
-msgstr ""
+msgid "close"
+msgstr "close"
 
-#: venv/lib/python3.8/site-packages/django/utils/dates.py:48
-msgid "oct"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/utils/dates.py:49
-msgid "nov"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/utils/dates.py:50
 msgid "dec"
-msgstr ""
+msgstr "déc."
 
-#: venv/lib/python3.8/site-packages/django/utils/dates.py:53
-msgctxt "abbrev. month"
-msgid "Jan."
-msgstr ""
+msgid "feb"
+msgstr "févr."
 
-#: venv/lib/python3.8/site-packages/django/utils/dates.py:54
-msgctxt "abbrev. month"
-msgid "Feb."
-msgstr ""
+msgid "jan"
+msgstr "janv."
 
-#: venv/lib/python3.8/site-packages/django/utils/dates.py:55
-msgctxt "abbrev. month"
-msgid "March"
-msgstr ""
+msgid "jul"
+msgstr "jui."
 
-#: venv/lib/python3.8/site-packages/django/utils/dates.py:56
-msgctxt "abbrev. month"
-msgid "April"
-msgstr ""
+msgid "jun"
+msgstr "juin"
 
-#: venv/lib/python3.8/site-packages/django/utils/dates.py:57
-msgctxt "abbrev. month"
-msgid "May"
-msgstr ""
+msgid "mar"
+msgstr "mars"
 
-#: venv/lib/python3.8/site-packages/django/utils/dates.py:58
-msgctxt "abbrev. month"
-msgid "June"
-msgstr ""
+msgid "may"
+msgstr "mai"
 
-#: venv/lib/python3.8/site-packages/django/utils/dates.py:59
-msgctxt "abbrev. month"
-msgid "July"
-msgstr ""
+msgid "midnight"
+msgstr "Minuit"
 
-#: venv/lib/python3.8/site-packages/django/utils/dates.py:60
-msgctxt "abbrev. month"
-msgid "Aug."
-msgstr ""
+msgid "noon"
+msgstr "Midi"
 
-#: venv/lib/python3.8/site-packages/django/utils/dates.py:61
-msgctxt "abbrev. month"
-msgid "Sept."
-msgstr ""
+msgid "nov"
+msgstr "nov."
 
-#: venv/lib/python3.8/site-packages/django/utils/dates.py:62
-msgctxt "abbrev. month"
-msgid "Oct."
-msgstr ""
+msgid "oct"
+msgstr "oct."
 
-#: venv/lib/python3.8/site-packages/django/utils/dates.py:63
-msgctxt "abbrev. month"
-msgid "Nov."
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/utils/dates.py:64
-msgctxt "abbrev. month"
-msgid "Dec."
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/utils/dates.py:67
-msgctxt "alt. month"
-msgid "January"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/utils/dates.py:68
-msgctxt "alt. month"
-msgid "February"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/utils/dates.py:69
-msgctxt "alt. month"
-msgid "March"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/utils/dates.py:70
-msgctxt "alt. month"
-msgid "April"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/utils/dates.py:71
-msgctxt "alt. month"
-msgid "May"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/utils/dates.py:72
-msgctxt "alt. month"
-msgid "June"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/utils/dates.py:73
-msgctxt "alt. month"
-msgid "July"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/utils/dates.py:74
-msgctxt "alt. month"
-msgid "August"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/utils/dates.py:75
-#, fuzzy
-#| msgid "Remember me"
-msgctxt "alt. month"
-msgid "September"
-msgstr "Se souvenir de moi"
-
-#: venv/lib/python3.8/site-packages/django/utils/dates.py:76
-msgctxt "alt. month"
-msgid "October"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/utils/dates.py:77
-msgctxt "alt. month"
-msgid "November"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/utils/dates.py:78
-#, fuzzy
-#| msgid "Remember me"
-msgctxt "alt. month"
-msgid "December"
-msgstr "Se souvenir de moi"
-
-#: venv/lib/python3.8/site-packages/django/utils/ipv6.py:20
-#, fuzzy
-#| msgid "You entered an invalid email address."
-msgid "This is not a valid IPv6 address."
-msgstr "E-mail incorrect."
-
-#: venv/lib/python3.8/site-packages/django/utils/text.py:138
-#, python-format
-msgctxt "String to return when truncating text"
-msgid "%(truncated_text)s…"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/utils/text.py:323
 msgid "or"
-msgstr ""
+msgstr "ou"
 
-#. Translators: This string is used as a separator between list elements
-#: venv/lib/python3.8/site-packages/django/utils/text.py:342
-#: venv/lib/python3.8/site-packages/django/utils/timesince.py:135
-msgid ", "
-msgstr ""
+msgid "p.m."
+msgstr "Après-midi"
 
-#: venv/lib/python3.8/site-packages/django/utils/timesince.py:8
-#, python-format
-msgid "%(num)d year"
-msgid_plural "%(num)d years"
-msgstr[0] ""
-msgstr[1] ""
+msgid "sep"
+msgstr "sept."
 
-#: venv/lib/python3.8/site-packages/django/utils/timesince.py:9
-#, python-format
-msgid "%(num)d month"
-msgid_plural "%(num)d months"
-msgstr[0] ""
-msgstr[1] ""
+msgid "yes,no,maybe"
+msgstr "Oui, Non, Peut-être"
 
-#: venv/lib/python3.8/site-packages/django/utils/timesince.py:10
-#, python-format
-msgid "%(num)d week"
-msgid_plural "%(num)d weeks"
-msgstr[0] ""
-msgstr[1] ""
-
-#: venv/lib/python3.8/site-packages/django/utils/timesince.py:11
-#, python-format
-msgid "%(num)d day"
-msgid_plural "%(num)d days"
-msgstr[0] ""
-msgstr[1] ""
-
-#: venv/lib/python3.8/site-packages/django/utils/timesince.py:12
-#, python-format
-msgid "%(num)d hour"
-msgid_plural "%(num)d hours"
-msgstr[0] ""
-msgstr[1] ""
-
-#: venv/lib/python3.8/site-packages/django/utils/timesince.py:13
-#, python-format
-msgid "%(num)d minute"
-msgid_plural "%(num)d minutes"
-msgstr[0] ""
-msgstr[1] ""
-
-#: venv/lib/python3.8/site-packages/django/views/csrf.py:111
-msgid "Forbidden"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/views/csrf.py:112
-msgid "CSRF verification failed. Request aborted."
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/views/csrf.py:116
-msgid ""
-"You are seeing this message because this HTTPS site requires a “Referer "
-"header” to be sent by your web browser, but none was sent. This header is "
-"required for security reasons, to ensure that your browser is not being "
-"hijacked by third parties."
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/views/csrf.py:122
-msgid ""
-"If you have configured your browser to disable “Referer” headers, please re-"
-"enable them, at least for this site, or for HTTPS connections, or for “same-"
-"origin” requests."
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/views/csrf.py:127
-msgid ""
-"If you are using the <meta name=\"referrer\" content=\"no-referrer\"> tag or "
-"including the “Referrer-Policy: no-referrer” header, please remove them. The "
-"CSRF protection requires the “Referer” header to do strict referer checking. "
-"If you’re concerned about privacy, use alternatives like <a rel=\"noreferrer"
-"\" …> for links to third-party sites."
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/views/csrf.py:136
-msgid ""
-"You are seeing this message because this site requires a CSRF cookie when "
-"submitting forms. This cookie is required for security reasons, to ensure "
-"that your browser is not being hijacked by third parties."
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/views/csrf.py:142
-msgid ""
-"If you have configured your browser to disable cookies, please re-enable "
-"them, at least for this site, or for “same-origin” requests."
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/views/csrf.py:148
-msgid "More information is available with DEBUG=True."
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/views/generic/dates.py:44
-msgid "No year specified"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/views/generic/dates.py:64
-#: venv/lib/python3.8/site-packages/django/views/generic/dates.py:115
-#: venv/lib/python3.8/site-packages/django/views/generic/dates.py:214
-msgid "Date out of range"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/views/generic/dates.py:94
-msgid "No month specified"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/views/generic/dates.py:147
-msgid "No day specified"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/views/generic/dates.py:194
-msgid "No week specified"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/views/generic/dates.py:349
-#: venv/lib/python3.8/site-packages/django/views/generic/dates.py:380
-#, python-format
-msgid "No %(verbose_name_plural)s available"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/views/generic/dates.py:652
-#, python-format
-msgid ""
-"Future %(verbose_name_plural)s not available because %(class_name)s."
-"allow_future is False."
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/views/generic/dates.py:692
-#, python-format
-msgid "Invalid date string “%(datestr)s” given format “%(format)s”"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/views/generic/detail.py:56
-#, python-format
-msgid "No %(verbose_name)s found matching the query"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/views/generic/list.py:70
-msgid "Page is not “last”, nor can it be converted to an int."
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/views/generic/list.py:77
-#, python-format
-msgid "Invalid page (%(page_number)s): %(message)s"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/views/generic/list.py:169
-#, python-format
-msgid "Empty list and “%(class_name)s.allow_empty” is False."
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/views/static.py:38
-msgid "Directory indexes are not allowed here."
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/views/static.py:40
-#, python-format
-msgid "“%(path)s” does not exist"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/views/static.py:79
-#, python-format
-msgid "Index of %(directory)s"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/views/templates/default_urlconf.html:7
-#: venv/lib/python3.8/site-packages/django/views/templates/default_urlconf.html:220
-msgid "The install worked successfully! Congratulations!"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/views/templates/default_urlconf.html:206
-#, python-format
-msgid ""
-"View <a href=\"https://docs.djangoproject.com/en/%(version)s/releases/\" "
-"target=\"_blank\" rel=\"noopener\">release notes</a> for Django %(version)s"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/views/templates/default_urlconf.html:221
-#, python-format
-msgid ""
-"You are seeing this page because <a href=\"https://docs.djangoproject.com/en/"
-"%(version)s/ref/settings/#debug\" target=\"_blank\" rel=\"noopener"
-"\">DEBUG=True</a> is in your settings file and you have not configured any "
-"URLs."
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/views/templates/default_urlconf.html:229
-#, fuzzy
-#| msgid "Django administration"
-msgid "Django Documentation"
-msgstr "Administration de Django"
-
-#: venv/lib/python3.8/site-packages/django/views/templates/default_urlconf.html:230
-msgid "Topics, references, &amp; how-to’s"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/views/templates/default_urlconf.html:238
-msgid "Tutorial: A Polling App"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/views/templates/default_urlconf.html:239
-msgid "Get started with Django"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/views/templates/default_urlconf.html:247
-msgid "Django Community"
-msgstr ""
-
-#: venv/lib/python3.8/site-packages/django/views/templates/default_urlconf.html:248
-msgid "Connect, get help, or contribute"
-msgstr ""
-
-#~ msgid "First name"
-#~ msgstr "Nom"
-
-#~ msgid "Last name"
-#~ msgstr "Prénom"
-
-#~ msgid "Confirm this action:"
-#~ msgstr "Confirmez cette action:"
-
-#~ msgid "Home"
-#~ msgstr "Accueil"
-
-#~ msgid "Your username is"
-#~ msgstr "Votre nom d'utilisateur est"

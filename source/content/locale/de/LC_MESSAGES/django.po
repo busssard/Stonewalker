@@ -8,1317 +8,1030 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-07-26 22:08+0000\n"
+"POT-Creation-Date: 2025-01-27 18:03+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language-Team: DE <de@li.org>\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: source/accounts/forms.py:21
-msgid "Password"
-msgstr "Passwort"
-
-#: source/accounts/forms.py:27
-msgid "Remember me"
-msgstr "Angemeldet bleiben"
-
-#: source/accounts/forms.py:36
-msgid "You entered an invalid password."
-msgstr "Sie haben ein ungültiges Passwort eingegeben."
-
-#: source/accounts/forms.py:42 source/accounts/forms.py:195
-#: source/accounts/forms.py:233
-#: source/accounts/templates/accounts/profile/change_profile.html:44
-msgid "Username"
-msgstr "Benutzername"
-
-#: source/accounts/forms.py:55
-msgid "You entered an invalid username."
-msgstr "Sie haben einen ungültigen Benutzernamen eingegeben."
-
-#: source/accounts/forms.py:58 source/accounts/forms.py:76
-#: source/accounts/forms.py:102
-msgid "This account is not active."
-msgstr "Dieses Konto ist nicht aktiv."
-
-#: source/accounts/forms.py:66 source/accounts/forms.py:122
-#: source/accounts/forms.py:161 source/accounts/forms.py:209
-#: source/accounts/forms.py:234
-#: source/accounts/templates/accounts/profile/change_profile.html:52
-msgid "Email"
-msgstr "E-Mail"
-
-#: source/accounts/forms.py:73 source/accounts/forms.py:168
-msgid "You entered an invalid email address."
-msgstr "Sie haben eine ungültige E-Mail-Adresse eingegeben."
-
-#: source/accounts/forms.py:92 source/accounts/forms.py:135
-msgid "Email or Username"
-msgstr "E-Mail oder Benutzername"
-
-#: source/accounts/forms.py:99 source/accounts/forms.py:142
-msgid "You entered an invalid email address or username."
-msgstr ""
-"Sie haben eine ungültige E-Mail-Adresse oder einen ungültigen Benutzernamen "
-"eingegeben."
-
-#: source/accounts/forms.py:122
-msgid "Required. Enter an existing email address."
-msgstr "Erforderlich. Geben Sie eine bestehende E-Mail-Adresse ein."
-
-#: source/accounts/forms.py:129
-msgid "You can not use this email address."
-msgstr "Sie können diese E-Mail-Adresse nicht verwenden."
-
-#: source/accounts/forms.py:145 source/accounts/forms.py:171
-msgid "This account has already been activated."
-msgstr "Dieses Konto wurde bereits aktiviert."
-
-#: source/accounts/forms.py:149 source/accounts/forms.py:175
-msgid "Activation code not found."
-msgstr "Aktivierungscode nicht gefunden."
-
-#: source/accounts/forms.py:153 source/accounts/forms.py:179
-msgid ""
-"Activation code has already been sent. You can request a new code in 24 "
-"hours."
-msgstr ""
-"Aktivierungscode wurde bereits gesendet. Sie können in 24 Stunden einen "
-"neuen Code anfordern"
-
-#: source/accounts/forms.py:200 source/accounts/forms.py:249
-msgid "Username cannot be empty."
-msgstr "Benutzername darf nicht leer sein."
-
-#: source/accounts/forms.py:202 source/accounts/forms.py:251
-msgid "Username cannot contain whitespace."
-msgstr "Benutzername darf keine Leerzeichen enthalten."
-
-#: source/accounts/forms.py:204 source/accounts/forms.py:253
-msgid "This username is already taken."
-msgstr "Dieser Benutzername ist bereits vergeben."
-
-#: source/accounts/forms.py:219
-msgid "Please enter another email."
-msgstr "Hey, probier mal 'ne andere E-Mail-Adresse!"
-
-#: source/accounts/forms.py:223
-msgid "You can not use this mail."
-msgstr "Diese E-Mail-Adresse geht leider nicht."
-
-#: source/accounts/forms.py:235
-msgid "Profile picture"
-msgstr "Dein Profilbild"
-
-#: source/accounts/forms.py:236
-#: source/accounts/templates/accounts/profile/change_profile.html:59
-msgid "New password"
-msgstr "Neues Passwort"
-
-#: source/accounts/forms.py:237
-#: source/accounts/templates/accounts/profile/change_profile.html:63
-msgid "Confirm new password"
-msgstr "Neues Passwort nochmal"
-
-#: source/accounts/forms.py:269
-msgid ""
-"You have made too many email change attempts. Please wait 15 minutes and try "
-"again."
-msgstr ""
-
-#: source/accounts/forms.py:275 source/accounts/views.py:333
-msgid "This email address is already in use by another account."
-msgstr "Hoppla, diese E-Mail-Adresse benutzt schon jemand anders."
-
-#: source/accounts/forms.py:284
-msgid "Passwords do not match."
-msgstr "Die Passwörter passen nicht zusammen!"
-
-#: source/accounts/templates/accounts/emails/activate_profile.html:15
-#: source/accounts/templates/accounts/emails/activate_profile.txt:3
-msgid "To activate your profile, please follow this link:"
-msgstr "Klick auf den Link, um dein Profil zu aktivieren:"
-
-#: source/accounts/templates/accounts/emails/change_email.html:15
-#: source/accounts/templates/accounts/emails/change_email.txt:3
-msgid "To change your current email address, please follow the link:"
-msgstr "Klick hier, um deine E-Mail-Adresse zu ändern:"
-
-#: source/accounts/templates/accounts/emails/forgotten_username.html:15
-#: source/accounts/templates/accounts/emails/forgotten_username.txt:3
-msgid "Your username is:"
-msgstr "Dein Benutzername ist:"
-
-#: source/accounts/templates/accounts/emails/restore_password_email.html:15
-#: source/accounts/templates/accounts/emails/restore_password_email.txt:3
-msgid ""
-"You received this email because you requested a password reset for your user "
-"account."
-msgstr ""
-
-#: source/accounts/templates/accounts/emails/restore_password_email.html:19
-#: source/accounts/templates/accounts/emails/restore_password_email.txt:5
-msgid "Please, go to the following page and choose a new password:"
-msgstr "Geh auf diese Seite und such dir ein neues Passwort aus:"
-
-#: source/accounts/templates/accounts/log_in.html:7
-#: source/accounts/templates/accounts/log_in.html:11
-#: source/accounts/templates/accounts/remind_username.html:23
-#: source/accounts/templates/accounts/resend_activation_code.html:23
-#: source/accounts/templates/accounts/restore_password.html:23
-#: source/accounts/templates/accounts/sign_up.html:21
-#: source/content/templates/layouts/default/nav_links.html:15
-#: source/content/templates/layouts/default/nav_links.html:20
-#: source/content/templates/layouts/default/page.html:109
-msgid "Log in"
-msgstr "Einloggen"
-
-#: source/accounts/templates/accounts/log_in.html:14
-msgid "Don't have an account?"
-msgstr "Noch kein Konto?"
-
-#: source/accounts/templates/accounts/log_in.html:15
-#: source/content/templates/layouts/default/nav_links.html:16
-#: source/content/templates/layouts/default/nav_links.html:21
-msgid "Sign up"
-msgstr "Anmelden"
-
-#: source/accounts/templates/accounts/log_in.html:19
-msgid "Forgot your password?"
-msgstr "Passwort vergessen?"
-
-#: source/accounts/templates/accounts/log_in.html:20
-msgid "Forgot your username?"
-msgstr "Benutzernamen vergessen?"
-
-#: source/accounts/templates/accounts/log_out.html:11
-msgid "Logged out"
-msgstr "Ausgeloggt"
-
-#: source/accounts/templates/accounts/log_out.html:12
-msgid "Thanks for spending some quality time with StoneWalker today!"
-msgstr "Danke, dass du heute mit StoneWalker gespielt hast!"
-
-#: source/accounts/templates/accounts/log_out.html:15
-msgid "Log in again"
-msgstr "Nochmal einloggen"
-
-#: source/accounts/templates/accounts/log_out.html:17
-msgid "Return to StoneWalker Home"
-msgstr "Zurück zur StoneWalker-Startseite"
-
-#: source/accounts/templates/accounts/log_out_confirm.html:11
-#: source/accounts/templates/accounts/log_out_confirm.html:16
-#: source/content/templates/layouts/default/nav_links.html:13
-#: source/content/templates/layouts/default/page.html:99
-msgid "Log out"
-msgstr "Ausloggen"
-
-#: source/accounts/templates/accounts/log_out_confirm.html:12
-msgid "Are you sure you want to log out?"
-msgstr "Willst du wirklich ausloggen?"
-
-#: source/accounts/templates/accounts/log_out_confirm.html:19
-msgid "Cancel and return home"
-msgstr "Abbrechen und zurück zur Startseite"
-
-#: source/accounts/templates/accounts/profile/change_profile.html:67
-msgid "Save profile"
-msgstr "Profil speichern"
-
-#: source/accounts/templates/accounts/profile/change_profile.html:68
-#: source/content/templates/main/stonewalker_start.html:165
-msgid "Cancel"
-msgstr "Abbrechen"
-
-#: source/accounts/templates/accounts/remind_username.html:8
-msgid "Remind a username"
-msgstr "Benutzernamen erinnern"
-
-#: source/accounts/templates/accounts/remind_username.html:15
-#: source/accounts/templates/accounts/resend_activation_code.html:15
-#: source/accounts/templates/accounts/restore_password.html:15
-#: source/content/templates/main/my_stones.html:230
-#: source/content/templates/main/my_stones.html:252
-#: source/content/templates/main/stonewalker_start.html:166
-msgid "Next"
-msgstr "Weiter"
-
-#: source/accounts/templates/accounts/resend_activation_code.html:8
-msgid "Resend an activation code"
-msgstr "Neuen Aktivierungscode schicken"
-
-#: source/accounts/templates/accounts/restore_password.html:8
-#: source/accounts/templates/accounts/restore_password_confirm.html:8
-#: source/accounts/templates/accounts/restore_password_done.html:7
-#: source/accounts/utils.py:37
-msgid "Restore password"
-msgstr "Passwort zurücksetzen"
-
-#: source/accounts/templates/accounts/restore_password_confirm.html:13
-msgid ""
-"Please enter your new password twice so we can verify you typed it in "
-"correctly."
-msgstr ""
-
-#: source/accounts/templates/accounts/restore_password_confirm.html:21
-#: source/content/templates/main/change_language.html:32
-msgid "Change"
-msgstr "Ändern"
-
-#: source/accounts/templates/accounts/restore_password_confirm.html:28
-msgid ""
-"The password reset link was invalid, possibly because it has already been "
-"used. Please request a new password reset."
-msgstr ""
-
-#: source/accounts/templates/accounts/restore_password_done.html:10
-msgid ""
-"We've emailed you instructions for setting your password, if an account "
-"exists with the email you entered."
-msgstr ""
-
-#: source/accounts/templates/accounts/restore_password_done.html:11
-msgid "You should receive them shortly."
-msgstr "Die E-Mail kommt gleich an!"
-
-#: source/accounts/templates/accounts/restore_password_done.html:15
-msgid ""
-"If you don't receive an email, please make sure you've entered the address "
-"you signed up with, and check your spam folder."
-msgstr ""
-
-#: source/accounts/templates/accounts/sign_up.html:12
-msgid "Create an account"
-msgstr "Konto erstellen"
-
-#: source/accounts/templates/accounts/sign_up.html:13
-#, fuzzy
-#| msgid "Track the journey of painted stones around the world"
-msgid ""
-"Join the journey! Track, share, and discover painted stones around the world."
-msgstr "Verfolge die Reise bemalter Steine um die Welt"
-
-#: source/accounts/templates/accounts/sign_up.html:18
-msgid "Create"
-msgstr "Erstellen"
-
-#: source/accounts/templates/accounts/sign_up.html:21
-#, fuzzy
-#| msgid "Don't have an account?"
-msgid "Already have an account?"
-msgstr "Noch kein Konto?"
-
-#: source/accounts/utils.py:19
-msgid "Profile activation"
-msgstr "Profil aktivieren"
-
-#: source/accounts/utils.py:28
-msgid "Change email"
-msgstr "E-Mail ändern"
-
-#: source/accounts/utils.py:47
-msgid "Your username"
-msgstr "Ihr Benutzername ist:"
-
-#: source/accounts/views.py:134
-msgid ""
-"You are signed up. To activate the account, follow the link sent to the mail."
-msgstr ""
-
-#: source/accounts/views.py:141
-msgid "You are successfully signed up!"
-msgstr "Juhu, du bist jetzt dabei!"
-
-#: source/accounts/views.py:167
-msgid "You have successfully activated your account!"
-msgstr "Yeah, dein Konto ist jetzt aktiv!"
-
-#: source/accounts/views.py:197
+msgid "%(from)s-%(to)s relationship"
+msgstr "%(from)s-%(to)s-Beziehung"
+
+msgid "%(from)s-%(to)s relationships"
+msgstr "%(from)s-%(to)s-Beziehungen"
+
+msgid "%(model)s instance with %(field)s %(value)r does not exist."
+msgstr "Ein %(model)s mit %(field)s %(value)r gibt's nicht!"
+
+msgid "%(model_name)s with this %(field_label)s already exists."
+msgstr "Ein %(model_name)s mit diesem %(field_label)s gibt's schon."
+
+msgid "%(model_name)s with this %(field_labels)s already exists."
+msgstr "Ein %(model_name)s mit diesem %(field_labels)s gibt's schon!"
+
+msgid "%(path)s does not exist"
+msgstr "\"%(path)s\" gibt's nicht!"
+
+msgid "%(pk)s is not a valid value."
+msgstr "%(pk)s ist kein richtiger Wert!"
+
+msgid "%(truncated_text)s..."
+msgstr "%(truncated_text)s..."
+
+msgid "%(value)s value must be either True"
+msgstr "False"
+
+msgid "%(value)s value must be either True or False."
+msgstr "Der Wert \"%(value)s\" muss entweder True oder False sein."
+
+msgid "%s GB"
+msgstr "%s GB"
+
+msgid "%s KB"
+msgstr "%s KB"
+
+msgid "%s MB"
+msgstr "%s MB"
+
+msgid "%s PB"
+msgstr "%s PB"
+
+msgid "%s TB"
+msgstr "%s TB"
+
+msgid "(Hidden field %(name)s) %(error)s"
+msgstr "(Verstecktes Feld %(name)s) %(error)s"
+
+msgid "A JSON object"
+msgstr "Ein JSON-Ding"
+
 msgid "A new activation code has been sent to your email address."
 msgstr "Ein neuer Aktivierungscode ist auf dem Weg zu deiner E-Mail!"
 
-#: source/accounts/views.py:233
-msgid "Your username has been successfully sent to your email."
-msgstr "Dein Benutzername ist in deiner E-Mail gelandet!"
-
-#: source/accounts/views.py:245
-msgid "Your password has been set. You may go ahead and log in now."
-msgstr "Dein Passwort ist fertig! Jetzt kannst du dich einloggen."
-
-#: source/accounts/views.py:338
-msgid ""
-"You have reached the maximum number of email change attempts. Please try "
-"again later."
-msgstr ""
-
-#: source/accounts/views.py:355
-msgid "To complete the change of email address, click on the link sent to it."
-msgstr "Klick auf den Link in der E-Mail, um die neue Adresse zu bestätigen!"
-
-#: source/accounts/views.py:361
-msgid "Email successfully changed."
-msgstr "E-Mail erfolgreich gewechselt!"
-
-#: source/accounts/views.py:376
-msgid "Your password was changed."
-msgstr ""
-
-#: source/accounts/views.py:378
-msgid "Profile data has been successfully updated."
-msgstr ""
-
-#: source/accounts/views.py:404
-msgid "You have successfully changed your email!"
-msgstr "Juhu, deine E-Mail ist jetzt geändert!"
-
-#: source/accounts/views.py:416
-msgid "No pending email confirmation to resend."
-msgstr "Keine E-Mail-Bestätigung zum erneuten Senden da."
-
-#: source/accounts/views.py:425
 msgid "A new activation link has been sent to your email address."
 msgstr "Ein neuer Aktivierungslink ist auf dem Weg zu deiner E-Mail!"
 
-#: source/accounts/views.py:443
-msgid "Email change cancelled and reverted."
-msgstr "E-Mail-Änderung abgebrochen und zurückgesetzt."
+msgid "AM"
+msgstr "Vormittags"
 
-#: source/accounts/views.py:445
-msgid "No pending email change to cancel."
-msgstr "Keine E-Mail-Änderung zum Abbrechen da."
-
-#: source/app/conf/development/settings.py:115
-#: source/app/conf/production/settings.py:114
-msgid "English"
-msgstr "Englisch"
-
-#: source/app/conf/development/settings.py:116
-#: source/app/conf/production/settings.py:115
-msgid "Russian"
-msgstr "Russisch"
-
-#: source/app/conf/development/settings.py:117
-#: source/app/conf/production/settings.py:116
-msgid "Simplified Chinese"
-msgstr "Chinesisch (einfach)"
-
-#: source/app/conf/development/settings.py:118
-#: source/app/conf/production/settings.py:117
-msgid "French"
-msgstr "Französisch"
-
-#: source/app/conf/development/settings.py:119
-#: source/app/conf/production/settings.py:118
-msgid "Spanish"
-msgstr "Spanisch"
-
-#: source/app/conf/development/settings.py:120
-#: source/app/conf/production/settings.py:119
-msgid "German"
-msgstr "Deutsch"
-
-#: source/app/conf/development/settings.py:121
-#: source/app/conf/production/settings.py:120
-msgid "Italian"
-msgstr ""
-
-#: source/content/templates/layouts/default/nav_links.html:5
-#: source/content/templates/layouts/default/page.html:88
 msgid "About"
 msgstr "Über uns"
 
-#: source/content/templates/layouts/default/nav_links.html:6
-#: source/content/templates/layouts/default/page.html:89
-#: source/content/templates/main/shop.html:7
-msgid "Shop"
-msgstr "Shoppen"
-
-#: source/content/templates/layouts/default/nav_links.html:7
-#: source/content/templates/layouts/default/page.html:90
-#: source/content/templates/main/forum.html:7
-msgid "Forum"
-msgstr "Plauderecke"
-
-#: source/content/templates/layouts/default/nav_links.html:8
-#: source/content/templates/layouts/default/page.html:91
-#: source/content/templates/main/change_language.html:12
-msgid "Change language"
-msgstr "Sprache wechseln"
-
-#: source/content/templates/layouts/default/nav_links.html:11
-#: source/content/templates/layouts/default/page.html:97
-msgid "My Stones"
-msgstr "Meine Steine"
-
-#: source/content/templates/layouts/default/nav_links.html:12
-#: source/content/templates/layouts/default/page.html:98
-msgid "Edit Profile"
-msgstr "Mein Profil pimpen"
-
-#: source/content/templates/main/about.html:7
 msgid "About StoneWalker"
 msgstr "Alles über StoneWalker"
 
-#: source/content/templates/main/about.html:14 test_about_translation.py:22
-msgid ""
-"StoneWalker is a unique platform that combines the joy of geocaching with "
-"the beauty of collaborative art. Our mission is to create a global community "
-"of stone travelers who paint, hide, and track beautiful stones as they "
-"journey around the world."
-msgstr "StoneWalker ist ein supercooler Ort, wo Schatzsuche und buntes Malen zusammenkommen! Wir wollen eine riesige Gemeinschaft von Steine-Fans, die Steine bemalen, verstecken und auf ihrer Reise um die Welt verfolgen."
+msgid "Activation code not found."
+msgstr "Aktivierungscode nicht gefunden."
 
-#: source/content/templates/main/about.html:20
-msgid "Did you know:"
-msgstr "Wusstest du schon:"
-
-#: source/content/templates/main/about.html:20
-msgid ""
-"One of the oldest known cave paintings, found in Indonesia, is over 45,000 "
-"years old. This shows that humans have always been drawn to creating art in "
-"unexpected places."
-msgstr "Eine der ältesten Höhlenmalereien in Indonesien ist über 45.000 Jahre alt! Das zeigt, dass Menschen schon immer Lust hatten, an verrückten Orten Kunst zu machen."
-
-#: source/content/templates/main/about.html:24
-msgid "Read more about this discovery →"
-msgstr "Mehr über diesen Fund lesen →"
-
-#: source/content/templates/main/about.html:32
-msgid "How it works:"
-msgstr "So geht’s:"
-
-#: source/content/templates/main/about.html:35
-msgid "Pick up a brush and paint a stone."
-msgstr "Schnapp dir einen Pinsel und bemal einen Stein!"
-
-#: source/content/templates/main/about.html:39
-msgid "Click the \"Create a Stone\" button and follow the instructions."
-msgstr "Klick auf \"Stein erstellen\" und folg den Schritten!"
-
-#: source/content/templates/main/about.html:43
-msgid "Glue the custom QR code on the back of the stone."
-msgstr "Klebe den speziellen QR-Code hinten auf den Stein."
-
-#: source/content/templates/main/about.html:47
-msgid "Set it free and watch it travel the world."
-msgstr "Lass ihn los und schau, wie er die Welt bereist!"
-
-#: source/content/templates/main/about.html:54
-msgid "Community Guidelines:"
-msgstr "Unsere Regeln:"
-
-#: source/content/templates/main/about.html:55
-msgid "Use non-toxic, weather-resistant paint, like acrylic."
-msgstr "Nutze ungiftige, wetterfeste Farbe, wie Acryl!"
-
-#: source/content/templates/main/about.html:56
-#: source/content/templates/main/about.html:58
-msgid "Don't place stones in protected areas or private property!"
-msgstr "Leg keine Steine in Naturschutzgebiete oder auf Privatgrund!"
-
-#: source/content/templates/main/about.html:57
-msgid "Be kind and respectful to other community members!"
-msgstr "Sei nett und fair zu allen anderen!"
-
-#: source/content/templates/main/about.html:60
-msgid ""
-"You never know where it might go, or who it might inspire along the way!"
-msgstr "Du weißt nie, wohin dein Stein reist oder wen er happy macht!"
-
-#: source/content/templates/main/about.html:64
-msgid "Start Your Journey"
-msgstr "Starte dein Abenteuer!"
-
-#: source/content/templates/main/change_language.html:20
-msgid "Select your preferred language"
-msgstr "Wähl deine Lieblingssprache!"
-
-#: source/content/templates/main/forum.html:8
-msgid "The StoneWalker forum is coming soon. Stay tuned!"
-msgstr "Die StoneWalker-Plauderecke kommt bald – bleib dran!"
-
-#: source/content/templates/main/index.html:7
-msgid "Welcome to StoneWalker"
-msgstr "Willkommen bei StoneWalker"
-
-#: source/content/templates/main/index.html:8
-msgid "Track the journey of painted stones around the world"
-msgstr "Verfolge die Reise bemalter Steine um die Welt"
-
-#: source/content/templates/main/index.html:9
-msgid ""
-"Join our community of stone travelers and discover amazing stories from "
-"around the globe."
-msgstr ""
-
-#: source/content/templates/main/index.html:11
-msgid "Start Exploring"
-msgstr "Los, erkunde!"
-
-#: source/content/templates/main/index.html:12
-msgid "Learn More"
-msgstr "Mehr erfahren"
-
-#: source/content/templates/main/my_stones.html:213
-msgid "My CREATIONS"
-msgstr "Meine Kunstwerke"
-
-#: source/content/templates/main/my_stones.html:215
-#: source/content/templates/main/my_stones.html:237
-msgid "Sort by:"
-msgstr "Sortieren nach:"
-
-#: source/content/templates/main/my_stones.html:217
-#: source/content/templates/main/my_stones.html:239
-msgid "Distance traveled (min)"
-msgstr "Reiseweg (kleinst)"
-
-#: source/content/templates/main/my_stones.html:218
-#: source/content/templates/main/my_stones.html:240
-msgid "Distance traveled (max)"
-msgstr "Reiseweg (größt)"
-
-#: source/content/templates/main/my_stones.html:219
-#: source/content/templates/main/my_stones.html:241
-msgid "Number of moves (min)"
-msgstr "Anzahl der Reisen (kleinst)"
-
-#: source/content/templates/main/my_stones.html:220
-#: source/content/templates/main/my_stones.html:242
-msgid "Number of moves (max)"
-msgstr "Anzahl der Reisen (größt)"
-
-#: source/content/templates/main/my_stones.html:221
-#: source/content/templates/main/my_stones.html:243
-msgid "Youngest"
-msgstr "Jüngster"
-
-#: source/content/templates/main/my_stones.html:222
-#: source/content/templates/main/my_stones.html:244
-msgid "Oldest"
-msgstr "Ältesten"
-
-#: source/content/templates/main/my_stones.html:228
-#: source/content/templates/main/my_stones.html:250
-msgid "Previous page"
-msgstr "Vorige Seite"
-
-#: source/content/templates/main/my_stones.html:228
-#: source/content/templates/main/my_stones.html:250
-msgid "Previous"
-msgstr "Zurück"
-
-#: source/content/templates/main/my_stones.html:230
-#: source/content/templates/main/my_stones.html:252
-msgid "Next page"
-msgstr "Nächste Seite"
-
-#: source/content/templates/main/my_stones.html:235
-msgid "MY INTERACTIONS"
-msgstr "Meine Abenteuer"
-
-#: source/content/templates/main/shop.html:8
-msgid "The StoneWalker shop is coming soon. Stay tuned!"
-msgstr "Der StoneWalker-Shop kommt bald – freu dich drauf!"
-
-#: source/content/templates/main/stone_scan.html:8
-#: source/content/templates/main/stonewalker_start.html:68
-msgid "Scan a Stone"
-msgstr "Stein scannen"
-
-#: source/content/templates/main/stone_scan.html:23
-#: source/content/templates/main/stonewalker_start.html:133
-msgid "Stone Name"
-msgstr "Stein-Name"
-
-#: source/content/templates/main/stone_scan.html:26
-msgid "Comment (optional)"
-msgstr "Kommentar (kannst du, musst du aber nicht)"
-
-#: source/content/templates/main/stone_scan.html:27
-msgid "Tell us about your stone adventure..."
-msgstr "Erzähl uns von deinem Stein-Abenteuer..."
-
-#: source/content/templates/main/stone_scan.html:29
-msgid "Photo (optional)"
-msgstr "Foto (kannst du, musst du aber nicht)"
-
-#: source/content/templates/main/stone_scan.html:32
-msgid "Latitude"
-msgstr "Breitengrad"
-
-#: source/content/templates/main/stone_scan.html:35
-msgid "Longitude"
-msgstr "Längengrad"
-
-#: source/content/templates/main/stone_scan.html:40
-msgid "Submit Scan"
-msgstr "Scan abschicken"
-
-#: source/content/templates/main/stonewalker_start.html:11
-msgid "Welcome to StoneWalker!"
-msgstr "Hallo bei StoneWalker!"
-
-#: source/content/templates/main/stonewalker_start.html:13
-msgid "You are a guest."
-msgstr "Du bist ein Gast."
-
-#: source/content/templates/main/stonewalker_start.html:14
-msgid ""
-"Sign up to start creating, finding, and sharing stones around the world!"
-msgstr "Meld dich an, um Steine zu basteln, zu finden und mit der ganzen Welt zu teilen!"
-
-#: source/content/templates/main/stonewalker_start.html:17
-#, fuzzy
-#| msgid "Create an account"
-msgid "Create an Account"
-msgstr "Konto erstellen"
-
-#: source/content/templates/main/stonewalker_start.html:18
-#, fuzzy
-#| msgid "Log in"
-msgid "Log In"
-msgstr "Einloggen"
-
-#: source/content/templates/main/stonewalker_start.html:62
-#: source/content/templates/main/stonewalker_start.html:63
-msgid "Add new stone"
-msgstr "Neuen Stein hinzufügen"
-
-#: source/content/templates/main/stonewalker_start.html:64
-msgid "Create New Stone"
-msgstr "Neuen Stein basteln"
-
-#: source/content/templates/main/stonewalker_start.html:66
-msgid "I found a stone"
-msgstr "Ich hab einen Stein gefunden!"
-
-#: source/content/templates/main/stonewalker_start.html:67
-msgid "Scan Stone"
-msgstr "Stein scannen"
-
-#: source/content/templates/main/stonewalker_start.html:110
 msgid "Add New Stone"
 msgstr "Neuen Stein hinzufügen"
 
-#: source/content/templates/main/stonewalker_start.html:115
-msgid "Stone Type"
-msgstr "Stein-Art"
+msgid "Add new stone"
+msgstr "Neuen Stein hinzufügen"
 
-#: source/content/templates/main/stonewalker_start.html:117
-msgid "Hidden (no location, must be found by scanning)"
-msgstr "Versteckt (kein Ort, muss gescannt werden)"
+msgid "Already have an account?"
+msgstr "Hast du schon einen Account?"
 
-#: source/content/templates/main/stonewalker_start.html:118
-msgid "Hunted (placed at a location, must be found at that spot)"
-msgstr "Gejagt (an einem Ort, muss dort gefunden werden)"
+msgid "April"
+msgstr "April"
 
-#: source/content/templates/main/stonewalker_start.html:122
-msgid ""
-"Hidden stones do not have a known location. Hunted stones are placed at a "
-"specific spot and must be found there."
-msgstr ""
+msgid "Are you sure you want to log out?"
+msgstr "Willst du wirklich ausloggen?"
 
-#: source/content/templates/main/stonewalker_start.html:125
-msgid "Picture"
-msgstr "Bild"
+msgid "Aug."
+msgstr "Aug."
 
-#: source/content/templates/main/stonewalker_start.html:140
-msgid "Description"
-msgstr "Beschreibung"
+msgid "August"
+msgstr "August"
 
-#: source/content/templates/main/stonewalker_start.html:141
-msgid "Say something about your stone (max 500 chars)"
-msgstr "Erzähl was über deinen Stein (max. 500 Zeichen)"
-
-#: source/content/templates/main/stonewalker_start.html:149
-msgid "Marker Color"
-msgstr "Marker-Farbe"
-
-#: source/content/templates/main/stonewalker_start.html:154
-msgid "Marker Shape"
-msgstr "Marker-Form"
-
-#: source/content/templates/main/stonewalker_start.html:156
-msgid "Circle"
-msgstr "Kreis"
-
-#: source/content/templates/main/stonewalker_start.html:157
-msgid "Square"
-msgstr "Quadrat"
-
-#: source/content/templates/main/stonewalker_start.html:158
-msgid "Star"
-msgstr "Stern"
-
-#: source/content/templates/main/stonewalker_start.html:159
-msgid "Triangle"
-msgstr "Dreieck"
-
-#: source/content/templates/main/stonewalker_start.html:174
 msgid "Back"
 msgstr "Zurück"
 
-#: source/content/templates/main/stonewalker_start.html:175
+msgid "Be kind and respectful to other community members!"
+msgstr "Sei nett und fair zu allen anderen!"
+
+msgid "Big (8 byte) integer"
+msgstr "Riesige (8 Byte) Zahl"
+
+msgid "Boolean (Either True or False)"
+msgstr "Ja oder Nein (True oder False)"
+
+msgid "Boolean (Either True, False or None)"
+msgstr "Ja, Nein oder Nix"
+
+msgid "CSRF verification failed. Request aborted."
+msgstr "CSRF verification failed. Request aborted."
+
+msgid "Cancel"
+msgstr "Abbrechen"
+
+msgid "Cancel and return home"
+msgstr "Abbrechen und zurück zur Startseite"
+
+msgid "Change"
+msgstr "Ändern"
+
+msgid "Change email"
+msgstr "E-Mail ändern"
+
+msgid "Change language"
+msgstr "Sprache wechseln"
+
+msgid "Change password"
+msgstr "Passwort änder"
+
+msgid "Change profile"
+msgstr "Profil ändern"
+
+msgid "Circle"
+msgstr "Kreis"
+
+msgid "Clear"
+msgstr "Löschen"
+
+msgid "Click the \\\\"
+msgstr "Klick auf \\\\"
+
+msgid "Comma-separated integers"
+msgstr "Zahlen mit Kommas dazwischen"
+
+msgid "Comment (optional)"
+msgstr "Kommentar (kannst du, musst du aber nicht)"
+
+msgid "Community Guidelines:"
+msgstr "Unsere Regeln:"
+
+msgid "Confirm new password"
+msgstr "Neues Passwort nochmal"
+
+msgid "Confirm this action:"
+msgstr "Bestätige, dass du das wirklich willsdt:"
+
+msgid "Connect, get help, or contribute"
+msgstr "Verbinde dich, hol Hilfe oder mach mit!"
+
+msgid "Constraint \"%(name)s\" is violated."
+msgstr "Regel \"%(name)s\" wurde gebrochen!"
+
+msgid "Constraint \\\\"
+msgstr "Constraint \\\\"
+
+msgid "Create"
+msgstr "Erstellen"
+
+msgid "Create New Stone"
+msgstr "Neuen Stein basteln"
+
+msgid "Create an account"
+msgstr "Konto erstellen"
+
+msgid "Currently"
+msgstr "Jetzt"
+
+msgid "Date (with time)"
+msgstr "Datum (mit Uhrzeit)"
+
+msgid "Date (without time)"
+msgstr "Datum (ohne Uhrzeit)"
+
+msgid "Date out of range"
+msgstr "Date out of range"
+
+msgid "Dec."
+msgstr "Dez."
+
+msgid "December"
+msgstr "Dezember"
+
+msgid "Decimal number"
+msgstr "Zahl mit Komma"
+
+msgid "Delete"
+msgstr "Löschen"
+
+msgid "Description"
+msgstr "Beschreibung"
+
+msgid "Did you know:"
+msgstr "Wusstest du schon:"
+
+msgid "Directory indexes are not allowed here."
+msgstr "Verzeichnislisten sind hier nicht erlaubt!"
+
+msgid "Distance traveled (max)"
+msgstr "Reiseweg (größt)"
+
+msgid "Distance traveled (min)"
+msgstr "Reiseweg (kleinst)"
+
+msgid "Django Community"
+msgstr "Django-Gang"
+
+msgid "Django Documentation"
+msgstr "Django-Doku"
+
+msgid "Django administration"
+msgstr "Django administration"
+
+msgid "Don't have an account?"
+msgstr "Noch kein Konto?"
+
+msgid "Don't place stones in protected areas or private property!"
+msgstr "Leg keine Steine in Naturschutzgebiete oder auf Privatgrund!"
+
+msgid "Don\\\\\\\\"
+msgstr "Don\\\\\\\\"
+
+msgid "Duration"
+msgstr "Duration"
+
+msgid "Edit Profile"
+msgstr "Mein Profil pimpen"
+
+msgid "Email"
+msgstr "E-Mail"
+
+msgid "Email address"
+msgstr "E-Mail-Adresse"
+
+msgid "Email change cancelled and reverted."
+msgstr "E-Mail-Änderung abgebrochen und zurückgesetzt."
+
+msgid "Email or Username"
+msgstr "E-Mail oder Benutzername"
+
+msgid "Email successfully changed."
+msgstr "E-Mail erfolgreich gewechselt!"
+
+msgid "Empty list and \"%(class_name)s.allow_empty\" is False."
+msgstr "Die Liste ist leer und \"%(class_name)s.allow_empty\" ist False!"
+
+msgid "Empty list and \\\\"
+msgstr "Empty list and \\\\"
+
+msgid "English"
+msgstr "Englisch"
+
+msgid "Ensure this value is %(limit_value)s (it is %(show_value)s)."
+msgstr "Ensure this value is %(limit_value)s (it is %(show_value)s)."
+
+msgid "Ensure this value is a multiple of step size %(limit_value)s."
+msgstr "Der Wert muss ein Vielfaches von %(limit_value)s sein!"
+
+msgid "Ensure this value is greater than or equal to %(limit_value)s."
+msgstr "Der Wert muss %(limit_value)s oder größer sein!"
+
+msgid "Ensure this value is less than or equal to %(limit_value)s."
+msgstr "Der Wert muss %(limit_value)s oder kleiner sein!"
+
+msgid "Enter a complete value."
+msgstr "Gib einen vollständigen Wert ein!"
+
+msgid "Enter a list of values."
+msgstr "Gib eine Liste mit Werten ein!"
+
+msgid "Enter a number."
+msgstr "Enter a number."
+
+msgid "Enter a valid IPv4 address."
+msgstr "Gib eine richtige IPv4-Adresse ein!"
+
+msgid "Enter a valid IPv4 or IPv6 address."
+msgstr "Gib eine richtige IPv4- oder IPv6-Adresse ein!"
+
+msgid "Enter a valid IPv6 address."
+msgstr "Gib eine richtige IPv6-Adresse ein!"
+
+msgid "Enter a valid JSON."
+msgstr "Gib richtiges JSON ein!"
+
+msgid "Enter a valid URL."
+msgstr "Gib eine richtige Webadresse ein!"
+
+msgid "Enter a valid UUID."
+msgstr "Gib eine richtige UUID ein!"
+
+msgid "Enter a valid date."
+msgstr "Gib ein richtiges Datum ein!"
+
+msgid "Enter a valid date/time."
+msgstr "Gib ein richtiges Datum und Uhrzeit ein!"
+
+msgid "Enter a valid duration."
+msgstr "Gib eine richtige Dauer ein!"
+
+msgid "Enter a valid email address."
+msgstr "Enter a valid email address."
+
+msgid "Enter a valid integer."
+msgstr "Gib eine richtige Zahl ein!"
+
+msgid "Enter a valid time."
+msgstr "Gib eine richtige Uhrzeit ein!"
+
+msgid "Enter a valid value."
+msgstr "Enter a valid value."
+
+msgid "Enter a whole number."
+msgstr "Gib eine ganze Zahl ein!"
+
+msgid "Enter only digits separated by commas."
+msgstr "Gib nur Zahlen ein, mit Kommas dazwischen!"
+
+msgid "Feb."
+msgstr "Feb."
+
+msgid "February"
+msgstr "Februar"
+
+msgid "Field of type: %(field_type)s"
+msgstr "Feld vom Typ: %(field_type)s"
+
+msgid "File"
+msgstr "Datei"
+
+msgid "File path"
+msgstr "Dateipfad"
+
+msgid "First name"
+msgstr "First name"
+
+msgid "Floating point number"
+msgstr "Zahl mit Komma"
+
+msgid "Forbidden"
+msgstr "Forbidden"
+
+msgid "Foreign Key (type determined by related field)"
+msgstr "Fremdschlüssel (Typ hängt vom verknüpften Feld ab)"
+
+msgid "Forgot your password?"
+msgstr "Passwort vergessen?"
+
+msgid "Forgot your username?"
+msgstr "Benutzernamen vergessen?"
+
+msgid "Forum"
+msgstr "Plauderecke"
+
+msgid "French"
+msgstr "Französisch"
+
+msgid "Fri"
+msgstr "Fr"
+
+msgid "Friday"
+msgstr "Freitag"
+
+msgid "German"
+msgstr "Deutsch"
+
+msgid "Get started with Django"
+msgstr "Leg los mit Django!"
+
+msgid "Glue the custom QR code on the back of the stone."
+msgstr "Klebe den speziellen QR-Code hinten auf den Stein."
+
+msgid "Hidden (no location, must be found by scanning)"
+msgstr "Versteckt (kein Ort, muss gescannt werden)"
+
+msgid "Home"
+msgstr "Home"
+
+msgid "How it works:"
+msgstr "So geht's:"
+
+msgid "Hunted (placed at a location, must be found at that spot)"
+msgstr "Gejagt (an einem Ort, muss dort gefunden werden)"
+
+msgid "I found a stone"
+msgstr "Ich hab einen Stein gefunden!"
+
+msgid "IP address"
+msgstr "IP-Adresse"
+
+msgid "IPv4 address"
+msgstr "IPv4-Adresse"
+
+msgid "Image"
+msgstr "Bild"
+
+msgid "Index of %(directory)s"
+msgstr "Inhalt von %(directory)s"
+
+msgid "Integer"
+msgstr "Ganze Zahl"
+
+msgid "Invalid date string \"%(datestr)s\" given format \"%(format)s\""
+msgstr "Das Datum \"%(datestr)s\" passt nicht zum Format \"%(format)s\"!"
+
+msgid "Invalid date string \\\\"
+msgstr "Invalid date string \\\\"
+
+msgid "Invalid page (%(page_number)s): %(message)s"
+msgstr "Falsche Seite (%(page_number)s): %(message)s"
+
+msgid "Italian"
+msgstr "Italian"
+
+msgid "Jan."
+msgstr "Jan."
+
+msgid "January"
+msgstr "Januar"
+
+msgid "July"
+msgstr "Juli"
+
+msgid "June"
+msgstr "Juni"
+
+msgid "Last name"
+msgstr "Last name"
+
+msgid "Latitude"
+msgstr "Breitengrad"
+
+msgid "Learn More"
+msgstr "Mehr erfahren"
+
+msgid "Log In"
+msgstr "Log In"
+
+msgid "Log in"
+msgstr "Einloggen"
+
+msgid "Log in again"
+msgstr "Nochmal einloggen"
+
+msgid "Log out"
+msgstr "Ausloggen"
+
+msgid "Logged out"
+msgstr "Ausgeloggt"
+
+msgid "Longitude"
+msgstr "Längengrad"
+
+msgid "MY INTERACTIONS"
+msgstr "Meine Abenteuer"
+
+msgid "Many-to-many relationship"
+msgstr "Viele-zu-viele-Beziehung"
+
+msgid "March"
+msgstr "März"
+
+msgid "Marker Color"
+msgstr "Marker-Farbe"
+
+msgid "Marker Shape"
+msgstr "Marker-Form"
+
+msgid "May"
+msgstr "Mai"
+
+msgid "Messages"
+msgstr "Messages"
+
+msgid "Mon"
+msgstr "Mo"
+
+msgid "Monday"
+msgstr "Montag"
+
+msgid "More information is available with DEBUG=True."
+msgstr "More information is available with DEBUG=True."
+
+msgid "My CREATIONS"
+msgstr "Meine Kunstwerke"
+
+msgid "My Stones"
+msgstr "Meine Steine"
+
+msgid "New password"
+msgstr "Neues Passwort"
+
+msgid "Next"
+msgstr "Weiter"
+
+msgid "Next page"
+msgstr "Nächste Seite"
+
+msgid "No"
+msgstr "Nein"
+
+msgid "No %(verbose_name)s found matching the query"
+msgstr "Kein %(verbose_name)s gefunden, das passt!"
+
+msgid "No %(verbose_name_plural)s available"
+msgstr "Keine %(verbose_name_plural)s da!"
+
+msgid "No day specified"
+msgstr "Kein Tag angegeben!"
+
+msgid "No file was submitted."
+msgstr "Du hast keine Datei hochgeladen!"
+
+msgid "No file was submitted. Check the encoding type on the form."
+msgstr "Keine Datei hochgeladen! Überprüf den Codierungstyp im Formular."
+
+msgid "No month specified"
+msgstr "Kein Monat angegeben!"
+
+msgid "No pending email change to cancel."
+msgstr "Keine E-Mail-Änderung zum Abbrechen da."
+
+msgid "No pending email confirmation to resend."
+msgstr "Keine E-Mail-Bestätigung zum erneuten Senden da."
+
+msgid "No week specified"
+msgstr "Keine Woche angegeben!"
+
+msgid "No year specified"
+msgstr "Kein Jahr angegeben!"
+
+msgid "Nov."
+msgstr "Nov."
+
+msgid "November"
+msgstr "November"
+
+msgid "Null characters are not allowed."
+msgstr "Nichts-Zeichen sind verboten!"
+
+msgid "Number of moves (max)"
+msgstr "Anzahl der Reisen (größt)"
+
+msgid "Number of moves (min)"
+msgstr "Anzahl der Reisen (kleinst)"
+
+msgid "Oct."
+msgstr "Okt."
+
+msgid "October"
+msgstr "Oktober"
+
+msgid "Oldest"
+msgstr "Ältesten"
+
+msgid "One-to-one relationship"
+msgstr "Eins-zu-eins-Beziehung"
+
+msgid "Order"
+msgstr "Reihenfolge"
+
+msgid "PM"
+msgstr "Nachmittags"
+
+msgid "Page is not \\\\"
+msgstr "Page is not \\\\"
+
+msgid "Password"
+msgstr "Passwort"
+
+msgid "Passwords do not match."
+msgstr "Die Passwörter passen nicht zusammen!"
+
+msgid "Photo (optional)"
+msgstr "Foto (kannst du, musst du aber nicht)"
+
+msgid "Pick up a brush and paint a stone."
+msgstr "Schnapp dir einen Pinsel und bemal einen Stein!"
+
+msgid "Picture"
+msgstr "Bild"
+
+msgid "Please correct the duplicate data for %(field)s, which must be unique."
+msgstr "Please correct the duplicate data for %(field)s, which must be unique."
+
+msgid "Please correct the duplicate data for %(field)s."
+msgstr "Bitte korrigier die doppelten Daten für %(field)s!"
+
+msgid "Please correct the duplicate values below."
+msgstr "Bitte korrigier die doppelten Werte unten!"
+
+msgid "Please either submit a file or check the clear checkbox, not both."
+msgstr "Please either submit a file or check the clear checkbox, not both."
+
+msgid "Please enter another email."
+msgstr "Hey, probier mal 'ne andere E-Mail-Adresse!"
+
+msgid "Please, go to the following page and choose a new password:"
+msgstr "Geh auf diese Seite und such dir ein neues Passwort aus:"
+
+msgid "Positive big integer"
+msgstr "Große positive Zahl"
+
+msgid "Positive integer"
+msgstr "Positive Zahl"
+
+msgid "Positive small integer"
+msgstr "Kleine positive Zahl"
+
+msgid "Previous"
+msgstr "Zurück"
+
+msgid "Previous page"
+msgstr "Vorige Seite"
+
+msgid "Profile activation"
+msgstr "Profil aktivieren"
+
+msgid "Profile data has been successfully updated."
+msgstr "Profile data has been successfully updated."
+
+msgid "Profile picture"
+msgstr "Dein Profilbild"
+
+msgid "Raw binary data"
+msgstr "Rohe Binärdaten"
+
+msgid "Read more about this discovery →"
+msgstr "Mehr über diesen Fund lesen →"
+
+msgid "Remember me"
+msgstr "Angemeldet bleiben"
+
+msgid "Remind a username"
+msgstr "Benutzernamen erinnern"
+
+msgid "Required. Enter an existing email address."
+msgstr "Erforderlich. Geben Sie eine bestehende E-Mail-Adresse ein."
+
+msgid "Resend an activation code"
+msgstr "Neuen Aktivierungscode schicken"
+
+msgid "Restore password"
+msgstr "Passwort zurücksetzen"
+
+msgid "Return to StoneWalker Home"
+msgstr "Zurück zur StoneWalker-Startseite"
+
+msgid "Russian"
+msgstr "Russisch"
+
+msgid "Sat"
+msgstr "Sa"
+
+msgid "Saturday"
+msgstr "Samstag"
+
 msgid "Save"
 msgstr "Speichern"
 
-#~ msgid "Ensure that there are no more than %(max)s digit in total."
-#~ msgid_plural "Ensure that there are no more than %(max)s digits in total."
-#~ msgstr[0] "Stell sicher, dass es nicht mehr als %(max)s Ziffer gibt."
-#~ msgstr[1] "Stell sicher, dass es nicht mehr als %(max)s Ziffern gibt."
+msgid "Save profile"
+msgstr "Profil speichern"
 
-#~ msgid "Ensure that there are no more than %(max)s decimal place."
-#~ msgid_plural "Ensure that there are no more than %(max)s decimal places."
-#~ msgstr[0] "Stell sicher, dass es nicht mehr als %(max)s Dezimalstelle gibt."
-#~ msgstr[1] ""
-#~ "Stell sicher, dass es nicht mehr als %(max)s Dezimalstellen gibt."
+msgid "Say something about your stone (max 500 chars)"
+msgstr "Erzähl was über deinen Stein (max. 500 Zeichen)"
 
-#~ msgid "Value %(value)r is not a valid choice."
-#~ msgstr "Der Wert %(value)r ist keine gültige Auswahl."
+msgid "Scan Stone"
+msgstr "Stein scannen"
 
-#~ msgid "This field cannot be null."
-#~ msgstr "Dieses Feld darf nicht leer sein."
+msgid "Scan a Stone"
+msgstr "Stein scannen"
 
-#~ msgid "This field cannot be blank."
-#~ msgstr "Dieses Feld darf nicht leer sein."
+msgid "Select a valid choice. %(value)s is not one of the available choices."
+msgstr "Select a valid choice. %(value)s is not one of the available choices."
 
-#~ msgid "%(model_name)s with this %(field_label)s already exists."
-#~ msgstr "Ein %(model_name)s mit diesem %(field_label)s gibt’s schon."
+msgid "Select a valid choice. That choice is not one of the available choices."
+msgstr "Select a valid choice. That choice is not one of the available choices."
 
-#~ msgid "“%(value)s” value must be either True or False."
-#~ msgstr "Der Wert „%(value)s“ muss entweder True oder False sein."
+msgid "Select the language"
+msgstr "Select the language"
 
-#~ msgid ""
-#~ "Ensure this filename has at most %(max)d character (it has %(length)d)."
-#~ msgid_plural ""
-#~ "Ensure this filename has at most %(max)d characters (it has %(length)d)."
-#~ msgstr[0] ""
-#~ "Stell sicher, dass der Dateiname maximal %(max)d Zeichen hat (er hat "
-#~ "%(length)d)."
-#~ msgstr[1] ""
-#~ "Stell sicher, dass der Dateiname maximal %(max)d Zeichen hat (er hat "
-#~ "%(length)d)."
+msgid "Select your preferred language"
+msgstr "Wähl deine Lieblingssprache!"
 
-#~ msgid ""
-#~ "Select a valid choice. %(value)s is not one of the available choices."
-#~ msgstr "Wähl was Gültiges aus. %(value)s ist nicht dabei."
+msgid "Sept."
+msgstr "Sept."
 
-#~ msgid "Please submit at most %(num)d form."
-#~ msgid_plural "Please submit at most %(num)d forms."
-#~ msgstr[0] "Schick bitte maximal %(num)d Formular."
-#~ msgstr[1] "Schick bitte maximal %(num)d Formulare."
+msgid "September"
+msgstr "September"
 
-#~ msgid "Please submit at least %(num)d form."
-#~ msgid_plural "Please submit at least %(num)d forms."
-#~ msgstr[0] "Schick bitte mindestens %(num)d Formular."
-#~ msgstr[1] "Schick bitte mindestens %(num)d Formulare."
+msgid "Set it free and watch it travel the world."
+msgstr "Lass ihn los und schau, wie er die Welt bereist!"
 
-#~ msgid "yes,no,maybe"
-#~ msgstr "Ja, Nein, Vielleicht"
+msgid "Shop"
+msgstr "Shoppen"
 
-#~ msgid "%(size)d byte"
-#~ msgid_plural "%(size)d bytes"
-#~ msgstr[0] "%(size)d Byte"
-#~ msgstr[1] "%(size)d Bytes"
+msgid "Sign up"
+msgstr "Anmelden"
 
-#~ msgid "Enter a valid URL."
-#~ msgstr "Gib eine richtige Webadresse ein!"
+msgid "Simplified Chinese"
+msgstr "Chinesisch (einfach)"
 
-#~ msgid "Enter a valid integer."
-#~ msgstr "Gib eine richtige Zahl ein!"
+msgid "Site Maps"
+msgstr "Site Maps"
 
-#~ msgid "Enter a valid IPv4 address."
-#~ msgstr "Gib eine richtige IPv4-Adresse ein!"
+msgid "Slug (up to %(max_length)s)"
+msgstr "Slug (bis zu %(max_length)s Zeichen)"
 
-#~ msgid "Enter a valid IPv6 address."
-#~ msgstr "Gib eine richtige IPv6-Adresse ein!"
+msgid "Small integer"
+msgstr "Kleine Zahl"
 
-#~ msgid "Enter a valid IPv4 or IPv6 address."
-#~ msgstr "Gib eine richtige IPv4- oder IPv6-Adresse ein!"
+msgid "Sort by:"
+msgstr "Sortieren nach:"
 
-#~ msgid "Enter only digits separated by commas."
-#~ msgstr "Gib nur Zahlen ein, mit Kommas dazwischen!"
+msgid "Spanish"
+msgstr "Spanisch"
 
-#~ msgid "Ensure this value is %(limit_value)s (it is %(show_value)s)."
-#~ msgstr ""
-#~ "Stell sicher, dass der Wert %(limit_value)s ist (jetzt ist er "
-#~ "%(show_value)s)!"
+msgid "Square"
+msgstr "Quadrat"
 
-#~ msgid "Ensure this value is less than or equal to %(limit_value)s."
-#~ msgstr "Der Wert muss %(limit_value)s oder kleiner sein!"
+msgid "Star"
+msgstr "Stern"
 
-#~ msgid "Ensure this value is greater than or equal to %(limit_value)s."
-#~ msgstr "Der Wert muss %(limit_value)s oder größer sein!"
+msgid "Start Exploring"
+msgstr "Los, erkunde!"
 
-#~ msgid "Ensure this value is a multiple of step size %(limit_value)s."
-#~ msgstr "Der Wert muss ein Vielfaches von %(limit_value)s sein!"
+msgid "Start Your Journey"
+msgstr "Starte dein Abenteuer!"
 
-#~ msgid "Null characters are not allowed."
-#~ msgstr "Nichts-Zeichen sind verboten!"
+msgid "Static Files"
+msgstr "Static Files"
 
-#~ msgid "and"
-#~ msgstr "und"
+msgid "Stone Name"
+msgstr "Stein-Name"
 
-#~ msgid "%(model_name)s with this %(field_labels)s already exists."
-#~ msgstr "Ein %(model_name)s mit diesem %(field_labels)s gibt’s schon!"
+msgid "Stone Type"
+msgstr "Stein-Art"
 
-#~ msgid "Constraint “%(name)s” is violated."
-#~ msgstr "Regel „%(name)s“ wurde gebrochen!"
+msgid "String (unlimited)"
+msgstr "Text (ohne Limit)"
 
-#~ msgid "Field of type: %(field_type)s"
-#~ msgstr "Feld vom Typ: %(field_type)s"
+msgid "String (up to %(max_length)s)"
+msgstr "Text (bis zu %(max_length)s Zeichen)"
 
-#~ msgid "“%(value)s” value must be either True, False, or None."
-#~ msgstr "Der Wert „%(value)s“ muss True, False oder nix sein!"
+msgid "Submit Scan"
+msgstr "Scan abschicken"
 
-#~ msgid "Boolean (Either True or False)"
-#~ msgstr "Ja oder Nein (True oder False)"
+msgid "Sun"
+msgstr "So"
 
-#~ msgid "String (up to %(max_length)s)"
-#~ msgstr "Text (bis zu %(max_length)s Zeichen)"
+msgid "Sunday"
+msgstr "Sonntag"
 
-#~ msgid "String (unlimited)"
-#~ msgstr "Text (ohne Limit)"
+msgid "Syndication"
+msgstr "Syndication"
 
-#~ msgid "Comma-separated integers"
-#~ msgstr "Zahlen mit Kommas dazwischen"
+msgid "Tell us about your stone adventure..."
+msgstr "Erzähl uns von deinem Stein-Abenteuer..."
 
-#~ msgid "Date (without time)"
-#~ msgstr "Datum (ohne Uhrzeit)"
+msgid "Text"
+msgstr "Text"
 
-#~ msgid "Date (with time)"
-#~ msgstr "Datum (mit Uhrzeit)"
+msgid "Thanks for spending some quality time with StoneWalker today!"
+msgstr "Danke, dass du heute mit StoneWalker gespielt hast!"
 
-#~ msgid "Decimal number"
-#~ msgstr "Zahl mit Komma"
+msgid "That page contains no results"
+msgstr "That page contains no results"
 
-#~ msgid "Email address"
-#~ msgstr "E-Mail-Adresse"
+msgid "That page number is less than 1"
+msgstr "That page number is less than 1"
 
-#~ msgid "File path"
-#~ msgstr "Dateipfad"
+msgid "That page number is not an integer"
+msgstr "That page number is not an integer"
 
-#~ msgid "Floating point number"
-#~ msgstr "Zahl mit Komma"
+msgid "The StoneWalker forum is coming soon. Stay tuned!"
+msgstr "Die StoneWalker-Plauderecke kommt bald - bleib dran!"
 
-#~ msgid "Integer"
-#~ msgstr "Ganze Zahl"
+msgid "The StoneWalker shop is coming soon. Stay tuned!"
+msgstr "Der StoneWalker-Shop kommt bald - freu dich drauf!"
 
-#~ msgid "Big (8 byte) integer"
-#~ msgstr "Riesige (8 Byte) Zahl"
+msgid "The inline value did not match the parent instance."
+msgstr "Der Wert passt nicht zum Hauptwert!"
 
-#~ msgid "Small integer"
-#~ msgstr "Kleine Zahl"
+msgid "The install worked successfully! Congratulations!"
+msgstr "Die Installation hat geklappt! Juhu, super gemacht!"
 
-#~ msgid "IPv4 address"
-#~ msgstr "IPv4-Adresse"
+msgid "The number of days must be between {min_days} and {max_days}."
+msgstr "Die Tage müssen zwischen {min_days} und {max_days} liegen!"
 
-#~ msgid "IP address"
-#~ msgstr "IP-Adresse"
+msgid "The submitted file is empty."
+msgstr "Die hochgeladene Datei ist leer!"
 
-#~ msgid "Boolean (Either True, False or None)"
-#~ msgstr "Ja, Nein oder Nix"
+msgid "This account has already been activated."
+msgstr "Dieses Konto wurde bereits aktiviert."
 
-#~ msgid "Positive big integer"
-#~ msgstr "Große positive Zahl"
+msgid "This account is not active."
+msgstr "Dieses Konto ist nicht aktiv."
 
-#~ msgid "Positive integer"
-#~ msgstr "Positive Zahl"
+msgid "This email address is already in use by another account."
+msgstr "Hoppla, diese E-Mail-Adresse benutzt schon jemand anders."
 
-#~ msgid "Positive small integer"
-#~ msgstr "Kleine positive Zahl"
+msgid "This field cannot be blank."
+msgstr "Dieses Feld darf nicht leer sein."
 
-#~ msgid "Slug (up to %(max_length)s)"
-#~ msgstr "Slug (bis zu %(max_length)s Zeichen)"
+msgid "This field cannot be null."
+msgstr "Dieses Feld darf nicht leer sein."
 
-#~ msgid "Text"
-#~ msgstr "Text"
+msgid "This field is required."
+msgstr "Dieses Feld musst du ausfüllen!"
 
-#~ msgid "Time"
-#~ msgstr "Uhrzeit"
+msgid "This is not a valid IPv6 address."
+msgstr "Das ist keine richtige IPv6-Adresse!"
 
-#~ msgid "URL"
-#~ msgstr "Webadresse"
+msgid "This username is already taken."
+msgstr "Dieser Benutzername ist bereits vergeben."
 
-#~ msgid "Raw binary data"
-#~ msgstr "Rohe Binärdaten"
+msgid "Thu"
+msgstr "Do"
 
-#~ msgid "Universally unique identifier"
-#~ msgstr "Einzigartige ID"
+msgid "Thursday"
+msgstr "Donnerstag"
 
-#~ msgid "File"
-#~ msgstr "Datei"
+msgid "Time"
+msgstr "Uhrzeit"
 
-#~ msgid "Image"
-#~ msgstr "Bild"
+msgid "To activate your profile, please follow this link:"
+msgstr "Klick auf den Link, um dein Profil zu aktivieren:"
 
-#~ msgid "A JSON object"
-#~ msgstr "Ein JSON-Ding"
+msgid "To change your current email address, please follow the link:"
+msgstr "Klick hier, um deine E-Mail-Adresse zu ändern:"
 
-#~ msgid "Value must be valid JSON."
-#~ msgstr "Der Wert muss richtiges JSON sein!"
+msgid "To complete the change of email address, click on the link sent to it."
+msgstr "Klick auf den Link in der E-Mail, um die neue Adresse zu bestätigen!"
 
-#~ msgid "%(model)s instance with %(field)s %(value)r does not exist."
-#~ msgstr "Ein %(model)s mit %(field)s %(value)r gibt’s nicht!"
+msgid "Topics, references, &amp; how-to's"
+msgstr "Themen, Infos und Anleitungen"
 
-#~ msgid "Foreign Key (type determined by related field)"
-#~ msgstr "Fremdschlüssel (Typ hängt vom verknüpften Feld ab)"
+msgid "Track the journey of painted stones around the world"
+msgstr "Verfolge die Reise bemalter Steine um die Welt"
 
-#~ msgid "One-to-one relationship"
-#~ msgstr "Eins-zu-eins-Beziehung"
+msgid "Triangle"
+msgstr "Dreieck"
 
-#~ msgid "%(from)s-%(to)s relationship"
-#~ msgstr "%(from)s-%(to)s-Beziehung"
+msgid "Tue"
+msgstr "Di"
 
-#~ msgid "%(from)s-%(to)s relationships"
-#~ msgstr "%(from)s-%(to)s-Beziehungen"
+msgid "Tuesday"
+msgstr "Dienstag"
 
-#~ msgid "Many-to-many relationship"
-#~ msgstr "Viele-zu-viele-Beziehung"
+msgid "Tutorial: A Polling App"
+msgstr "Anleitung: Eine Umfrage-App"
 
-#~ msgid "This field is required."
-#~ msgstr "Dieses Feld musst du ausfüllen!"
+msgid "URL"
+msgstr "Webadresse"
 
-#~ msgid "Enter a whole number."
-#~ msgstr "Gib eine ganze Zahl ein!"
+msgid "Universally unique identifier"
+msgstr "Einzigartige ID"
 
-#~ msgid "Enter a valid date."
-#~ msgstr "Gib ein richtiges Datum ein!"
+msgid "Unknown"
+msgstr "Unbekannt"
 
-#~ msgid "Enter a valid time."
-#~ msgstr "Gib eine richtige Uhrzeit ein!"
+msgid "Use non-toxic, weather-resistant paint, like acrylic."
+msgstr "Nutze ungiftige, wetterfeste Farbe, wie Acryl!"
 
-#~ msgid "Enter a valid date/time."
-#~ msgstr "Gib ein richtiges Datum und Uhrzeit ein!"
+msgid "Username"
+msgstr "Benutzername"
 
-#~ msgid "Enter a valid duration."
-#~ msgstr "Gib eine richtige Dauer ein!"
+msgid "Username cannot be empty."
+msgstr "Benutzername darf nicht leer sein."
 
-#~ msgid "The number of days must be between {min_days} and {max_days}."
-#~ msgstr "Die Tage müssen zwischen {min_days} und {max_days} liegen!"
+msgid "Username cannot contain whitespace."
+msgstr "Benutzername darf keine Leerzeichen enthalten."
 
-#~ msgid "No file was submitted. Check the encoding type on the form."
-#~ msgstr "Keine Datei hochgeladen! Überprüf den Codierungstyp im Formular."
+msgid "Value %(value)r is not a valid choice."
+msgstr "Der Wert %(value)r ist keine gültige Auswahl."
 
-#~ msgid "No file was submitted."
-#~ msgstr "Du hast keine Datei hochgeladen!"
+msgid "Value must be valid JSON."
+msgstr "Der Wert muss richtiges JSON sein!"
 
-#~ msgid "The submitted file is empty."
-#~ msgstr "Die hochgeladene Datei ist leer!"
+msgid "Wed"
+msgstr "Mi"
 
-#~ msgid "Please either submit a file or check the clear checkbox, not both."
-#~ msgstr ""
-#~ "Lad entweder eine Datei hoch oder klick auf „Löschen“, aber nicht beides!"
+msgid "Wednesday"
+msgstr "Mittwoch"
 
-#~ msgid "Enter a list of values."
-#~ msgstr "Gib eine Liste mit Werten ein!"
+msgid "Welcome to StoneWalker"
+msgstr "Willkommen bei StoneWalker"
 
-#~ msgid "Enter a complete value."
-#~ msgstr "Gib einen vollständigen Wert ein!"
+msgid "Welcome to StoneWalker!"
+msgstr "Hallo bei StoneWalker!"
 
-#~ msgid "Enter a valid UUID."
-#~ msgstr "Gib eine richtige UUID ein!"
+msgid "Yes"
+msgstr "Ja"
 
-#~ msgid "Enter a valid JSON."
-#~ msgstr "Gib richtiges JSON ein!"
+msgid "You are a guest."
+msgstr "Du bist ein Gast."
 
-#~ msgid ":"
-#~ msgstr ":"
+msgid "You are successfully signed up!"
+msgstr "Juhu, du bist jetzt dabei!"
 
-#~ msgid "(Hidden field %(name)s) %(error)s"
-#~ msgstr "(Verstecktes Feld %(name)s) %(error)s"
+msgid "You can not use this email address."
+msgstr "Sie können diese E-Mail-Adresse nicht verwenden."
 
-#~ msgid "Order"
-#~ msgstr "Reihenfolge"
+msgid "You can not use this mail."
+msgstr "Diese E-Mail-Adresse geht leider nicht."
 
-#~ msgid "Delete"
-#~ msgstr "Löschen"
+msgid "You entered an invalid email address or username."
+msgstr "You entered an invalid email address or username."
 
-#~ msgid "Please correct the duplicate data for %(field)s."
-#~ msgstr "Bitte korrigier die doppelten Daten für %(field)s!"
+msgid "You entered an invalid email address."
+msgstr "Sie haben eine ungültige E-Mail-Adresse eingegeben."
 
-#~ msgid ""
-#~ "Please correct the duplicate data for %(field)s, which must be unique."
-#~ msgstr ""
-#~ "Bitte korrigier die doppelten Daten für %(field)s, die müssen einzigartig "
-#~ "sein!"
+msgid "You entered an invalid password."
+msgstr "Sie haben ein ungültiges Passwort eingegeben."
 
-#~ msgid "Please correct the duplicate values below."
-#~ msgstr "Bitte korrigier die doppelten Werte unten!"
+msgid "You entered an invalid username."
+msgstr "Sie haben einen ungültigen Benutzernamen eingegeben."
 
-#~ msgid "The inline value did not match the parent instance."
-#~ msgstr "Der Wert passt nicht zum Hauptwert!"
+msgid "You have successfully activated your account!"
+msgstr "Yeah, dein Konto ist jetzt aktiv!"
 
-#~ msgid ""
-#~ "Select a valid choice. That choice is not one of the available choices."
-#~ msgstr "Wähl was Richtiges aus! Diese Wahl ist nicht dabei."
+msgid "You have successfully changed your email!"
+msgstr "Juhu, deine E-Mail ist jetzt geändert!"
 
-#~ msgid "“%(pk)s” is not a valid value."
-#~ msgstr "„%(pk)s“ ist kein richtiger Wert!"
+msgid "You should receive them shortly."
+msgstr "Die E-Mail kommt gleich an!"
 
-#~ msgid "Clear"
-#~ msgstr "Löschen"
+msgid "Youngest"
+msgstr "Jüngster"
 
-#~ msgid "Currently"
-#~ msgstr "Jetzt"
+msgid "Your password has been set. You may go ahead and log in now."
+msgstr "Dein Passwort ist fertig! Jetzt kannst du dich einloggen."
 
-#~ msgid "Unknown"
-#~ msgstr "Unbekannt"
+msgid "Your password was changed."
+msgstr "Your password was changed."
 
-#~ msgid "Yes"
-#~ msgstr "Ja"
+msgid "Your username"
+msgstr "Ihr Benutzername ist:"
 
-#~ msgid "No"
-#~ msgstr "Nein"
+msgid "Your username has been successfully sent to your email."
+msgstr "Dein Benutzername ist in deiner E-Mail gelandet!"
 
-#~ msgid "%s KB"
-#~ msgstr "%s KB"
+msgid "Your username is"
+msgstr "Your username is"
 
-#~ msgid "%s MB"
-#~ msgstr "%s MB"
+msgid "Your username is:"
+msgstr "Dein Benutzername ist:"
 
-#~ msgid "%s GB"
-#~ msgstr "%s GB"
+msgid "\\\\"
+msgstr "\\\\"
 
-#~ msgid "%s TB"
-#~ msgstr "%s TB"
+msgid "a.m."
+msgstr "vormittags"
 
-#~ msgid "%s PB"
-#~ msgstr "%s PB"
+msgid "and"
+msgstr "und"
 
-#~ msgid "p.m."
-#~ msgstr "nachmittags"
+msgid "apr"
+msgstr "apr"
 
-#~ msgid "a.m."
-#~ msgstr "vormittags"
+msgid "aug"
+msgstr "aug"
 
-#~ msgid "PM"
-#~ msgstr "Nachmittags"
+msgid "close"
+msgstr "close"
 
-#~ msgid "AM"
-#~ msgstr "Vormittags"
+msgid "dec"
+msgstr "dez"
 
-#~ msgid "midnight"
-#~ msgstr "Mitternacht"
+msgid "feb"
+msgstr "feb"
 
-#~ msgid "noon"
-#~ msgstr "Mittag"
+msgid "jan"
+msgstr "jan"
 
-#~ msgid "Monday"
-#~ msgstr "Montag"
+msgid "jul"
+msgstr "jul"
 
-#~ msgid "Tuesday"
-#~ msgstr "Dienstag"
+msgid "jun"
+msgstr "jun"
 
-#~ msgid "Wednesday"
-#~ msgstr "Mittwoch"
+msgid "mar"
+msgstr "mär"
 
-#~ msgid "Thursday"
-#~ msgstr "Donnerstag"
+msgid "may"
+msgstr "mai"
 
-#~ msgid "Friday"
-#~ msgstr "Freitag"
+msgid "midnight"
+msgstr "Mitternacht"
 
-#~ msgid "Saturday"
-#~ msgstr "Samstag"
+msgid "noon"
+msgstr "Mittag"
 
-#~ msgid "Sunday"
-#~ msgstr "Sonntag"
+msgid "nov"
+msgstr "nov"
 
-#~ msgid "Mon"
-#~ msgstr "Mo"
+msgid "oct"
+msgstr "okt"
 
-#~ msgid "Tue"
-#~ msgstr "Di"
+msgid "or"
+msgstr "oder"
 
-#~ msgid "Wed"
-#~ msgstr "Mi"
+msgid "p.m."
+msgstr "nachmittags"
 
-#~ msgid "Thu"
-#~ msgstr "Do"
+msgid "sep"
+msgstr "sep"
 
-#~ msgid "Fri"
-#~ msgstr "Fr"
+msgid "yes,no,maybe"
+msgstr "Ja, Nein, Vielleicht"
 
-#~ msgid "Sat"
-#~ msgstr "Sa"
-
-#~ msgid "Sun"
-#~ msgstr "So"
-
-#~ msgid "January"
-#~ msgstr "Januar"
-
-#~ msgid "February"
-#~ msgstr "Februar"
-
-#~ msgid "March"
-#~ msgstr "März"
-
-#~ msgid "April"
-#~ msgstr "April"
-
-#~ msgid "May"
-#~ msgstr "Mai"
-
-#~ msgid "June"
-#~ msgstr "Juni"
-
-#~ msgid "July"
-#~ msgstr "Juli"
-
-#~ msgid "August"
-#~ msgstr "August"
-
-#~ msgid "September"
-#~ msgstr "September"
-
-#~ msgid "October"
-#~ msgstr "Oktober"
-
-#~ msgid "November"
-#~ msgstr "November"
-
-#~ msgid "December"
-#~ msgstr "Dezember"
-
-#~ msgid "jan"
-#~ msgstr "jan"
-
-#~ msgid "feb"
-#~ msgstr "feb"
-
-#~ msgid "mar"
-#~ msgstr "mär"
-
-#~ msgid "apr"
-#~ msgstr "apr"
-
-#~ msgid "may"
-#~ msgstr "mai"
-
-#~ msgid "jun"
-#~ msgstr "jun"
-
-#~ msgid "jul"
-#~ msgstr "jul"
-
-#~ msgid "aug"
-#~ msgstr "aug"
-
-#~ msgid "sep"
-#~ msgstr "sep"
-
-#~ msgid "oct"
-#~ msgstr "okt"
-
-#~ msgid "nov"
-#~ msgstr "nov"
-
-#~ msgid "dec"
-#~ msgstr "dez"
-
-#~ msgctxt "abbrev. month"
-#~ msgid "Jan."
-#~ msgstr "Jan."
-
-#~ msgctxt "abbrev. month"
-#~ msgid "Feb."
-#~ msgstr "Feb."
-
-#~ msgctxt "abbrev. month"
-#~ msgid "Aug."
-#~ msgstr "Aug."
-
-#~ msgctxt "abbrev. month"
-#~ msgid "Sept."
-#~ msgstr "Sept."
-
-#~ msgctxt "abbrev. month"
-#~ msgid "Oct."
-#~ msgstr "Okt."
-
-#~ msgctxt "abbrev. month"
-#~ msgid "Nov."
-#~ msgstr "Nov."
-
-#~ msgctxt "abbrev. month"
-#~ msgid "Dec."
-#~ msgstr "Dez."
-
-#~ msgid "This is not a valid IPv6 address."
-#~ msgstr "Das ist keine richtige IPv6-Adresse!"
-
-#~ msgctxt "String to return when truncating text"
-#~ msgid "%(truncated_text)s…"
-#~ msgstr "%(truncated_text)s…"
-
-#~ msgid "or"
-#~ msgstr "oder"
-
-#~ msgid "No year specified"
-#~ msgstr "Kein Jahr angegeben!"
-
-#~ msgid "No month specified"
-#~ msgstr "Kein Monat angegeben!"
-
-#~ msgid "No day specified"
-#~ msgstr "Kein Tag angegeben!"
-
-#~ msgid "No week specified"
-#~ msgstr "Keine Woche angegeben!"
-
-#~ msgid "No %(verbose_name_plural)s available"
-#~ msgstr "Keine %(verbose_name_plural)s da!"
-
-#~ msgid "Invalid date string “%(datestr)s” given format “%(format)s”"
-#~ msgstr "Das Datum „%(datestr)s“ passt nicht zum Format „%(format)s“!"
-
-#~ msgid "No %(verbose_name)s found matching the query"
-#~ msgstr "Kein %(verbose_name)s gefunden, das passt!"
-
-#~ msgid "Page is not “last”, nor can it be converted to an int."
-#~ msgstr ""
-#~ "Die Seite ist nicht „letzte“ und kann auch nicht in eine Zahl umgewandelt "
-#~ "werden!"
-
-#~ msgid "Invalid page (%(page_number)s): %(message)s"
-#~ msgstr "Falsche Seite (%(page_number)s): %(message)s"
-
-#~ msgid "Empty list and “%(class_name)s.allow_empty” is False."
-#~ msgstr "Die Liste ist leer und „%(class_name)s.allow_empty“ ist False!"
-
-#~ msgid "Directory indexes are not allowed here."
-#~ msgstr "Verzeichnislisten sind hier nicht erlaubt!"
-
-#~ msgid "“%(path)s” does not exist"
-#~ msgstr "„%(path)s“ gibt’s nicht!"
-
-#~ msgid "Index of %(directory)s"
-#~ msgstr "Inhalt von %(directory)s"
-
-#~ msgid "The install worked successfully! Congratulations!"
-#~ msgstr "Die Installation hat geklappt! Juhu, super gemacht!"
-
-#~ msgid "Django Documentation"
-#~ msgstr "Django-Doku"
-
-#~ msgid "Topics, references, &amp; how-to’s"
-#~ msgstr "Themen, Infos und Anleitungen"
-
-#~ msgid "Tutorial: A Polling App"
-#~ msgstr "Anleitung: Eine Umfrage-App"
-
-#~ msgid "Get started with Django"
-#~ msgstr "Leg los mit Django!"
-
-#~ msgid "Django Community"
-#~ msgstr "Django-Gang"
-
-#~ msgid "Connect, get help, or contribute"
-#~ msgstr "Verbinde dich, hol Hilfe oder mach mit!"
