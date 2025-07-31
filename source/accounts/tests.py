@@ -112,6 +112,9 @@ class ProfileManagementTests(TestCase):
 class NavigationUITests(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='navuser', email='nav@example.com', password='TestPassword123', is_active=True)
+        # Ensure tests run in English
+        from django.utils.translation import activate
+        activate('en')
 
     def test_nav_links_unauthenticated(self):
         response = self.client.get(reverse('index'))

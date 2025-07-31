@@ -14,7 +14,7 @@ class ChangeLanguageTests(TestCase):
     def test_change_language_page_loads(self):
         response = self.client.get(reverse('change_language'))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'Select the language')
+        self.assertContains(response, 'Select your preferred language')
 
     def test_change_language_available_languages(self):
         response = self.client.get(reverse('change_language'))
@@ -217,33 +217,39 @@ class TranslationFunctionalityTests(TestCase):
         """Test that the home page shows different content in different languages"""
         # Test English
         activate('en')
+        # Clear session to ensure welcome modal shows
+        self.client.session.flush()
         response = self.client.get(reverse('index'))
         self.assertEqual(response.status_code, 200)
         english_content = response.content.decode('utf-8')
         
         # Test German
         activate('de')
+        # Clear session to ensure welcome modal shows
+        self.client.session.flush()
         response = self.client.get(reverse('index'))
         self.assertEqual(response.status_code, 200)
         german_content = response.content.decode('utf-8')
         
         # Check for translated strings
-        self.assertIn('Willkommen bei StoneWalker', german_content,
+        self.assertIn('Hallo bei StoneWalker!', german_content,
                      "German translation not found in home page")
-        self.assertIn('Welcome to StoneWalker', english_content,
+        self.assertIn('Welcome to StoneWalker!', english_content,
                      "English text not found in home page")
     
     def test_language_switching_works(self):
         """Test that language switching via URL works correctly"""
         # Test switching to German
+        self.client.session.flush()
         response = self.client.get('/de/')
         self.assertEqual(response.status_code, 200)
-        self.assertIn('Willkommen bei StoneWalker', response.content.decode('utf-8'))
+        self.assertIn('Hallo bei StoneWalker!', response.content.decode('utf-8'))
         
         # Test switching to Italian
+        self.client.session.flush()
         response = self.client.get('/it/')
         self.assertEqual(response.status_code, 200)
-        self.assertIn('Benvenuto in StoneWalker', response.content.decode('utf-8'))
+        self.assertIn('Benvenuto in StoneWalker!', response.content.decode('utf-8'))
 
 
 class TranslationCoverageTests(TestCase):

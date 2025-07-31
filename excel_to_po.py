@@ -22,11 +22,17 @@ def read_csv(input_file):
         languages = [col for col in reader.fieldnames if col != 'key']
         
         for row in reader:
-            key = row['key']
+            key = clean_dangerous_characters(row['key'])
             for lang in languages:
                 if lang not in translations:
                     translations[lang] = {}
-                translations[lang][key] = row.get(lang, '')
+                # Use key as fallback if no translation provided
+                translation = row.get(lang, '').strip()
+                if not translation:
+                    translation = key
+                else:
+                    translation = clean_dangerous_characters(translation)
+                translations[lang][key] = translation
     
     return translations, languages
 
@@ -47,8 +53,14 @@ def read_excel(input_file):
     for lang in languages:
         translations[lang] = {}
         for _, row in df.iterrows():
-            key = row['key']
-            translations[lang][key] = str(row.get(lang, ''))
+            key = clean_dangerous_characters(str(row['key']))
+            # Use key as fallback if no translation provided
+            translation = str(row.get(lang, '')).strip()
+            if not translation or translation == 'nan':
+                translation = key
+            else:
+                translation = clean_dangerous_characters(translation)
+            translations[lang][key] = translation
     
     return translations, languages
 
@@ -77,10 +89,33 @@ msgstr ""
 '''
     return header
 
+def clean_dangerous_characters(text):
+    """Replace dangerous characters that can cause issues in .po files."""
+    if not text:
+        return text
+    
+    # Replace smart quotes with regular quotes (these interfere with .po parsing)
+    text = text.replace('"', '"').replace('"', '"')  # Smart double quotes
+    text = text.replace(''', "'").replace(''', "'")  # Smart single quotes
+    text = text.replace('‚', ',').replace('„', '"').replace('"', '"')  # German quotes
+    text = text.replace('‹', '<').replace('›', '>')  # Single angle quotes
+    text = text.replace('«', '"').replace('»', '"')  # Double angle quotes
+    text = text.replace('‶', '"').replace('″', '"')  # Double prime
+    text = text.replace('‵', "'").replace('′', "'")  # Prime
+    
+    # Replace other characters that can interfere with .po parsing
+    text = text.replace('…', '...')  # Ellipsis
+    text = text.replace('–', '-').replace('—', '-')  # En and em dashes
+    
+    return text
+
 def escape_po_string(text):
     """Escape special characters for .po format."""
     if not text:
         return '""'
+    
+    # Clean dangerous characters first
+    text = clean_dangerous_characters(text)
     
     # Escape quotes and backslashes
     escaped = text.replace('\\', '\\\\').replace('"', '\\"')
@@ -103,7 +138,7 @@ def write_po_file(po_file_path, translations, language_code):
         for key in sorted(translations.keys()):
             translation = translations[key]
             
-            # Skip empty translations
+            # Skip empty translations (shouldn't happen now with fallback)
             if not translation.strip():
                 continue
             
