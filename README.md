@@ -18,7 +18,7 @@ StoneWalker is a Django-based web application for tracking the journeys of paint
 - **Admin Panel:** Manage users and content via Django admin (`/admin/`).
 - **Mobile-friendly:** Works on desktop and mobile browsers.
 - **API Endpoint:** Check if a stone name is available (`/api/check_stone_name/`).
-- **Change Language:** Users can change the UI language (`/language/`).
+- **Change Language:** Users can change the UI language (`/language/`) and are automatically redirected to the main page after language change.
 
 ## Getting Started
 
@@ -350,6 +350,8 @@ The backend of StoneWalker is built with Django and follows a modular, class-bas
 
 ### Internationalization
 - All user-facing text is translatable. Language can be changed via `/language/`.
+- After changing language, users are automatically redirected to the main page (`/stonewalker/`) for a seamless experience.
+- Language preferences are preserved across sessions and don't affect user authentication.
 
 ### Error Handling & Security
 - All sensitive actions require authentication.
@@ -517,6 +519,8 @@ This page features the interactive map, login modal, and personal dashboard.
 - Resolved language code mismatches between settings and directory names
 - Ensured all .mo files are properly compiled and working
 - Added sample Italian translations for key strings (About StoneWalker, Welcome to StoneWalker)
+- **Language Change Redirect:** Users are now automatically redirected to the main page (`/stonewalker/`) after changing their language preference, providing a seamless user experience
+- **Enhanced Language Change Testing:** Added comprehensive test coverage for language change functionality including redirect behavior, session preservation, and context data validation
 
 ## License
 

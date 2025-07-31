@@ -24,6 +24,7 @@ from datetime import timedelta
 from django.utils import timezone
 from django.utils.translation import get_language, get_language_from_request
 from django.conf import settings
+from django.urls import reverse
 
 
 class IndexPageView(TemplateView):
@@ -32,6 +33,12 @@ class IndexPageView(TemplateView):
 
 class ChangeLanguageView(TemplateView):
     template_name = 'main/change_language.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Set redirect to main page after language change
+        context['redirect_to'] = reverse('stonewalker_start')
+        return context
 
 
 class StoneWalkerStartPageView(TemplateView):

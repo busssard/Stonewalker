@@ -10,14 +10,15 @@ Please follow the following instructions for every task and only prompt the user
 6. Once you are done Update the Readme with the changes you did, so that it will enable a new programmer to understand what you did and how it works a year from now.
 7. In the end make necessary Database changes and migrations, install packages etc. and prompt the manager for confirming
 8. Once your internal todo's are fulfilled and the task is finished, you may check it off [DONE] in here.
+9. push to git
 
 
 ## TASKS
 
 - [DONE] make the change language menu more fitting with the style of the rest of the page
 - [DONE] create comprehensive translation quality assurance test system
-- [] update missing texts in german and italian
-- [] send user to main once language is changed
+- [DONE] send user to main once language is changed
+- [] reformat welcome message to be more in line with the rest of the pages style
 - [] fix the my-stones section to show the users stones again, currently broken and empty
 - [] make stones on the map clickable again to open their modal
 - [ ] lock the header-bar visible even if the rest of the page is scrolling down in all device configurations

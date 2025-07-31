@@ -26,6 +26,90 @@ class ChangeLanguageTests(TestCase):
         response = self.client.post(reverse('change_language'))
         self.assertEqual(response.status_code, 405)  # Method Not Allowed
 
+    def test_change_language_redirect_to_main_page(self):
+        """Test that the change language page includes redirect_to to main page"""
+        response = self.client.get(reverse('change_language'))
+        self.assertEqual(response.status_code, 200)
+        # Check that the redirect_to is set to the main page
+        self.assertContains(response, 'name="next"')
+        self.assertContains(response, 'value="/stonewalker/"')
+
+    def test_language_change_redirects_to_main(self):
+        """Test that changing language redirects to the main page"""
+        # First, get the change language page to get the CSRF token
+        response = self.client.get(reverse('change_language'))
+        self.assertEqual(response.status_code, 200)
+        
+        # Extract CSRF token
+        csrf_token = response.cookies.get('csrftoken').value
+        
+        # Submit language change form
+        response = self.client.post(
+            reverse('set_language'),
+            {
+                'language': 'fr',  # Change to French
+                'next': '/stonewalker/',
+            },
+            HTTP_X_CSRFTOKEN=csrf_token,
+            follow=True  # Follow redirects
+        )
+        
+        # Should redirect to main page
+        self.assertEqual(response.status_code, 200)
+        # Check that we're on the main page (stonewalker_start)
+        self.assertIn('/stonewalker/', response.redirect_chain[-1][0] if response.redirect_chain else '')
+        
+        # Verify language was actually changed
+        self.assertEqual(response.wsgi_request.LANGUAGE_CODE, 'fr')
+
+    def test_language_change_preserves_user_session(self):
+        """Test that language change doesn't affect user authentication"""
+        # Create a test user and log in
+        from django.contrib.auth.models import User
+        user = User.objects.create_user(username='testuser', password='testpass')
+        self.client.login(username='testuser', password='testpass')
+        
+        # Get change language page
+        response = self.client.get(reverse('change_language'))
+        self.assertEqual(response.status_code, 200)
+        
+        # Extract CSRF token
+        csrf_token = response.cookies.get('csrftoken').value
+        
+        # Change language
+        response = self.client.post(
+            reverse('set_language'),
+            {
+                'language': 'de',  # Change to German
+                'next': '/stonewalker/',
+            },
+            HTTP_X_CSRFTOKEN=csrf_token,
+            follow=True
+        )
+        
+        # Should still be logged in
+        self.assertTrue(response.wsgi_request.user.is_authenticated)
+        self.assertEqual(response.wsgi_request.user.username, 'testuser')
+        
+        # Should be on main page
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('/stonewalker/', response.redirect_chain[-1][0] if response.redirect_chain else '')
+
+    def test_change_language_view_context_data(self):
+        """Test that ChangeLanguageView provides correct context data"""
+        from main.views import ChangeLanguageView
+        from django.test import RequestFactory
+        
+        factory = RequestFactory()
+        request = factory.get(reverse('change_language'))
+        
+        view = ChangeLanguageView()
+        view.request = request
+        context = view.get_context_data()
+        
+        # Check that redirect_to is set to main page
+        self.assertEqual(context['redirect_to'], '/stonewalker/')
+
 
 class TranslationQualityAssuranceTests(TestCase):
     """Comprehensive tests for translation quality and PO file validation"""
