@@ -88,6 +88,8 @@ Visit [http://localhost:8000/stonewalker/](http://localhost:8000/stonewalker/) t
 This project includes a comprehensive translation quality assurance system to ensure all translations work correctly and maintain high quality standards.
 
 > 📖 **For detailed information about the translation testing setup, see [TRANSLATION_TESTING_SETUP.md](TRANSLATION_TESTING_SETUP.md)**
+> 
+> 📖 **For translation workflow instructions, see [TRANSLATION_README.md](TRANSLATION_README.md)**
 
 ### Translation QA Tests
 
