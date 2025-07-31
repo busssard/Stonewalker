@@ -352,9 +352,12 @@ function renderStonesList(listId, data, page, perPage) {
       </div>
     `;
     item.onclick = function() {
-      console.log('Opening modal for', stone.PK_stone, stone, data);
       import('/static/js/stone-modal.js').then(mod => {
         mod.openStoneModal(stone.PK_stone, stone.color, data);
+      }).catch(err => {
+        console.error('Failed to load stone modal:', err);
+        // Fallback: create a simple modal
+        showSimpleModal(stone.PK_stone, stone.color, data);
       });
     };
     list.appendChild(item);
@@ -442,6 +445,50 @@ function getAgeString(created_at) {
     return `${years.toFixed(1)} years`;
   }
 }
+
+// Fallback modal function
+function showSimpleModal(pk, color, data) {
+  const stone = data.find(s => s.PK_stone === pk);
+  if (!stone) return;
+  
+  const modal = document.getElementById('stone-gallery-modal');
+  const modalBody = document.getElementById('stone-gallery-body');
+  const closeBtn = document.getElementById('stone-gallery-close');
+  
+  if (!modal) {
+    console.error('Modal container not found');
+    return;
+  }
+  
+  closeBtn.onclick = () => { modal.style.display = 'none'; };
+  window.onclick = (e) => { if (e.target === modal) modal.style.display = 'none'; };
+  
+  const html = `
+    <div style='text-align:center;margin-bottom:1.2rem;'>
+      <span style="font-family:var(--font-title);font-size:2.1rem;font-weight:700;letter-spacing:1px;color:${color};text-shadow:0 2px 8px rgba(0,0,0,0.07);">${stone.PK_stone}</span>
+    </div>
+    <div style="background:linear-gradient(90deg,${color}11 0%,#fff 100%);border-radius:12px;padding:1.1rem 1.3rem;margin-bottom:1.2rem;font-size:1.13rem;font-family:var(--font-serif);box-shadow:0 2px 8px rgba(0,0,0,0.04);color:#333;">${stone.description}</div>
+    <div style='display:flex;justify-content:center;align-items:center;margin-bottom:1.2rem;font-size:1.05em;color:#888;font-family:monospace;gap:0;'>
+      <div style='flex:1;min-width:120px;max-width:160px;text-align:center;padding:0 0.5em;'>
+        <span style='display:block;font-size:0.97em;color:#aaa;'>Created</span>
+        <span style='font-weight:600;color:#444;white-space:nowrap;'>${getAgeString(stone.created_at)}</span>
+      </div>
+      <div style='width:1px;height:2.2em;background:#eee;margin:0 0.5em;'></div>
+      <div style='flex:1;min-width:80px;max-width:120px;text-align:center;padding:0 0.5em;'>
+        <span style='display:block;font-size:0.97em;color:#aaa;'>Moves</span>
+        <span style='font-weight:600;color:#444;'>${stone.moves ? stone.moves.length : 0}</span>
+      </div>
+      <div style='width:1px;height:2.2em;background:#eee;margin:0 0.5em;'></div>
+      <div style='flex:1;min-width:80px;max-width:120px;text-align:center;padding:0 0.5em;'>
+        <span style='display:block;font-size:0.97em;color:#aaa;'>Distance</span>
+        <span style='font-weight:600;color:#444;'>${stone.distance_km} km</span>
+      </div>
+    </div>
+  `;
+  
+  modalBody.innerHTML = `<div style='background:repeating-linear-gradient(135deg,${color}09 0 12px,transparent 12px 24px);border-radius:18px;padding:1.2rem 0.7rem;'>${html}</div>`;
+  modal.style.display = 'flex';
+}
 document.addEventListener('DOMContentLoaded', function() {
   setupPagination('creations');
   setupPagination('interactions');
@@ -454,5 +501,5 @@ document.addEventListener('DOMContentLoaded', function() {
     i === 0 ? 'NO INTERACTIONS' : (i === 1 ? 'MY INTERACTION' : `MY ${i} INTERACTIONS`);
 });
 </script>
-<script type="module" src="{% static 'js/stone-modal.js' %}"></script>
+
 {% endblock %} 

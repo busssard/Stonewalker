@@ -3,6 +3,7 @@ export function openStoneModal(pk, color, stonesData) {
   // Ensure modal HTML exists
   let modal = document.getElementById('stone-gallery-modal');
   let modalBody;
+  
   if (!modal) {
     modal = document.createElement('div');
     modal.id = 'stone-gallery-modal';
@@ -23,7 +24,21 @@ export function openStoneModal(pk, color, stonesData) {
       </div>
     `;
     document.body.appendChild(modal);
+  } else {
+    // Clean up any conflicting CSS classes
+    modal.className = '';
+    modal.style.display = 'none';
+    modal.style.position = 'fixed';
+    modal.style.top = '0';
+    modal.style.left = '0';
+    modal.style.width = '100vw';
+    modal.style.height = '100vh';
+    modal.style.background = 'rgba(0,0,0,0.4)';
+    modal.style.alignItems = 'center';
+    modal.style.justifyContent = 'center';
+    modal.style.zIndex = '3000';
   }
+  
   modalBody = document.getElementById('stone-gallery-body');
   const closeBtn = document.getElementById('stone-gallery-close');
   closeBtn.onclick = () => { modal.style.display = 'none'; };
