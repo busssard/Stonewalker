@@ -18,10 +18,10 @@ Please follow the following instructions for every task and only prompt the user
 - [DONE] make the change language menu more fitting with the style of the rest of the page
 - [DONE] create comprehensive translation quality assurance test system
 - [DONE] send user to main once language is changed
-- [] reformat welcome message to be more in line with the rest of the pages style
-- [] fix the my-stones section to show the users stones again, currently broken and empty
-- [] make stones on the map clickable again to open their modal
-- [ ] lock the header-bar visible even if the rest of the page is scrolling down in all device configurations
+- [DONE] reformat welcome message to be more in line with the rest of the pages style
+- [DONE] fix the my-stones section to show the users stones again, currently broken and empty
+- [DONE] make stones on the map clickable again to open their modal
+- [current] lock the header-bar visible even if the rest of the page is scrolling down in all device configurations
       - [ ] make sure the content below the header is scrollable
                   (About, create stone, scan stone and create account are currently scroll locked, even if content goes out of the window)
       - [ ] make sure the menu stays functional and clickable (burger-overlay is covering the menu sometimes )

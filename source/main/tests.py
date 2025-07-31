@@ -363,3 +363,392 @@ class TranslationCoverageTests(TestCase):
                 else:
                     # If it's the same, it might be intentional, so we'll just log it
                     print(f"Warning: '{string}' appears untranslated in {lang_name} ({lang_code})") 
+
+
+class WelcomeModalTests(TestCase):
+    def setUp(self):
+        self.client = Client()
+
+    def test_welcome_modal_shows_for_guests(self):
+        """Test that welcome modal is shown to unauthenticated users"""
+        # Clear session to ensure welcome modal shows
+        self.client.session.flush()
+        # Also clear any existing session data
+        self.client.session.clear()
+        # Force English language for consistent testing
+        from django.utils.translation import activate
+        activate('en')
+        response = self.client.get(reverse('stonewalker_start'))
+        self.assertEqual(response.status_code, 200)
+        
+        # Check for welcome modal HTML structure
+        self.assertContains(response, 'welcome-modal-overlay')
+        self.assertContains(response, 'welcome-modal-content')
+        self.assertContains(response, 'Welcome to StoneWalker!')
+        self.assertContains(response, 'You are a guest.')
+        self.assertContains(response, 'Create an Account')
+        self.assertContains(response, 'Log In')
+
+    def test_welcome_modal_not_shown_for_authenticated_users(self):
+        """Test that welcome modal is not shown to authenticated users"""
+        from django.contrib.auth.models import User
+        user = User.objects.create_user(username='testuser', password='testpass')
+        self.client.login(username='testuser', password='testpass')
+        
+        response = self.client.get(reverse('stonewalker_start'))
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, 'Welcome to StoneWalker!')
+        self.assertNotContains(response, 'You are a guest.')
+
+    def test_welcome_modal_has_correct_styling_classes(self):
+        """Test that welcome modal uses the correct avant-garde styling classes"""
+        # Clear session to ensure welcome modal shows
+        self.client.session.flush()
+        self.client.session.clear()
+        # Force English language for consistent testing
+        from django.utils.translation import activate
+        activate('en')
+        response = self.client.get(reverse('stonewalker_start'))
+        self.assertEqual(response.status_code, 200)
+        
+        # Check for modern styling classes
+        self.assertContains(response, 'avant-card max-w-520')
+        self.assertContains(response, 'avant-card-title fs-2-4 fw-600')
+        self.assertContains(response, 'avant-fact-box')
+        self.assertContains(response, 'bg-gradient-decor-1')
+        self.assertContains(response, 'bg-gradient-decor-2')
+
+    def test_welcome_modal_has_decorative_elements(self):
+        """Test that welcome modal includes decorative background elements"""
+        # Clear session to ensure welcome modal shows
+        self.client.session.flush()
+        self.client.session.clear()
+        # Force English language for consistent testing
+        from django.utils.translation import activate
+        activate('en')
+        response = self.client.get(reverse('stonewalker_start'))
+        self.assertEqual(response.status_code, 200)
+        
+        # Check for decorative elements
+        self.assertContains(response, 'position-absolute top-neg-60 right-neg-60')
+        self.assertContains(response, 'position-absolute bottom-neg-40 left-neg-40')
+        self.assertContains(response, 'border-radius-50')
+
+    def test_welcome_modal_buttons_are_properly_styled(self):
+        """Test that welcome modal buttons use avant-btn styling"""
+        # Clear session to ensure welcome modal shows
+        self.client.session.flush()
+        self.client.session.clear()
+        # Force English language for consistent testing
+        from django.utils.translation import activate
+        activate('en')
+        response = self.client.get(reverse('stonewalker_start'))
+        self.assertEqual(response.status_code, 200)
+        
+        # Check for button styling
+        self.assertContains(response, 'avant-btn')
+        self.assertContains(response, 'flex-center gap-1')
+
+    def test_welcome_modal_has_local_storage_functionality(self):
+        """Test that welcome modal includes localStorage functionality"""
+        # Clear session to ensure welcome modal shows
+        self.client.session.flush()
+        self.client.session.clear()
+        # Force English language for consistent testing
+        from django.utils.translation import activate
+        activate('en')
+        response = self.client.get(reverse('stonewalker_start'))
+        self.assertEqual(response.status_code, 200)
+        
+        # Check for localStorage functionality
+        self.assertContains(response, 'stonewalker_guest_last_visit')
+        self.assertContains(response, 'localStorage.setItem')
+
+
+class MyStonesTests(TestCase):
+    def setUp(self):
+        self.client = Client()
+        # Create a test user
+        from django.contrib.auth.models import User
+        self.user = User.objects.create_user(username='testuser', password='testpass')
+        self.client.login(username='testuser', password='testpass')
+
+    def test_my_stones_page_loads(self):
+        """Test that my-stones page loads correctly for authenticated users"""
+        response = self.client.get(reverse('my_stones'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'My CREATIONS')
+        self.assertContains(response, 'MY INTERACTIONS')
+
+    def test_my_stones_requires_login(self):
+        """Test that my-stones page requires authentication"""
+        self.client.logout()
+        response = self.client.get(reverse('my_stones'))
+        self.assertEqual(response.status_code, 302)  # Should redirect to login
+
+    def test_my_stones_with_no_stones(self):
+        """Test that my-stones page shows empty state correctly"""
+        response = self.client.get(reverse('my_stones'))
+        self.assertEqual(response.status_code, 200)
+        # Should show empty state messages
+        self.assertContains(response, 'creationsData = [')
+        self.assertContains(response, 'interactionsData = [')
+        # Should contain the JavaScript that handles empty states
+        self.assertContains(response, 'added any stones yet')
+        self.assertContains(response, 'interacted with any stones yet')
+
+    def test_my_stones_empty_state_messages(self):
+        """Test that empty state messages are properly displayed"""
+        response = self.client.get(reverse('my_stones'))
+        self.assertEqual(response.status_code, 200)
+        
+        # Check that the JavaScript arrays are empty
+        self.assertContains(response, 'const creationsData = [')
+        self.assertContains(response, 'const interactionsData = [')
+        
+        # Check that the render function handles empty data
+        self.assertContains(response, 'if (!data.length) {')
+        self.assertContains(response, 'added any stones yet')
+        self.assertContains(response, 'interacted with any stones yet')
+
+    def test_my_stones_with_stones(self):
+        """Test that my-stones page shows stones when they exist"""
+        from main.models import Stone, StoneMove
+        # Create a test stone
+        stone = Stone.objects.create(
+            PK_stone='TESTSTONE',
+            description='Test stone',
+            FK_user=self.user,
+            color='#ff9800',
+            shape='circle'
+        )
+        # Create a move for the stone
+        StoneMove.objects.create(
+            FK_stone=stone,
+            FK_user=self.user,
+            latitude=40.7128,
+            longitude=-74.0060,
+            comment='Test move'
+        )
+        
+        response = self.client.get(reverse('my_stones'))
+        self.assertEqual(response.status_code, 200)
+        # Should contain the stone data
+        self.assertContains(response, 'TESTSTONE')
+        self.assertContains(response, 'Test stone')
+        self.assertContains(response, '#ff9800')
+
+    def test_my_stones_interactions(self):
+        """Test that my-stones page shows interactions correctly"""
+        from main.models import Stone, StoneMove
+        from django.contrib.auth.models import User
+        
+        # Create another user and their stone
+        other_user = User.objects.create_user(username='otheruser', password='testpass')
+        stone = Stone.objects.create(
+            PK_stone='OTHERSTONE',
+            description='Other user stone',
+            FK_user=other_user,
+            color='#4CAF50',
+            shape='triangle'
+        )
+        
+        # Current user interacts with the stone
+        StoneMove.objects.create(
+            FK_stone=stone,
+            FK_user=self.user,
+            latitude=40.7128,
+            longitude=-74.0060,
+            comment='I found this stone!'
+        )
+        
+        response = self.client.get(reverse('my_stones'))
+        self.assertEqual(response.status_code, 200)
+        # Should show the interaction
+        self.assertContains(response, 'OTHERSTONE')
+        self.assertContains(response, 'Other user stone')
+
+    def test_distance_calculation(self):
+        """Test that distance calculation works correctly"""
+        from main.models import Stone, StoneMove, calculate_stone_distance
+        
+        # Create a stone with moves
+        stone = Stone.objects.create(
+            PK_stone='DISTTEST',
+            description='Distance test stone',
+            FK_user=self.user,
+            color='#ff5722',
+            shape='circle'
+        )
+        
+        # Add moves to calculate distance
+        StoneMove.objects.create(
+            FK_stone=stone,
+            FK_user=self.user,
+            latitude=40.7128,
+            longitude=-74.0060,
+            comment='First move'
+        )
+        
+        StoneMove.objects.create(
+            FK_stone=stone,
+            FK_user=self.user,
+            latitude=40.7589,
+            longitude=-73.9851,
+            comment='Second move'
+        )
+        
+        # Calculate distance
+        distance = calculate_stone_distance(stone)
+        self.assertGreater(distance, 0)
+        
+        # Update stone distance
+        stone.distance_km = distance
+        stone.save()
+        
+        # Check that the view shows the stone with distance
+        response = self.client.get(reverse('my_stones'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'DISTTEST')
+        self.assertContains(response, str(distance))
+
+    def test_my_stones_context_data(self):
+        """Test that my-stones view provides correct context data"""
+        from main.models import Stone, StoneMove
+        from django.contrib.auth.models import User
+        
+        # Create test stones
+        stone1 = Stone.objects.create(
+            PK_stone='STONE1',
+            description='First stone',
+            FK_user=self.user,
+            color='#ff9800',
+            shape='circle'
+        )
+        
+        # Create another user's stone
+        other_user = User.objects.create_user(username='otheruser', password='testpass')
+        stone2 = Stone.objects.create(
+            PK_stone='STONE2',
+            description='Other user stone',
+            FK_user=other_user,
+            color='#4CAF50',
+            shape='triangle'
+        )
+        
+        # Current user interacts with other user's stone
+        StoneMove.objects.create(
+            FK_stone=stone2,
+            FK_user=self.user,
+            latitude=40.7128,
+            longitude=-74.0060,
+            comment='Found this stone!'
+        )
+        
+        # Get the view context
+        from main.views import MyStonesView
+        view = MyStonesView()
+        view.request = self.client.request()
+        view.request.user = self.user
+        context = view.get_context_data()
+        
+        # Check that my_stones contains the user's stone
+        self.assertIn(stone1, context['my_stones'])
+        self.assertEqual(len(context['my_stones']), 1)
+        
+        # Check that my_interactions contains the other user's stone
+        self.assertIn(stone2, context['my_interactions'])
+        self.assertEqual(len(context['my_interactions']), 1)
+
+    def test_stone_modal_import_in_template(self):
+        """Test that the stone modal import is correctly included in the template"""
+        response = self.client.get(reverse('my_stones'))
+        self.assertEqual(response.status_code, 200)
+        
+        # Check that the stone modal import is present
+        self.assertContains(response, 'import(\'/static/js/stone-modal.js\')')
+        self.assertContains(response, 'openStoneModal')
+        
+        # Check that the modal HTML structure is present
+        self.assertContains(response, 'stone-gallery-modal')
+        self.assertContains(response, 'stone-gallery-content')
+
+    def test_stone_modal_functionality(self):
+        """Test that stone modal functionality works correctly"""
+        from main.models import Stone, StoneMove
+        from django.contrib.auth.models import User
+        
+        # Create a test stone with moves
+        stone = Stone.objects.create(
+            PK_stone='MODALTEST',
+            description='Test stone for modal',
+            FK_user=self.user,
+            color='#ff5722',
+            shape='circle'
+        )
+        
+        # Add moves to the stone
+        StoneMove.objects.create(
+            FK_stone=stone,
+            FK_user=self.user,
+            latitude=40.7128,
+            longitude=-74.0060,
+            comment='First move'
+        )
+        
+        StoneMove.objects.create(
+            FK_stone=stone,
+            FK_user=self.user,
+            latitude=40.7589,
+            longitude=-73.9851,
+            comment='Second move'
+        )
+        
+        # Test that the stone appears in my-stones
+        response = self.client.get(reverse('my_stones'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'MODALTEST')
+        self.assertContains(response, 'Test stone for modal')
+        
+        # Test that the modal JavaScript is properly included
+        self.assertContains(response, 'showSimpleModal')
+        self.assertContains(response, 'stone-gallery-close')
+
+    def test_stone_modal_fallback_functionality(self):
+        """Test that the fallback modal function works when ES6 import fails"""
+        response = self.client.get(reverse('my_stones'))
+        self.assertEqual(response.status_code, 200)
+        
+        # Check that the fallback function is present
+        self.assertContains(response, 'showSimpleModal')
+        self.assertContains(response, 'stone-gallery-modal')
+        self.assertContains(response, 'stone-gallery-body')
+
+    def test_stone_modal_css_conflict_resolution(self):
+        """Test that CSS conflicts are properly resolved in the modal"""
+        response = self.client.get(reverse('my_stones'))
+        self.assertEqual(response.status_code, 200)
+        
+        # Check that the modal uses inline styles to avoid CSS conflicts
+        self.assertContains(response, 'openStoneModal')
+        self.assertContains(response, 'showSimpleModal')
+
+    def test_stone_modal_click_handlers(self):
+        """Test that stone click handlers are properly set up"""
+        from main.models import Stone
+        
+        # Create a test stone
+        stone = Stone.objects.create(
+            PK_stone='CLICKTEST',
+            description='Click test stone',
+            FK_user=self.user,
+            color='#2196F3',
+            shape='triangle'
+        )
+        
+        response = self.client.get(reverse('my_stones'))
+        self.assertEqual(response.status_code, 200)
+        
+        # Check that the onclick handler is present
+        self.assertContains(response, 'onclick')
+        self.assertContains(response, 'openStoneModal')

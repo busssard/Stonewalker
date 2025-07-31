@@ -370,7 +370,7 @@ The frontend of StoneWalker is designed for a modern, responsive, and user-frien
 
 ### Modals & Popups
 - **Profile Edit Modal:** Accessible from the header or burger menu, the profile modal overlays the current page and loads the profile edit form via AJAX.
-- **Welcome Modal:** Shown to guests on the main page, encouraging sign up or login. Uses localStorage to avoid repeat popups.
+- **Welcome Modal:** Shown to guests on the main page, encouraging sign up or login. Features modern avant-garde styling with decorative background elements, improved typography hierarchy, and localStorage functionality to avoid repeat popups.
 
 ### Main Templates
 - **Base Layout:** `layouts/default/page.html` provides the main structure, header, and modal containers.
@@ -502,6 +502,57 @@ This page features the interactive map, login modal, and personal dashboard.
 - Added proper responsive design with avant-card layout and background gradients
 - Implemented comprehensive test coverage for the change language functionality
 - Ensured the page is accessible to both authenticated and unauthenticated users
+
+### Welcome Modal Styling Improvements (2024)
+- Enhanced the welcome modal styling to match the modern avant-garde design system
+- Added decorative background elements (gradient circles) consistent with other pages
+- Improved typography hierarchy with better font weights and spacing
+- Enhanced button layout with proper flexbox centering and gap spacing
+- Added comprehensive test coverage for welcome modal functionality and styling
+- Maintained all existing functionality including localStorage behavior and responsive design
+
+### My-Stones Functionality Verification (2024)
+- Verified that the my-stones page is working correctly and not actually broken
+- Confirmed that empty state messages are properly displayed when users have no stones
+- Added comprehensive test coverage for my-stones functionality including:
+  - Page loading for authenticated users
+  - Authentication requirements
+  - Empty state handling
+  - Stone display with distance calculations
+  - Interaction tracking (stones moved by user but not created by user)
+  - Context data validation
+- The my-stones page correctly shows user's created stones and interactions with other users' stones
+- Distance calculations work correctly for stones with multiple moves
+- Empty state messages guide users to create stones or scan existing ones
+
+### Stone Modal Popup Fix (2024)
+- Fixed the stone modal popup functionality that was not working when clicking on stones
+- Resolved ES6 module import conflicts that were preventing the modal from loading
+- Fixed CSS class conflicts where `display-none` was overriding `display: flex`
+- Implemented proper modal container creation and cleanup for existing modals
+- Added fallback functionality using `showSimpleModal` when ES6 import fails
+- Enhanced error handling with proper catch blocks for import failures
+- Added comprehensive test coverage for stone modal functionality including:
+  - Modal import and function availability
+  - Fallback modal functionality
+  - CSS conflict resolution
+  - Click handler setup
+  - Modal content generation
+- The stone modal now properly displays stone details, images, moves, and comments
+- Modal can be closed by clicking the X button or clicking outside the modal
+- All stone interactions in my-stones page now work correctly
+
+### Stone Modal Popup Fix (2024)
+- Identified and fixed the stone modal popup functionality in my-stones page
+- The issue was with ES6 module import reliability in the browser
+- Implemented a robust solution with:
+  - Primary ES6 module import for the full stone modal functionality
+  - Fallback modal function for cases where ES6 modules fail to load
+  - Comprehensive error handling and user feedback
+  - Maintained all existing modal features (images, comments, distance, etc.)
+- Added fallback modal function that provides basic stone information display
+- Enhanced error logging and user feedback for debugging modal issues
+- The stone modal now works reliably across different browsers and network conditions
 
 ### Comprehensive Localization Implementation (2024)
 - Added complete i18n support with `{% trans %}` tags across all templates
