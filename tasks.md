@@ -15,16 +15,12 @@ Please follow the following instructions for every task and only prompt the user
 
 ## TASKS
 
-- [DONE] lock the header-bar visible even if the rest of the page is scrolling down in all device configurations
-      - [x] make sure the content below the header is scrollable
-                  (About, create stone, scan stone and create account are currently scroll locked, even if content goes out of the window)
-      - [x] make sure the menu stays functional and clickable (burger-overlay is covering the menu sometimes )
-      
-- [ ] Refactor Stone creation
-      - [ ] fix the bug that the "Create a Stone" button is not opening the popup anymore
-      - [ ] Implement the QR generation using a new UUID and download QR after stone creation
-      - [ ] automatically select the stone shape: Circles for hidden stones and triangles for hunted stones
+- [DONE] Refactor Stone creation
+      - [x] fix the bug that the "Create a Stone" button is not opening the popup anymore
+      - [x] Implement the QR generation using a new UUID and download QR after stone creation
+      - [x] automatically select the stone shape: Circles for hidden stones and triangles for hunted stones
 - [ ] Implement the unique links to the ScanStone of a specific stone using their UUID, locking a new entry from the same user
+- [ ] Optimize Layout for My-Stones,the two sides are not scaling equally over all scaling modes (mobile, tablet and desktop) also the bottom is not actually the bottom of the window, which looks unprofessional
 - [ ] Refactor the website for faster loading times and better code structure
       - Optimize static asset loading (CSS, JS, images)
       - Remove unused or duplicate code

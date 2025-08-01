@@ -4,6 +4,7 @@ from django.core.exceptions import ValidationError
 import re
 from math import radians, sin, cos, sqrt, atan2
 from django.core.management.base import BaseCommand
+import uuid
 
 def validate_no_whitespace(value):
     if re.search(r'\s', value):
@@ -16,6 +17,7 @@ class Stone(models.Model):
         validators=[validate_no_whitespace],
         primary_key=True
     )
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     description = models.TextField(blank=True, max_length=500)
     created_at = models.DateTimeField(auto_now_add=True)
     FK_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='stones')
