@@ -153,14 +153,19 @@ body, html {
     margin: 0;
     padding: 0;
     font-family: var(--font-main);
-    height: 100%;
+    min-height: 100%;
     background-color: #f7f7f7;
     color: #333;
     overflow-x: hidden;
 }
+
+/* Add top padding to body to account for fixed header */
+body {
+    padding-top: var(--header-height);
+}
 .container {
     display: flex;
-    height: calc(100vh - 80px);
+    min-height: calc(100vh - 80px);
     padding: 20px;
     box-sizing: border-box;
 }
@@ -518,8 +523,12 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
   background: var(--color-bg-left);
   color: var(--color-text-main);
   border-bottom: 3px solid var(--color-primary);
-  position: relative;
-  box-shadow: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1001;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .header,
@@ -690,15 +699,15 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
   top: 0;
   left: 0;
   width: 100vw;
-  height: 100vh;
+  height: 100%;
   background: rgba(0,0,0,0.25);
-  z-index: 101;
+  z-index: 999;
 }
 .header-burger-nav {
   position: fixed;
-  top: 0;
+  top: var(--header-height);
   right: 0;
-  height: 100vh;
+  height: calc(100vh - var(--header-height));
   width: 270px;
   background: var(--color-bg-card);
   box-shadow: -2px 0 16px rgba(0,0,0,0.07);
@@ -706,7 +715,7 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
   align-items: flex-start;
   padding: 2.5rem 1.2rem 1.2rem 1.2rem;
   gap: 1.2rem;
-  z-index: 102;
+  z-index: 1000;
   transform: translateX(100%);
   transition: transform 0.25s cubic-bezier(.4,2,.6,1);
   display: block;
@@ -777,7 +786,7 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
   top: 0;
   left: 0;
   width: 100vw;
-  height: 100vh;
+  height: 100%;
   background: rgba(0,0,0,0.4);
   z-index: 2000;
   align-items: center;
@@ -1559,7 +1568,6 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
 }
 #map {
   width: 100% !important;
-  height: 100% !important;
   min-height: 120px;
   margin: 0 !important;
   border-radius: 12px;
@@ -1567,7 +1575,8 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
   box-shadow: 0 2px 8px rgba(0,0,0,0.04);
 }
 html, body {
-  overflow: hidden !important;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 /* --- End Unified Responsive Map Frame --- */
 
@@ -2220,7 +2229,7 @@ html, body {
 }
 
 .h-100vh {
-  height: 100vh !important;
+  height: 100% !important;
 }
 
 .h-100vw {

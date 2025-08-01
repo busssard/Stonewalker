@@ -472,6 +472,18 @@ This page features the interactive map, login modal, and personal dashboard.
 
 ## Recent Refactoring Work
 
+### Fixed Header Implementation (2024)
+- **Fixed Header Positioning**: Implemented a fixed header that remains visible at the top of the viewport during scrolling
+- **Header Lock**: The header-bar is now locked visible even when the rest of the page is scrolling down in all device configurations
+- **Content Spacing**: Added proper top padding to the body to prevent content from being hidden behind the fixed header
+- **Z-Index Management**: Properly managed z-index values to ensure the header stays above other content while allowing overlays to work correctly
+- **Burger Menu Compatibility**: Updated burger menu overlay and navigation to work seamlessly with the fixed header
+- **Responsive Design**: Ensured the fixed header works correctly across all device sizes and orientations
+- **Scrolling Functionality**: Fixed CSS issues that were preventing scrolling on pages like About, Create Stone, Scan Stone, and Create Account
+- **Overlay Height Fixes**: Changed problematic `height: 100vh` rules to `height: 100%` to prevent viewport overflow issues
+- **Test Coverage**: Added comprehensive test coverage for fixed header functionality including positioning, padding, and scrolling behavior
+- **Cross-Browser Compatibility**: Ensured the fixed header works consistently across different browsers and devices
+
 ### Font System Refactoring (2024)
 - Replaced Google Fonts imports with OpenSans from Google Fonts
 - Added local GiantBoom font using @font-face declaration
