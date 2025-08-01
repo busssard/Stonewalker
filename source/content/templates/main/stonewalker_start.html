@@ -105,7 +105,7 @@ scanBtn.addEventListener('mouseleave', function() {
 
 <!-- Add New Stone Modal -->
 <div id="add-stone-modal" class="modal display-none position-fixed z-2000 left-0 top-0 w-100vw h-100vh bg-modal-overlay flex-center">
-  <div class="avant-modal max-w-600 min-w-320 w-40vw m-auto p-2 position-relative display-grid grid-template-rows-auto gap-1-5">
+  <div class="avant-modal max-w-600 min-w-320 w-40vw m-auto p-2 position-relative display-grid grid-template-rows-auto gap-1-5 overflow-auto">
     <span id="add-stone-close" class="close position-absolute top-1 right-1 fs-2 cursor-pointer">&times;</span>
     <h2 class="avant-header mb-1">{% trans 'Add New Stone' %}</h2>
     <form id="add-stone-form" enctype="multipart/form-data" autocomplete="off" method="post" action="{% url 'add_stone' %}" class="flex-column gap-1-2 h-full">
@@ -433,10 +433,16 @@ function updateStoneTypeFlavor() {
   if (stoneTypeInput.value === 'hidden') {
     stoneTypeFlavor.textContent = 'Hidden stones do not have a known location. When found, the finder will be asked to add the location.';
     locationFlavor.textContent = 'Location is optional for hidden stones. You may leave it blank.';
+    // Auto-select circle shape for hidden stones
+    document.getElementById('stone-shape-input').value = 'circle';
   } else {
     stoneTypeFlavor.textContent = 'Hunted stones are placed at a specific spot and must be found there.';
     locationFlavor.textContent = 'Location is required for hunted stones. Please pick a spot on the map.';
+    // Auto-select triangle shape for hunted stones
+    document.getElementById('stone-shape-input').value = 'triangle';
   }
+  // Update shape preview
+  updateShapePreview();
 }
 stoneTypeInput.addEventListener('change', updateStoneTypeFlavor);
 updateStoneTypeFlavor();

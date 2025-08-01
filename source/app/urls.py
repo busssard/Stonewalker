@@ -10,7 +10,7 @@ from main.views import StoneWalkerStartPageView
 from main.views import debug_add_stone
 from main.views import MyStonesView
 from main.views import add_stone, StoneScanView, check_stone_name
-from main.views import StoneQRCodeView
+from main.views import StoneQRCodeView, download_qr_code
 
 # URLs that should not have language prefix
 urlpatterns = [
@@ -33,6 +33,7 @@ urlpatterns += i18n_patterns(
     path('shop/', TemplateView.as_view(template_name='main/shop.html'), name='shop'),
     path('about/', TemplateView.as_view(template_name='main/about.html'), name='about'),
     path('stone/<str:pk>/qr/', StoneQRCodeView.as_view(), name='stone_qr'),
+    path('download-qr/', download_qr_code, name='download_qr'),
 
     path('language/', ChangeLanguageView.as_view(), name='change_language'),
 

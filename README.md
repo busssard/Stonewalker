@@ -472,6 +472,16 @@ This page features the interactive map, login modal, and personal dashboard.
 
 ## Recent Refactoring Work
 
+### Stone Creation Refactoring (2024)
+- **UUID Integration**: Added UUID field to Stone model for secure QR code generation and unique stone identification
+- **Automatic Shape Selection**: Stones now automatically get circle shape for hidden stones and triangle shape for hunted stones
+- **QR Code Generation**: Each stone creation now generates a unique QR code linking to the stone's scan page using UUID
+- **QR Download Functionality**: Users can download the generated QR code after stone creation via the success message link
+- **Enhanced Stone Scanning**: Stone scanning now supports both UUID and PK_stone parameters for backward compatibility
+- **Improved Validation**: Hunted stones now properly require location before creation, preventing invalid stones
+- **Comprehensive Testing**: Added 18 new tests covering UUID generation, QR functionality, automatic shape selection, and stone scanning
+- **Database Migrations**: Created proper migration sequence for UUID field addition with data population for existing records
+
 ### Fixed Header Implementation (2024)
 - **Fixed Header Positioning**: Implemented a fixed header that remains visible at the top of the viewport during scrolling
 - **Header Lock**: The header-bar is now locked visible even when the rest of the page is scrolling down in all device configurations

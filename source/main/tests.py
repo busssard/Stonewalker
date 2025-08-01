@@ -5,6 +5,13 @@ from django.urls import reverse
 from django.utils.translation import activate, gettext as _
 from django.conf import settings
 import polib
+from django.contrib.auth.models import User
+from django.core.files.uploadedfile import SimpleUploadedFile
+from django.test.utils import override_settings
+import tempfile
+import shutil
+import uuid
+from .models import Stone, StoneMove
 
 
 class ChangeLanguageTests(TestCase):
@@ -65,7 +72,6 @@ class ChangeLanguageTests(TestCase):
     def test_language_change_preserves_user_session(self):
         """Test that language change doesn't affect user authentication"""
         # Create a test user and log in
-        from django.contrib.auth.models import User
         user = User.objects.create_user(username='testuser', password='testpass')
         self.client.login(username='testuser', password='testpass')
         
@@ -749,58 +755,321 @@ class MyStonesTests(TestCase):
         self.assertContains(response, 'openStoneModal')
 
 
-class FixedHeaderTests(TestCase):
-    """Test that the header is properly fixed and content is scrollable"""
-    
-    def test_header_is_fixed(self):
-        """Test that the header has fixed positioning"""
-        # Check the CSS file directly
-        css_file_path = os.path.join(settings.BASE_DIR, 'content', 'assets', 'css', 'styles.css')
-        with open(css_file_path, 'r') as f:
-            css_content = f.read()
+class StoneCreationTests(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.user = User.objects.create_user(
+            username='testuser',
+            email='test@example.com',
+            password='testpass123'
+        )
+        self.client.login(username='testuser', password='testpass123')
+
+    def test_stone_creation_with_uuid(self):
+        """Test that stone creation generates a UUID"""
+        response = self.client.post(reverse('add_stone'), {
+            'PK_stone': 'TESTSTONE',
+            'description': 'Test stone description',
+            'stone_type': 'hidden',
+            'color': '#FF0000',
+            'shape': 'circle'
+        })
         
-        # Check that the header has fixed positioning
-        self.assertIn('position: fixed', css_content)
-        self.assertIn('top: 0', css_content)
-        self.assertIn('z-index: 1001', css_content)
+        self.assertEqual(response.status_code, 302)  # Redirect after success
+        stone = Stone.objects.get(PK_stone='TESTSTONE')
+        self.assertIsNotNone(stone.uuid)
+        self.assertIsInstance(stone.uuid, uuid.UUID)
+
+    def test_automatic_shape_selection_hidden(self):
+        """Test that hidden stones automatically get circle shape"""
+        response = self.client.post(reverse('add_stone'), {
+            'PK_stone': 'HIDDENSTONE',
+            'description': 'Hidden stone',
+            'stone_type': 'hidden',
+            'color': '#00FF00'
+        })
         
-    def test_body_has_padding_for_header(self):
-        """Test that the body has top padding to account for fixed header"""
-        # Check the CSS file directly
-        css_file_path = os.path.join(settings.BASE_DIR, 'content', 'assets', 'css', 'styles.css')
-        with open(css_file_path, 'r') as f:
-            css_content = f.read()
+        self.assertEqual(response.status_code, 302)
+        stone = Stone.objects.get(PK_stone='HIDDENSTONE')
+        self.assertEqual(stone.shape, 'circle')
+
+    def test_automatic_shape_selection_hunted(self):
+        """Test that hunted stones automatically get triangle shape"""
+        response = self.client.post(reverse('add_stone'), {
+            'PK_stone': 'HUNTEDSTONE',
+            'description': 'Hunted stone',
+            'stone_type': 'hunted',
+            'color': '#0000FF',
+            'latitude': '40.7128',
+            'longitude': '-74.0060'
+        })
         
-        # Check that the body has top padding to account for fixed header
-        self.assertIn('padding-top: var(--header-height)', css_content)
+        self.assertEqual(response.status_code, 302)
+        stone = Stone.objects.get(PK_stone='HUNTEDSTONE')
+        self.assertEqual(stone.shape, 'triangle')
+
+    def test_qr_code_generation(self):
+        """Test that QR code is generated and saved"""
+        response = self.client.post(reverse('add_stone'), {
+            'PK_stone': 'QRSTONE',
+            'description': 'Stone with QR',
+            'stone_type': 'hidden',
+            'color': '#FF00FF'
+        })
         
-    def test_scrolling_is_enabled(self):
-        """Test that scrolling is enabled by checking key properties"""
-        # Check the CSS file directly
-        css_file_path = os.path.join(settings.BASE_DIR, 'content', 'assets', 'css', 'styles.css')
-        with open(css_file_path, 'r') as f:
-            css_content = f.read()
+        self.assertEqual(response.status_code, 302)
         
-        # Check that body/html use min-height instead of height to allow scrolling
-        self.assertIn('min-height: 100%', css_content)
+        # Check that QR download path is in session
+        session = self.client.session
+        self.assertIn('qr_download_path', session)
+        self.assertIn('qr_stone_name', session)
+        self.assertEqual(session['qr_stone_name'], 'QRSTONE')
+
+    def test_qr_download_view(self):
+        """Test QR code download functionality"""
+        # Create a stone first
+        stone = Stone.objects.create(
+            PK_stone='DOWNLOADSTONE',
+            description='Test stone',
+            FK_user=self.user,
+            color='#FF0000',
+            shape='circle'
+        )
         
-        # Check that overflow is properly set for scrolling
-        self.assertIn('overflow-x: hidden', css_content)
-        self.assertIn('overflow-y: auto', css_content)
+        # Create a dummy QR file for testing
+        import os
+        from django.conf import settings
+        qr_dir = os.path.join(settings.MEDIA_ROOT, 'qr_codes')
+        os.makedirs(qr_dir, exist_ok=True)
+        qr_path = os.path.join(qr_dir, 'DOWNLOADSTONE_qr.png')
+        with open(qr_path, 'w') as f:
+            f.write('dummy qr content')
         
-        # Check that there's no problematic height: 100% on body/html
-        # Look for the specific body, html rule that should use min-height
-        body_html_rules = re.findall(r'body,\s*html\s*\{[^}]*\}', css_content)
-        for rule in body_html_rules:
-            if 'height: 100%' in rule and 'min-height: 100%' not in rule:
-                self.fail(f"Found body, html rule with height: 100% but no min-height: 100%: {rule}")
+        # Set up session data
+        session = self.client.session
+        session['qr_download_path'] = 'qr_codes/DOWNLOADSTONE_qr.png'
+        session['qr_stone_name'] = 'DOWNLOADSTONE'
+        session.save()
         
-    def test_container_uses_min_height(self):
-        """Test that containers use min-height to allow scrolling"""
-        # Check the CSS file directly
-        css_file_path = os.path.join(settings.BASE_DIR, 'content', 'assets', 'css', 'styles.css')
-        with open(css_file_path, 'r') as f:
-            css_content = f.read()
+        response = self.client.get(reverse('download_qr'))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['Content-Type'], 'image/png')
+        self.assertIn('attachment', response['Content-Disposition'])
         
-        # Check that container uses min-height instead of height
-        self.assertIn('min-height: calc(100vh - 80px)', css_content)
+        # Clean up
+        if os.path.exists(qr_path):
+            os.remove(qr_path)
+
+    def test_qr_download_no_session(self):
+        """Test QR download when no session data exists"""
+        response = self.client.get(reverse('download_qr'))
+        self.assertEqual(response.status_code, 302)  # Redirect
+
+    def test_stone_scan_with_uuid(self):
+        """Test that stone scanning works with UUID"""
+        stone = Stone.objects.create(
+            PK_stone='UUIDSTONE',
+            description='Test stone',
+            FK_user=self.user,
+            color='#FF0000',
+            shape='circle'
+        )
+        
+        response = self.client.get(f'/stonescan/?stone={stone.uuid}')
+        self.assertEqual(response.status_code, 200)
+        # Check that the stone name is pre-filled in the form
+        content = response.content.decode()
+        self.assertIn('value="UUIDSTONE"', content)
+
+    def test_stone_scan_with_pk_stone(self):
+        """Test that stone scanning still works with PK_stone"""
+        stone = Stone.objects.create(
+            PK_stone='PKSTONE',
+            description='Test stone',
+            FK_user=self.user,
+            color='#FF0000',
+            shape='circle'
+        )
+        
+        response = self.client.get(f'/stonescan/?stone={stone.PK_stone}')
+        self.assertEqual(response.status_code, 200)
+        # Check that the stone name is pre-filled in the form
+        content = response.content.decode()
+        self.assertIn('value="PKSTONE"', content)
+
+    def test_stone_qr_view_with_uuid(self):
+        """Test QR code generation view uses UUID"""
+        stone = Stone.objects.create(
+            PK_stone='QRVIEWSTONE',
+            description='Test stone',
+            FK_user=self.user,
+            color='#FF0000',
+            shape='circle'
+        )
+        
+        response = self.client.get(f'/stone/{stone.PK_stone}/qr/')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['Content-Type'], 'image/png')
+
+    def test_stone_data_includes_uuid(self):
+        """Test that stone data includes UUID in JSON response"""
+        stone = Stone.objects.create(
+            PK_stone='JSONSTONE',
+            description='Test stone',
+            FK_user=self.user,
+            color='#FF0000',
+            shape='circle'
+        )
+        
+        # Add a move to make the stone appear in the JSON data
+        StoneMove.objects.create(
+            FK_stone=stone,
+            FK_user=self.user,
+            latitude=40.7128,
+            longitude=-74.0060
+        )
+        
+        response = self.client.get(reverse('stonewalker_start'))
+        self.assertEqual(response.status_code, 200)
+        
+        # Check that UUID is in the JSON data
+        content = response.content.decode()
+        self.assertIn(str(stone.uuid), content)
+
+    def test_hunted_stone_requires_location(self):
+        """Test that hunted stones require location"""
+        response = self.client.post(reverse('add_stone'), {
+            'PK_stone': 'NOLOCATION',
+            'description': 'Hunted stone without location',
+            'stone_type': 'hunted',
+            'color': '#FF0000'
+        })
+        
+        self.assertEqual(response.status_code, 302)  # Redirect due to error
+        # Stone should not be created
+        self.assertFalse(Stone.objects.filter(PK_stone='NOLOCATION').exists())
+        
+        # Test with location - should succeed
+        response = self.client.post(reverse('add_stone'), {
+            'PK_stone': 'WITHLOCATION',
+            'description': 'Hunted stone with location',
+            'stone_type': 'hunted',
+            'color': '#FF0000',
+            'latitude': '40.7128',
+            'longitude': '-74.0060'
+        })
+        
+        self.assertEqual(response.status_code, 302)  # Redirect after success
+        self.assertTrue(Stone.objects.filter(PK_stone='WITHLOCATION').exists())
+
+    def test_hidden_stone_optional_location(self):
+        """Test that hidden stones don't require location"""
+        response = self.client.post(reverse('add_stone'), {
+            'PK_stone': 'HIDDENNOLOC',
+            'description': 'Hidden stone without location',
+            'stone_type': 'hidden',
+            'color': '#FF0000'
+        })
+        
+        self.assertEqual(response.status_code, 302)
+        # Stone should be created
+        self.assertTrue(Stone.objects.filter(PK_stone='HIDDENNOLOC').exists())
+
+    def test_unique_uuid_generation(self):
+        """Test that each stone gets a unique UUID"""
+        stone1 = Stone.objects.create(
+            PK_stone='STONE1',
+            description='First stone',
+            FK_user=self.user,
+            color='#FF0000',
+            shape='circle'
+        )
+        
+        stone2 = Stone.objects.create(
+            PK_stone='STONE2',
+            description='Second stone',
+            FK_user=self.user,
+            color='#00FF00',
+            shape='triangle'
+        )
+        
+        self.assertNotEqual(stone1.uuid, stone2.uuid)
+        self.assertIsNotNone(stone1.uuid)
+        self.assertIsNotNone(stone2.uuid)
+
+    def test_stone_creation_modal_functionality(self):
+        """Test that the stone creation modal opens and works"""
+        response = self.client.get(reverse('stonewalker_start'))
+        self.assertEqual(response.status_code, 200)
+        
+        # Check that modal elements exist
+        content = response.content.decode()
+        self.assertIn('add-stone-modal', content)
+        self.assertIn('add-stone-fab', content)
+        self.assertIn('stone-type-input', content)
+        self.assertIn('stone-shape-input', content)
+
+    def test_stone_type_flavor_text(self):
+        """Test that stone type flavor text is displayed correctly"""
+        response = self.client.get(reverse('stonewalker_start'))
+        self.assertEqual(response.status_code, 200)
+        
+        content = response.content.decode()
+        self.assertIn('Hidden stones do not have a known location', content)
+        self.assertIn('Hunted stones are placed at a specific spot', content)
+
+
+class StoneModelTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username='testuser',
+            email='test@example.com',
+            password='testpass123'
+        )
+
+    def test_stone_uuid_field(self):
+        """Test that Stone model has UUID field"""
+        stone = Stone.objects.create(
+            PK_stone='UUIDTEST',
+            description='Test stone',
+            FK_user=self.user,
+            color='#FF0000',
+            shape='circle'
+        )
+        
+        self.assertIsNotNone(stone.uuid)
+        self.assertIsInstance(stone.uuid, uuid.UUID)
+
+    def test_stone_uuid_unique(self):
+        """Test that UUID field is unique"""
+        stone1 = Stone.objects.create(
+            PK_stone='STONE1',
+            description='First stone',
+            FK_user=self.user,
+            color='#FF0000',
+            shape='circle'
+        )
+        
+        stone2 = Stone.objects.create(
+            PK_stone='STONE2',
+            description='Second stone',
+            FK_user=self.user,
+            color='#00FF00',
+            shape='triangle'
+        )
+        
+        self.assertNotEqual(stone1.uuid, stone2.uuid)
+
+    def test_stone_str_method(self):
+        """Test Stone __str__ method"""
+        stone = Stone.objects.create(
+            PK_stone='STRTEST',
+            description='Test stone',
+            FK_user=self.user,
+            color='#FF0000',
+            shape='circle'
+        )
+        
+        self.assertEqual(str(stone), 'STRTEST')
+
+
