@@ -270,257 +270,292 @@ scanBtn.addEventListener('mouseleave', function() {
   });
 </script>
 <script>
-// Floating button opens modal
-const fab = document.getElementById('add-stone-fab');
-const modal = document.getElementById('add-stone-modal');
-const closeBtn = document.getElementById('add-stone-close');
-const cancelBtn = document.getElementById('add-stone-cancel');
-fab.onclick = () => { modal.style.display = 'flex'; };
-closeBtn.onclick = cancelBtn.onclick = () => { modal.style.display = 'none'; };
-window.onclick = (e) => { if (e.target === modal) modal.style.display = 'none'; };
-
-// Image preview
-const imgInput = document.getElementById('stone-image-input');
-// --- SHAPE PROFILE PICTURE PREVIEW ---
-const shapePreview = document.getElementById('stone-shape-preview');
-const shapeInput = document.getElementById('stone-shape-input');
-let previewImgDataUrl = '';
-
-function updateShapePreview() {
-  const shape = shapeInput.value;
-  shapePreview.innerHTML = '';
-  if (!previewImgDataUrl) return;
-  if (shape === 'circle' || shape === 'square') {
-    // Use div with border-radius for circle, none for square
-    const div = document.createElement('div');
-    div.className = 'js-shape-preview-div';
-    div.style.background = '#eee';
-    div.style.borderRadius = shape === 'circle' ? '50%' : '0';
-    const img = document.createElement('img');
-    img.src = previewImgDataUrl;
-    img.className = 'js-shape-preview-img';
-    div.appendChild(img);
-    shapePreview.appendChild(div);
-  } else if (shape === 'star' || shape === 'triangle') {
-    // Use SVG mask
-    let maskPath = '';
-    if (shape === 'star') {
-      maskPath = 'M60,5 L73,45 L115,45 L80,70 L93,110 L60,85 L27,110 L40,70 L5,45 L47,45 Z';
-    } else if (shape === 'triangle') {
-      maskPath = 'M60,10 L110,110 L10,110 Z';
-    }
-    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    svg.setAttribute('width', '120');
-    svg.setAttribute('height', '120');
-    svg.setAttribute('viewBox', '0 0 120 120');
-    svg.innerHTML = `
-      <defs>
-        <clipPath id="stone-shape-clip">
-          <path d="${maskPath}" />
-        </clipPath>
-      </defs>
-      <image href="${previewImgDataUrl}" width="120" height="120" clip-path="url(#stone-shape-clip)" preserveAspectRatio="xMidYMid slice"/>
-      <rect width="120" height="120" fill="none" stroke="#bbb" stroke-width="2" clip-path="url(#stone-shape-clip)"/>
-    `;
-    shapePreview.appendChild(svg);
-  }
-}
-
-imgInput.addEventListener('change', function() {
-  if (this.files && this.files[0]) {
-    const reader = new FileReader();
-    reader.onload = e => {
-      previewImgDataUrl = e.target.result;
-      updateShapePreview();
+document.addEventListener('DOMContentLoaded', function() {
+  // Floating button opens modal
+  const fab = document.getElementById('add-stone-fab');
+  const modal = document.getElementById('add-stone-modal');
+  const closeBtn = document.getElementById('add-stone-close');
+  const cancelBtn = document.getElementById('add-stone-cancel');
+  
+  if (fab && modal) {
+    fab.onclick = () => { 
+      modal.style.display = 'flex'; 
     };
-    reader.readAsDataURL(this.files[0]);
-  } else {
-    previewImgDataUrl = '';
-    updateShapePreview();
+    closeBtn.onclick = cancelBtn.onclick = () => { 
+      modal.style.display = 'none'; 
+    };
+    window.onclick = (e) => { 
+      if (e.target === modal) {
+        modal.style.display = 'none'; 
+      }
+    };
   }
 });
-shapeInput.addEventListener('change', updateShapePreview);
 
-// AJAX name uniqueness check
-const checkBtn = document.getElementById('check-name-btn');
-const nameInput = document.getElementById('stone-name-input');
-const nameResult = document.getElementById('name-check-result');
-const checkmark = document.getElementById('checkmark');
-const nextBtn = document.getElementById('add-stone-next');
-let nameValid = false;
+  // Image preview and other functionality
+  const imgInput = document.getElementById('stone-image-input');
+  // --- SHAPE PROFILE PICTURE PREVIEW ---
+  const shapePreview = document.getElementById('stone-shape-preview');
+  const shapeInput = document.getElementById('stone-shape-input');
+  let previewImgDataUrl = '';
 
-function validateStoneName() {
-  const name = nameInput.value.trim();
-  if (!name) {
-    checkmark.textContent = '✔️';
-    checkmark.className = 'js-checkmark js-checkmark-neutral';
-    nameResult.textContent = 'Please enter a name.';
-    nameResult.className = 'js-result-text js-result-neutral';
-    nameValid = false;
-    nextBtn.disabled = true;
-    return;
-  }
-  if (/\s/.test(name)) {
-    checkmark.textContent = '❌';
-    checkmark.className = 'js-checkmark js-checkmark-invalid';
-    nameResult.textContent = 'No whitespace allowed.';
-    nameResult.className = 'js-result-text js-result-invalid';
-    nameValid = false;
-    nextBtn.disabled = true;
-    return;
-  }
-  nameResult.textContent = 'Checking...';
-  nameResult.className = 'js-result-text js-result-checking';
-  checkmark.textContent = '...';
-  checkmark.className = 'js-checkmark js-checkmark-checking';
-  fetch(`/api/check_stone_name/?PK_stone=${encodeURIComponent(name)}`)
-    .then(r => r.json())
-    .then(data => {
-      if (data.taken) {
-        checkmark.textContent = '❌';
-        checkmark.className = 'js-checkmark js-checkmark-invalid';
-        nameResult.textContent = 'Name is already taken.';
-        nameResult.className = 'js-result-text js-result-invalid';
-        nameValid = false;
-        nextBtn.disabled = true;
-      } else {
-        checkmark.textContent = '✅';
-        checkmark.className = 'js-checkmark js-checkmark-valid';
-        nameResult.textContent = 'Name is available!';
-        nameResult.className = 'js-result-text js-result-valid';
-        nameValid = true;
-        nextBtn.disabled = false;
+  function updateShapePreview() {
+    const shape = shapeInput.value;
+    shapePreview.innerHTML = '';
+    if (!previewImgDataUrl) return;
+    if (shape === 'circle' || shape === 'square') {
+      // Use div with border-radius for circle, none for square
+      const div = document.createElement('div');
+      div.className = 'js-shape-preview-div';
+      div.style.background = '#eee';
+      div.style.borderRadius = shape === 'circle' ? '50%' : '0';
+      const img = document.createElement('img');
+      img.src = previewImgDataUrl;
+      img.className = 'js-shape-preview-img';
+      div.appendChild(img);
+      shapePreview.appendChild(div);
+    } else if (shape === 'star' || shape === 'triangle') {
+      // Use SVG mask
+      let maskPath = '';
+      if (shape === 'star') {
+        maskPath = 'M60,5 L73,45 L115,45 L80,70 L93,110 L60,85 L27,110 L40,70 L5,45 L47,45 Z';
+      } else if (shape === 'triangle') {
+        maskPath = 'M60,10 L110,110 L10,110 Z';
       }
-    })
-    .catch((err) => {
+      const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      svg.setAttribute('width', '120');
+      svg.setAttribute('height', '120');
+      svg.setAttribute('viewBox', '0 0 120 120');
+      svg.innerHTML = `
+        <defs>
+          <clipPath id="stone-shape-clip">
+            <path d="${maskPath}" />
+          </clipPath>
+        </defs>
+        <image href="${previewImgDataUrl}" width="120" height="120" clip-path="url(#stone-shape-clip)" preserveAspectRatio="xMidYMid slice"/>
+        <rect width="120" height="120" fill="none" stroke="#bbb" stroke-width="2" clip-path="url(#stone-shape-clip)"/>
+      `;
+      shapePreview.appendChild(svg);
+    }
+  }
+
+  if (imgInput) {
+    imgInput.addEventListener('change', function() {
+      if (this.files && this.files[0]) {
+        const reader = new FileReader();
+        reader.onload = e => {
+          previewImgDataUrl = e.target.result;
+          updateShapePreview();
+        };
+        reader.readAsDataURL(this.files[0]);
+      } else {
+        previewImgDataUrl = '';
+        updateShapePreview();
+      }
+    });
+  }
+  
+  if (shapeInput) {
+    shapeInput.addEventListener('change', updateShapePreview);
+  }
+
+  // AJAX name uniqueness check
+  const checkBtn = document.getElementById('check-name-btn');
+  const nameInput = document.getElementById('stone-name-input');
+  const nameResult = document.getElementById('name-check-result');
+  const checkmark = document.getElementById('checkmark');
+  const nextBtn = document.getElementById('add-stone-next');
+  let nameValid = false;
+
+  function validateStoneName() {
+    const name = nameInput.value.trim();
+    if (!name) {
+      checkmark.textContent = '✔️';
+      checkmark.className = 'js-checkmark js-checkmark-neutral';
+      nameResult.textContent = 'Please enter a name.';
+      nameResult.className = 'js-result-text js-result-neutral';
+      nameValid = false;
+      nextBtn.disabled = true;
+      return;
+    }
+    if (/\s/.test(name)) {
       checkmark.textContent = '❌';
       checkmark.className = 'js-checkmark js-checkmark-invalid';
-      nameResult.textContent = 'Could not check name (server error).';
+      nameResult.textContent = 'No whitespace allowed.';
       nameResult.className = 'js-result-text js-result-invalid';
       nameValid = false;
       nextBtn.disabled = true;
-    });
-}
-nameInput.addEventListener('blur', validateStoneName);
-nameInput.addEventListener('input', function() {
-  if (!nameInput.value.trim()) {
-    checkmark.textContent = '✔️';
-    checkmark.className = 'js-checkmark js-checkmark-neutral';
-    nameResult.className = 'js-result-text js-result-neutral';
-  } else {
-    checkmark.textContent = '✔️';
-    checkmark.className = 'js-checkmark js-checkmark-checking';
+      return;
+    }
+    nameResult.textContent = 'Checking...';
     nameResult.className = 'js-result-text js-result-checking';
-  }
-  nameResult.textContent = '';
-  nameValid = false;
-  nextBtn.disabled = true;
-});
-
-const step1 = document.getElementById('add-stone-step1');
-const step2 = document.getElementById('add-stone-step2');
-const backBtn = document.getElementById('add-stone-back');
-const form = document.getElementById('add-stone-form');
-const latInput = document.getElementById('add-stone-lat');
-const lngInput = document.getElementById('add-stone-lng');
-let addStoneMap, addStoneMarker;
-
-const stoneTypeInput = document.getElementById('stone-type-input');
-const stoneTypeFlavor = document.getElementById('stone-type-flavor');
-const locationFlavor = document.getElementById('location-flavor');
-
-function updateStoneTypeFlavor() {
-  if (stoneTypeInput.value === 'hidden') {
-    stoneTypeFlavor.textContent = 'Hidden stones do not have a known location. When found, the finder will be asked to add the location.';
-    locationFlavor.textContent = 'Location is optional for hidden stones. You may leave it blank.';
-    // Auto-select circle shape for hidden stones
-    document.getElementById('stone-shape-input').value = 'circle';
-  } else {
-    stoneTypeFlavor.textContent = 'Hunted stones are placed at a specific spot and must be found there.';
-    locationFlavor.textContent = 'Location is required for hunted stones. Please pick a spot on the map.';
-    // Auto-select triangle shape for hunted stones
-    document.getElementById('stone-shape-input').value = 'triangle';
-  }
-  // Update shape preview
-  updateShapePreview();
-}
-stoneTypeInput.addEventListener('change', updateStoneTypeFlavor);
-updateStoneTypeFlavor();
-
-nextBtn.onclick = function() {
-  // Validate required fields (name, description, etc.)
-  if (!nameInput.value.trim()) {
-    nameResult.textContent = 'Please enter a name.';
-    nameResult.className = 'js-result-text js-result-invalid';
-    nameInput.focus();
-    return;
-  }
-  if (nameResult.textContent === 'Name is already taken.') {
-    nameInput.focus();
-    return;
-  }
-  if (!document.getElementById('stone-desc-input').value.trim()) {
-    alert('Please enter a description.');
-    return;
-  }
-  // Go to step 2
-  step1.style.display = 'none';
-  step2.style.display = 'flex';
-  setTimeout(() => {
-    if (!addStoneMap) {
-      addStoneMap = L.map('add-stone-map').setView([20, 0], 2);
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-        attribution: '© OpenStreetMap'
-      }).addTo(addStoneMap);
-      addStoneMarker = L.marker([20, 0], {draggable:true}).addTo(addStoneMap);
-      addStoneMarker.on('dragend', function(e) {
-        const pos = addStoneMarker.getLatLng();
-        latInput.value = pos.lat;
-        lngInput.value = pos.lng;
+    checkmark.textContent = '...';
+    checkmark.className = 'js-checkmark js-checkmark-checking';
+    fetch(`/api/check_stone_name/?PK_stone=${encodeURIComponent(name)}`)
+      .then(r => r.json())
+      .then(data => {
+        if (data.taken) {
+          checkmark.textContent = '❌';
+          checkmark.className = 'js-checkmark js-checkmark-invalid';
+          nameResult.textContent = 'Name is already taken.';
+          nameResult.className = 'js-result-text js-result-invalid';
+          nameValid = false;
+          nextBtn.disabled = true;
+        } else {
+          checkmark.textContent = '✅';
+          checkmark.className = 'js-checkmark js-checkmark-valid';
+          nameResult.textContent = 'Name is available!';
+          nameResult.className = 'js-result-text js-result-valid';
+          nameValid = true;
+          nextBtn.disabled = false;
+        }
+      })
+      .catch((err) => {
+        checkmark.textContent = '❌';
+        checkmark.className = 'js-checkmark js-checkmark-invalid';
+        nameResult.textContent = 'Could not check name (server error).';
+        nameResult.className = 'js-result-text js-result-invalid';
+        nameValid = false;
+        nextBtn.disabled = true;
       });
-      addStoneMap.on('click', function(e) {
-        addStoneMarker.setLatLng(e.latlng);
-        latInput.value = e.latlng.lat;
-        lngInput.value = e.latlng.lng;
-      });
-      // Set initial values
-      latInput.value = '';
-      lngInput.value = '';
-    }
-    addStoneMap.invalidateSize();
-  }, 200);
-  updateStoneTypeFlavor();
-};
-backBtn.onclick = function() {
-  step2.style.display = 'none';
-  step1.style.display = 'block';
-};
-form.onsubmit = function(e) {
-  if (stoneTypeInput.value === 'hunted') {
-    if (!latInput.value || !lngInput.value) {
-      alert('Please pick a position on the map for a hunted stone.');
-      e.preventDefault();
-      return false;
-    }
   }
-  // For hidden stones, location is optional
-  // Allow form to submit (to be handled by backend)
-};
+  
+  if (nameInput) {
+    nameInput.addEventListener('blur', validateStoneName);
+    nameInput.addEventListener('input', function() {
+      if (!nameInput.value.trim()) {
+        checkmark.textContent = '✔️';
+        checkmark.className = 'js-checkmark js-checkmark-neutral';
+        nameResult.className = 'js-result-text js-result-neutral';
+      } else {
+        checkmark.textContent = '✔️';
+        checkmark.className = 'js-checkmark js-checkmark-checking';
+        nameResult.className = 'js-result-text js-result-checking';
+      }
+      nameResult.textContent = '';
+      nameValid = false;
+      nextBtn.disabled = true;
+    });
+  }
 
-const descInput = document.getElementById('stone-desc-input');
-const descCharCount = document.getElementById('desc-char-count');
+  const step1 = document.getElementById('add-stone-step1');
+  const step2 = document.getElementById('add-stone-step2');
+  const backBtn = document.getElementById('add-stone-back');
+  const form = document.getElementById('add-stone-form');
+  const latInput = document.getElementById('add-stone-lat');
+  const lngInput = document.getElementById('add-stone-lng');
+  let addStoneMap, addStoneMarker;
 
-descInput.addEventListener('input', function() {
-  const len = descInput.value.length;
-  descCharCount.textContent = len + '/500';
-  if (len > 500) {
-    descCharCount.className = 'js-char-count js-char-count-over';
-    nextBtn.disabled = true;
-  } else {
-    descCharCount.className = 'js-char-count';
-    // Only enable next if name is valid and not over char limit
-    if (nameValid) nextBtn.disabled = false;
+  const stoneTypeInput = document.getElementById('stone-type-input');
+  const stoneTypeFlavor = document.getElementById('stone-type-flavor');
+  const locationFlavor = document.getElementById('location-flavor');
+
+  function updateStoneTypeFlavor() {
+    if (stoneTypeInput.value === 'hidden') {
+      stoneTypeFlavor.textContent = 'Hidden stones do not have a known location. When found, the finder will be asked to add the location.';
+      locationFlavor.textContent = 'Location is optional for hidden stones. You may leave it blank.';
+      // Auto-select circle shape for hidden stones
+      document.getElementById('stone-shape-input').value = 'circle';
+    } else {
+      stoneTypeFlavor.textContent = 'Hunted stones are placed at a specific spot and must be found there.';
+      locationFlavor.textContent = 'Location is required for hunted stones. Please pick a spot on the map.';
+      // Auto-select triangle shape for hunted stones
+      document.getElementById('stone-shape-input').value = 'triangle';
+    }
+    // Update shape preview
+    updateShapePreview();
+  }
+  
+  if (stoneTypeInput) {
+    stoneTypeInput.addEventListener('change', updateStoneTypeFlavor);
+    updateStoneTypeFlavor();
+  }
+
+  if (nextBtn) {
+    nextBtn.onclick = function() {
+      // Validate required fields (name, description, etc.)
+      if (!nameInput.value.trim()) {
+        nameResult.textContent = 'Please enter a name.';
+        nameResult.className = 'js-result-text js-result-invalid';
+        nameInput.focus();
+        return;
+      }
+      if (nameResult.textContent === 'Name is already taken.') {
+        nameInput.focus();
+        return;
+      }
+      if (!document.getElementById('stone-desc-input').value.trim()) {
+        alert('Please enter a description.');
+        return;
+      }
+      // Go to step 2
+      step1.style.display = 'none';
+      step2.style.display = 'flex';
+      setTimeout(() => {
+        if (!addStoneMap) {
+          addStoneMap = L.map('add-stone-map').setView([20, 0], 2);
+          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap'
+          }).addTo(addStoneMap);
+          addStoneMarker = L.marker([20, 0], {draggable:true}).addTo(addStoneMap);
+          addStoneMarker.on('dragend', function(e) {
+            const pos = addStoneMarker.getLatLng();
+            latInput.value = pos.lat;
+            lngInput.value = pos.lng;
+          });
+          addStoneMap.on('click', function(e) {
+            addStoneMarker.setLatLng(e.latlng);
+            latInput.value = e.latlng.lat;
+            lngInput.value = e.latlng.lng;
+          });
+          // Set initial values
+          latInput.value = '';
+          lngInput.value = '';
+        }
+        addStoneMap.invalidateSize();
+      }, 200);
+      updateStoneTypeFlavor();
+    };
+  }
+  
+  if (backBtn) {
+    backBtn.onclick = function() {
+      step2.style.display = 'none';
+      step1.style.display = 'block';
+    };
+  }
+  
+  if (form) {
+    form.onsubmit = function(e) {
+      if (stoneTypeInput.value === 'hunted') {
+        if (!latInput.value || !lngInput.value) {
+          alert('Please pick a position on the map for a hunted stone.');
+          e.preventDefault();
+          return false;
+        }
+      }
+      // For hidden stones, location is optional
+      // Allow form to submit (to be handled by backend)
+    };
+  }
+
+  const descInput = document.getElementById('stone-desc-input');
+  const descCharCount = document.getElementById('desc-char-count');
+
+  if (descInput) {
+    descInput.addEventListener('input', function() {
+      const len = descInput.value.length;
+      descCharCount.textContent = len + '/500';
+      if (len > 500) {
+        descCharCount.className = 'js-char-count js-char-count-over';
+        nextBtn.disabled = true;
+      } else {
+        descCharCount.className = 'js-char-count';
+        // Only enable next if name is valid and not over char limit
+        if (nameValid) nextBtn.disabled = false;
+      }
+    });
   }
 });
 </script>
