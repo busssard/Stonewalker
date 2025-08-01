@@ -109,6 +109,11 @@
     </label>
   </div>
   <div id="burger-overlay" class="header-burger-overlay"></div>
+  
+  <!-- Burger Navigation Menu -->
+  <nav id="burger-nav" class="header-burger-nav">
+    {% include 'layouts/default/nav_links.html' with burger=True %}
+  </nav>
 </header>
 <!-- JS for burger menu and profile modal moved to static/js/header.js -->
 
@@ -171,7 +176,7 @@ window.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
-<div class="container-fluid mt-3">
+<div class="container-fluid">
 
     {% bootstrap_messages %}
 

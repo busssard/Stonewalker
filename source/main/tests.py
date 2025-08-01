@@ -747,3 +747,60 @@ class MyStonesTests(TestCase):
         # Check that the onclick handler is present
         self.assertContains(response, 'onclick')
         self.assertContains(response, 'openStoneModal')
+
+
+class FixedHeaderTests(TestCase):
+    """Test that the header is properly fixed and content is scrollable"""
+    
+    def test_header_is_fixed(self):
+        """Test that the header has fixed positioning"""
+        # Check the CSS file directly
+        css_file_path = os.path.join(settings.BASE_DIR, 'content', 'assets', 'css', 'styles.css')
+        with open(css_file_path, 'r') as f:
+            css_content = f.read()
+        
+        # Check that the header has fixed positioning
+        self.assertIn('position: fixed', css_content)
+        self.assertIn('top: 0', css_content)
+        self.assertIn('z-index: 1001', css_content)
+        
+    def test_body_has_padding_for_header(self):
+        """Test that the body has top padding to account for fixed header"""
+        # Check the CSS file directly
+        css_file_path = os.path.join(settings.BASE_DIR, 'content', 'assets', 'css', 'styles.css')
+        with open(css_file_path, 'r') as f:
+            css_content = f.read()
+        
+        # Check that the body has top padding to account for fixed header
+        self.assertIn('padding-top: var(--header-height)', css_content)
+        
+    def test_scrolling_is_enabled(self):
+        """Test that scrolling is enabled by checking key properties"""
+        # Check the CSS file directly
+        css_file_path = os.path.join(settings.BASE_DIR, 'content', 'assets', 'css', 'styles.css')
+        with open(css_file_path, 'r') as f:
+            css_content = f.read()
+        
+        # Check that body/html use min-height instead of height to allow scrolling
+        self.assertIn('min-height: 100%', css_content)
+        
+        # Check that overflow is properly set for scrolling
+        self.assertIn('overflow-x: hidden', css_content)
+        self.assertIn('overflow-y: auto', css_content)
+        
+        # Check that there's no problematic height: 100% on body/html
+        # Look for the specific body, html rule that should use min-height
+        body_html_rules = re.findall(r'body,\s*html\s*\{[^}]*\}', css_content)
+        for rule in body_html_rules:
+            if 'height: 100%' in rule and 'min-height: 100%' not in rule:
+                self.fail(f"Found body, html rule with height: 100% but no min-height: 100%: {rule}")
+        
+    def test_container_uses_min_height(self):
+        """Test that containers use min-height to allow scrolling"""
+        # Check the CSS file directly
+        css_file_path = os.path.join(settings.BASE_DIR, 'content', 'assets', 'css', 'styles.css')
+        with open(css_file_path, 'r') as f:
+            css_content = f.read()
+        
+        # Check that container uses min-height instead of height
+        self.assertIn('min-height: calc(100vh - 80px)', css_content)
