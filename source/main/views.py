@@ -1,5 +1,5 @@
 from django.views.generic import TemplateView
-from .models import Stone, StoneMove, calculate_stone_distance
+from .models import Stone, StoneMove, calculate_stone_distance, StoneScanAttempt
 import json
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import redirect
@@ -25,6 +25,7 @@ from django.utils import timezone
 from django.utils.translation import get_language, get_language_from_request
 from django.conf import settings
 from django.urls import reverse
+import uuid as uuid_lib
 
 
 class IndexPageView(TemplateView):
@@ -79,7 +80,7 @@ class StoneWalkerStartPageView(TemplateView):
                     'description': stone.description,
                     'created_at': stone.created_at.isoformat(),
                     'user': stone.FK_user.username,
-                    'user_picture': stone.FK_user.profile.profile_picture.url if hasattr(stone.FK_user, 'profile') and stone.FK_user.profile.profile_picture else '/static/user_picture.png',
+                    'user_picture': stone.FK_user.profile.profile_picture.url if hasattr(stone.FK_user, 'profile') and hasattr(stone.FK_user.profile, 'profile_picture') and stone.FK_user.profile.profile_picture else '/static/user_picture.png',
                     'image': stone.image.url if stone.image else '',
                     'color': stone.color,
                     'shape': stone.shape,
@@ -96,7 +97,7 @@ class StoneWalkerStartPageView(TemplateView):
                             'image': m.image.url if m.image else '',
                             'comment': m.comment,
                             'user': m.FK_user.username,
-                            'user_picture': m.FK_user.profile.profile_picture.url if hasattr(m.FK_user, 'profile') and m.FK_user.profile.profile_picture else '/static/user_picture.png',
+                            'user_picture': m.FK_user.profile.profile_picture.url if hasattr(m.FK_user, 'profile') and hasattr(m.FK_user.profile, 'profile_picture') and m.FK_user.profile.profile_picture else '/static/user_picture.png',
                         } for m in moves
                     ]
                 })
@@ -189,6 +190,7 @@ def add_stone(request):
             return redirect('stonewalker_start')
     
     try:
+        # Create stone with UUID (will be auto-generated)
         stone = Stone(
             PK_stone=PK_stone,
             description=description,
@@ -197,7 +199,9 @@ def add_stone(request):
             color=color,
             shape=shape
         )
-        stone.save()  # Ensure the image is saved to disk
+        stone.save()  # This will generate the UUID
+        
+        # Create initial move for hunted stones
         if stone_type == 'hunted':
             StoneMove.objects.create(
                 FK_stone=stone,
@@ -207,13 +211,13 @@ def add_stone(request):
                 latitude=float(latitude),
                 longitude=float(longitude)
             )
-        # For hidden stones, do not create a StoneMove entry at creation
+        
         # Update distance
         stone.distance_km = calculate_stone_distance(stone)
         stone.save()
         
-        # Generate QR code for the stone
-        qr_url = request.build_absolute_uri(f'/stonescan/?stone={stone.uuid}')
+        # Generate QR code server-side using the stone's UUID
+        qr_url = request.build_absolute_uri(f'/stone-link/{stone.uuid}/')
         qr = qrcode.QRCode(version=1, box_size=10, border=5)
         qr.add_data(qr_url)
         qr.make(fit=True)
@@ -222,7 +226,7 @@ def add_stone(request):
         # Save QR code to media directory
         import os
         from django.conf import settings
-        qr_filename = f'qr_codes/{stone.PK_stone}_qr.png'
+        qr_filename = f'qr_codes/{stone.PK_stone}_{stone.uuid}_qr.png'
         qr_path = os.path.join(settings.MEDIA_ROOT, qr_filename)
         os.makedirs(os.path.dirname(qr_path), exist_ok=True)
         qr_img.save(qr_path)
@@ -230,6 +234,8 @@ def add_stone(request):
         # Store QR path in session for download
         request.session['qr_download_path'] = qr_filename
         request.session['qr_stone_name'] = stone.PK_stone
+        request.session['qr_stone_uuid'] = str(stone.uuid)
+        request.session['qr_stone_url'] = qr_url
         
         messages.success(request, f'Stone "{PK_stone}" added successfully! QR code generated. <a href="/download-qr/" class="avant-btn">Download QR Code</a>')
         return redirect(f'/stonewalker/?focus={PK_stone}')
@@ -265,14 +271,11 @@ class StoneScanView(View):
                     messages.error(request, 'Stone not found.')
                     return render(request, self.template_name, context)
             
-            # Check cooldown
-            recent_move = None
-            if request.user.is_authenticated:
-                from main.models import StoneMove
-                recent_move = StoneMove.objects.filter(FK_stone__PK_stone=context['stone_name'], FK_user=request.user, timestamp__gte=timezone.now()-timedelta(days=3)).first()
-            if recent_move:
-                context['locked'] = True
-                context['lock_message'] = 'You have already updated this stone in the last 3 days. Please wait before updating again.'
+            # Check cooldown using new StoneScanAttempt model
+            if request.user.is_authenticated and stone:
+                if not StoneScanAttempt.can_scan_again(stone, request.user):
+                    context['locked'] = True
+                    context['lock_message'] = 'You have already scanned this stone in the last week. Please wait before scanning again.'
         return render(request, self.template_name, context)
 
     @method_decorator(login_required)
@@ -282,26 +285,31 @@ class StoneScanView(View):
         latitude = request.POST.get('latitude')
         longitude = request.POST.get('longitude')
         image = request.FILES.get('image')
-        # Enforce cooldown on POST as well
-        from main.models import StoneMove
-        recent_move = StoneMove.objects.filter(FK_stone__PK_stone=PK_stone, FK_user=request.user, timestamp__gte=timezone.now()-timedelta(days=3)).first()
-        if recent_move:
-            messages.error(request, 'You have already updated this stone in the last 3 days. Please wait before updating again.')
-            return render(request, self.template_name, {'prefill_stone': PK_stone, 'locked': True, 'lock_message': 'You have already updated this stone in the last 3 days. Please wait before updating again.'})
+        
         try:
             stone = Stone.objects.get(PK_stone=PK_stone)
         except Stone.DoesNotExist:
             messages.error(request, 'Stone not found.')
             return render(request, self.template_name)
+        
+        # Check one-week blackout period
+        if not StoneScanAttempt.can_scan_again(stone, request.user):
+            messages.error(request, 'You have already scanned this stone in the last week. Please wait before scanning again.')
+            return render(request, self.template_name, {'prefill_stone': PK_stone, 'locked': True, 'lock_message': 'You have already scanned this stone in the last week. Please wait before scanning again.'})
+        
         try:
+            # Record the scan attempt
+            StoneScanAttempt.record_scan_attempt(stone, request.user, request)
+            
+            # Create the stone move
             StoneMove.objects.create(
                 FK_stone=stone,
                 FK_user=request.user,
-            image=image,
-            comment=comment,
+                image=image,
+                comment=comment,
                 latitude=float(latitude) if latitude else None,
                 longitude=float(longitude) if longitude else None
-        )
+            )
             # Update distance
             stone.distance_km = calculate_stone_distance(stone)
             stone.save()
@@ -331,6 +339,22 @@ def check_stone_name(request):
     return JsonResponse({'taken': taken, 'reason': reason, 'PK_stone': PK_stone})
 
 
+def check_stone_uuid(request, uuid):
+    """Check if a UUID exists in the database"""
+    uuid_param = uuid.strip()
+    
+    if not uuid_param:
+        return JsonResponse({'exists': False, 'error': 'No UUID provided'})
+    
+    try:
+        # Validate UUID format
+        uuid_obj = uuid_lib.UUID(uuid_param)
+        exists = Stone.objects.filter(uuid=uuid_obj).exists()
+        return JsonResponse({'exists': exists, 'uuid': uuid_param})
+    except ValueError:
+        return JsonResponse({'exists': False, 'error': 'Invalid UUID format'})
+
+
 class StoneQRCodeView(View):
     def get(self, request, pk):
         # Generate the update link for this stone using UUID
@@ -345,6 +369,119 @@ class StoneQRCodeView(View):
             return response
         except Stone.DoesNotExist:
             return HttpResponse("Stone not found", status=404)
+
+
+class StoneLinkView(View):
+    """Handle stone-link functionality with cookie tracking and database storage"""
+    
+    def get(self, request, stone_uuid):
+        try:
+            # Parse UUID and find stone
+            stone_uuid_obj = uuid_lib.UUID(stone_uuid)
+            stone = Stone.objects.get(uuid=stone_uuid_obj)
+        except (ValueError, Stone.DoesNotExist):
+            messages.error(request, 'Invalid stone link.')
+            return redirect('stonewalker_start')
+        
+        # If user is authenticated, record scan attempt
+        if request.user.is_authenticated:
+            StoneScanAttempt.record_scan_attempt(stone, request.user, request)
+        
+        # Check if this is user's first stone
+        is_first_stone = False
+        if request.user.is_authenticated:
+            user_stone_count = StoneMove.objects.filter(FK_user=request.user).count()
+            is_first_stone = user_stone_count == 0
+        
+        # Create response with cookie
+        response = render(request, 'main/stone_found.html', {
+            'stone': stone,
+            'stone_uuid': stone_uuid,
+            'is_first_stone': is_first_stone,
+        })
+        response.set_cookie(
+            f'stone_scan_{stone_uuid}',
+            timezone.now().isoformat(),
+            max_age=7*24*60*60,  # 7 days
+            httponly=True,
+            samesite='Lax'
+        )
+        
+        return response
+    
+    @method_decorator(login_required)
+    def post(self, request, stone_uuid):
+        try:
+            # Parse UUID and find stone
+            stone_uuid_obj = uuid_lib.UUID(stone_uuid)
+            stone = Stone.objects.get(uuid=stone_uuid_obj)
+        except (ValueError, Stone.DoesNotExist):
+            messages.error(request, 'Invalid stone link.')
+            return redirect('stonewalker_start')
+        
+        # Check one-week blackout period
+        if not StoneScanAttempt.can_scan_again(stone, request.user):
+            messages.error(request, 'You have already scanned this stone in the last week. Please wait before scanning again.')
+            return redirect('stonewalker_start')
+        
+        # Get form data
+        comment = request.POST.get('comment', '')
+        image = request.FILES.get('image')
+        latitude = request.POST.get('latitude')
+        longitude = request.POST.get('longitude')
+        new_latitude = request.POST.get('new_latitude')
+        new_longitude = request.POST.get('new_longitude')
+        
+        # Validate coordinates
+        try:
+            lat = float(latitude) if latitude else None
+            lng = float(longitude) if longitude else None
+            if lat is None or lng is None:
+                raise ValueError("Missing coordinates")
+        except ValueError:
+            messages.error(request, 'Please provide valid coordinates for where you found the stone.')
+            return redirect(f'/stone-link/{stone_uuid}/')
+        
+        try:
+            # Record the scan attempt
+            StoneScanAttempt.record_scan_attempt(stone, request.user, request)
+            
+            # Create the stone move
+            stone_move = StoneMove.objects.create(
+                FK_stone=stone,
+                FK_user=request.user,
+                image=image,
+                comment=comment,
+                latitude=lat,
+                longitude=lng
+            )
+            
+            # Update stone distance
+            stone.distance_km = calculate_stone_distance(stone)
+            stone.save()
+            
+            # For hunted stones, store the new location for next week
+            if stone.stone_type == 'hunted' and new_latitude and new_longitude:
+                try:
+                    new_lat = float(new_latitude)
+                    new_lng = float(new_longitude)
+                    # Store new location in session for next week placement
+                    request.session[f'new_location_{stone_uuid}'] = {
+                        'latitude': new_lat,
+                        'longitude': new_lng,
+                        'user_id': request.user.id,
+                        'timestamp': timezone.now().isoformat()
+                    }
+                except ValueError:
+                    messages.error(request, 'Please provide valid coordinates for the new location.')
+                    return redirect(f'/stone-link/{stone_uuid}/')
+            
+            messages.success(request, 'Your stone find has been recorded!')
+            return redirect(f'/stonewalker/?focus={stone.PK_stone}')
+            
+        except Exception as e:
+            messages.error(request, f'Could not record stone find: {str(e)}')
+            return redirect(f'/stone-link/{stone_uuid}/')
 
 
 @login_required
@@ -373,6 +510,47 @@ def download_qr_code(request):
     except Exception as e:
         messages.error(request, f'Error downloading QR code: {str(e)}')
         return redirect('stonewalker_start')
+
+
+def generate_qr_code(request):
+    """Generate QR code for a stone and return as JSON"""
+    stone_name = request.GET.get('stone_name')
+    stone_uuid = request.GET.get('stone_uuid')
+    
+    if not stone_name or not stone_uuid:
+        return JsonResponse({'error': 'Missing stone name or UUID'}, status=400)
+    
+    try:
+        # Validate UUID format
+        uuid_lib.UUID(stone_uuid)
+        
+        # Generate QR code
+        qr_url = request.build_absolute_uri(f'/stone-link/{stone_uuid}/')
+        qr = qrcode.QRCode(version=1, box_size=10, border=5)
+        qr.add_data(qr_url)
+        qr.make(fit=True)
+        qr_img = qr.make_image(fill_color="black", back_color="white")
+        
+        # Convert to base64 for download
+        import base64
+        from io import BytesIO
+        
+        buffer = BytesIO()
+        qr_img.save(buffer, format='PNG')
+        qr_base64 = base64.b64encode(buffer.getvalue()).decode()
+        
+        return JsonResponse({
+            'success': True,
+            'qr_code': qr_base64,
+            'qr_url': qr_url,
+            'stone_name': stone_name,
+            'stone_uuid': stone_uuid
+        })
+        
+    except ValueError:
+        return JsonResponse({'error': 'Invalid UUID format'}, status=400)
+    except Exception as e:
+        return JsonResponse({'error': f'Error generating QR code: {str(e)}'}, status=500)
 
 
 

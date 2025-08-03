@@ -5,6 +5,8 @@ import re
 from math import radians, sin, cos, sqrt, atan2
 from django.core.management.base import BaseCommand
 import uuid
+from datetime import timedelta
+from django.utils import timezone
 
 def validate_no_whitespace(value):
     if re.search(r'\s', value):
@@ -25,6 +27,10 @@ class Stone(models.Model):
     color = models.CharField(max_length=7, default='#4CAF50')
     shape = models.CharField(max_length=20, default='circle')
     distance_km = models.FloatField(default=0.0)
+    stone_type = models.CharField(max_length=20, default='hidden', choices=[
+        ('hidden', 'Hidden'),
+        ('hunted', 'Hunted'),
+    ])
 
     def __str__(self):
         return f"{self.PK_stone}"
@@ -40,6 +46,54 @@ class StoneMove(models.Model):
 
     def __str__(self):
         return f"Move for {self.FK_stone.PK_stone} at {self.timestamp}"
+
+class StoneScanAttempt(models.Model):
+    """Track scan attempts to enforce one-week blackout period"""
+    FK_stone = models.ForeignKey(Stone, on_delete=models.CASCADE, related_name='scan_attempts')
+    FK_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='stone_scan_attempts')
+    scan_time = models.DateTimeField(auto_now_add=True)
+    ip_address = models.GenericIPAddressField(null=True, blank=True)
+    user_agent = models.TextField(blank=True)
+    
+    class Meta:
+        unique_together = ['FK_stone', 'FK_user']
+        indexes = [
+            models.Index(fields=['FK_stone', 'FK_user', 'scan_time']),
+        ]
+    
+    def __str__(self):
+        return f"Scan attempt for {self.FK_stone.PK_stone} by {self.FK_user.username} at {self.scan_time}"
+    
+    @classmethod
+    def can_scan_again(cls, stone, user):
+        """Check if user can scan this stone again (one week blackout)"""
+        one_week_ago = timezone.now() - timedelta(weeks=1)
+        recent_attempt = cls.objects.filter(
+            FK_stone=stone,
+            FK_user=user,
+            scan_time__gte=one_week_ago
+        ).first()
+        return recent_attempt is None
+    
+    @classmethod
+    def record_scan_attempt(cls, stone, user, request=None):
+        """Record a scan attempt for the stone"""
+        attempt, created = cls.objects.get_or_create(
+            FK_stone=stone,
+            FK_user=user,
+            defaults={
+                'ip_address': request.META.get('REMOTE_ADDR') if request else None,
+                'user_agent': request.META.get('HTTP_USER_AGENT', '') if request else '',
+            }
+        )
+        if not created:
+            # Update existing record with new scan time
+            attempt.scan_time = timezone.now()
+            if request:
+                attempt.ip_address = request.META.get('REMOTE_ADDR')
+                attempt.user_agent = request.META.get('HTTP_USER_AGENT', '')
+            attempt.save()
+        return attempt
 
 def calculate_stone_distance(stone):
     moves = list(stone.moves.order_by('timestamp').all())

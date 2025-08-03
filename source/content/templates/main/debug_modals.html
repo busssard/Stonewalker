@@ -1,0 +1,150 @@
+{% extends 'layouts/default/page.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block content %}
+<!-- Include Shared Modals -->
+{% include 'main/shared_modals.html' %}
+
+<div style="padding: 20px; max-width: 1200px; margin: 0 auto;">
+  <h1 style="text-align: center; margin-bottom: 30px; color: #333;">🔧 Debug Page - Stone Modals</h1>
+  
+  <!-- Debug Controls -->
+  <div style="background: #f5f5f5; padding: 20px; border-radius: 10px; margin-bottom: 30px;">
+    <h2 style="margin-top: 0; color: #666;">Debug Controls</h2>
+    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+      <button onclick="openCreateStoneModal()" style="background: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
+        🗿 Open Create Stone Modal
+      </button>
+      <button onclick="openScanStoneModal()" style="background: #2196F3; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
+        🔍 Open Scan Stone Modal
+      </button>
+      <button onclick="showQRCode()" style="background: #FF9800; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
+        📱 Show QR Code
+      </button>
+      <button onclick="resetAll()" style="background: #f44336; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
+        🔄 Reset All
+      </button>
+    </div>
+    
+    <!-- Productive Buttons for Testing Shared Modals -->
+    <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #ddd;">
+      <h3 style="margin-top: 0; color: #666;">Productive Buttons (Testing Shared Modals)</h3>
+      <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+        <button onclick="openSharedCreateStoneModal()" style="background: #9C27B0; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
+          🗿 Open Shared Create Stone Modal
+        </button>
+        <button onclick="openSharedScanStoneModal()" style="background: #607D8B; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
+          🔍 Open Shared Scan Stone Modal
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Debug Info -->
+  <div style="background: #e3f2fd; padding: 20px; border-radius: 10px; margin-bottom: 30px;">
+    <h2 style="margin-top: 0; color: #1976d2;">Debug Information</h2>
+    <div id="debug-info" style="font-family: monospace; font-size: 14px;">
+      <p><strong>Current Status:</strong> <span id="status">Ready</span></p>
+      <p><strong>Modal States:</strong></p>
+      <ul id="modal-states">
+        <li>Create Stone Modal: <span id="create-modal-state">Closed</span></li>
+        <li>Scan Stone Modal: <span id="scan-modal-state">Closed</span></li>
+        <li>QR Code: <span id="qr-state">Hidden</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Sample Data Display -->
+  <div style="background: #fff3e0; padding: 20px; border-radius: 10px; margin-bottom: 30px;">
+    <h2 style="margin-top: 0; color: #e65100;">Sample Data</h2>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+      <div>
+        <h3>Sample Stone Data</h3>
+        <pre style="background: #f5f5f5; padding: 10px; border-radius: 5px; overflow-x: auto;">
+{
+  "PK_stone": "TESTSTONE",
+  "uuid": "550e8400-e29b-41d4-a716-446655440000",
+  "description": "A test stone for debugging",
+  "stone_type": "hidden",
+  "shape": "circle",
+  "color": "#4CAF50"
+}
+        </pre>
+      </div>
+      <div>
+        <h3>Sample QR URL</h3>
+        <pre style="background: #f5f5f5; padding: 10px; border-radius: 5px; overflow-x: auto;">
+http://localhost:8000/stone-link/550e8400-e29b-41d4-a716-446655440000/
+        </pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+<script src="{% static 'js/qr-code.js' %}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Debug info update function
+  function updateDebugInfo() {
+    const createModal = document.getElementById('add-stone-modal');
+    const scanModal = document.getElementById('scan-stone-modal');
+    const qrModal = document.getElementById('qr-code-modal');
+    
+    document.getElementById('create-modal-state').textContent = createModal.classList.contains('display-none') ? 'Closed' : 'Open';
+    document.getElementById('scan-modal-state').textContent = scanModal.classList.contains('display-none') ? 'Closed' : 'Open';
+    document.getElementById('qr-state').textContent = qrModal.classList.contains('display-none') ? 'Hidden' : 'Visible';
+  }
+  
+  // Global functions for debug buttons
+  window.openCreateStoneModal = function() {
+    // Call the shared function directly from shared_modals.html
+    if (window.openSharedCreateStoneModal) {
+      window.openSharedCreateStoneModal();
+    }
+    updateDebugInfo();
+  };
+  
+  window.openScanStoneModal = function() {
+    // Call the shared function directly from shared_modals.html
+    if (window.openSharedScanStoneModal) {
+      window.openSharedScanStoneModal();
+    }
+    updateDebugInfo();
+  };
+  
+  window.showQRCode = function() {
+    const qrModal = document.getElementById('qr-code-modal');
+    if (qrModal) {
+      qrModal.classList.remove('display-none');
+      qrModal.style.display = 'flex';
+      updateDebugInfo();
+    }
+  };
+  
+  window.resetAll = function() {
+    const createModal = document.getElementById('add-stone-modal');
+    const scanModal = document.getElementById('scan-stone-modal');
+    const qrModal = document.getElementById('qr-code-modal');
+    
+    if (createModal) {
+      createModal.style.display = 'none';
+      createModal.classList.add('display-none');
+    }
+    if (scanModal) {
+      scanModal.style.display = 'none';
+      scanModal.classList.add('display-none');
+    }
+    if (qrModal) {
+      qrModal.style.display = 'none';
+      qrModal.classList.add('display-none');
+    }
+    updateDebugInfo();
+  };
+  
+  // Initialize debug info
+  updateDebugInfo();
+});
+</script>
+{% endblock %} 

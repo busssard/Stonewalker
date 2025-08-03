@@ -1,0 +1,920 @@
+{% load static %}
+{% load i18n %}
+
+<!-- Create Stone Modal -->
+<div id="add-stone-modal" class="modal display-none position-fixed z-2000 left-0 top-0 w-100vw h-100vh bg-modal-overlay flex-center">
+  <div class="avant-modal max-w-600 min-w-320 w-90vw max-h-90vh m-auto p-2 position-relative" style="display: flex; flex-direction: column; max-height: 90vh;">
+    <span id="add-stone-close" class="close position-absolute top-1 right-1 fs-2 cursor-pointer">&times;</span>
+    <h2 class="avant-header mb-1">{% trans 'Add New Stone' %}</h2>
+    <form id="add-stone-form" enctype="multipart/form-data" autocomplete="off" method="post" action="{% url 'add_stone' %}" style="display: flex; flex-direction: column; gap: 0.5rem; flex: 1; overflow-y: auto; padding-right: 0.5rem;">
+      {% csrf_token %}
+      <div id="add-stone-step1" style="display: flex; flex-direction: column; gap: 0.5rem;">
+        <!-- Image preview -->
+        <div id="stone-shape-preview-container" style="margin-bottom: 0;">
+          <div id="stone-shape-preview" class="w-120 h-120 m-auto overflow-hidden" style="border: 4px solid #4CAF50; background: #f5f5f5; border-radius: 12px;">
+          </div>
+        </div>
+        
+        <!-- Name with checkmark -->
+        <label class="avant-label flex-center gap-0-5">{% trans 'Stone Name' %}*
+          <input type="text" name="PK_stone" id="stone-name-input" maxlength="10" required class="avant-input flex-1 ml-0-5">
+          <span id="checkmark" class="js-checkmark js-checkmark-neutral">✔️</span>
+        </label>
+        <div id="name-check-result" aria-live="polite" class="js-result-text js-result-neutral"></div>
+        
+        <!-- Stone type selector -->
+        <div class="w-full">
+          <label class="avant-label mb-1">{% trans 'Stone Type' %}</label>
+          <div class="display-grid grid-cols-2 grid-gap-2">
+            <button type="button" id="stone-type-hidden" class="stone-type-btn avant-btn p-1 text-center" data-type="hidden" style="min-height: 60px;">
+              <div style="font-size: 16px; margin-bottom: 2px;">🕵️</div>
+              <div class="fw-bold fs-0-98">{% trans 'Hidden' %}</div>
+              <div class="fs-0-95 text-muted">{% trans 'No known location' %}</div>
+            </button>
+            <button type="button" id="stone-type-hunted" class="stone-type-btn avant-btn p-1 text-center" data-type="hunted" style="min-height: 60px;">
+              <div style="font-size: 16px; margin-bottom: 2px;">🎯</div>
+              <div class="fw-bold fs-0-98">{% trans 'Hunted' %}</div>
+              <div class="fs-0-95 text-muted">{% trans 'Placed at location' %}</div>
+            </button>
+          </div>
+          <input type="hidden" name="stone_type" id="stone-type-input" value="hidden">
+          <input type="hidden" name="shape" id="stone-shape-input" value="square">
+        </div>
+        
+        <!-- Location field for hunted stones -->
+        <div id="hunted-location-section" class="w-full" style="display: none;">
+          <label class="avant-label">{% trans 'Stone Location' %}</label>
+          <div class="flex gap-1 mt-0-5">
+            <input type="number" name="latitude" id="hunted-latitude" step="any" placeholder="Latitude" class="avant-input flex-1" required>
+            <input type="number" name="longitude" id="hunted-longitude" step="any" placeholder="Longitude" class="avant-input flex-1" required>
+          </div>
+          <div id="hunted-location-map" class="w-full h-200 border-radius-12 mb-1 mt-0-5" style="background: #f5f5f5; border: 2px dashed #ccc;">
+            <div style="display: flex; align-items: center; justify-content: center; height: 100%;">
+              <div style="text-align: center;">
+                <div style="font-size: 24px; margin-bottom: 5px;">🗺️</div>
+                <p style="color: #666; margin: 0; font-size: 14px;">Location Map</p>
+                <p style="color: #999; font-size: 11px; margin: 2px 0 0 0;">Click to set location</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Image upload -->
+        <div class="w-full">
+          <label class="avant-label">{% trans 'Picture' %}</label>
+          <div class="flex gap-1 mt-0-5 items-center">
+            <input type="file" name="image" accept="image/*" id="stone-image-input" class="avant-input flex-1">
+            <button type="button" id="reset-image-btn" class="avant-btn bg-gray text-dark" style="white-space: nowrap;">{% trans 'Reset' %}</button>
+          </div>
+        </div>
+        
+        <!-- Description -->
+        <div class="w-full">
+          <label class="avant-label flex-column w-full">{% trans 'Description' %}
+            <textarea name="description" id="stone-desc-input" rows="3" maxlength="500" class="avant-input w-full mt-0-5 resize-vertical display-block p-2" placeholder="{% trans 'Say something about your stone (max 500 chars)' %}"></textarea>
+            <span id="desc-char-count" class="js-char-count">0/500</span>
+          </label>
+        </div>
+        
+        <input type="hidden" name="color" id="stone-color-input" value="#4CAF50">
+        
+        <!-- Save/Cancel -->
+        <div class="flex gap-1 mt-2 justify-end">
+          <button type="button" id="add-stone-cancel" class="avant-btn bg-gray text-dark">{% trans 'Cancel' %}</button>
+          <button type="button" id="add-stone-next" class="avant-btn">{% trans 'Next' %}</button>
+        </div>
+      </div>
+      
+      <!-- Step 2: QR Code Selection -->
+      <div id="add-stone-step2" class="display-none flex-column items-center gap-1-2">
+        <div class="w-full text-center mb-1">
+          <h3 class="avant-header">{% trans 'StoneWalker Code' %}</h3>
+          <p class="text-muted">{% trans 'Choose how to get your stone code' %}</p>
+        </div>
+        
+        <!-- QR Code Option Buttons -->
+        <div class="w-full">
+          <div class="display-grid grid-cols-2 grid-gap-2" style="max-width: 500px; margin: 0 auto;">
+            <button type="button" id="qr-option-existing" class="qr-option-btn avant-btn p-1 text-center" data-option="existing" style="min-height: 60px;">
+              <div style="font-size: 16px; margin-bottom: 2px;">📱</div>
+              <div class="fw-bold fs-0-98">{% trans 'I have a StoneWalker code already' %}</div>
+              <div class="fs-0-95 text-muted">{% trans 'Scan or enter existing code' %}</div>
+            </button>
+            <button type="button" id="qr-option-new" class="qr-option-btn avant-btn p-1 text-center" data-option="new" style="min-height: 60px;">
+              <div style="font-size: 16px; margin-bottom: 2px;">🆕</div>
+              <div class="fw-bold fs-0-98">{% trans 'I need a new StoneWalker code' %}</div>
+              <div class="fs-0-95 text-muted">{% trans 'Generate new code' %}</div>
+            </button>
+          </div>
+        </div>
+        
+        <!-- Existing Code Section -->
+        <div id="existing-code-section" class="w-full" style="display: none;">
+          <div class="w-full text-center mb-1">
+            <h4 class="avant-header fs-1-1">{% trans 'Enter Your StoneWalker Code' %}</h4>
+            <p class="text-muted fs-0-95">{% trans 'Scan QR code or enter UUID manually' %}</p>
+          </div>
+          
+          <!-- Camera Scanner Placeholder -->
+          <div id="camera-scanner" class="w-full mb-1">
+            <div style="background: #f5f5f5; border: 2px dashed #ccc; border-radius: 8px; padding: 20px; text-align: center;">
+              <div style="font-size: 24px; margin-bottom: 5px;">📷</div>
+              <p style="color: #666; margin: 0; font-size: 14px;">QR Code Scanner</p>
+              <p style="color: #999; font-size: 11px; margin: 2px 0 0 0;">Point camera at StoneWalker QR code</p>
+            </div>
+          </div>
+          
+          <!-- Manual UUID Input -->
+          <div class="w-full mb-2">
+            <label class="avant-label">{% trans 'Or enter UUID manually' %}
+              <input type="text" id="manual-uuid-input" class="avant-input w-full mt-0-5" placeholder="Enter StoneWalker UUID">
+            </label>
+          </div>
+          
+          <!-- Code Validation Result -->
+          <div id="code-validation" class="w-full bg-gray p-2 border-radius-8 mb-2" style="display: none;">
+            <h4 style="margin: 0 0 10px 0;">{% trans 'Code Information' %}</h4>
+            <p style="margin: 5px 0;"><strong>{% trans 'UUID:' %}</strong> <span id="validated-uuid"></span></p>
+            <p style="margin: 5px 0;"><strong>{% trans 'Status:' %}</strong> <span id="validation-status"></span></p>
+          </div>
+        </div>
+        
+        <!-- New Code Section -->
+        <div id="new-code-section" class="w-full" style="display: none;">
+          <div class="w-full text-center mb-1">
+            <h4 class="avant-header fs-1-1">{% trans 'New StoneWalker Code Generated' %}</h4>
+            <p class="text-muted fs-0-95">{% trans 'Download and print this code for your stone' %}</p>
+          </div>
+          
+          <!-- QR Code Display -->
+          <div id="qr-code-container" class="w-full flex-center mb-1">
+            <div id="qr-code-display" style="background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+              <div id="qr-code-placeholder" style="width: 150px; height: 150px; background: #f0f0f0; border: 1px solid #ddd; display: flex; align-items: center; justify-content: center; border-radius: 4px;">
+                <div style="text-align: center;">
+                  <div style="font-size: 32px; margin-bottom: 5px;">📱</div>
+                  <p style="margin: 0; color: #666; font-size: 11px;">QR Code will be generated</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- QR Code Info -->
+          <div id="qr-code-info" class="w-full bg-gray p-2 border-radius-8 mb-2" style="display: none;">
+            <h4 style="margin: 0 0 10px 0;">{% trans 'QR Code Information' %}</h4>
+            <p style="margin: 5px 0;"><strong>{% trans 'Stone Name:' %}</strong> <span id="qr-stone-name"></span></p>
+            <p style="margin: 5px 0;"><strong>{% trans 'UUID:' %}</strong> <span id="qr-stone-uuid"></span></p>
+            <p style="margin: 5px 0;"><strong>{% trans 'Scan URL:' %}</strong> <code id="qr-scan-url" style="background: #e0e0e0; padding: 2px 4px; border-radius: 3px; font-size: 12px;"></code></p>
+          </div>
+          
+          <!-- Download Button -->
+          <div class="flex gap-1 justify-center w-full mb-2">
+            <button type="button" id="download-qr-btn" class="avant-btn bg-accent text-white" style="display: none;">
+              📥 {% trans 'Download QR Code' %}
+            </button>
+          </div>
+        </div>
+        
+        <!-- Action Buttons -->
+        <div class="flex gap-1 justify-end w-full">
+          <button type="button" id="add-stone-back" class="avant-btn bg-gray text-dark">{% trans 'Back' %}</button>
+          <button type="submit" class="avant-btn">{% trans 'Save Stone' %}</button>
+        </div>
+      </div>
+      
+      <!-- Step 3: Map (for hunted stones) -->
+      <div id="add-stone-step3" class="display-none flex-column items-center gap-1-2">
+        <div id="location-flavor" class="mb-1 text-muted fs-0-98"></div>
+        <div id="add-stone-map" class="w-full h-300 border-radius-12 mb-1"></div>
+        <div class="flex gap-1 justify-end">
+          <button type="button" id="add-stone-back-step3" class="avant-btn bg-gray text-dark">{% trans 'Back' %}</button>
+          <button type="submit" class="avant-btn">{% trans 'Save' %}</button>
+        </div>
+      </div>
+      <input type="hidden" name="latitude" id="add-stone-lat">
+      <input type="hidden" name="longitude" id="add-stone-lng">
+    </form>
+  </div>
+</div>
+
+<!-- Scan Stone Modal -->
+<div id="scan-stone-modal" class="modal display-none position-fixed z-2000 left-0 top-0 w-100vw h-100vh bg-modal-overlay flex-center">
+  <div class="avant-modal max-w-600 min-w-320 w-90vw max-h-90vh m-auto p-2 position-relative" style="display: flex; flex-direction: column; max-height: 90vh;">
+    <span id="scan-stone-close" class="close position-absolute top-1 right-1 fs-2 cursor-pointer">&times;</span>
+    <h2 class="avant-header mb-1">{% trans 'Scan Stone' %}</h2>
+    <div style="display: flex; flex-direction: column; gap: 1rem; flex: 1; overflow-y: auto;">
+      <!-- Stone Name Input -->
+      <div>
+        <label class="avant-label">{% trans 'Stone Name or UUID' %}
+          <input type="text" id="scan-stone-input" class="avant-input w-full mt-0-5" placeholder="Enter stone name or scan QR code">
+        </label>
+      </div>
+      
+      <!-- QR Code Scanner -->
+      <div class="w-full mb-1">
+        <label class="avant-label mb-1">{% trans 'Scan QR Code' %}</label>
+        <div id="scan-camera-scanner" class="w-full">
+          <div style="background: #f5f5f5; border: 2px dashed #ccc; border-radius: 8px; padding: 20px; text-align: center;">
+            <div style="font-size: 24px; margin-bottom: 5px;">📷</div>
+            <p style="color: #666; margin: 0; font-size: 14px;">QR Code Scanner</p>
+            <p style="color: #999; font-size: 11px; margin: 2px 0 0 0;">Point camera at StoneWalker QR code</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Manual UUID Input -->
+      <div class="w-full mb-2">
+        <label class="avant-label">{% trans 'Or enter UUID manually' %}
+          <input type="text" id="scan-manual-uuid-input" class="avant-input w-full mt-0-5" placeholder="Enter StoneWalker UUID">
+        </label>
+      </div>
+      
+      <!-- Code Validation Result -->
+      <div id="scan-code-validation" class="w-full bg-gray p-2 border-radius-8 mb-2" style="display: none;">
+        <h4 style="margin: 0 0 10px 0;">{% trans 'Code Information' %}</h4>
+        <p style="margin: 5px 0;"><strong>{% trans 'UUID:' %}</strong> <span id="scan-validated-uuid"></span></p>
+        <p style="margin: 5px 0;"><strong>{% trans 'Status:' %}</strong> <span id="scan-validation-status"></span></p>
+      </div>
+      
+      <!-- Stone Info Display -->
+      <div id="scan-stone-info" class="w-full bg-gray p-2 border-radius-8 mb-2" style="display: none;">
+        <h4 style="margin: 0 0 10px 0;">{% trans 'Stone Information' %}</h4>
+        <p style="margin: 5px 0;"><strong>{% trans 'Name:' %}</strong> <span id="scan-stone-name"></span></p>
+        <p style="margin: 5px 0;"><strong>{% trans 'Type:' %}</strong> <span id="scan-stone-type"></span></p>
+        <p style="margin: 5px 0;"><strong>{% trans 'Description:' %}</strong> <span id="scan-stone-description"></span></p>
+        <p style="margin: 5px 0;"><strong>{% trans 'Created by:' %}</strong> <span id="scan-stone-creator"></span></p>
+      </div>
+      
+      <!-- Action Buttons -->
+      <div class="flex gap-1 justify-end">
+        <button type="button" id="scan-stone-cancel" class="avant-btn bg-gray text-dark">{% trans 'Cancel' %}</button>
+        <button type="button" id="scan-stone-found" class="avant-btn" style="display: none;">{% trans 'Found This Stone' %}</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- QR Code Display Modal -->
+<div id="qr-code-modal" class="modal display-none position-fixed z-2000 left-0 top-0 w-100vw h-100vh bg-modal-overlay flex-center">
+  <div class="avant-modal max-w-500 min-w-320 w-90vw max-h-90vh m-auto p-2 position-relative" style="display: flex; flex-direction: column; max-height: 90vh;">
+    <span id="qr-code-close" class="close position-absolute top-1 right-1 fs-2 cursor-pointer">&times;</span>
+    <h2 class="avant-header mb-1">{% trans 'QR Code' %}</h2>
+    <div style="display: flex; flex-direction: column; gap: 1rem; flex: 1; overflow-y: auto; align-items: center;">
+      <!-- QR Code Image -->
+      <div style="background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+        <div style="width: 200px; height: 200px; background: #f0f0f0; border: 1px solid #ddd; display: flex; align-items: center; justify-content: center; border-radius: 5px;">
+          <div style="text-align: center;">
+            <div style="font-size: 48px; margin-bottom: 10px;">📱</div>
+            <p style="margin: 0; color: #666; font-size: 12px;">QR Code Placeholder</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- QR Code Info -->
+      <div style="background: #f5f5f5; padding: 15px; border-radius: 8px; width: 100%; max-width: 400px;">
+        <h4 style="margin: 0 0 10px 0;">{% trans 'QR Code Information' %}</h4>
+        <p style="margin: 5px 0;"><strong>{% trans 'Stone Name:' %}</strong> <span id="qr-modal-stone-name">Sample Stone</span></p>
+        <p style="margin: 5px 0;"><strong>{% trans 'UUID:' %}</strong> <span id="qr-modal-uuid">550e8400-e29b-41d4-a716-446655440000</span></p>
+        <p style="margin: 5px 0;"><strong>{% trans 'Scan URL:' %}</strong> <code id="qr-modal-url" style="background: #e0e0e0; padding: 2px 4px; border-radius: 3px; font-size: 12px;">http://localhost:8000/stone-link/550e8400-e29b-41d4-a716-446655440000/</code></p>
+      </div>
+      
+      <!-- Download Button -->
+      <div class="flex gap-1 justify-center w-full">
+        <button type="button" id="qr-modal-download" class="avant-btn bg-accent text-white">
+          📥 {% trans 'Download QR Code' %}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- QR Scanner Required Scripts -->
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+<script src="{% static 'js/qr-code.js' %}"></script>
+
+<script>
+// Shared Modal JavaScript Functionality
+document.addEventListener('DOMContentLoaded', function() {
+  // Modal elements
+  const createModal = document.getElementById('add-stone-modal');
+  const scanModal = document.getElementById('scan-stone-modal');
+  const qrModal = document.getElementById('qr-code-modal');
+  
+  // Close buttons
+  const createClose = document.getElementById('add-stone-close');
+  const scanClose = document.getElementById('scan-stone-close');
+  const qrClose = document.getElementById('qr-code-close');
+  const createCancel = document.getElementById('add-stone-cancel');
+  const scanCancel = document.getElementById('scan-stone-cancel');
+  
+  // Close modal function
+  function closeModal(modal) {
+    if (modal) {
+      modal.style.display = 'none';
+      modal.classList.add('display-none');
+    }
+  }
+  
+  // Close button handlers
+  if (createClose) createClose.onclick = () => closeModal(createModal);
+  if (scanClose) scanClose.onclick = () => closeModal(scanModal);
+  if (qrClose) qrClose.onclick = () => closeModal(qrModal);
+  if (createCancel) createCancel.onclick = () => closeModal(createModal);
+  if (scanCancel) scanCancel.onclick = () => closeModal(scanModal);
+  
+  // Overlay click handlers
+  window.onclick = (e) => {
+    if (e.target === createModal) closeModal(createModal);
+    if (e.target === scanModal) closeModal(scanModal);
+    if (e.target === qrModal) closeModal(qrModal);
+  };
+  
+  // Stone type button functionality
+  const stoneTypeButtons = document.querySelectorAll('.stone-type-btn');
+  const stoneTypeInput = document.getElementById('stone-type-input');
+  const stoneShapeInput = document.getElementById('stone-shape-input');
+  const huntedLocationSection = document.getElementById('hunted-location-section');
+  
+  stoneTypeButtons.forEach(btn => {
+    btn.addEventListener('click', function() {
+      // Remove active class from all buttons
+      stoneTypeButtons.forEach(b => b.classList.remove('bg-accent', 'text-white'));
+      stoneTypeButtons.forEach(b => b.classList.add('bg-gray', 'text-dark'));
+      
+      // Add active class to clicked button
+      this.classList.remove('bg-gray', 'text-dark');
+      this.classList.add('bg-accent', 'text-white');
+      
+      // Update hidden input
+      const stoneType = this.dataset.type;
+      stoneTypeInput.value = stoneType;
+      
+      // Auto-select shape based on stone type
+      if (stoneType === 'hidden') {
+        stoneShapeInput.value = 'square';
+        if (huntedLocationSection) huntedLocationSection.style.display = 'none';
+      } else if (stoneType === 'hunted') {
+        stoneShapeInput.value = 'circle';
+        if (huntedLocationSection) huntedLocationSection.style.display = 'block';
+        // Initialize map for hunted stones
+        setTimeout(initializeHuntedLocationMap, 100);
+      }
+      
+      // Update shape preview
+      updateShapePreview();
+    });
+  });
+  
+  // Set initial active state for hidden stone
+  const hiddenBtn = document.getElementById('stone-type-hidden');
+  if (hiddenBtn) {
+    hiddenBtn.classList.remove('bg-gray', 'text-dark');
+    hiddenBtn.classList.add('bg-accent', 'text-white');
+  }
+  
+  // Image upload functionality
+  const imageInput = document.getElementById('stone-image-input');
+  const resetImageBtn = document.getElementById('reset-image-btn');
+  const shapePreview = document.getElementById('stone-shape-preview');
+  let previewImgDataUrl = '';
+  
+  function updateShapePreview() {
+    const shape = stoneShapeInput.value;
+    
+    if (shapePreview) {
+      shapePreview.innerHTML = '';
+      
+      // Reset all shape styles first
+      shapePreview.style.borderRadius = '';
+      shapePreview.style.clipPath = '';
+      
+      // Create image element
+      const img = document.createElement('img');
+      if (!previewImgDataUrl) {
+        // Use default stone image
+        img.src = "/static/stone.png";
+      } else {
+        // Use uploaded image
+        img.src = previewImgDataUrl;
+      }
+      img.style.width = '100%';
+      img.style.height = '100%';
+      img.style.objectFit = 'cover';
+      shapePreview.appendChild(img);
+      
+      // Apply shape styling
+      if (shape === 'circle') {
+        shapePreview.style.borderRadius = '50%';
+        shapePreview.style.clipPath = '';
+      } else if (shape === 'square') {
+        shapePreview.style.borderRadius = '12px'; // Rounded square
+        shapePreview.style.clipPath = '';
+      } else if (shape === 'triangle') {
+        shapePreview.style.borderRadius = '';
+        shapePreview.style.clipPath = 'polygon(50% 0%, 0% 100%, 100% 100%)';
+      } else if (shape === 'star') {
+        shapePreview.style.borderRadius = '';
+        shapePreview.style.clipPath = 'polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)';
+      }
+    }
+  }
+  
+  if (imageInput) {
+    imageInput.addEventListener('change', function() {
+      if (this.files && this.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          previewImgDataUrl = e.target.result;
+          updateShapePreview();
+        };
+        reader.readAsDataURL(this.files[0]);
+      }
+    });
+  }
+  
+  if (resetImageBtn) {
+    resetImageBtn.addEventListener('click', function() {
+      if (imageInput) imageInput.value = '';
+      previewImgDataUrl = '';
+      updateShapePreview();
+    });
+  }
+  
+  // Initialize shape preview
+  updateShapePreview();
+  
+  // Step navigation functionality
+  const step1 = document.getElementById('add-stone-step1');
+  const step2 = document.getElementById('add-stone-step2');
+  const step3 = document.getElementById('add-stone-step3');
+  const nextBtn = document.getElementById('add-stone-next');
+  const backBtn = document.getElementById('add-stone-back');
+  const backBtnStep3 = document.getElementById('add-stone-back-step3');
+  const nameInput = document.getElementById('stone-name-input');
+  const descInput = document.getElementById('stone-desc-input');
+  const huntedLatitudeInput = document.getElementById('hunted-latitude');
+  const huntedLongitudeInput = document.getElementById('hunted-longitude');
+  const huntedLocationMap = document.getElementById('hunted-location-map');
+  
+  // Generate UUID function
+  function generateUUID() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+      const r = Math.random() * 16 | 0;
+      const v = c == 'x' ? r : (r & 0x3 | 0x8);
+      return v.toString(16);
+    });
+  }
+  
+  // Initialize hunted stone location map
+  let huntedLocationMapInstance = null;
+  let huntedLocationMarker = null;
+  
+  function initializeHuntedLocationMap() {
+    const huntedLocationMapElement = document.getElementById('hunted-location-map');
+    if (huntedLocationMapElement && !huntedLocationMapInstance) {
+      // Initialize map when hunted stone type is selected
+      huntedLocationMapInstance = L.map('hunted-location-map').setView([20, 0], 3);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '© OpenStreetMap'
+      }).addTo(huntedLocationMapInstance);
+      
+      huntedLocationMarker = L.marker([20, 0], {draggable: true}).addTo(huntedLocationMapInstance);
+      
+      // Handle marker drag
+      huntedLocationMarker.on('dragend', function(e) {
+        const pos = huntedLocationMarker.getLatLng();
+        huntedLatitudeInput.value = pos.lat.toFixed(6);
+        huntedLongitudeInput.value = pos.lng.toFixed(6);
+      });
+      
+      // Handle map click
+      huntedLocationMapInstance.on('click', function(e) {
+        huntedLocationMarker.setLatLng(e.latlng);
+        huntedLatitudeInput.value = e.latlng.lat.toFixed(6);
+        huntedLongitudeInput.value = e.latlng.lng.toFixed(6);
+      });
+      
+      // Try to get user location
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(pos) {
+          huntedLocationMarker.setLatLng([pos.coords.latitude, pos.coords.longitude]);
+          huntedLocationMapInstance.setView([pos.coords.latitude, pos.coords.longitude], 13);
+          huntedLatitudeInput.value = pos.coords.latitude.toFixed(6);
+          huntedLongitudeInput.value = pos.coords.longitude.toFixed(6);
+        });
+      }
+    }
+  }
+  
+  if (nextBtn) {
+    nextBtn.onclick = function() {
+      // Validate required fields
+      if (!nameInput.value.trim()) {
+        alert('Please enter a stone name.');
+        nameInput.focus();
+        return;
+      }
+      if (!descInput.value.trim()) {
+        alert('Please enter a description.');
+        descInput.focus();
+        return;
+      }
+      
+      // Validate hunted stone location
+      const stoneType = stoneTypeInput.value;
+      if (stoneType === 'hunted') {
+        if (!huntedLatitudeInput.value || !huntedLongitudeInput.value) {
+          alert('Please set the location for your hunted stone.');
+          return;
+        }
+        const lat = parseFloat(huntedLatitudeInput.value);
+        const lng = parseFloat(huntedLongitudeInput.value);
+        if (isNaN(lat) || isNaN(lng) || lat < -90 || lat > 90 || lng < -180 || lng > 180) {
+          alert('Please enter valid coordinates for your hunted stone.');
+          return;
+        }
+      }
+      
+      // Generate UUID for the stone
+      const stoneUUID = generateUUID();
+      
+      // Generate QR code using server API
+      generateQRCodeForStone(nameInput.value.trim(), stoneUUID);
+      
+      // Go to step 2 (QR Code)
+      if (step1) {
+        step1.style.display = 'none';
+        step1.classList.add('display-none');
+      }
+      if (step2) {
+        step2.style.display = 'flex';
+        step2.classList.remove('display-none');
+      }
+    };
+  }
+  
+  // Function to generate QR code for a stone
+  async function generateQRCodeForStone(stoneName, stoneUUID) {
+    console.log('Generating QR code for:', stoneName, stoneUUID);
+    
+    try {
+      const response = await fetch(`/api/generate-qr/?stone_name=${encodeURIComponent(stoneName)}&stone_uuid=${stoneUUID}`);
+      console.log('QR API response status:', response.status);
+      
+      const data = await response.json();
+      console.log('QR API response data:', data);
+      
+      if (data.success) {
+        // Display QR code
+        const qrPlaceholder = document.getElementById('qr-code-placeholder');
+        if (qrPlaceholder) {
+          console.log('Updating QR placeholder with image');
+          qrPlaceholder.innerHTML = `<img src="data:image/png;base64,${data.qr_code}" style="width: 100%; height: 100%; object-fit: contain;">`;
+        } else {
+          console.error('QR placeholder element not found');
+        }
+        
+        // Update QR code information
+        const qrStoneName = document.getElementById('qr-stone-name');
+        const qrStoneUuid = document.getElementById('qr-stone-uuid');
+        const qrScanUrl = document.getElementById('qr-scan-url');
+        const qrCodeInfo = document.getElementById('qr-code-info');
+        const downloadQrBtn = document.getElementById('download-qr-btn');
+        
+        if (qrStoneName) qrStoneName.textContent = stoneName;
+        if (qrStoneUuid) qrStoneUuid.textContent = stoneUUID;
+        if (qrScanUrl) qrScanUrl.textContent = data.qr_url;
+        
+        // Show QR code info and download button
+        if (qrCodeInfo) qrCodeInfo.style.display = 'block';
+        if (downloadQrBtn) downloadQrBtn.style.display = 'inline-block';
+        
+        // Store QR data for download
+        window.currentQRData = data;
+        console.log('QR code generated successfully');
+      } else {
+        console.error('Failed to generate QR code:', data.error);
+        alert('Failed to generate QR code. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error generating QR code:', error);
+      alert('Error generating QR code. Please try again.');
+    }
+  }
+  
+  if (backBtn) {
+    backBtn.onclick = function() {
+      if (step2) {
+        step2.style.display = 'none';
+        step2.classList.add('display-none');
+      }
+      if (step1) {
+        step1.style.display = 'flex';
+        step1.classList.remove('display-none');
+      }
+    };
+  }
+  
+  if (backBtnStep3) {
+    backBtnStep3.onclick = function() {
+      if (step3) step3.style.display = 'none';
+      if (step2) step2.style.display = 'flex';
+    };
+  }
+  
+  // QR Code option button functionality
+  const qrOptionButtons = document.querySelectorAll('.qr-option-btn');
+  const existingCodeSection = document.getElementById('existing-code-section');
+  const newCodeSection = document.getElementById('new-code-section');
+  
+  qrOptionButtons.forEach(btn => {
+    btn.addEventListener('click', function() {
+      // Remove active class from all buttons
+      qrOptionButtons.forEach(b => b.classList.remove('bg-accent', 'text-white'));
+      qrOptionButtons.forEach(b => b.classList.add('bg-gray', 'text-dark'));
+      
+      // Add active class to clicked button
+      this.classList.remove('bg-gray', 'text-dark');
+      this.classList.add('bg-accent', 'text-white');
+      
+      const option = this.dataset.option;
+      
+      if (option === 'existing') {
+        // Show existing code section
+        if (existingCodeSection) existingCodeSection.style.display = 'block';
+        if (newCodeSection) newCodeSection.style.display = 'none';
+      } else if (option === 'new') {
+        // Show new code section and generate QR
+        if (existingCodeSection) existingCodeSection.style.display = 'none';
+        if (newCodeSection) newCodeSection.style.display = 'block';
+        
+        // Generate new UUID and QR code
+        const stoneUUID = generateUUID();
+        const stoneName = nameInput.value.trim();
+        
+        // Generate QR code using server API
+        generateQRCodeForStone(stoneName, stoneUUID);
+      }
+    });
+  });
+  
+  // Manual UUID input validation
+  const manualUuidInput = document.getElementById('manual-uuid-input');
+  const codeValidation = document.getElementById('code-validation');
+  const validatedUuid = document.getElementById('validated-uuid');
+  const validationStatus = document.getElementById('validation-status');
+  
+  if (manualUuidInput) {
+    manualUuidInput.addEventListener('blur', function() {
+      const uuid = this.value.trim();
+      if (uuid) {
+        // Simple UUID validation (basic format check)
+        const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+        if (uuidRegex.test(uuid)) {
+          if (validatedUuid) validatedUuid.textContent = uuid;
+          if (validationStatus) {
+            validationStatus.textContent = 'Valid UUID';
+            validationStatus.style.color = '#4CAF50';
+          }
+          if (codeValidation) codeValidation.style.display = 'block';
+        } else {
+          if (validationStatus) {
+            validationStatus.textContent = 'Invalid UUID format';
+            validationStatus.style.color = '#f44336';
+          }
+          if (codeValidation) codeValidation.style.display = 'block';
+        }
+      } else {
+        if (codeValidation) codeValidation.style.display = 'none';
+      }
+    });
+  }
+  
+  // Download QR code functionality
+  const downloadQrBtn = document.getElementById('download-qr-btn');
+  if (downloadQrBtn) {
+    downloadQrBtn.onclick = function() {
+      if (window.currentQRData) {
+        // Download the actual QR code image
+        const link = document.createElement('a');
+        link.href = `data:image/png;base64,${window.currentQRData.qr_code}`;
+        link.download = `${window.currentQRData.stone_name}_qr.png`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      } else {
+        alert('No QR code available for download. Please generate a QR code first.');
+      }
+    };
+  }
+  
+  // Scan Modal QR Scanner Functionality
+  const scanManualUuidInput = document.getElementById('scan-manual-uuid-input');
+  const scanCodeValidation = document.getElementById('scan-code-validation');
+  const scanValidatedUuid = document.getElementById('scan-validated-uuid');
+  const scanValidationStatus = document.getElementById('scan-validation-status');
+  const scanStoneInfo = document.getElementById('scan-stone-info');
+  const scanStoneFoundBtn = document.getElementById('scan-stone-found');
+  
+  // Initialize scan modal QR scanner when modal opens
+  function initializeScanModal() {
+    // Initialize QR scanner for scan modal
+    const scanCameraScanner = document.getElementById('scan-camera-scanner');
+    if (scanCameraScanner && window.qrCodeManager) {
+      // Override the default QR code detection behavior for scan modal
+      const originalOnQRCodeDetected = window.qrCodeManager.onQRCodeDetected;
+      const originalHandleScannedUUID = window.qrCodeManager.handleScannedUUID;
+      const originalShowScanSuccess = window.qrCodeManager.showScanSuccess;
+      
+      // Custom behavior for scan modal
+      window.qrCodeManager.onQRCodeDetected = function(decodedText, decodedResult) {
+        console.log('Scan Modal QR Code detected:', decodedText);
+        
+        // Stop scanning
+        this.stopQRScanner();
+        
+        // Extract UUID from the decoded text
+        const uuidMatch = decodedText.match(/\/stone-link\/([^\/]+)\//);
+        if (uuidMatch) {
+          const uuid = uuidMatch[1];
+          this.handleScannedUUIDForScanModal(uuid);
+        } else {
+          // Try to extract UUID directly if it's just a UUID
+          const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+          if (uuidRegex.test(decodedText)) {
+            this.handleScannedUUIDForScanModal(decodedText);
+          } else {
+            alert('Invalid QR code format. Please scan a valid StoneWalker QR code.');
+          }
+        }
+      };
+      
+      window.qrCodeManager.handleScannedUUIDForScanModal = function(uuid) {
+        // Update manual input
+        if (scanManualUuidInput) {
+          scanManualUuidInput.value = uuid;
+          scanManualUuidInput.dispatchEvent(new Event('blur'));
+        }
+        
+        // Show success message and congratulate user
+        this.showScanSuccessForScanModal(uuid);
+        
+        // Forward to stone UUID weblink after a short delay
+        setTimeout(() => {
+          window.location.href = `/stone-link/${uuid}/`;
+        }, 2000);
+      };
+      
+      window.qrCodeManager.showScanSuccessForScanModal = function(uuid) {
+        const container = document.getElementById('scan-camera-scanner');
+        if (!container) return;
+        
+        container.innerHTML = `
+          <div style="background: #e8f5e8; border: 2px solid #4caf50; border-radius: 8px; padding: 20px; text-align: center;">
+            <div style="font-size: 24px; margin-bottom: 10px;">🎉</div>
+            <p style="color: #2e7d32; margin: 0; font-size: 16px; font-weight: bold;">Congratulations!</p>
+            <p style="color: #2e7d32; margin: 5px 0; font-size: 14px;">You found a StoneWalker stone!</p>
+            <p style="color: #666; font-size: 11px; margin: 5px 0 0 0;">Redirecting to stone page...</p>
+          </div>
+        `;
+      };
+      
+      // Initialize QR scanner
+      window.qrCodeManager.initQRScanner('scan-camera-scanner');
+    }
+  }
+  
+  // Manual UUID validation for scan modal
+  if (scanManualUuidInput) {
+    scanManualUuidInput.addEventListener('blur', async function() {
+      const uuid = this.value.trim();
+      if (uuid) {
+        // Simple UUID validation (basic format check)
+        const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+        if (uuidRegex.test(uuid)) {
+          if (scanValidatedUuid) scanValidatedUuid.textContent = uuid;
+          if (scanValidationStatus) {
+            scanValidationStatus.textContent = 'Valid UUID';
+            scanValidationStatus.style.color = '#4CAF50';
+          }
+          if (scanCodeValidation) scanCodeValidation.style.display = 'block';
+          
+          // Try to fetch stone information
+          try {
+            const response = await fetch(`/api/check-stone-uuid/${uuid}/`);
+            const data = await response.json();
+            
+            if (data.exists && data.stone) {
+              // Show stone information
+              const scanStoneName = document.getElementById('scan-stone-name');
+              const scanStoneType = document.getElementById('scan-stone-type');
+              const scanStoneDescription = document.getElementById('scan-stone-description');
+              const scanStoneCreator = document.getElementById('scan-stone-creator');
+              
+              if (scanStoneName) scanStoneName.textContent = data.stone.PK_stone || 'Unknown';
+              if (scanStoneType) scanStoneType.textContent = data.stone.stone_type || 'Unknown';
+              if (scanStoneDescription) scanStoneDescription.textContent = data.stone.description || 'No description';
+              if (scanStoneCreator) scanStoneCreator.textContent = data.stone.user || 'Unknown';
+              
+              if (scanStoneInfo) scanStoneInfo.style.display = 'block';
+              if (scanStoneFoundBtn) scanStoneFoundBtn.style.display = 'inline-block';
+            } else {
+              if (scanValidationStatus) {
+                scanValidationStatus.textContent = 'Valid UUID - Stone not found';
+                scanValidationStatus.style.color = '#FF9800';
+              }
+            }
+          } catch (error) {
+            console.error('Error fetching stone information:', error);
+            if (scanValidationStatus) {
+              scanValidationStatus.textContent = 'Valid UUID - Error checking stone';
+              scanValidationStatus.style.color = '#FF9800';
+            }
+          }
+        } else {
+          if (scanValidationStatus) {
+            scanValidationStatus.textContent = 'Invalid UUID format';
+            scanValidationStatus.style.color = '#f44336';
+          }
+          if (scanCodeValidation) scanCodeValidation.style.display = 'block';
+        }
+      } else {
+        if (scanCodeValidation) scanCodeValidation.style.display = 'none';
+        if (scanStoneInfo) scanStoneInfo.style.display = 'none';
+        if (scanStoneFoundBtn) scanStoneFoundBtn.style.display = 'none';
+      }
+    });
+  }
+  
+  // Found Stone button functionality
+  if (scanStoneFoundBtn) {
+    scanStoneFoundBtn.addEventListener('click', function() {
+      const uuid = scanManualUuidInput?.value.trim();
+      if (uuid) {
+        // Here you would implement the logic for marking the stone as found
+        alert(`Stone with UUID ${uuid} marked as found!`);
+        // Close modal
+        closeModal(scanModal);
+      }
+    });
+  }
+  
+  // Global functions for opening modals
+  window.openSharedCreateStoneModal = function() {
+    // Reset modal to step 1
+    if (step1) {
+      step1.style.display = 'flex';
+      step1.classList.remove('display-none');
+    }
+    if (step2) {
+      step2.style.display = 'none';
+      step2.classList.add('display-none');
+    }
+    if (step3) {
+      step3.style.display = 'none';
+      step3.classList.add('display-none');
+    }
+    
+    // Reset form fields
+    const form = document.getElementById('add-stone-form');
+    if (form) form.reset();
+    
+    // Reset stone type buttons
+    stoneTypeButtons.forEach(b => b.classList.remove('bg-accent', 'text-white'));
+    stoneTypeButtons.forEach(b => b.classList.add('bg-gray', 'text-dark'));
+    
+    // Set hidden stone as default
+    if (hiddenBtn) {
+      hiddenBtn.classList.remove('bg-gray', 'text-dark');
+      hiddenBtn.classList.add('bg-accent', 'text-white');
+    }
+    
+    // Reset hunted location section
+    if (huntedLocationSection) huntedLocationSection.style.display = 'none';
+    
+    // Reset QR code sections
+    if (existingCodeSection) existingCodeSection.style.display = 'none';
+    if (newCodeSection) newCodeSection.style.display = 'none';
+    
+    // Reset QR option buttons
+    qrOptionButtons.forEach(b => b.classList.remove('bg-accent', 'text-white'));
+    qrOptionButtons.forEach(b => b.classList.add('bg-gray', 'text-dark'));
+    
+    // Show modal
+    if (createModal) {
+      createModal.classList.remove('display-none');
+      createModal.style.display = 'flex';
+    }
+  };
+  
+  window.openSharedScanStoneModal = function() {
+    if (scanModal) {
+      scanModal.classList.remove('display-none');
+      scanModal.style.display = 'flex';
+      
+      // Initialize QR scanner after modal opens
+      setTimeout(initializeScanModal, 100);
+    }
+  };
+});
+</script> 

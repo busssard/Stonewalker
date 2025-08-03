@@ -11,7 +11,10 @@ from django.test.utils import override_settings
 import tempfile
 import shutil
 import uuid
-from .models import Stone, StoneMove
+from .models import Stone, StoneMove, StoneScanAttempt
+from django.utils import timezone
+from datetime import timedelta
+import uuid as uuid_lib
 
 
 class ChangeLanguageTests(TestCase):
@@ -1071,5 +1074,739 @@ class StoneModelTests(TestCase):
         )
         
         self.assertEqual(str(stone), 'STRTEST')
+
+
+class StoneScanAttemptTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='testuser', password='testpass')
+        self.stone = Stone.objects.create(
+            PK_stone='TESTSTONE',
+            description='Test stone',
+            FK_user=self.user
+        )
+
+    def test_stone_scan_attempt_creation(self):
+        """Test creating a scan attempt"""
+        attempt = StoneScanAttempt.objects.create(
+            FK_stone=self.stone,
+            FK_user=self.user,
+            ip_address='127.0.0.1',
+            user_agent='Test Browser'
+        )
+        self.assertEqual(attempt.FK_stone, self.stone)
+        self.assertEqual(attempt.FK_user, self.user)
+        self.assertEqual(attempt.ip_address, '127.0.0.1')
+
+    def test_can_scan_again_within_week(self):
+        """Test that user cannot scan again within one week"""
+        # Create a scan attempt now
+        StoneScanAttempt.objects.create(
+            FK_stone=self.stone,
+            FK_user=self.user
+        )
+        
+        # Should not be able to scan again
+        self.assertFalse(StoneScanAttempt.can_scan_again(self.stone, self.user))
+
+    def test_can_scan_again_after_week(self):
+        """Test that user can scan again after one week"""
+        # Create a scan attempt more than a week ago
+        old_time = timezone.now() - timedelta(weeks=2)
+        attempt = StoneScanAttempt.objects.create(
+            FK_stone=self.stone,
+            FK_user=self.user
+        )
+        attempt.scan_time = old_time
+        attempt.save()
+        
+        # Should be able to scan again
+        self.assertTrue(StoneScanAttempt.can_scan_again(self.stone, self.user))
+
+    def test_record_scan_attempt(self):
+        """Test recording a scan attempt"""
+        attempt = StoneScanAttempt.record_scan_attempt(self.stone, self.user)
+        self.assertEqual(attempt.FK_stone, self.stone)
+        self.assertEqual(attempt.FK_user, self.user)
+        self.assertIsNotNone(attempt.scan_time)
+
+    def test_record_scan_attempt_updates_existing(self):
+        """Test that recording updates existing attempt"""
+        # Create initial attempt
+        attempt1 = StoneScanAttempt.record_scan_attempt(self.stone, self.user)
+        old_time = attempt1.scan_time
+        
+        # Record another attempt
+        attempt2 = StoneScanAttempt.record_scan_attempt(self.stone, self.user)
+        
+        # Should be the same object but with updated time
+        self.assertEqual(attempt1.id, attempt2.id)
+        self.assertGreater(attempt2.scan_time, old_time)
+
+
+class QRCodeGenerationTests(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.user = User.objects.create_user(username='testuser', password='testpass')
+        self.client.login(username='testuser', password='testpass')
+
+    def test_generate_qr_code_api(self):
+        """Test QR code generation API"""
+        stone_name = 'TESTSTONE'
+        stone_uuid = str(uuid.uuid4())
+        
+        response = self.client.get('/api/generate-qr/', {
+            'stone_name': stone_name,
+            'stone_uuid': stone_uuid
+        })
+        
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertTrue(data['success'])
+        self.assertEqual(data['stone_name'], stone_name)
+        self.assertEqual(data['stone_uuid'], stone_uuid)
+        self.assertIn('qr_code', data)
+        self.assertIn('qr_url', data)
+
+    def test_generate_qr_code_missing_params(self):
+        """Test QR code generation with missing parameters"""
+        response = self.client.get('/api/generate-qr/', {})
+        
+        self.assertEqual(response.status_code, 400)
+        data = response.json()
+        self.assertIn('error', data)
+
+    def test_generate_qr_code_invalid_uuid(self):
+        """Test QR code generation with invalid UUID"""
+        response = self.client.get('/api/generate-qr/', {
+            'stone_name': 'TESTSTONE',
+            'stone_uuid': 'invalid-uuid'
+        })
+        
+        self.assertEqual(response.status_code, 400)
+        data = response.json()
+        self.assertIn('error', data)
+
+    def test_generate_qr_code_api_structure(self):
+        """Test QR code generation API returns correct data structure"""
+        stone_name = 'TESTSTONE'
+        stone_uuid = str(uuid.uuid4())
+        
+        response = self.client.get('/api/generate-qr/', {
+            'stone_name': stone_name,
+            'stone_uuid': stone_uuid
+        })
+        
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertTrue(data['success'])
+        self.assertEqual(data['stone_name'], stone_name)
+        self.assertEqual(data['stone_uuid'], stone_uuid)
+        self.assertIn('qr_code', data)
+        self.assertIn('qr_url', data)
+        
+        # Verify QR code is base64 encoded PNG
+        import base64
+        try:
+            base64.b64decode(data['qr_code'])
+            self.assertTrue(True)  # If no exception, base64 is valid
+        except Exception:
+            self.fail('QR code is not valid base64')
+        
+        # Verify QR URL contains the UUID
+        self.assertIn(stone_uuid, data['qr_url'])
+
+
+class StoneLinkTests(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.user = User.objects.create_user(username='testuser', password='testpass')
+        self.stone = Stone.objects.create(
+            PK_stone='TESTSTONE',
+            description='Test stone',
+            FK_user=self.user
+        )
+
+    def test_stone_link_redirect(self):
+        """Test stone-link renders stone found page"""
+        stone_uuid = str(self.stone.uuid)
+        response = self.client.get(f'/stone-link/{stone_uuid}/')
+        
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Stone Found!')
+        self.assertContains(response, self.stone.PK_stone)
+
+    def test_stone_link_sets_cookie(self):
+        """Test stone-link sets tracking cookie"""
+        stone_uuid = str(self.stone.uuid)
+        response = self.client.get(f'/stone-link/{stone_uuid}/')
+        
+        cookie_name = f'stone_scan_{stone_uuid}'
+        self.assertIn(cookie_name, response.cookies)
+        cookie = response.cookies[cookie_name]
+        self.assertEqual(cookie['max-age'], 7*24*60*60)  # 7 days
+
+    def test_stone_link_invalid_uuid(self):
+        """Test stone-link with invalid UUID"""
+        response = self.client.get('/stone-link/invalid-uuid/')
+        
+        self.assertEqual(response.status_code, 302)
+        # Should redirect to main page with error
+
+    def test_stone_link_nonexistent_stone(self):
+        """Test stone-link with non-existent stone UUID"""
+        fake_uuid = str(uuid.uuid4())
+        response = self.client.get(f'/stone-link/{fake_uuid}/')
+        
+        self.assertEqual(response.status_code, 302)
+        # Should redirect to main page with error
+
+
+class StoneCreationWithQRTests(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.user = User.objects.create_user(username='testuser', password='testpass')
+        self.client.login(username='testuser', password='testpass')
+
+    def test_stone_creation_generates_uuid(self):
+        """Test that stone creation generates UUID"""
+        response = self.client.post('/add_stone/', {
+            'PK_stone': 'NEWSTONE',
+            'description': 'A new test stone',
+            'stone_type': 'hidden',
+            'color': '#4CAF50',
+            'shape': 'circle'
+        })
+        
+        self.assertEqual(response.status_code, 302)
+        
+        # Check that stone was created with UUID
+        stone = Stone.objects.get(PK_stone='NEWSTONE')
+        self.assertIsNotNone(stone.uuid)
+        self.assertIsInstance(stone.uuid, uuid.UUID)
+
+    def test_stone_creation_generates_qr_code(self):
+        """Test that stone creation generates QR code file"""
+        response = self.client.post('/add_stone/', {
+            'PK_stone': 'QRSTONE',
+            'description': 'A stone with QR code',
+            'stone_type': 'hidden',
+            'color': '#4CAF50',
+            'shape': 'circle'
+        })
+        
+        self.assertEqual(response.status_code, 302)
+        
+        # Check that QR code file was created
+        stone = Stone.objects.get(PK_stone='QRSTONE')
+        import os
+        from django.conf import settings
+        qr_filename = f'qr_codes/{stone.PK_stone}_{stone.uuid}_qr.png'
+        qr_path = os.path.join(settings.MEDIA_ROOT, qr_filename)
+        self.assertTrue(os.path.exists(qr_path))
+
+    def test_stone_creation_stores_session_data(self):
+        """Test that stone creation stores QR data in session"""
+        response = self.client.post('/add_stone/', {
+            'PK_stone': 'SESSIONSTONE',
+            'description': 'A stone for session testing',
+            'stone_type': 'hidden',
+            'color': '#4CAF50',
+            'shape': 'circle'
+        })
+        
+        self.assertEqual(response.status_code, 302)
+        
+        # Check session data
+        session = self.client.session
+        self.assertIn('qr_download_path', session)
+        self.assertIn('qr_stone_name', session)
+        self.assertIn('qr_stone_uuid', session)
+        self.assertIn('qr_stone_url', session)
+
+
+class CheckStoneUUIDTests(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.user = User.objects.create_user(username='testuser', password='testpass')
+        self.stone = Stone.objects.create(
+            PK_stone='TESTSTONE',
+            description='Test stone',
+            FK_user=self.user
+        )
+
+    def test_check_existing_uuid(self):
+        """Test checking existing UUID"""
+        stone_uuid = str(self.stone.uuid)
+        response = self.client.get(f'/api/check-stone-uuid/{stone_uuid}/')
+        
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertTrue(data['exists'])
+        self.assertEqual(data['uuid'], stone_uuid)
+
+    def test_check_nonexistent_uuid(self):
+        """Test checking non-existent UUID"""
+        fake_uuid = str(uuid.uuid4())
+        response = self.client.get(f'/api/check-stone-uuid/{fake_uuid}/')
+        
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertFalse(data['exists'])
+        self.assertEqual(data['uuid'], fake_uuid)
+
+    def test_check_invalid_uuid_format(self):
+        """Test checking invalid UUID format"""
+        response = self.client.get('/api/check-stone-uuid/invalid-uuid/')
+        
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertFalse(data['exists'])
+        self.assertIn('error', data)
+
+    def test_check_empty_uuid(self):
+        """Test checking empty UUID"""
+        response = self.client.get('/api/check-stone-uuid//')
+        
+        self.assertEqual(response.status_code, 404)  # Empty UUID should return 404
+
+
+class StoneScanWithBlackoutTests(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.user = User.objects.create_user(username='testuser', password='testpass')
+        self.stone = Stone.objects.create(
+            PK_stone='TESTSTONE',
+            description='Test stone',
+            FK_user=self.user
+        )
+        self.client.login(username='testuser', password='testpass')
+
+    def test_scan_stone_with_blackout(self):
+        """Test scanning stone with one-week blackout enforcement"""
+        # First scan should work
+        response = self.client.post('/stonescan/', {
+            'PK_stone': 'TESTSTONE',
+            'comment': 'First scan',
+            'latitude': '40.7128',
+            'longitude': '-74.0060'
+        })
+        
+        self.assertEqual(response.status_code, 302)
+        
+        # Second scan within a week should be blocked
+        response = self.client.post('/stonescan/', {
+            'PK_stone': 'TESTSTONE',
+            'comment': 'Second scan',
+            'latitude': '40.7128',
+            'longitude': '-74.0060'
+        })
+        
+        self.assertEqual(response.status_code, 200)  # Should render form with error
+        # Check that error message is present
+
+    def test_scan_stone_after_blackout(self):
+        """Test scanning stone after blackout period"""
+        # Create old scan attempt
+        old_time = timezone.now() - timedelta(weeks=2)
+        attempt = StoneScanAttempt.objects.create(
+            FK_stone=self.stone,
+            FK_user=self.user
+        )
+        attempt.scan_time = old_time
+        attempt.save()
+        
+        # Should be able to scan again
+        response = self.client.post('/stonescan/', {
+            'PK_stone': 'TESTSTONE',
+            'comment': 'Scan after blackout',
+            'latitude': '40.7128',
+            'longitude': '-74.0060'
+        })
+        
+        self.assertEqual(response.status_code, 302)  # Should redirect to success
+
+
+class DownloadQRTests(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.user = User.objects.create_user(username='testuser', password='testpass')
+        self.client.login(username='testuser', password='testpass')
+
+    def test_download_qr_with_session_data(self):
+        """Test downloading QR code with session data"""
+        # Set up session data
+        session = self.client.session
+        session['qr_download_path'] = 'test_qr.png'
+        session['qr_stone_name'] = 'TESTSTONE'
+        session.save()
+        
+        response = self.client.get('/download-qr/')
+        
+        # Should redirect (since file doesn't exist in test)
+        self.assertEqual(response.status_code, 302)
+
+    def test_download_qr_without_session_data(self):
+        """Test downloading QR code without session data"""
+        response = self.client.get('/download-qr/')
+        
+        self.assertEqual(response.status_code, 302)
+        # Should redirect to main page with error
+
+
+class QRScannerTests(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.user = User.objects.create_user(username='testuser', password='testpass')
+        self.stone = Stone.objects.create(
+            PK_stone='TESTSTONE',
+            description='Test stone',
+            FK_user=self.user
+        )
+
+    def test_qr_scanner_library_loaded(self):
+        """Test that html5-qrcode library is available"""
+        # This test verifies that the QR scanner library is properly loaded
+        # In a real implementation, you would test the actual scanning functionality
+        response = self.client.get('/debug/modals/')
+        self.assertEqual(response.status_code, 200)
+        # Check that the html5-qrcode script is included
+        self.assertIn('html5-qrcode', response.content.decode())
+
+    def test_debug_modals_page_loads(self):
+        """Test that debug modals page loads with QR functionality"""
+        response = self.client.get('/debug/modals/')
+        self.assertEqual(response.status_code, 200)
+        
+        # Check that the page contains QR-related elements
+        content = response.content.decode()
+        self.assertIn('qr-code-placeholder', content)
+        self.assertIn('download-qr-btn', content)
+        self.assertIn('html5-qrcode', content)
+
+    def test_shared_modals_included(self):
+        """Test that shared modals are included in debug modals and stonewalker start"""
+        # Test debug modals page
+        response = self.client.get('/debug/modals/')
+        self.assertEqual(response.status_code, 200)
+        content = response.content.decode()
+        # Check for shared modal content (QR code sections)
+        self.assertIn('qr-option-existing', content)
+        self.assertIn('qr-option-new', content)
+        
+        # Test stonewalker start page
+        response = self.client.get('/')
+        self.assertEqual(response.status_code, 200)
+        content = response.content.decode()
+        # Check for shared modal content (QR code sections)
+        self.assertIn('qr-option-existing', content)
+        self.assertIn('qr-option-new', content)
+
+    def test_shared_modal_javascript_functions(self):
+        """Test that shared modal JavaScript functions are properly defined"""
+        # Test debug modals page
+        response = self.client.get('/debug/modals/')
+        self.assertEqual(response.status_code, 200)
+        content = response.content.decode()
+        
+        # Check for shared modal functions
+        self.assertIn('openSharedCreateStoneModal', content)
+        self.assertIn('openSharedScanStoneModal', content)
+        
+        # Check for productive buttons
+        self.assertIn('Open Shared Create Stone Modal', content)
+        self.assertIn('Open Shared Scan Stone Modal', content)
+
+    def test_shared_modal_global_functions(self):
+        """Test that shared modal functions are defined as global window functions"""
+        # Test debug modals page (which includes shared modals)
+        response = self.client.get('/debug/modals/')
+        self.assertEqual(response.status_code, 200)
+        content = response.content.decode()
+        
+        # Check for global function assignments in shared modals
+        self.assertIn('window.openCreateStoneModal = function()', content)
+        self.assertIn('window.openScanStoneModal = function()', content)
+        self.assertIn('window.openSharedCreateStoneModal = function()', content)
+        self.assertIn('window.openSharedScanStoneModal = function()', content)
+
+
+class StoneFoundTests(TestCase):
+    """Test the stone found functionality and related features"""
+    
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username='testuser',
+            email='test@example.com',
+            password='testpass123'
+        )
+        self.stone = Stone.objects.create(
+            PK_stone='TestStone',
+            description='A test stone',
+            FK_user=self.user,
+            stone_type='hidden',
+            uuid=uuid_lib.uuid4()
+        )
+        self.hunted_stone = Stone.objects.create(
+            PK_stone='HuntedStone',
+            description='A hunted test stone',
+            FK_user=self.user,
+            stone_type='hunted',
+            uuid=uuid_lib.uuid4()
+        )
+    
+    def test_stone_found_page_loads(self):
+        """Test that the stone found page loads correctly"""
+        self.client.force_login(self.user)
+        response = self.client.get(f'/stone-link/{self.stone.uuid}/')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Stone Found!')
+        self.assertContains(response, 'TestStone')
+        self.assertContains(response, 'Stone Information')
+    
+    def test_stone_found_page_requires_login(self):
+        """Test that stone found page requires login for POST"""
+        response = self.client.post(f'/stone-link/{self.stone.uuid}/', {
+            'latitude': '40.7128',
+            'longitude': '-74.0060',
+            'comment': 'Found it!'
+        })
+        self.assertEqual(response.status_code, 302)  # Redirect to login
+    
+    def test_stone_found_form_submission(self):
+        """Test successful stone found form submission"""
+        self.client.force_login(self.user)
+        response = self.client.post(f'/stone-link/{self.stone.uuid}/', {
+            'latitude': '40.7128',
+            'longitude': '-74.0060',
+            'comment': 'Found it in Central Park!'
+        })
+        self.assertEqual(response.status_code, 302)  # Redirect after success
+        
+        # Check that StoneMove was created
+        stone_move = StoneMove.objects.filter(FK_stone=self.stone, FK_user=self.user).first()
+        self.assertIsNotNone(stone_move)
+        self.assertEqual(stone_move.comment, 'Found it in Central Park!')
+        self.assertEqual(float(stone_move.latitude), 40.7128)
+        self.assertEqual(float(stone_move.longitude), -74.0060)
+    
+    def test_hunted_stone_new_location_storage(self):
+        """Test that hunted stone new location is stored in session"""
+        self.client.force_login(self.user)
+        response = self.client.post(f'/stone-link/{self.hunted_stone.uuid}/', {
+            'latitude': '40.7128',
+            'longitude': '-74.0060',
+            'new_latitude': '34.0522',
+            'new_longitude': '-118.2437',
+            'comment': 'Found hunted stone!'
+        })
+        self.assertEqual(response.status_code, 302)
+        
+        # Check session storage for new location
+        session_key = f'new_location_{self.hunted_stone.uuid}'
+        self.assertIn(session_key, self.client.session)
+        new_location = self.client.session[session_key]
+        self.assertEqual(new_location['latitude'], 34.0522)
+        self.assertEqual(new_location['longitude'], -118.2437)
+        self.assertEqual(new_location['user_id'], self.user.id)
+    
+    def test_invalid_coordinates_rejection(self):
+        """Test that invalid coordinates are rejected"""
+        self.client.force_login(self.user)
+        response = self.client.post(f'/stone-link/{self.stone.uuid}/', {
+            'latitude': 'invalid',
+            'longitude': '-74.0060',
+            'comment': 'Found it!'
+        })
+        self.assertEqual(response.status_code, 302)  # Redirect back to form
+        
+        # Check that no StoneMove was created
+        stone_move = StoneMove.objects.filter(FK_stone=self.stone, FK_user=self.user).first()
+        self.assertIsNone(stone_move)
+    
+    def test_missing_coordinates_rejection(self):
+        """Test that missing coordinates are rejected"""
+        self.client.force_login(self.user)
+        response = self.client.post(f'/stone-link/{self.stone.uuid}/', {
+            'comment': 'Found it!'
+        })
+        self.assertEqual(response.status_code, 302)  # Redirect back to form
+        
+        # Check that no StoneMove was created
+        stone_move = StoneMove.objects.filter(FK_stone=self.stone, FK_user=self.user).first()
+        self.assertIsNone(stone_move)
+    
+    def test_first_stone_detection(self):
+        """Test that first stone is correctly detected"""
+        self.client.force_login(self.user)
+        response = self.client.get(f'/stone-link/{self.stone.uuid}/')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Welcome to StoneWalker!')
+        self.assertContains(response, 'This is your first stone!')
+    
+    def test_not_first_stone_detection(self):
+        """Test that non-first stone doesn't show welcome message"""
+        # Create a previous stone move
+        StoneMove.objects.create(
+            FK_stone=self.stone,
+            FK_user=self.user,
+            latitude=40.7128,
+            longitude=-74.0060,
+            comment='Previous find'
+        )
+        
+        self.client.force_login(self.user)
+        response = self.client.get(f'/stone-link/{self.stone.uuid}/')
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, 'Welcome to StoneWalker!')
+        self.assertNotContains(response, 'This is your first stone!')
+    
+    def test_hunted_stone_special_messages(self):
+        """Test that hunted stones show special messages"""
+        self.client.force_login(self.user)
+        response = self.client.get(f'/stone-link/{self.hunted_stone.uuid}/')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Hunted Stone Found!')
+        self.assertContains(response, 'Congratulations! Many others were probably looking for this stone.')
+        self.assertContains(response, 'Where will you place this stone next week?')
+    
+    def test_regular_stone_no_hunted_messages(self):
+        """Test that regular stones don't show hunted messages"""
+        self.client.force_login(self.user)
+        response = self.client.get(f'/stone-link/{self.stone.uuid}/')
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, 'Hunted Stone Found!')
+        self.assertNotContains(response, 'Where will you place this stone next week?')
+
+
+class HuntedStoneLocationTests(TestCase):
+    """Test the hunted stone location field functionality"""
+    
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username='testuser',
+            email='test@example.com',
+            password='testpass123'
+        )
+    
+    def test_hunted_location_field_presence(self):
+        """Test that hunted location field appears in shared modals"""
+        self.client.force_login(self.user)
+        response = self.client.get('/debug/modals/')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'hunted-location-section')
+        self.assertContains(response, 'hunted-latitude')
+        self.assertContains(response, 'hunted-longitude')
+        self.assertContains(response, 'hunted-location-map')
+    
+    def test_hunted_location_field_validation(self):
+        """Test that hunted stone requires location coordinates"""
+        # This would be tested in the frontend JavaScript
+        # For now, we test that the field structure is present
+        self.client.force_login(self.user)
+        response = self.client.get('/debug/modals/')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'required')
+
+
+class ScanModalTests(TestCase):
+    """Test the scan modal congratulations and forwarding functionality"""
+    
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username='testuser',
+            email='test@example.com',
+            password='testpass123'
+        )
+        self.stone = Stone.objects.create(
+            PK_stone='TestStone',
+            description='A test stone',
+            FK_user=self.user,
+            stone_type='hidden',
+            uuid=uuid_lib.uuid4()
+        )
+    
+    def test_scan_modal_congratulations_present(self):
+        """Test that scan modal contains congratulations functionality"""
+        self.client.force_login(self.user)
+        response = self.client.get('/debug/modals/')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Congratulations!')
+        self.assertContains(response, 'You found a StoneWalker stone!')
+        self.assertContains(response, 'Redirecting to stone page...')
+    
+    def test_scan_modal_forwarding_functionality(self):
+        """Test that scan modal has forwarding functionality"""
+        self.client.force_login(self.user)
+        response = self.client.get('/debug/modals/')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'window.location.href')
+        self.assertContains(response, '/stone-link/')
+    
+    def test_shared_modals_include_stone_found_text(self):
+        """Test that shared modals include stone found page text"""
+        self.client.force_login(self.user)
+        response = self.client.get('/debug/modals/')
+        self.assertEqual(response.status_code, 200)
+        # Check for some key text that should be in the shared modals
+        self.assertContains(response, 'Stone Type')
+        self.assertContains(response, 'Hunted')
+        self.assertContains(response, 'Hidden')
+
+
+class StoneFoundTemplateTests(TestCase):
+    """Test the stone found template functionality"""
+    
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username='testuser',
+            email='test@example.com',
+            password='testpass123'
+        )
+        self.stone = Stone.objects.create(
+            PK_stone='TestStone',
+            description='A test stone',
+            FK_user=self.user,
+            stone_type='hidden',
+            uuid=uuid_lib.uuid4()
+        )
+    
+    def test_stone_found_template_renders(self):
+        """Test that stone found template renders correctly"""
+        self.client.force_login(self.user)
+        response = self.client.get(f'/stone-link/{self.stone.uuid}/')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Stone Found!')
+        self.assertContains(response, 'Stone Information')
+        self.assertContains(response, 'TestStone')
+        self.assertContains(response, 'Where did you find this stone?')
+        self.assertContains(response, 'Submit Find')
+    
+    def test_stone_found_template_maps_present(self):
+        """Test that stone found template includes map functionality"""
+        self.client.force_login(self.user)
+        response = self.client.get(f'/stone-link/{self.stone.uuid}/')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'found-location-map')
+        self.assertContains(response, 'leaflet')
+        self.assertContains(response, 'L.map')
+    
+    def test_hunted_stone_template_extra_fields(self):
+        """Test that hunted stone template includes extra fields"""
+        hunted_stone = Stone.objects.create(
+            PK_stone='HuntedStone',
+            description='A hunted stone',
+            FK_user=self.user,
+            stone_type='hunted',
+            uuid=uuid_lib.uuid4()
+        )
+        
+        self.client.force_login(self.user)
+        response = self.client.get(f'/stone-link/{hunted_stone.uuid}/')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Hunted Stone Found!')
+        self.assertContains(response, 'Where will you place this stone next week?')
+        self.assertContains(response, 'new-location-map')
+        self.assertContains(response, 'New Latitude')
+        self.assertContains(response, 'New Longitude')
 
 

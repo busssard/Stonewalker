@@ -3,6 +3,9 @@
 {% load i18n %}
 
 {% block content %}
+<!-- Include Shared Modals -->
+{% include 'main/shared_modals.html' %}
+
 <!-- Welcome Modal for Guests -->
 {% if show_welcome_modal %}
 <div id="welcome-modal-overlay" class="profile-modal-overlay">
@@ -63,123 +66,73 @@
     <img src="{% static 'hold_stone.png' %}" alt="{% trans 'Add new stone' %}" />
     <span>{% trans 'Create New Stone' %}</span>
   </button>
-  <a href="{% url 'stone_scan' %}" id="scan-stone-fab" title="{% trans 'I found a stone' %}" class="avant-btn floating-action-btn secondary">
+  <button id="scan-stone-fab" title="{% trans 'I found a stone' %}" class="avant-btn floating-action-btn secondary">
     <img id="scan-stone-icon" src="{% static 'found_stone.png' %}" alt="{% trans 'Scan Stone' %}" />
     <span id="scan-stone-text">{% trans 'Scan a Stone' %}</span>
-  </a>
+  </button>
 </div>
+
+
 <script>
-// Highlight add-stone-fab in a random color on hover
-const addStoneFab = document.getElementById('add-stone-fab');
-const originalBg = addStoneFab.style.background;
-const randomColors = [
-  '#ff9800', '#ffb300', '#4CAF50', '#3fa7ff', '#e91e63', '#9c27b0', '#00bcd4', '#8bc34a', '#ffc107', '#ff5722'
-];
-addStoneFab.addEventListener('mouseenter', function() {
-  const color = randomColors[Math.floor(Math.random() * randomColors.length)];
-  addStoneFab.style.background = color;
-});
-addStoneFab.addEventListener('mouseleave', function() {
-  addStoneFab.style.background = originalBg;
-});
-// Scan button hover: change border, text, and icon color
-const scanBtn = document.getElementById('scan-stone-fab');
-const scanText = document.getElementById('scan-stone-text');
-const scanIcon = document.getElementById('scan-stone-icon');
-const scanDefaultColor = '#ff9800';
-let scanOriginalBorder = scanBtn.style.borderColor;
-let scanOriginalText = scanText.style.color;
-let scanOriginalFilter = scanIcon.style.filter;
-scanBtn.addEventListener('mouseenter', function() {
-  const color = randomColors[Math.floor(Math.random() * randomColors.length)];
-  scanBtn.style.borderColor = color;
-  scanText.style.color = color;
-  scanIcon.style.filter = `drop-shadow(0 0 0 ${color}) brightness(0) saturate(100%) sepia(1) hue-rotate(0deg)`;
-});
-scanBtn.addEventListener('mouseleave', function() {
-  scanBtn.style.borderColor = scanDefaultColor;
-  scanText.style.color = scanDefaultColor;
-  scanIcon.style.filter = scanOriginalFilter;
+document.addEventListener('DOMContentLoaded', function() {
+  // Highlight add-stone-fab in a random color on hover
+  const addStoneFab = document.getElementById('add-stone-fab');
+  if (addStoneFab) {
+    const originalBg = addStoneFab.style.background;
+    const randomColors = [
+      '#ff9800', '#ffb300', '#4CAF50', '#3fa7ff', '#e91e63', '#9c27b0', '#00bcd4', '#8bc34a', '#ffc107', '#ff5722'
+    ];
+    addStoneFab.addEventListener('mouseenter', function() {
+      const color = randomColors[Math.floor(Math.random() * randomColors.length)];
+      addStoneFab.style.background = color;
+    });
+    addStoneFab.addEventListener('mouseleave', function() {
+      addStoneFab.style.background = originalBg;
+    });
+    
+    // Add click handler to open create modal
+    addStoneFab.addEventListener('click', function() {
+      if (window.openSharedCreateStoneModal) {
+        window.openSharedCreateStoneModal();
+      }
+    });
+  }
+  
+  // Scan button hover: change border, text, and icon color
+  const scanBtn = document.getElementById('scan-stone-fab');
+  const scanText = document.getElementById('scan-stone-text');
+  const scanIcon = document.getElementById('scan-stone-icon');
+  if (scanBtn && scanText && scanIcon) {
+    const scanDefaultColor = '#ff9800';
+    let scanOriginalBorder = scanBtn.style.borderColor;
+    let scanOriginalText = scanText.style.color;
+    let scanOriginalFilter = scanIcon.style.filter;
+    const randomColors = [
+      '#ff9800', '#ffb300', '#4CAF50', '#3fa7ff', '#e91e63', '#9c27b0', '#00bcd4', '#8bc34a', '#ffc107', '#ff5722'
+    ];
+    scanBtn.addEventListener('mouseenter', function() {
+      const color = randomColors[Math.floor(Math.random() * randomColors.length)];
+      scanBtn.style.borderColor = color;
+      scanText.style.color = color;
+      scanIcon.style.filter = `drop-shadow(0 0 0 ${color}) brightness(0) saturate(100%) sepia(1) hue-rotate(0deg)`;
+    });
+    scanBtn.addEventListener('mouseleave', function() {
+      scanBtn.style.borderColor = scanDefaultColor;
+      scanText.style.color = scanDefaultColor;
+      scanIcon.style.filter = scanOriginalFilter;
+    });
+    
+    // Add click handler to open scan modal
+    scanBtn.addEventListener('click', function() {
+      if (window.openSharedScanStoneModal) {
+        window.openSharedScanStoneModal();
+      }
+    });
+  }
 });
 </script>
 
-<!-- Add New Stone Modal -->
-<div id="add-stone-modal" class="modal display-none position-fixed z-2000 left-0 top-0 w-100vw h-100vh bg-modal-overlay flex-center">
-  <div class="avant-modal max-w-600 min-w-320 w-40vw m-auto p-2 position-relative display-grid grid-template-rows-auto gap-1-5 overflow-auto">
-    <span id="add-stone-close" class="close position-absolute top-1 right-1 fs-2 cursor-pointer">&times;</span>
-    <h2 class="avant-header mb-1">{% trans 'Add New Stone' %}</h2>
-    <form id="add-stone-form" enctype="multipart/form-data" autocomplete="off" method="post" action="{% url 'add_stone' %}" class="flex-column gap-1-2 h-full">
-      {% csrf_token %}
-      <div id="add-stone-step1" class="flex-column gap-1-2">
-        <!-- Stone type selector -->
-        <label class="avant-label">{% trans 'Stone Type' %}
-          <select name="stone_type" id="stone-type-input" class="avant-select ml-1 w-auto display-inline-block">
-            <option value="hidden">{% trans 'Hidden (no location, must be found by scanning)' %}</option>
-            <option value="hunted">{% trans 'Hunted (placed at a location, must be found at that spot)' %}</option>
-          </select>
-        </label>
-        <div id="stone-type-flavor" class="fs-0-98 text-muted mb-0-5">
-          {% trans 'Hidden stones do not have a known location. Hunted stones are placed at a specific spot and must be found there.' %}
-        </div>
-        <!-- Image upload -->
-                  <label class="avant-label">{% trans 'Picture' %}
-            <input type="file" name="image" accept="image/*" id="stone-image-input" class="avant-input display-block mt-0-5">
-          </label>
-        <!-- Profile picture shape preview -->
-        <div id="stone-shape-preview-container" class="mt-0-5 mb-0">
-          <div id="stone-shape-preview" class="w-120 h-120 m-auto"></div>
-        </div>
-        <!-- Name with checkmark -->
-        <label class="avant-label flex-center gap-0-5 mt-0-5">{% trans 'Stone Name' %}*
-          <input type="text" name="PK_stone" id="stone-name-input" maxlength="10" required class="avant-input flex-1 ml-0-5">
-          <span id="checkmark" class="js-checkmark js-checkmark-neutral">✔️</span>
-        </label>
-        <div id="name-check-result" aria-live="polite" class="js-result-text js-result-neutral"></div>
-        <!-- Description -->
-        <div class="w-full">
-          <label class="avant-label flex-column w-full">{% trans 'Description' %}
-            <textarea name="description" id="stone-desc-input" rows="6" maxlength="500" class="avant-input w-full mt-0-5 resize-vertical display-block p-2" placeholder="{% trans 'Say something about your stone (max 500 chars)' %}"></textarea>
-            <span id="desc-char-count" class="js-char-count">0/500</span>
-          </label>
-        </div>
-        <!-- Marker options side-by-side -->
-        <div class="flex gap-1 mt-1 flex-wrap">
-          <!-- Marker Color -->
-          <label class="avant-label flex-1 min-w-120 flex-center gap-0-5">
-            {% trans 'Marker Color' %}
-            <input type="color" name="color" id="stone-color-input" value="#4CAF50" class="ml-auto w-48 h-32 border-none border-radius-6">
-          </label>
-          <!-- Marker Shape -->
-          <label class="avant-label flex-2 min-w-160 flex-center gap-0-5">
-            {% trans 'Marker Shape' %}
-            <select name="shape" id="stone-shape-input" class="avant-select flex-1 p-0-4">
-              <option value="circle">{% trans 'Circle' %}</option>
-              <option value="square">{% trans 'Square' %}</option>
-              <option value="star">{% trans 'Star' %}</option>
-              <option value="triangle">{% trans 'Triangle' %}</option>
-            </select>
-          </label>
-        </div>
-        <!-- Next/Cancel -->
-        <div class="flex gap-1 mt-2 justify-end">
-          <button type="button" id="add-stone-cancel" class="avant-btn bg-gray text-dark">{% trans 'Cancel' %}</button>
-          <button type="button" id="add-stone-next" class="avant-btn">{% trans 'Next' %}</button>
-        </div>
-      </div>
-      <!-- Step 2: Map -->
-      <div id="add-stone-step2" class="display-none flex-column items-center gap-1-2">
-        <div id="location-flavor" class="mb-1 text-muted fs-0-98"></div>
-        <div id="add-stone-map" class="w-full h-300 border-radius-12 mb-1"></div>
-        <div class="flex gap-1 justify-end">
-          <button type="button" id="add-stone-back" class="avant-btn bg-gray text-dark">{% trans 'Back' %}</button>
-          <button type="submit" class="avant-btn">{% trans 'Save' %}</button>
-        </div>
-      </div>
-      <input type="hidden" name="latitude" id="add-stone-lat">
-      <input type="hidden" name="longitude" id="add-stone-lng">
-    </form>
-  </div>
-</div>
+<!-- Shared modals are now included from shared_modals.html -->
   
 <script id="stones-data" type="application/json">{{ stones_json|safe }}</script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" crossorigin=""/>
@@ -279,18 +232,23 @@ document.addEventListener('DOMContentLoaded', function() {
   
   if (fab && modal) {
     fab.onclick = () => { 
+      console.log('Opening modal, current display:', modal.style.display);
+      modal.classList.remove('display-none');
       modal.style.display = 'flex'; 
+      console.log('Modal display after setting:', modal.style.display);
+      console.log('Modal visible:', modal.offsetParent !== null);
     };
     closeBtn.onclick = cancelBtn.onclick = () => { 
       modal.style.display = 'none'; 
+      modal.classList.add('display-none');
     };
     window.onclick = (e) => { 
       if (e.target === modal) {
         modal.style.display = 'none'; 
+        modal.classList.add('display-none');
       }
     };
   }
-});
 
   // Image preview and other functionality
   const imgInput = document.getElementById('stone-image-input');
