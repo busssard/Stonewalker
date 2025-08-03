@@ -472,6 +472,22 @@ This page features the interactive map, login modal, and personal dashboard.
 
 ## Recent Refactoring Work
 
+### QR Code Logic Implementation (2024)
+- **Server-Side QR Generation**: Implemented complete QR code generation system using Python qrcode library
+- **StoneScanAttempt Model**: Added new model to track scan attempts and enforce one-week blackout period
+- **Stone-Link System**: Created stone-link URLs with UUID-based routing and cookie tracking
+- **QR Code API**: Added API endpoints for QR code generation and UUID validation
+- **Real QR Scanner**: Implemented actual QR code scanning using html5-qrcode library with camera access
+- **Database Integration**: UUID is automatically generated and stored in database when stone is created
+- **Cookie Tracking**: Stone-link visits are tracked with cookies for analytics and blackout enforcement
+- **Comprehensive Testing**: Added 24 new tests covering QR generation, stone-link functionality, blackout enforcement, and UUID validation
+- **Dependencies**: Added qrcode==7.4.2 and pillow==10.0.1 for QR code generation
+- **Complete Sequence**: Implemented full workflow from stone creation → QR generation → stone-link → scanning → blackout enforcement
+- **QR Test Page**: Created dedicated test page at `/qr-test/` for testing QR scanner functionality
+- **Debug Modals Integration**: Fixed QR code generation and display in debug modals with real image download
+- **API Authentication**: Removed login requirement from QR generation API for debug functionality
+- **Shared Modals System**: Created shared modals template for consistent modal behavior across pages with working JavaScript functions, resolved duplicate modal conflicts, fixed global function accessibility, centralized JavaScript functionality in shared_modals.html for code reuse, fixed circular reference issues between debug and shared modal functions, implemented complete QR scanner functionality in the shared scan stone modal with camera access, UUID validation, and stone information display, added hunted stone location field with map integration, implemented scan modal congratulations and automatic forwarding to stone UUID weblink, and created comprehensive stone found page with first-time user experience and hunted stone special handling
+
 ### Stone Creation Refactoring (2024)
 - **UUID Integration**: Added UUID field to Stone model for secure QR code generation and unique stone identification
 - **Automatic Shape Selection**: Stones now automatically get circle shape for hidden stones and triangle shape for hunted stones
@@ -605,3 +621,33 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - UI/UX design: Busssard
 - Map: [Leaflet.js](https://leafletjs.com/)
 - Project maintained by StoneWalker.org
+
+## Recent Updates (2024-2025)
+
+### Stone Found Experience Implementation (August 2025)
+- **Hunted Stone Location Field**: Added location input fields (latitude/longitude) that appear when "hunted" stone type is selected in create-new modal
+- **Interactive Map Integration**: Integrated Leaflet.js maps for easy location selection with drag-and-drop functionality
+- **Location Validation**: Added validation to require location coordinates for hunted stones with coordinate range checking
+- **Scan Modal Congratulations**: Updated scan modal to show congratulations message when QR code is scanned with automatic forwarding to stone UUID weblink
+- **Stone UUID Weblink Page**: Created comprehensive `stone_found.html` template with:
+  - **First-time User Experience**: Detects if this is user's first stone and provides welcome explanation
+  - **Stone Information Display**: Shows stone name, type, description, and creator
+  - **Location Selection**: Interactive map for selecting where stone was found
+  - **Hunted Stone Special Handling**: Congratulates user for finding hunted stone, explains that many others were looking for it, requires new location selection for next week placement
+  - **Form Validation**: Comprehensive error handling and validation for coordinates
+  - **Session Storage**: New locations stored for future placement
+- **Database Schema Update**: Added `stone_type` field to Stone model with choices for 'hidden' and 'hunted'
+- **Translation Support**: Added all frontend text from stone_found.html to translations.csv with complete translations in 7 languages
+- **Comprehensive Testing**: Added 18 new test cases covering all functionality including:
+  - Stone found page loading and form submission
+  - Hunted stone location field presence and validation
+  - Scan modal congratulations and forwarding functionality
+  - Stone found template rendering and map functionality
+  - First-time user detection and special messages
+  - Coordinate validation and error handling
+  - Session storage for hunted stone new locations
+
+### QR Code Logic Implementation (2024)
+- **Debug Modals Integration**: Fixed QR code generation and display in debug modals with real image download
+- **API Authentication**: Removed login requirement from QR generation API for debug functionality
+- **Shared Modals System**: Created shared modals template for consistent modal behavior across pages with working JavaScript functions, resolved duplicate modal conflicts, fixed global function accessibility, centralized JavaScript functionality in shared_modals.html for code reuse, fixed circular reference issues between debug and shared modal functions, implemented complete QR scanner functionality in the shared scan stone modal with camera access, UUID validation, and stone information display, added hunted stone location field with map integration, implemented scan modal congratulations and automatic forwarding to stone UUID weblink, and created comprehensive stone found page with first-time user experience and hunted stone special handling

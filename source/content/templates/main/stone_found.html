@@ -1,0 +1,154 @@
+{% extends 'layouts/default/page.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block content %}
+<div class="avant-section avant-bg-right flex-center min-h-70vh overflow-auto">
+  <div class="avant-card max-w-600 m-2-5-auto">
+    <div class="avant-header text-center mb-1-2">🎉 {% trans 'Stone Found!' %}</div>
+    
+    {% if messages %}
+      {% for message in messages %}
+        <div class="text-center mb-1 {% if message.tags == 'error' %}text-error{% else %}text-success{% endif %}">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+    
+    <!-- Stone Information -->
+    <div class="bg-gray p-2 border-radius-8 mb-2">
+      <h4 style="margin: 0 0 10px 0;">{% trans 'Stone Information' %}</h4>
+      <p style="margin: 5px 0;"><strong>{% trans 'Name:' %}</strong> {{ stone.PK_stone }}</p>
+      <p style="margin: 5px 0;"><strong>{% trans 'Type:' %}</strong> {{ stone.stone_type|title }}</p>
+      <p style="margin: 5px 0;"><strong>{% trans 'Description:' %}</strong> {{ stone.description|default:"No description" }}</p>
+      <p style="margin: 5px 0;"><strong>{% trans 'Created by:' %}</strong> {{ stone.user|default:"Unknown" }}</p>
+    </div>
+    
+    <!-- First Stone Welcome -->
+    {% if is_first_stone %}
+    <div class="bg-blue p-2 border-radius-8 mb-2">
+      <h4 style="margin: 0 0 10px 0; color: #1976d2;">🎯 {% trans 'Welcome to StoneWalker!' %}</h4>
+      <p style="margin: 5px 0; color: #1976d2;">{% trans 'This is your first stone! Here\'s how it works:' %}</p>
+      <ul style="margin: 5px 0; padding-left: 20px; color: #1976d2;">
+        <li>{% trans 'You found a stone that someone else placed' %}</li>
+        <li>{% trans 'Now you need to tell us where you found it' %}</li>
+        <li>{% trans 'If it\'s a hunted stone, you\'ll place it somewhere new next week' %}</li>
+        <li>{% trans 'This creates a trail of stone movements around the world!' %}</li>
+      </ul>
+    </div>
+    {% endif %}
+    
+    <!-- Special Message for Hunted Stones -->
+    {% if stone.stone_type == 'hunted' %}
+    <div class="bg-orange p-2 border-radius-8 mb-2">
+      <h4 style="margin: 0 0 10px 0; color: #e65100;">🎯 {% trans 'Hunted Stone Found!' %}</h4>
+      <p style="margin: 5px 0; color: #e65100;">{% trans 'Congratulations! Many others were probably looking for this stone. You\'ve found it!' %}</p>
+      <p style="margin: 5px 0; color: #e65100;">{% trans 'Next week, you\'ll place it in a new location for others to find.' %}</p>
+    </div>
+    {% endif %}
+    
+    <form class="stone-found-form flex-column gap-0-7" method="post" enctype="multipart/form-data" autocomplete="off">
+      {% csrf_token %}
+      <input type="hidden" name="stone_uuid" value="{{ stone_uuid }}">
+      
+      <label class="avant-label" for="id_comment">{% trans 'Comment (optional)' %}</label>
+      <textarea name="comment" id="id_comment" rows="4" maxlength="500" class="avant-input" placeholder="{% trans 'Tell us about your stone adventure...' %}"></textarea>
+      
+      <label class="avant-label" for="id_image">{% trans 'Photo (optional)' %}</label>
+      <input type="file" name="image" id="id_image" accept="image/*" class="avant-input">
+      
+      <label class="avant-label" for="id_latitude">{% trans 'Where did you find this stone?' %}</label>
+      <div class="flex gap-1">
+        <input type="number" name="latitude" id="id_latitude" step="any" placeholder="Latitude" class="avant-input flex-1" required>
+        <input type="number" name="longitude" id="id_longitude" step="any" placeholder="Longitude" class="avant-input flex-1" required>
+      </div>
+      
+      <div id="found-location-map" class="w-full h-260 border-radius-12 mb-1 mt-0-5"></div>
+      
+      <!-- New Location for Hunted Stones -->
+      {% if stone.stone_type == 'hunted' %}
+      <div class="bg-orange p-2 border-radius-8 mb-2">
+        <h4 style="margin: 0 0 10px 0; color: #e65100;">🗺️ {% trans 'Where will you place this stone next week?' %}</h4>
+        <p style="margin: 5px 0; color: #e65100;">{% trans 'Choose a new location where others can find it.' %}</p>
+        <div class="flex gap-1 mt-1">
+          <input type="number" name="new_latitude" id="id_new_latitude" step="any" placeholder="New Latitude" class="avant-input flex-1" required>
+          <input type="number" name="new_longitude" id="id_new_longitude" step="any" placeholder="New Longitude" class="avant-input flex-1" required>
+        </div>
+        <div id="new-location-map" class="w-full h-200 border-radius-12 mb-1 mt-0-5"></div>
+      </div>
+      {% endif %}
+      
+      <button type="submit" class="avant-btn mt-1-2">{% trans 'Submit Find' %}</button>
+    </form>
+  </div>
+</div>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" crossorigin=""/>
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" crossorigin=""></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Initialize found location map
+  var foundMap = L.map('found-location-map').setView([20, 0], 3);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '© OpenStreetMap'
+  }).addTo(foundMap);
+  
+  var foundMarker = L.marker([20, 0], {draggable: true}).addTo(foundMap);
+  
+  function setFoundLatLng(lat, lng) {
+    foundMarker.setLatLng([lat, lng]);
+    document.getElementById('id_latitude').value = lat;
+    document.getElementById('id_longitude').value = lng;
+  }
+  
+  foundMarker.on('dragend', function(e) {
+    var pos = foundMarker.getLatLng();
+    setFoundLatLng(pos.lat, pos.lng);
+  });
+  
+  foundMap.on('click', function(e) {
+    setFoundLatLng(e.latlng.lat, e.latlng.lng);
+  });
+  
+  // Try to get user location for found location
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(function(pos) {
+      setFoundLatLng(pos.coords.latitude, pos.coords.longitude);
+      foundMap.setView([pos.coords.latitude, pos.coords.longitude], 13);
+    });
+  }
+  
+  // Set initial values for found location
+  setFoundLatLng(20, 0);
+  
+  // Initialize new location map for hunted stones if it exists
+  var newLocationMap = document.getElementById('new-location-map');
+  if (newLocationMap) {
+    var newMap = L.map('new-location-map').setView([20, 0], 3);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '© OpenStreetMap'
+    }).addTo(newMap);
+    
+    var newMarker = L.marker([20, 0], {draggable: true}).addTo(newMap);
+    
+    function setNewLatLng(lat, lng) {
+      newMarker.setLatLng([lat, lng]);
+      document.getElementById('id_new_latitude').value = lat;
+      document.getElementById('id_new_longitude').value = lng;
+    }
+    
+    newMarker.on('dragend', function(e) {
+      var pos = newMarker.getLatLng();
+      setNewLatLng(pos.lat, pos.lng);
+    });
+    
+    newMap.on('click', function(e) {
+      setNewLatLng(e.latlng.lat, e.latlng.lng);
+    });
+    
+    // Set initial values for new location
+    setNewLatLng(20, 0);
+  }
+});
+</script>
+{% endblock %} 
