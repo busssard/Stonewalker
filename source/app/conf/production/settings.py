@@ -5,11 +5,15 @@ from django.utils.translation import gettext_lazy as _
 BASE_DIR = dirname(dirname(dirname(dirname(os.path.abspath(__file__)))))
 CONTENT_DIR = os.path.join(BASE_DIR, 'content')
 
-SECRET_KEY = '3d305kajG5Jy8KBafCMpHwDIsNi0SqVaW'
+SECRET_KEY = os.environ.get('SECRET_KEY', '3d305kajG5Jy8KBafCMpHwDIsNi0SqVaW')
 
-DEBUG = False
+DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
 ALLOWED_HOSTS = [
     'example.com',
+    '.netlify.app',
+    '.netlify.com',
+    'localhost',
+    '127.0.0.1',
 ]
 
 SITE_ID = 1

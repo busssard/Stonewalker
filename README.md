@@ -29,7 +29,21 @@ git clone <your-fork-or-this-repo-url>
 cd simple-django-login-and-register
 ```
 
-### 2. Set Up a Virtual Environment
+### 2. Deployment Options
+
+#### Option A: Local Development
+Follow the steps below for local development.
+
+#### Option B: Netlify Deployment (Static Site)
+For hosting the static frontend on Netlify, see [NETLIFY_DEPLOYMENT.md](NETLIFY_DEPLOYMENT.md) for detailed instructions.
+
+**Note:** Netlify is primarily for static sites. For full Django functionality with database, user sessions, and file uploads, consider:
+- **Heroku** - Excellent Django support with PostgreSQL
+- **Railway** - Modern platform with great Python support  
+- **DigitalOcean App Platform** - Reliable Django hosting
+- **Render** - Modern platform with good Django support
+
+### 3. Set Up a Virtual Environment
 
 #### Using Poetry (Recommended)
 
@@ -47,7 +61,7 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### 3. Configure Settings
+### 4. Configure Settings
 
 - For development: edit `source/app/conf/development/settings.py`
 - For production: edit `source/app/conf/production/settings.py`
@@ -64,19 +78,19 @@ Set up email backend, allowed hosts, and any other environment-specific options.
 - `LANGUAGE_CODE`, `LANGUAGES`, `LOCALE_PATHS`: For internationalization.
 - `STATIC_ROOT`, `STATIC_URL`, `MEDIA_ROOT`, `MEDIA_URL`: For static/media files.
 
-### 4. Apply Migrations
+### 5. Apply Migrations
 
 ```bash
 python source/manage.py migrate
 ```
 
-### 5. (Production Only) Collect Static Files
+### 6. (Production Only) Collect Static Files
 
 ```bash
 python source/manage.py collectstatic
 ```
 
-### 6. Run the Development Server
+### 7. Run the Development Server
 
 ```bash
 python source/manage.py runserver
@@ -623,6 +637,17 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - Project maintained by StoneWalker.org
 
 ## Recent Updates (2024-2025)
+
+### Netlify Deployment Setup (2025)
+- **Netlify Configuration**: Created comprehensive Netlify deployment setup with `netlify.toml`, build script, and serverless functions
+- **Static Site Hosting**: Configured for hosting static files (CSS, JS, images) on Netlify's CDN with automatic HTTPS
+- **Serverless Functions**: Implemented basic Django routing via Netlify Functions for API endpoints
+- **Build Automation**: Created `build.sh` script for automated deployment with static file collection and migration support
+- **Environment Variables**: Added support for environment variable configuration in production settings
+- **Security Headers**: Configured security headers and caching rules for optimal performance
+- **Comprehensive Documentation**: Created detailed deployment guide with alternative platform recommendations
+- **Testing Coverage**: Added 10 new tests covering Netlify configuration, build scripts, and deployment functionality
+- **Deployment Limitations**: Clearly documented Netlify's limitations for Django applications and provided migration paths to Django-native platforms
 
 ### Stone Found Experience Implementation (August 2025)
 - **Hunted Stone Location Field**: Added location input fields (latitude/longitude) that appear when "hunted" stone type is selected in create-new modal

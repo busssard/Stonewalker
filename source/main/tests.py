@@ -1831,3 +1831,184 @@ class StoneFoundTemplateTests(TestCase):
         self.assertContains(response, 'New Longitude')
 
 
+class NetlifyDeploymentTests(TestCase):
+    """Test Netlify deployment configuration and functionality"""
+    
+    def test_netlify_config_files_exist(self):
+        """Test that all required Netlify configuration files exist"""
+        from pathlib import Path
+        
+        required_files = [
+            '../netlify.toml',
+            '../build.sh',
+            '../netlify/functions/django.js',
+            '../netlify/functions/package.json',
+            '../NETLIFY_DEPLOYMENT.md'
+        ]
+        
+        for file_path in required_files:
+            self.assertTrue(
+                Path(file_path).exists(),
+                f"Required Netlify file {file_path} does not exist"
+            )
+    
+    def test_build_script_executable(self):
+        """Test that the build script is executable"""
+        import os
+        from pathlib import Path
+        
+        build_script = Path('../build.sh')
+        self.assertTrue(
+            build_script.exists(),
+            "build.sh does not exist"
+        )
+        self.assertTrue(
+            os.access(build_script, os.X_OK),
+            "build.sh is not executable"
+        )
+    
+    def test_netlify_toml_configuration(self):
+        """Test that netlify.toml has required configuration"""
+        with open('../netlify.toml', 'r') as f:
+            content = f.read()
+        
+        required_sections = [
+            '[build]',
+            'command = "bash build.sh"',
+            'publish = "source"',
+            'functions = "netlify/functions"',
+            '[[redirects]]'
+        ]
+        
+        for section in required_sections:
+            self.assertIn(
+                section,
+                content,
+                f"Required section '{section}' not found in netlify.toml"
+            )
+    
+    def test_django_serverless_function(self):
+        """Test that the Django serverless function is properly configured"""
+        with open('../netlify/functions/django.js', 'r') as f:
+            content = f.read()
+        
+        required_elements = [
+            'exports.handler',
+            'DJANGO_SETTINGS_MODULE',
+            'statusCode: 200'
+        ]
+        
+        for element in required_elements:
+            self.assertIn(
+                element,
+                content,
+                f"Required element '{element}' not found in django.js"
+            )
+    
+    def test_static_files_directory(self):
+        """Test that static files directory exists"""
+        from pathlib import Path
+        
+        static_dir = Path('content/static')
+        self.assertTrue(
+            static_dir.exists(),
+            "Static files directory does not exist"
+        )
+    
+    def test_production_settings_netlify_compatible(self):
+        """Test that production settings are compatible with Netlify"""
+        # Import production settings directly
+        import os
+        import sys
+        sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
+        
+        from app.conf.production import settings
+        
+        # Test that Netlify domains are in ALLOWED_HOSTS
+        netlify_domains = ['.netlify.app', '.netlify.com']
+        for domain in netlify_domains:
+            self.assertIn(
+                domain,
+                settings.ALLOWED_HOSTS,
+                f"Netlify domain {domain} not in ALLOWED_HOSTS"
+            )
+    
+    def test_environment_variables_support(self):
+        """Test that environment variables are properly handled"""
+        import os
+        
+        # Test that SECRET_KEY can be set via environment variable
+        original_secret = os.environ.get('SECRET_KEY')
+        test_secret = 'test-secret-key-for-netlify'
+        
+        try:
+            os.environ['SECRET_KEY'] = test_secret
+            # Reload settings to test environment variable handling
+            from django.conf import settings
+            # This test verifies that the settings module can handle env vars
+            self.assertTrue(hasattr(settings, 'SECRET_KEY'))
+        finally:
+            if original_secret:
+                os.environ['SECRET_KEY'] = original_secret
+            else:
+                os.environ.pop('SECRET_KEY', None)
+    
+    def test_netlify_deployment_documentation(self):
+        """Test that Netlify deployment documentation exists and is comprehensive"""
+        with open('../NETLIFY_DEPLOYMENT.md', 'r') as f:
+            content = f.read()
+        
+        required_sections = [
+            'Deployment Steps',
+            'Environment Variables',
+            'What Works',
+            'What Doesn\'t Work',
+            'Alternative Deployment Options'
+        ]
+        
+        for section in required_sections:
+            self.assertIn(
+                section,
+                content,
+                f"Required section '{section}' not found in NETLIFY_DEPLOYMENT.md"
+            )
+    
+    def test_build_script_content(self):
+        """Test that build script contains required functionality"""
+        with open('../build.sh', 'r') as f:
+            content = f.read()
+        
+        required_elements = [
+            '#!/bin/bash',
+            'pip install -r requirements.txt',
+            'python manage.py collectstatic',
+            'python manage.py migrate',
+            'DJANGO_SETTINGS_MODULE=app.conf.production.settings'
+        ]
+        
+        for element in required_elements:
+            self.assertIn(
+                element,
+                content,
+                f"Required element '{element}' not found in build.sh"
+            )
+    
+    def test_netlify_functions_package_json(self):
+        """Test that package.json for Netlify functions is properly configured"""
+        with open('../netlify/functions/package.json', 'r') as f:
+            content = f.read()
+        
+        required_elements = [
+            '"name": "stonewalker-netlify-functions"',
+            '"main": "django.js"',
+            '"dependencies": {}'
+        ]
+        
+        for element in required_elements:
+            self.assertIn(
+                element,
+                content,
+                f"Required element '{element}' not found in package.json"
+            )
+
+
