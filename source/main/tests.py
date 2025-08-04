@@ -473,7 +473,8 @@ class WelcomeModalTests(TestCase):
         # Check that debug welcome modal HTML is present
         self.assertContains(response, 'welcome-banner-modal')
         self.assertContains(response, 'showWelcomeModal')
-        self.assertContains(response, 'Welcome to StoneWalker!')
+        # Check for the welcome modal text (either translated or original)
+        self.assertContains(response, 'Welcome to StoneWalker')
 
 
 class MyStonesTests(TestCase):
