@@ -8,41 +8,42 @@
 
 <!-- Welcome Modal for Guests -->
 {% if show_welcome_modal %}
-<div id="welcome-modal-overlay" class="profile-modal-overlay">
-  <div id="welcome-modal-content" class="avant-card">
-    <span id="welcome-modal-close" class="profile-modal-close">&times;</span>
-    <div class="avant-header">{% trans 'Welcome to StoneWalker!' %}</div>
-    <div class="avant-card-desc">
-      <span class="avant-header accent">{% trans 'You are a guest.' %}</span><br>
-      <span class="avant-header secondary">{% trans 'Sign up to start creating, finding, and sharing stones around the world!' %}</span>
-    </div>
-    <div class="avant-card-btns">
-      <a href="{% url 'accounts:sign_up' %}" class="avant-btn">{% trans 'Create an Account' %}</a>
-      <a href="{% url 'accounts:log_in' %}" class="avant-btn">{% trans 'Log In' %}</a>
-    </div>
-  </div>
-</div>
 <script>
 (function() {
   var lastVisitKey = 'stonewalker_guest_last_visit';
   var now = Date.now();
   var lastVisit = parseInt(localStorage.getItem(lastVisitKey) || '0', 10);
   var oneHour = 60 * 60 * 1000;
-  var overlay = document.getElementById('welcome-modal-overlay');
+  
   if (!lastVisit || now - lastVisit > oneHour) {
-    overlay.style.display = 'flex';
-    document.getElementById('welcome-modal-close').onclick = function() {
-      overlay.style.display = 'none';
-      localStorage.setItem(lastVisitKey, Date.now().toString());
-    };
-    overlay.onclick = function(e) {
-      if (e.target === overlay) {
-        overlay.style.display = 'none';
+    // Use the shared welcome modal
+    if (window.showWelcomeModal) {
+      window.showWelcomeModal();
+    }
+    
+    // Add localStorage functionality to the shared modal close
+    var welcomeModal = document.getElementById('welcome-banner-modal');
+    var welcomeClose = document.getElementById('welcome-modal-close');
+    
+    if (welcomeClose) {
+      welcomeClose.onclick = function() {
         localStorage.setItem(lastVisitKey, Date.now().toString());
-      }
-    };
-  } else {
-    overlay.style.display = 'none';
+        if (window.closeWelcomeModal) {
+          window.closeWelcomeModal();
+        }
+      };
+    }
+    
+    if (welcomeModal) {
+      welcomeModal.onclick = function(e) {
+        if (e.target === welcomeModal) {
+          localStorage.setItem(lastVisitKey, Date.now().toString());
+          if (window.closeWelcomeModal) {
+            window.closeWelcomeModal();
+          }
+        }
+      };
+    }
   }
 })();
 </script>

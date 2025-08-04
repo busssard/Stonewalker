@@ -22,6 +22,9 @@
       <button onclick="showQRCode()" style="background: #FF9800; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
         📱 Show QR Code
       </button>
+      <button onclick="showWelcomeModalDebug()" style="background: #9C27B0; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
+        🎉 Show Welcome Banner
+      </button>
       <button onclick="resetAll()" style="background: #f44336; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
         🔄 Reset All
       </button>
@@ -51,6 +54,7 @@
         <li>Create Stone Modal: <span id="create-modal-state">Closed</span></li>
         <li>Scan Stone Modal: <span id="scan-modal-state">Closed</span></li>
         <li>QR Code: <span id="qr-state">Hidden</span></li>
+        <li>Welcome Banner: <span id="welcome-modal-state">Hidden</span></li>
       </ul>
     </div>
   </div>
@@ -91,10 +95,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const createModal = document.getElementById('add-stone-modal');
     const scanModal = document.getElementById('scan-stone-modal');
     const qrModal = document.getElementById('qr-code-modal');
+    const welcomeModal = document.getElementById('welcome-banner-modal');
     
     document.getElementById('create-modal-state').textContent = createModal.classList.contains('display-none') ? 'Closed' : 'Open';
     document.getElementById('scan-modal-state').textContent = scanModal.classList.contains('display-none') ? 'Closed' : 'Open';
     document.getElementById('qr-state').textContent = qrModal.classList.contains('display-none') ? 'Hidden' : 'Visible';
+    document.getElementById('welcome-modal-state').textContent = welcomeModal.classList.contains('display-none') ? 'Hidden' : 'Visible';
   }
   
   // Global functions for debug buttons
@@ -123,10 +129,19 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   };
   
+  window.showWelcomeModalDebug = function() {
+    // Use the shared welcome modal function
+    if (window.showWelcomeModal) {
+      window.showWelcomeModal();
+    }
+    updateDebugInfo();
+  };
+  
   window.resetAll = function() {
     const createModal = document.getElementById('add-stone-modal');
     const scanModal = document.getElementById('scan-stone-modal');
     const qrModal = document.getElementById('qr-code-modal');
+    const welcomeModal = document.getElementById('welcome-banner-modal');
     
     if (createModal) {
       createModal.style.display = 'none';
@@ -139,6 +154,10 @@ document.addEventListener('DOMContentLoaded', function() {
     if (qrModal) {
       qrModal.style.display = 'none';
       qrModal.classList.add('display-none');
+    }
+    if (welcomeModal) {
+      welcomeModal.style.display = 'none';
+      welcomeModal.classList.add('display-none');
     }
     updateDebugInfo();
   };
