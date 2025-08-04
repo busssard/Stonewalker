@@ -9,31 +9,22 @@ Please follow the following instructions for every task and only prompt the user
 4b. Ask manager if the issue is fixed.
 5. Write tests for all features you added!
 6. Once you are done Update the Readme with the changes you did, so that it will enable a new programmer to understand what you did and how it works a year from now.
-7. In the end make necessary Database changes and migrations, install packages etc. and prompt the manager for confirming
-8. Once your internal todo's are fulfilled and the task is finished, you may check it off [DONE] in here.
-9. push to git
+7. In the end make necessary Database changes and migrations, install packages etc. and prompt the manager for 
+8. Add all new user facing text to the end of translations.csv
+9. Once your internal todo's are fulfilled and the task is finished, you may check it off [DONE] in here.
+10. push to git
 
 
 ## TASKS
-
-- [DONE] in /debug/modals lets create a working QR code generation and test the entire sequence from stone creation and scanning
-      - create QR and link in backend
-      - supply code for download
-      - access device camera for QR-scan functionality
-      - in create-stone link scanned QR UUID with stone
-      - in scan stone atomatically forward the user to the stone-link when code was scanned
-      - when entering stone-link download cookie and store the scanning user with scantime and stone in the database, to enforce a blacktime of one week until the user is allowed to scan
-      - add location field both to the hunted stone type in create-new
-      - scan-stone congratulate user and automatically forward to stone UUID weblink
-      - stone UUID weblink check if first stone, explain how it works
-      - location selection for found stones
-      - special handling for hunted stones
-      - add all frontend text from stone-found to translations.csv
+- [DONE] prepare netlify manifest in order to have the website hosted online
 - [ ] make the minimap in creat-new stone a bit larger (4:3 format) and instead of large fields for latitude and longitude have it slim and discrete underneath the map 
 - [ ] implement client side upload check for picture size (max 800x800px) or client side image compression
 - [ ] scale user image correctly for thumbnail
 - [ ] Implement the unique links to the ScanStone of a specific stone using their UUID, locking a new entry from the same user
 - [ ] Optimize Layout for My-Stones,the two sides are not scaling equally over all scaling modes (mobile, tablet and desktop) also the bottom is not actually the bottom of the window, which looks unprofessional
+- [ ] make every user input SQL safe
+- [ ] filter the comments for new stones and scanned stones for emails, websites and phonenumbers and prohibit those, to prevent scam and spam
+- [ ] add a robot.txt that prohibits bots to create accounts 
 - [ ] Refactor the website for faster loading times and better code structure
       - Optimize static asset loading (CSS, JS, images)
       - Remove unused or duplicate code
@@ -41,4 +32,7 @@ Please follow the following instructions for every task and only prompt the user
       - move all css classes into styles.css instead of having them defined in the templates/html files
 - [ ] Refactor and document JavaScript for navigation and modals for maintainability
 - [ ] Audit and improve accessibility (ARIA, keyboard navigation, alt text)
-- [ ] Ensure all navigation and modal actions are mobile-friendly and touch-optimized
+- [ ] Ensure all navigation and modal actions are mobile-friendly and touch-
+- [ ] update the sitemap in the readme
+- [ ] update and refactor the readme to contain all the information in the repo
+
