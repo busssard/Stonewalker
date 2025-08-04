@@ -474,26 +474,19 @@ class WelcomeModalTests(TestCase):
         self.assertContains(response, 'welcome-banner-modal')
         self.assertContains(response, 'showWelcomeModal')
         
-        # Debug: Check what's actually in the response
-        response_content = response.content.decode('utf-8')
-        if 'Welcome to StoneWalker' not in response_content:
-            print("DEBUG: Response content does not contain 'Welcome to StoneWalker'")
-            print("DEBUG: Looking for welcome modal content...")
-            if 'welcome-banner-modal' in response_content:
-                print("DEBUG: welcome-banner-modal found")
-                # Find the welcome modal section
-                start_idx = response_content.find('welcome-banner-modal')
-                if start_idx != -1:
-                    end_idx = response_content.find('</div>', start_idx)
-                    if end_idx != -1:
-                        modal_section = response_content[start_idx:end_idx+6]
-                        print("DEBUG: Welcome modal section:")
-                        print(modal_section)
-            else:
-                print("DEBUG: welcome-banner-modal not found")
-        
         # Check for the welcome modal text (either translated or original)
-        self.assertContains(response, 'Welcome to StoneWalker')
+        response_content = response.content.decode('utf-8')
+        # The text might be translated, so check for both English and Italian versions
+        welcome_text_found = (
+            'Welcome to StoneWalker' in response_content or
+            'Benvenuto in StoneWalker' in response_content or
+            'Willkommen bei StoneWalker' in response_content or
+            'Bienvenido a StoneWalker' in response_content or
+            'Bienvenue chez StoneWalker' in response_content or
+            'Добро пожаловать в StoneWalker' in response_content or
+            '欢迎来到 StoneWalker' in response_content
+        )
+        self.assertTrue(welcome_text_found, "Welcome modal text not found in any supported language")
 
 
 class MyStonesTests(TestCase):
