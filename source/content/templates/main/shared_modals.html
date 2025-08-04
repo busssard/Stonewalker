@@ -287,6 +287,22 @@
   </div>
 </div>
 
+<!-- Welcome Banner Modal -->
+<div id="welcome-banner-modal" class="profile-modal-overlay display-none">
+  <div id="welcome-modal-content" class="avant-modal">
+    <span id="welcome-modal-close" class="profile-modal-close">&times;</span>
+    <div class="avant-header">{% trans 'Welcome to StoneWalker!' %}</div>
+    <div class="avant-card-desc">
+      <span class="avant-header accent">{% trans 'You are a guest.' %}</span><br>
+      <span class="avant-header secondary">{% trans 'Sign up to start creating, finding, and sharing stones around the world!' %}</span>
+    </div>
+    <div class="avant-card-btns">
+      <a href="{% url 'accounts:sign_up' %}" class="avant-btn">{% trans 'Create an Account' %}</a>
+      <a href="{% url 'accounts:log_in' %}" class="avant-btn">{% trans 'Log In' %}</a>
+    </div>
+  </div>
+</div>
+
 <!-- QR Scanner Required Scripts -->
 <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 <script src="{% static 'js/qr-code.js' %}"></script>
@@ -914,6 +930,48 @@ document.addEventListener('DOMContentLoaded', function() {
       
       // Initialize QR scanner after modal opens
       setTimeout(initializeScanModal, 100);
+    }
+  };
+  
+  // Welcome Banner Modal functionality
+  const welcomeModal = document.getElementById('welcome-banner-modal');
+  const welcomeClose = document.getElementById('welcome-modal-close');
+  
+  // Close welcome modal function
+  function closeWelcomeModal() {
+    if (welcomeModal) {
+      welcomeModal.style.display = 'none';
+      welcomeModal.classList.add('display-none');
+    }
+  }
+  
+  // Welcome modal close button handler
+  if (welcomeClose) {
+    welcomeClose.onclick = closeWelcomeModal;
+  }
+  
+  // Welcome modal overlay click handler
+  if (welcomeModal) {
+    welcomeModal.onclick = function(e) {
+      if (e.target === welcomeModal) {
+        closeWelcomeModal();
+      }
+    };
+  }
+  
+  // Global function to show welcome modal
+  window.showWelcomeModal = function() {
+    if (welcomeModal) {
+      welcomeModal.classList.remove('display-none');
+      welcomeModal.style.display = 'flex';
+    }
+  };
+  
+  // Global function to close welcome modal
+  window.closeWelcomeModal = function() {
+    if (welcomeModal) {
+      welcomeModal.style.display = 'none';
+      welcomeModal.classList.add('display-none');
     }
   };
 });

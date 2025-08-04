@@ -833,6 +833,129 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
   color: #888;
 }
 
+/* Welcome Modal Enhanced Styling */
+#welcome-modal-content {
+  background: linear-gradient(135deg, #fff6e9 0%, #ffe7d1 100%);
+  border: 3px solid var(--color-primary);
+  box-shadow: 0 8px 32px rgba(255, 152, 0, 0.15);
+  position: relative;
+  overflow: hidden;
+}
+
+#welcome-modal-content::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255, 152, 0, 0.05) 0%, transparent 70%);
+  animation: welcome-glow 3s ease-in-out infinite alternate;
+}
+
+@keyframes welcome-glow {
+  0% { transform: rotate(0deg) scale(1); }
+  100% { transform: rotate(360deg) scale(1.1); }
+}
+
+#welcome-modal-content .avant-header {
+  color: var(--color-primary);
+  text-shadow: 0 2px 8px rgba(255, 152, 0, 0.2);
+  margin-bottom: 1.5rem;
+  position: relative;
+  z-index: 2;
+  text-align: center;
+}
+
+#welcome-modal-content .avant-card-desc {
+  margin-bottom: 2rem;
+  position: relative;
+  z-index: 2;
+  text-align: center;
+}
+
+#welcome-modal-content .avant-header.accent {
+  color: var(--color-accent);
+  font-size: 1.4rem;
+  margin-bottom: 0.5rem;
+}
+
+#welcome-modal-content .avant-header.secondary {
+  color: var(--color-text-main);
+  font-size: 1.1rem;
+  font-weight: 400;
+  line-height: 1.6;
+}
+
+#welcome-modal-content .avant-card-btns {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  position: relative;
+  z-index: 2;
+}
+
+#welcome-modal-content .avant-btn {
+  min-width: 160px;
+  text-align: center;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+#welcome-modal-content .avant-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.5s;
+}
+
+#welcome-modal-content .avant-btn:hover::before {
+  left: 100%;
+}
+
+#welcome-modal-close {
+  color: var(--color-primary);
+  font-weight: bold;
+  transition: all 0.2s ease;
+  z-index: 3;
+}
+
+#welcome-modal-close:hover {
+  color: var(--color-primary-dark);
+  transform: scale(1.1);
+}
+
+/* Responsive adjustments for welcome modal */
+@media (max-width: 600px) {
+  #welcome-modal-content {
+    margin: 1rem;
+    padding: 1.5rem;
+    width: calc(100vw - 2rem);
+  }
+  
+  #welcome-modal-content .avant-header {
+    font-size: 1.8rem;
+  }
+  
+  #welcome-modal-content .avant-card-btns {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  #welcome-modal-content .avant-btn {
+    width: 100%;
+    max-width: 280px;
+  }
+}
+
 /* Floating Action Bar and Buttons */
 .floating-action-bar {
   position: fixed;
