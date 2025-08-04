@@ -473,6 +473,25 @@ class WelcomeModalTests(TestCase):
         # Check that debug welcome modal HTML is present
         self.assertContains(response, 'welcome-banner-modal')
         self.assertContains(response, 'showWelcomeModal')
+        
+        # Debug: Check what's actually in the response
+        response_content = response.content.decode('utf-8')
+        if 'Welcome to StoneWalker' not in response_content:
+            print("DEBUG: Response content does not contain 'Welcome to StoneWalker'")
+            print("DEBUG: Looking for welcome modal content...")
+            if 'welcome-banner-modal' in response_content:
+                print("DEBUG: welcome-banner-modal found")
+                # Find the welcome modal section
+                start_idx = response_content.find('welcome-banner-modal')
+                if start_idx != -1:
+                    end_idx = response_content.find('</div>', start_idx)
+                    if end_idx != -1:
+                        modal_section = response_content[start_idx:end_idx+6]
+                        print("DEBUG: Welcome modal section:")
+                        print(modal_section)
+            else:
+                print("DEBUG: welcome-banner-modal not found")
+        
         # Check for the welcome modal text (either translated or original)
         self.assertContains(response, 'Welcome to StoneWalker')
 
