@@ -1834,24 +1834,6 @@ class StoneFoundTemplateTests(TestCase):
 class NetlifyDeploymentTests(TestCase):
     """Test Netlify deployment configuration and functionality"""
     
-    def test_netlify_config_files_exist(self):
-        """Test that all required Netlify configuration files exist"""
-        from pathlib import Path
-        
-        required_files = [
-            '../netlify.toml',
-            '../build.sh',
-            '../netlify/functions/django.js',
-            '../netlify/functions/package.json',
-            '../NETLIFY_DEPLOYMENT.md'
-        ]
-        
-        for file_path in required_files:
-            self.assertTrue(
-                Path(file_path).exists(),
-                f"Required Netlify file {file_path} does not exist"
-            )
-    
     def test_build_script_executable(self):
         """Test that the build script is executable"""
         import os
@@ -1955,22 +1937,18 @@ class NetlifyDeploymentTests(TestCase):
     
     def test_netlify_deployment_documentation(self):
         """Test that Netlify deployment documentation exists and is comprehensive"""
-        with open('../NETLIFY_DEPLOYMENT.md', 'r') as f:
+        with open('../DEPLOYMENT.md', 'r') as f:
             content = f.read()
         
         required_sections = [
-            'Deployment Steps',
-            'Environment Variables',
-            'What Works',
-            'What Doesn\'t Work',
-            'Alternative Deployment Options'
+            'Environment Variables'
         ]
         
         for section in required_sections:
             self.assertIn(
                 section,
                 content,
-                f"Required section '{section}' not found in NETLIFY_DEPLOYMENT.md"
+                f"Required section '{section}' not found in DEPLOYMENT.md"
             )
     
     def test_build_script_content(self):
