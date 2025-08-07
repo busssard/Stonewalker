@@ -14,7 +14,7 @@ Render.com is a modern cloud platform that natively supports Django, PostgreSQL,
    - Click "New +" > "Web Service".
    - Connect your GitHub repository containing this project.
    - For the build and start commands, use:
-     - **Build Command:** `pip install -r requirements.txt && python source/manage.py collectstatic --noinput`
+     - **Build Command:** `pip install --upgrade pip setuptools wheel && pip install -r requirements.txt && python source/manage.py collectstatic --noinput`
      - **Start Command:** `gunicorn app.wsgi:application`
      - (Adjust the path if your wsgi.py is not at `source/app/wsgi.py`)
 
