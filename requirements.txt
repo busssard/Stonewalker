@@ -4,6 +4,7 @@ backports.zoneinfo==0.2.1
 baron==0.10.1
 beautifulsoup4==4.13.4
 coverage==7.6.1
+dj-database-url==3.0.1
 dj-email-url==1.0.6
 django==4.2.23
 django-bootstrap4==24.4
@@ -42,3 +43,5 @@ tomli==2.2.1
 typing-extensions==4.13.2
 tzdata==2025.2
 whitenoise==6.7.0
+setuptools>=65.0
+wheel
