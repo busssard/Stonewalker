@@ -14,11 +14,10 @@ Render.com is a modern cloud platform that natively supports Django, PostgreSQL,
    - Click "New +" > "Web Service".
    - Connect your GitHub repository containing this project.
    - **Important:** In the Environment settings, set Python version to 3.12 (not 3.13)
-   - **Working Directory:** Set to `source` (this tells Render where your Django app is located)
    - For the build and start commands, use:
-     - **Build Command:** `python -m ensurepip --upgrade && python -m pip install --upgrade pip setuptools wheel && python -m pip install -r requirements.txt && python source/manage.py collectstatic --noinput`
-     - **Start Command:** `python -m gunicorn app.wsgi:application --chdir source`
-     - **Working Directory:** `source` (set this in Render.com settings)
+     - **Build Command:** `./render_build.sh`
+     - **Start Command:** `cd source && gunicorn app.wsgi:application`
+     - (Adjust the path if your wsgi.py is not at `source/app/wsgi.py`)
 
 3. **Set Environment Variables**
    - In the Render dashboard, go to your service > Environment > Add Environment Variable.
@@ -42,13 +41,13 @@ Render.com is a modern cloud platform that natively supports Django, PostgreSQL,
 7. **Run Migrations**
    - In the Render dashboard, open the Shell for your web service and run:
      ```bash
-     python source/manage.py migrate
+     cd source && python manage.py migrate
      ```
 
 8. **(Optional) Create a Superuser**
    - In the Shell, run:
      ```bash
-     python source/manage.py createsuperuser
+     cd source && python manage.py createsuperuser
      ```
 
 **Notes:**
