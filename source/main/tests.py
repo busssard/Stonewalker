@@ -1831,7 +1831,6 @@ class StoneFoundTemplateTests(TestCase):
         self.assertContains(response, 'New Longitude')
 
 
-class NetlifyDeploymentTests(TestCase):
     """Test Netlify deployment configuration and functionality"""
     
     def test_build_script_executable(self):
