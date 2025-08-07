@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Pytest configuration for Django project with automatic translation compilation.
 """
