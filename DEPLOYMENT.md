@@ -16,7 +16,7 @@ Render.com is a modern cloud platform that natively supports Django, PostgreSQL,
    - **Important:** In the Environment settings, set Python version to 3.12 (not 3.13)
    - For the build and start commands, use:
      - **Build Command:** `./render_build.sh`
-     - **Start Command:** `cd source && gunicorn app.wsgi:application`
+     - **Start Command:** `cd source && ./render_start.sh`
      - (Adjust the path if your wsgi.py is not at `source/app/wsgi.py`)
 
 3. **Set Environment Variables**
@@ -39,9 +39,10 @@ Render.com is a modern cloud platform that natively supports Django, PostgreSQL,
    - Click "Manual Deploy" or push to your repository to trigger a deployment.
 
 7. **Run Migrations**
-   - In the Render dashboard, open the Shell for your web service and run:
+   - The start script runs migrations automatically on each deploy.
+   - If you need to run them manually, open Shell and run:
      ```bash
-     cd source && python manage.py migrate
+     cd source && python manage.py migrate --noinput
      ```
 
 8. **(Optional) Create a Superuser**
@@ -54,6 +55,24 @@ Render.com is a modern cloud platform that natively supports Django, PostgreSQL,
 - Make sure your `.env` file is not committed to Git. Use Render’s environment variable settings instead.
 - If you use `environs` and `dj-database-url`, your `settings.py` should read the `DATABASE_URL` from the environment.
 - For background tasks (e.g., Celery), use Render’s Background Worker service.
+
+#### Local vs Production settings
+
+- The app switches settings via `IS_PRODUCTION` env var:
+  - Unset/False: development settings (SQLite) for local debugging
+  - True: production settings (`DATABASE_URL` via `dj-database-url`)
+  
+Examples:
+```bash
+# Local dev (SQLite)
+unset IS_PRODUCTION
+cd source && python manage.py runserver
+
+# Local prod-like (Postgres)
+export IS_PRODUCTION=true
+export DATABASE_URL="postgresql://USER:PASS@HOST:PORT/DBNAME"
+cd source && python manage.py runserver
+```
 
 **References:**
 - [Render Django Guide](https://render.com/docs/deploy-django)
@@ -157,32 +176,4 @@ To test your Django project locally before deploying:
 ## Security Considerations
 
 - **Environment Variables:** Never commit secrets or sensitive data to your repository. Use Render’s environment variable settings.
-- **DEBUG:** Always set `DEBUG=False` in production.
-- **ALLOWED_HOSTS:** Set this to your Render domain and any custom domains.
-- **SSL:** Render automatically provides SSL certificates for your domains.
-- **Database Security:** Use strong passwords and restrict database access to only your app.
-- **Dependencies:** Regularly update dependencies to patch security vulnerabilities.
-
-## Performance Optimization
-
-- **Static Files:** Serve static files via Render’s static file service for better performance.
-- **Database Indexes:** Ensure your database tables have appropriate indexes for query speed.
-- **Gunicorn Workers:** Tune the number of Gunicorn workers for your app’s needs (e.g., `gunicorn -w 3 app.wsgi:application`).
-- **Caching:** Use Django’s caching framework for frequently accessed data.
-- **Compression:** Enable GZip middleware in Django for faster responses.
-
-## Support
-
-- **Render Documentation:** [https://render.com/docs](https://render.com/docs)
-- **Django Documentation:** [https://docs.djangoproject.com/](https://docs.djangoproject.com/)
-- **Community:** Use Stack Overflow or the Render community forums for help.
-- **Error Tracking:** Integrate with Sentry or similar tools for error monitoring.
-
-## Migration Path
-
-If you need to move your deployment to another platform:
-1. **Export Data:** Backup your database and any uploaded files.
-2. **Choose Platform:** Select a new host (e.g., Heroku, Railway, DigitalOcean).
-3. **Update Settings:** Adjust Django settings for the new environment.
-4. **Deploy:** Follow the new platform’s deployment guide.
-5. **Import Data:** Restore your database and files to the new platform.
+- **DEBUG:** Always set `DEBUG=False`

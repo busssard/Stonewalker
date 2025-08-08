@@ -78,6 +78,31 @@ Set up email backend, allowed hosts, and any other environment-specific options.
 - `LANGUAGE_CODE`, `LANGUAGES`, `LOCALE_PATHS`: For internationalization.
 - `STATIC_ROOT`, `STATIC_URL`, `MEDIA_ROOT`, `MEDIA_URL`: For static/media files.
 
+#### Local development (SQLite)
+
+```bash
+# Ensure production env is disabled
+unset IS_PRODUCTION
+unset DATABASE_URL  # optional
+
+# Run migrations and start server
+cd source
+python manage.py migrate
+python manage.py runserver
+```
+
+#### Run with production settings locally (Postgres via DATABASE_URL)
+
+```bash
+export IS_PRODUCTION=true
+export DATABASE_URL="postgresql://USER:PASS@HOST:PORT/DBNAME"
+cd source
+python manage.py migrate
+python manage.py runserver
+```
+
+- With `IS_PRODUCTION=true`, `app.settings` loads production settings and uses `dj-database-url` to configure the DB from `DATABASE_URL`. Without it, development settings with SQLite are used.
+
 ### 5. Apply Migrations
 
 ```bash
