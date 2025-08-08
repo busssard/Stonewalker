@@ -5,21 +5,54 @@
 {% load static %}
 
 {% block content %}
-<div class="avant-section avant-bg-right flex-center min-h-80vh bg-gradient-left overflow-auto">
-  <div class="avant-card max-w-440 w-full m-3-auto shadow-medium">
+<div id="auth-overlay" class="auth-overlay" role="dialog" aria-modal="true" aria-labelledby="auth-modal-title">
+  <div id="auth-modal" class="auth-modal">
+    <a href="{% url 'index' %}" class="auth-modal-close" aria-label="{% trans 'Close' %}" role="button">&times;</a>
+
     <div class="text-center mb-1-2">
-      <img src="{% static 'main_logo2.png' %}" alt="StoneWalker Logo" class="h-54 w-auto mb-0-5 filter-drop-shadow">
-      <div class="avant-header fs-2">{% trans 'Create an account' %}</div>
+      <img src="{% static 'main_logo2.png' %}" alt="StoneWalker Logo" class="auth-logo w-auto mb-0-5 filter-drop-shadow">
+      <div id="auth-modal-title" class="avant-header">{% trans 'Create an account' %}</div>
       <div class="fs-1-08 text-muted mb-0-7">{% trans "Join the journey! Track, share, and discover painted stones around the world." %}</div>
     </div>
-    <form method="post" class="mt-1-2">
+
+    <form method="post" class="auth-form mt-1-2">
       {% csrf_token %}
       {{ form.as_p }}
       <button class="avant-btn w-full mt-1-2 bg-accent text-white fs-1-13 letter-spacing-0-03">{% trans 'Create' %}</button>
     </form>
+
     <div class="text-center mt-1-5 fs-0-98 text-muted">
       {% trans "Already have an account?" %} <a href="{% url 'accounts:log_in' %}" class="text-accent underline">{% trans 'Log in' %}</a>
     </div>
   </div>
 </div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var overlay = document.getElementById('auth-overlay');
+    var modal = document.getElementById('auth-modal');
+    // Lock background scroll
+    document.body.classList.add('no-scroll');
+
+    function closeModal() {
+      // Unlock scroll and navigate back to index
+      document.body.classList.remove('no-scroll');
+      window.location.href = "{% url 'index' %}";
+    }
+
+    // Close on clicking outside the modal
+    overlay.addEventListener('click', function (e) {
+      if (e.target === overlay) {
+        closeModal();
+      }
+    });
+
+    // Close on ESC
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') {
+        closeModal();
+      }
+    });
+  });
+</script>
 {% endblock %}

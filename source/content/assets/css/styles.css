@@ -1831,6 +1831,11 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
   max-width: 600px !important;
 }
 
+/* Added */
+.max-w-440 {
+  max-width: 440px !important;
+}
+
 .w-full {
   width: 100% !important;
 }
@@ -1845,6 +1850,11 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
 
 .h-48 {
   height: 48px !important;
+}
+
+/* Added */
+.h-54 {
+  height: 54px !important;
 }
 
 .h-120 {
@@ -2466,4 +2476,123 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
 
 .border-radius-1-2 {
   border-radius: 1.2em !important;
+}
+
+/* Auth pages */
+.auth-card {
+  max-width: 440px;
+  width: 100%;
+  margin: 2rem auto;
+}
+
+.auth-logo {
+  height: 40px;
+  width: auto;
+}
+
+@media (max-width: 600px) {
+  .auth-card { max-width: 95vw; padding-left: 1.25rem; padding-right: 1.25rem; }
+  .auth-logo { height: 32px; }
+}
+
+.auth-form p {
+  margin-bottom: 0.9rem;
+}
+
+.auth-form p > label {
+  display: block;
+  font-family: var(--font-main);
+  font-size: 1.05rem;
+  color: var(--color-primary);
+  margin-bottom: 0.25rem;
+}
+
+.auth-form p > input,
+.auth-form p > select,
+.auth-form p > textarea {
+  display: block;
+  width: 100%;
+  font-family: var(--font-main);
+  font-size: 1.05rem;
+  border-radius: 7px;
+  border: 1.5px solid #e0e0e0;
+  padding: 0.6rem;
+  background: #fff;
+  color: var(--color-text-main);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.auth-form p > input:focus,
+.auth-form p > select:focus,
+.auth-form p > textarea:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 2px 8px rgba(255,152,0,0.13);
+  outline: none;
+}
+
+.auth-form .helptext {
+  display: block;
+  margin-top: 0.35rem;
+  color: #888;
+  font-size: 0.92rem;
+}
+
+.auth-form .errorlist {
+  margin: 0.25rem 0 0.5rem 0;
+  padding-left: 1rem;
+  color: #c62828;
+  font-size: 0.95rem;
+}
+
+/* Auth overlay modal */
+.auth-overlay {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: rgba(32, 33, 36, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+  z-index: 999999;
+}
+
+.auth-modal {
+  background: var(--color-bg-card);
+  border-radius: 18px;
+  box-shadow: 0 12px 48px rgba(0,0,0,0.2);
+  width: 100%;
+  max-width: 520px;
+  padding: 2rem 1.75rem 1.75rem 1.75rem;
+  position: relative;
+}
+
+.auth-modal-close {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  font-size: 1.8rem;
+  color: #999;
+  text-decoration: none;
+  line-height: 1;
+}
+.auth-modal-close:hover, .auth-modal-close:focus {
+  color: #666;
+}
+
+@media (max-width: 600px) {
+  .auth-modal { max-width: 95vw; padding-left: 1.25rem; padding-right: 1.25rem; }
+}
+
+/* Prevent background scroll when modal is open */
+.no-scroll {
+  overflow: hidden !important;
+}
+
+/* Modal internal scrolling */
+.auth-modal {
+  max-height: calc(100vh - 3rem);
+  overflow: auto;
 }
