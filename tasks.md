@@ -16,7 +16,6 @@ Please follow the following instructions for every task and only prompt the user
 
 
 ## TASKS
-- [DONE] prepare netlify manifest in order to have the website hosted online
 - [ ] make the minimap in creat-new stone a bit larger (4:3 format) and instead of large fields for latitude and longitude have it slim and discrete underneath the map 
 - [ ] implement client side upload check for picture size (max 800x800px) or client side image compression
 - [ ] scale user image correctly for thumbnail

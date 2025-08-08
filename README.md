@@ -650,6 +650,38 @@ This page features the interactive map, login modal, and personal dashboard.
 - **Language Change Redirect:** Users are now automatically redirected to the main page (`/stonewalker/`) after changing their language preference, providing a seamless user experience
 - **Enhanced Language Change Testing:** Added comprehensive test coverage for language change functionality including redirect behavior, session preservation, and context data validation
 
+### Signup Popup Redesign
+
+The sign-up page (`/accounts/sign-up/`) now renders as a modal-style popup overlay.
+- Accessible dialog semantics (`role="dialog"`, `aria-modal`, labeled title)
+- Close via outside click, ESC, or the close button
+- Background scroll is locked while open
+- All styles live in `source/content/static/css/styles.css` and mirrored in `source/content/assets/css/styles.css`
+
+### Database: SQLite (dev) and PostgreSQL (prod)
+
+- Development uses SQLite by default (`source/app/conf/development/settings.py`).
+- Production supports `DATABASE_URL` using `dj-database-url` in `source/app/conf/production/settings.py`.
+
+Run with Postgres locally:
+
+```bash
+export IS_PRODUCTION=true
+export DATABASE_URL="postgresql://USER:PASS@HOST:PORT/DBNAME"
+cd source
+python manage.py migrate
+python manage.py runserver
+```
+
+Run with SQLite (default):
+
+```bash
+unset IS_PRODUCTION
+cd source
+python manage.py migrate
+python manage.py runserver
+```
+
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
