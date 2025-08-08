@@ -44,6 +44,16 @@ def run_tests(test_args):
     """Run the actual tests."""
     print("🧪 Running tests...")
     
+    # If no explicit test paths are provided (either no args or only flags),
+    # target app test files explicitly to avoid cwd/testpaths issues
+    only_flags = all(arg.startswith('-') for arg in test_args) if test_args else True
+    if only_flags:
+        test_args = list(test_args) if test_args else []
+        test_args += [
+            "accounts/tests.py",
+            "main/tests.py",
+        ]
+    
     # Build pytest command
     cmd = ["python", "-m", "pytest"] + test_args
     
