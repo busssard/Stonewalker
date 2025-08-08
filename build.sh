@@ -10,7 +10,7 @@ echo "Installing Python dependencies..."
 pip install -r requirements.txt
 
 # Set environment variables for production
-export DJANGO_SETTINGS_MODULE=source.app.conf.production.settings
+export DJANGO_SETTINGS_MODULE=app.conf.production.settings
 export DEBUG=False
 export ALLOWED_HOSTS=".netlify.app,.netlify.com"
 
@@ -25,7 +25,7 @@ python manage.py collectstatic --noinput --settings=app.conf.production.settings
 
 # Run migrations
 echo "Running database migrations..."
-python manage.py migrate --settings=source.app.conf.production.settings
+python manage.py migrate --settings=app.conf.production.settings
 
 # Create a simple WSGI file for Netlify
 echo "Creating WSGI configuration..."

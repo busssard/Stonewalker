@@ -8,13 +8,7 @@ CONTENT_DIR = os.path.join(BASE_DIR, 'content')
 SECRET_KEY = os.environ.get('SECRET_KEY', '3d305kajG5Jy8KBafCMpHwDIsNi0SqVaW')
 
 DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
-ALLOWED_HOSTS = [
-    'example.com',
-    '.netlify.app',
-    '.netlify.com',
-    'localhost',
-    '127.0.0.1',
-]
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'example.com,.netlify.app,.netlify.com,.onrender.com,localhost,127.0.0.1').split(',')
 
 SITE_ID = 1
 
@@ -36,6 +30,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -83,6 +78,15 @@ DATABASES = {
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
+
+# Support DATABASE_URL on Render (PostgreSQL recommended)
+try:
+    import dj_database_url  # type: ignore
+    db_url = os.environ.get('DATABASE_URL')
+    if db_url:
+        DATABASES['default'] = dj_database_url.parse(db_url, conn_max_age=600, ssl_require=True)
+except Exception:
+    pass
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -137,6 +141,9 @@ USE_TZ = True
 
 STATIC_ROOT = os.path.join(CONTENT_DIR, 'static')
 STATIC_URL = '/static/'
+
+# Enable WhiteNoise for static files on Render
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 MEDIA_ROOT = os.path.join(CONTENT_DIR, 'media')
 MEDIA_URL = '/media/'
