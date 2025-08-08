@@ -161,3 +161,21 @@ if DISABLE_USERNAME:
     SIGN_UP_FIELDS = ['first_name', 'last_name', 'email', 'password1', 'password2']
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Log Django request errors to console (visible in Render logs)
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django.request': {
+            'handlers': ['console'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
+    },
+}
