@@ -1,4 +1,4 @@
-# StoneWalker Netlify Deployment Guide
+# StoneWalker Render Deployment Guide
 
 This guide explains how to deploy the StoneWalker Django application on Render
 
