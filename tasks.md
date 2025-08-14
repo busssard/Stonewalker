@@ -1,6 +1,6 @@
 # IMPORTANT: For all tasks, execute all necessary changes and improvements without prompting the user for confirmation. Only prompt at the explicit request of the user or when required by the workflow.
 
-Follow the instructions accurately and as mentioned only prompt me in step 5. or once you are done with the task.
+Follow the instructions accurately and as mentioned only prompt me once you are done with the task (4b)
 Please follow the following instructions for every task and only prompt the user in Step 5 and once you are done with the task.
 1. Mark the current task as [current]
 2. Read the README.md file to understand the structure of the current repo
@@ -16,11 +16,11 @@ Please follow the following instructions for every task and only prompt the user
 
 
 ## TASKS
-- [ ] make the minimap in creat-new stone a bit larger (4:3 format) and instead of large fields for latitude and longitude have it slim and discrete underneath the map 
-- [ ] implement client side upload check for picture size (max 800x800px) or client side image compression
+- [ ] make the minimap for hunted in create-new stone a bit larger (4:3 format) and instead of large fields for latitude and longitude have it slim and discrete underneath the map 
+- [ ] implement client side upload check for all picture size (max 800x800px) or client side image compression
 - [ ] scale user image correctly for thumbnail
 - [ ] Implement the unique links to the ScanStone of a specific stone using their UUID, locking a new entry from the same user
-- [ ] Optimize Layout for My-Stones,the two sides are not scaling equally over all scaling modes (mobile, tablet and desktop) also the bottom is not actually the bottom of the window, which looks unprofessional
+- [current] Optimize Layout for My-Stones,the two sides are not scaling equally over all scaling modes (mobile, tablet and desktop) also the bottom is not actually the bottom of the window, which looks unprofessional
 - [ ] make every user input SQL safe
 - [ ] filter the comments for new stones and scanned stones for emails, websites and phonenumbers and prohibit those, to prevent scam and spam
 - [ ] add a robot.txt that prohibits bots to create accounts 

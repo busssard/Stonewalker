@@ -1,24 +1,49 @@
 {% extends 'layouts/default/page.html' %}
-{% load static %}
 {% load i18n %}
+{% load static %}
 {% block content %}
-<div class="avant-section avant-bg-left flex-center min-h-80vh">
-  <div class="avant-card max-w-420 w-full m-3-auto">
-    <div class="avant-header text-center mb-2">{% trans 'Log in' %}</div>
-    <form method="post">
+<div id="auth-overlay" class="auth-overlay" role="dialog" aria-modal="true" aria-labelledby="auth-modal-title">
+  <div id="auth-modal" class="auth-modal">
+    <a href="{% url 'index' %}" class="auth-modal-close" aria-label="{% trans 'Close' %}" role="button">&times;</a>
+    <div class="text-center mb-1-2">
+      <img src="{% static 'main_logo2.png' %}" alt="StoneWalker Logo" class="auth-logo w-auto mb-0-5 filter-drop-shadow">
+      <div id="auth-modal-title" class="avant-header">{% trans 'Log in' %}</div>
+      <div class="fs-1-08 text-muted mb-0-7">{% trans "Welcome back! Log in to continue your journey." %}</div>
+    </div>
+    <form method="post" class="auth-form mt-1-2">
       {% csrf_token %}
       {{ form.as_p }}
-      <button class="avant-btn w-full mt-1-2">{% trans 'Log in' %}</button>
+      <button class="avant-btn w-full mt-1-2 bg-accent text-white fs-1-13 letter-spacing-0-03">{% trans 'Log in' %}</button>
     </form>
     <div class="text-center mt-1-5 fs-0-98 text-muted">
-      {% trans "Don't have an account?" %}
-      <a href="{% url 'accounts:sign_up' %}" class="avant-btn ml-0-7">{% trans 'Sign up' %}</a>
+      {% trans "Don't have an account?" %} <a href="{% url 'accounts:sign_up' %}" class="text-accent underline">{% trans 'Sign up' %}</a>
     </div>
     <hr class="mt-2 mb-1-2">
-    <ul class="pl-1-2">
-      <li><a href="{% url 'accounts:restore_password' %}">{% trans 'Forgot your password?' %}</a></li>
-      <li><a href="{% url 'accounts:remind_username' %}">{% trans 'Forgot your username?' %}</a></li>
+    <ul class="pl-1-2" style="margin-top:1.2rem; color:#222; text-align:center;">
+      <li><a href="{% url 'accounts:restore_password' %}" style="color:#3fa7ff; font-weight:500;">{% trans 'Forgot your password?' %}</a></li>
+      <li><a href="{% url 'accounts:remind_username' %}" style="color:#3fa7ff; font-weight:500;">{% trans 'Forgot your username?' %}</a></li>
     </ul>
   </div>
 </div>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var overlay = document.getElementById('auth-overlay');
+    var modal = document.getElementById('auth-modal');
+    document.body.classList.add('no-scroll');
+    function closeModal() {
+      document.body.classList.remove('no-scroll');
+      window.location.href = "{% url 'index' %}";
+    }
+    overlay.addEventListener('click', function (e) {
+      if (e.target === overlay) {
+        closeModal();
+      }
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') {
+        closeModal();
+      }
+    });
+  });
+</script>
 {% endblock %}
