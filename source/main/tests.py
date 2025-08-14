@@ -778,6 +778,13 @@ class MyStonesTests(TestCase):
         self.assertContains(response, 'onclick')
         self.assertContains(response, 'openStoneModal')
 
+    def test_my_stones_layout_containers_present(self):
+        response = self.client.get(reverse('my_stones'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'my-stones-split')
+        self.assertContains(response, 'my-stones-left')
+        self.assertContains(response, 'my-stones-right')
+
 
 class StoneCreationTests(TestCase):
     def setUp(self):
