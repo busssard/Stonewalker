@@ -19,14 +19,18 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    
 
     # Vendor apps
     'bootstrap4',
+    # Mail Apps
+    "sendgrid",
 
     # Application apps
     'main',
     'accounts',
 ]
+DEFAULT_FROM_EMAIL = ['mail@stonewalker.org']
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -71,6 +75,11 @@ EMAIL_HOST_PASSWORD = ''
 EMAIL_PORT = 465
 EMAIL_USE_TLS = False
 EMAIL_USE_SSL = True
+
+SENDGRID_EMAIL_HOST = "smtp.sendgrid.net"
+SENDGRID_EMAIL_PORT = 587
+SENDGRID_EMAIL_USERNAME = os.environ.get('SENDGRID_EMAIL_USERNAME')
+SENDGRID_EMAIL_PASSWORD = os.environ.get('SENDGRID_EMAIL_PASSWORD')
 
 DATABASES = {
     'default': {
