@@ -1,6 +1,5 @@
 from django.urls import path
 from django.conf import settings
-from django.conf.urls.static import static
 
 from .views import (
     LogInView, ResendActivationCodeView, RemindUsernameView, SignUpView, ActivateView, LogOutView,
@@ -33,4 +32,4 @@ urlpatterns = [
     path('cancel-email-change/', CancelEmailChangeView.as_view(), name='cancel_email_change'),
     path('api/check_username/', check_username, name='check_username'),
 
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+] 

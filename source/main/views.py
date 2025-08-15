@@ -80,7 +80,7 @@ class StoneWalkerStartPageView(TemplateView):
                     'description': stone.description,
                     'created_at': stone.created_at.isoformat(),
                     'user': stone.FK_user.username,
-                    'user_picture': stone.FK_user.profile.profile_picture.url if hasattr(stone.FK_user, 'profile') and hasattr(stone.FK_user.profile, 'profile_picture') and stone.FK_user.profile.profile_picture else '/static/user_picture.png',
+                    'user_picture': stone.FK_user.profile.get_picture_url(),
                     'image': stone.image.url if stone.image else '',
                     'color': stone.color,
                     'shape': stone.shape,
@@ -97,7 +97,7 @@ class StoneWalkerStartPageView(TemplateView):
                             'image': m.image.url if m.image else '',
                             'comment': m.comment,
                             'user': m.FK_user.username,
-                            'user_picture': m.FK_user.profile.profile_picture.url if hasattr(m.FK_user, 'profile') and hasattr(m.FK_user.profile, 'profile_picture') and m.FK_user.profile.profile_picture else '/static/user_picture.png',
+                            'user_picture': m.FK_user.profile.get_picture_url(),
                         } for m in moves
                     ]
                 })

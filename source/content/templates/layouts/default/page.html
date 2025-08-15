@@ -50,12 +50,12 @@
           <div>Has Profile: {% if request.user.profile %}<span class="text-success">YES</span>{% else %}<span class="text-danger">NO</span>{% endif %}</div>
           {% if request.user.profile %}
               <div>Profile ID: {{ request.user.profile.id }}</div>
-              <div>Has Picture: {% if request.user.profile.profile_picture %}<span class="text-success">YES</span>{% else %}<span class="text-danger">NO</span>{% endif %}</div>
+              <div>Has Picture: {% if request.user.profile.has_picture() %}<span class="text-success">YES</span>{% else %}<span class="text-danger">NO</span>{% endif %}</div>
               {% if request.user.profile.profile_picture %}
                   <div>Picture File: {{ request.user.profile.profile_picture.name }}</div>
                   <div>Picture URL: 
-                      <a href="{{ request.user.profile.profile_picture.url }}" target="_blank" class="text-info text-decoration-underline">
-                          {{ request.user.profile.profile_picture.url|truncatechars:30 }}
+                      <a href="{{ request.user.profile.get_picture_url() }}" target="_blank" class="text-info text-decoration-underline">
+                          {{ request.user.profile.get_picture_url() |truncatechars:30 }}
                       </a>
                   </div>
                   <div>Picture Size: 
@@ -172,16 +172,7 @@ function checkImageSize(imageUrl) {
   </div>
   <div id="profile-menu-container" class="flex-center position-relative">
     <button id="profile-menu-btn" class="avant-btn header-profile-menu-btn m-0 border-none bg-transparent h-full flex-center">
-      {% with profile=request.user.profile %}
-      {% if profile and profile.profile_picture and profile.profile_picture.name and profile.profile_picture.storage.exists(profile.profile_picture.name) %}
-      <img src="{{ profile.profile_picture.url }}" alt="Profile" class="header-profile-img">
-  {% else %}
-      <img src="{% static 'user_picture.png' %}" alt="Profile" class="header-profile-img">
-  {% endif %}
-  
-  {% endwith %}
- 
- 
+      <img src="{{ request.user.profile.get_picture_url() }}" alt="Profile" class="header-profile-img">
     </button>
   </div>
   {% else %}
