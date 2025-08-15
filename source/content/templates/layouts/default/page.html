@@ -42,19 +42,19 @@
 <!-- Expandable Debug mode indicator -->
 <div id="debug-mode-indicator" class="position-fixed bottom-12 left-12 bg-dark text-white fs-1 p-0-4 border-radius-8 z-99999 opacity-0-8 font-monospace cursor-pointer select-none transition-all-300ms" onclick="toggleDebugInfo()">
   <div id="debug-basic">Mode: ...</div>
-  <div id="debug-expanded" style="display: none; font-size: 12px; margin-top: 8px; line-height: 1.4; max-width: 300px; word-wrap: break-word;">
+  <div id="debug-expanded" class="display-none fs-0-75 mt-0-5 line-height-1-4 max-w-300 word-wrap-break-word">
       <div><strong>User Info:</strong></div>
-      <div>Authenticated: {% if request.user.is_authenticated %}<span style="color: #4CAF50;">YES</span>{% else %}<span style="color: #f44336;">NO</span>{% endif %}</div>
+      <div>Authenticated: {% if request.user.is_authenticated %}<span class="text-success">YES</span>{% else %}<span class="text-danger">NO</span>{% endif %}</div>
       {% if request.user.is_authenticated %}
           <div>Username: {{ request.user.username }}</div>
-          <div>Has Profile: {% if request.user.profile %}<span style="color: #4CAF50;">YES</span>{% else %}<span style="color: #f44336;">NO</span>{% endif %}</div>
+          <div>Has Profile: {% if request.user.profile %}<span class="text-success">YES</span>{% else %}<span class="text-danger">NO</span>{% endif %}</div>
           {% if request.user.profile %}
               <div>Profile ID: {{ request.user.profile.id }}</div>
-              <div>Has Picture: {% if request.user.profile.profile_picture %}<span style="color: #4CAF50;">YES</span>{% else %}<span style="color: #f44336;">NO</span>{% endif %}</div>
+              <div>Has Picture: {% if request.user.profile.profile_picture %}<span class="text-success">YES</span>{% else %}<span class="text-danger">NO</span>{% endif %}</div>
               {% if request.user.profile.profile_picture %}
                   <div>Picture File: {{ request.user.profile.profile_picture.name }}</div>
                   <div>Picture URL: 
-                      <a href="{{ request.user.profile.profile_picture.url }}" target="_blank" style="color: #2196F3; text-decoration: underline;">
+                      <a href="{{ request.user.profile.profile_picture.url }}" target="_blank" class="text-info text-decoration-underline">
                           {{ request.user.profile.profile_picture.url|truncatechars:30 }}
                       </a>
                   </div>
@@ -64,10 +64,10 @@
               {% endif %}
           {% endif %}
       {% endif %}
-      <div style="margin-top: 8px;"><strong>Static Files:</strong></div>
-      <div>Logo URL: <a href="{% static 'walker_no_text.png' %}" target="_blank" style="color: #2196F3;">{% static 'walker_no_text.png' %}</a></div>
-      <div>Default User Pic: <a href="{% static 'user_picture.png' %}" target="_blank" style="color: #2196F3;">{% static 'user_picture.png' %}</a></div>
-      <div style="margin-top: 8px;"><strong>URLs:</strong></div>
+      <div class="mt-0-5"><strong>Static Files:</strong></div>
+      <div>Logo URL: <a href="{% static 'walker_no_text.png' %}" target="_blank" class="text-info">{% static 'walker_no_text.png' %}</a></div>
+      <div>Default User Pic: <a href="{% static 'user_picture.png' %}" target="_blank" class="text-info">{% static 'user_picture.png' %}</a></div>
+      <div class="mt-0-5"><strong>URLs:</strong></div>
       <div>Current: {{ request.build_absolute_uri }}</div>
       <div>Media URL: {{ MEDIA_URL|default:'Not set' }}</div>
       <div>Static URL: {{ STATIC_URL|default:'Not set' }}</div>
@@ -84,18 +84,18 @@ function toggleDebugInfo() {
   debugExpanded = !debugExpanded;
   
   if (debugExpanded) {
-      expanded.style.display = 'block';
-      indicator.style.maxWidth = '350px';
-      indicator.style.maxHeight = 'none';
+      expanded.classList.remove('display-none');
+      expanded.classList.add('display-block');
+      indicator.classList.add('max-w-350');
       
       // Check if profile picture actually loads
       {% if request.user.is_authenticated and request.user.profile and request.user.profile.profile_picture %}
           checkImageSize('{{ request.user.profile.profile_picture.url }}');
       {% endif %}
   } else {
-      expanded.style.display = 'none';
-      indicator.style.maxWidth = 'auto';
-      indicator.style.maxHeight = 'auto';
+      expanded.classList.remove('display-block');
+      expanded.classList.add('display-none');
+      indicator.classList.remove('max-w-350');
   }
 }
 
@@ -104,11 +104,11 @@ function checkImageSize(imageUrl) {
   const sizeElement = document.getElementById('picture-size');
   
   img.onload = function() {
-      sizeElement.innerHTML = `<span style="color: #4CAF50;">${this.naturalWidth}x${this.naturalHeight}px (OK)</span>`;
+      sizeElement.innerHTML = `<span class="text-success">${this.naturalWidth}x${this.naturalHeight}px (OK)</span>`;
   };
   
   img.onerror = function() {
-      sizeElement.innerHTML = `<span style="color: #f44336;">Failed to load image</span>`;
+      sizeElement.innerHTML = `<span class="text-danger">Failed to load image</span>`;
   };
   
   img.src = imageUrl;
@@ -146,6 +146,8 @@ function checkImageSize(imageUrl) {
   updateDebugMode();
 })();
 </script>
+
+
 <!-- Elegant StoneWalker-style header -->
 {% comment %} Refactored navigation: use a Django include for nav links {% endcomment %}
 <header class="header avant-shadow">
