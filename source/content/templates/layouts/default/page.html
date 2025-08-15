@@ -173,11 +173,12 @@ function checkImageSize(imageUrl) {
   <div id="profile-menu-container" class="flex-center position-relative">
     <button id="profile-menu-btn" class="avant-btn header-profile-menu-btn m-0 border-none bg-transparent h-full flex-center">
       {% with profile=request.user.profile %}
-      {% if profile and profile.profile_picture and profile.profile_picture.url %}
-          <img src="{{ profile.profile_picture.url }}" alt="Profile" class="header-profile-img">
-      {% else %}
-          <img src="{% static 'user_picture.png' %}" alt="Profile" class="header-profile-img">
-      {% endif %}
+      {% if profile and profile.profile_picture and profile.profile_picture.name and profile.profile_picture.storage.exists(profile.profile_picture.name) %}
+      <img src="{{ profile.profile_picture.url }}" alt="Profile" class="header-profile-img">
+  {% else %}
+      <img src="{% static 'user_picture.png' %}" alt="Profile" class="header-profile-img">
+  {% endif %}
+  
   {% endwith %}
  
  
