@@ -79,7 +79,7 @@ const creationsData = [
           image: "{% if move.image %}{{ move.image.url }}{% else %}{% static 'stone.png' %}{% endif %}",
           comment: `{{ move.comment|escapejs }}`,
           username: "{{ move.FK_user.username|escapejs }}",
-          user_picture: "{{ move.FK_user.profile.get_picture_url() }}"
+          user_picture: "{{ move.FK_user.profile.get_picture_url }}"
         }{% if not forloop.last %},{% endif %}
         {% endfor %}
       ]
@@ -107,7 +107,7 @@ const interactionsData = [
           image: "{% if move.image %}{{ move.image.url }}{% else %}{% static 'stone.png' %}{% endif %}",
           comment: `{{ move.comment|escapejs }}`,
           username: "{{ move.FK_user.username|escapejs }}",
-          user_picture: "{{ move.FK_user.profile.get_picture_url() }}"
+          user_picture: "{{ move.FK_user.profile.get_picture_url }}"
         }{% if not forloop.last %},{% endif %}
         {% endfor %}
       ]
