@@ -2794,3 +2794,17 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
   .my-stones-split .stone-list-item { max-width: 99vw; padding: 0.7rem 0.5rem; }
   .my-stones-split .stone-list-img { width: 48px; height: 48px; margin-right: 0.7rem; }
 }
+
+/* Debug indicator utility classes */
+.display-none { display: none !important; }
+.display-block { display: block !important; }
+.fs-0-75 { font-size: 0.75rem; }
+.mt-0-5 { margin-top: 0.5rem; }
+.line-height-1-4 { line-height: 1.4; }
+.max-w-300 { max-width: 300px; }
+.max-w-350 { max-width: 350px; }
+.word-wrap-break-word { word-wrap: break-word; }
+.text-success { color: #4CAF50; }
+.text-danger { color: #f44336; }
+.text-info { color: #2196F3; }
+.text-decoration-underline { text-decoration: underline; }
