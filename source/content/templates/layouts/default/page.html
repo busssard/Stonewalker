@@ -39,39 +39,113 @@
 </head>
 
 <body>
+<!-- Expandable Debug mode indicator -->
+<div id="debug-mode-indicator" class="position-fixed bottom-12 left-12 bg-dark text-white fs-1 p-0-4 border-radius-8 z-99999 opacity-0-8 font-monospace cursor-pointer select-none transition-all-300ms" onclick="toggleDebugInfo()">
+  <div id="debug-basic">Mode: ...</div>
+  <div id="debug-expanded" style="display: none; font-size: 12px; margin-top: 8px; line-height: 1.4; max-width: 300px; word-wrap: break-word;">
+      <div><strong>User Info:</strong></div>
+      <div>Authenticated: {% if request.user.is_authenticated %}<span style="color: #4CAF50;">YES</span>{% else %}<span style="color: #f44336;">NO</span>{% endif %}</div>
+      {% if request.user.is_authenticated %}
+          <div>Username: {{ request.user.username }}</div>
+          <div>Has Profile: {% if request.user.profile %}<span style="color: #4CAF50;">YES</span>{% else %}<span style="color: #f44336;">NO</span>{% endif %}</div>
+          {% if request.user.profile %}
+              <div>Profile ID: {{ request.user.profile.id }}</div>
+              <div>Has Picture: {% if request.user.profile.profile_picture %}<span style="color: #4CAF50;">YES</span>{% else %}<span style="color: #f44336;">NO</span>{% endif %}</div>
+              {% if request.user.profile.profile_picture %}
+                  <div>Picture File: {{ request.user.profile.profile_picture.name }}</div>
+                  <div>Picture URL: 
+                      <a href="{{ request.user.profile.profile_picture.url }}" target="_blank" style="color: #2196F3; text-decoration: underline;">
+                          {{ request.user.profile.profile_picture.url|truncatechars:30 }}
+                      </a>
+                  </div>
+                  <div>Picture Size: 
+                      <span id="picture-size">Loading...</span>
+                  </div>
+              {% endif %}
+          {% endif %}
+      {% endif %}
+      <div style="margin-top: 8px;"><strong>Static Files:</strong></div>
+      <div>Logo URL: <a href="{% static 'walker_no_text.png' %}" target="_blank" style="color: #2196F3;">{% static 'walker_no_text.png' %}</a></div>
+      <div>Default User Pic: <a href="{% static 'user_picture.png' %}" target="_blank" style="color: #2196F3;">{% static 'user_picture.png' %}</a></div>
+      <div style="margin-top: 8px;"><strong>URLs:</strong></div>
+      <div>Current: {{ request.build_absolute_uri }}</div>
+      <div>Media URL: {{ MEDIA_URL|default:'Not set' }}</div>
+      <div>Static URL: {{ STATIC_URL|default:'Not set' }}</div>
+  </div>
+</div>
 
-<!-- Debug mode indicator -->
-<div id="debug-mode-indicator" class="position-fixed bottom-12 left-12 bg-dark text-white fs-1 p-0-4 border-radius-8 z-99999 pointer-events-none opacity-0-8 font-monospace">Mode: ...</div>
 <script>
+let debugExpanded = false;
+
+function toggleDebugInfo() {
+  const expanded = document.getElementById('debug-expanded');
+  const indicator = document.getElementById('debug-mode-indicator');
+  
+  debugExpanded = !debugExpanded;
+  
+  if (debugExpanded) {
+      expanded.style.display = 'block';
+      indicator.style.maxWidth = '350px';
+      indicator.style.maxHeight = 'none';
+      
+      // Check if profile picture actually loads
+      {% if request.user.is_authenticated and request.user.profile and request.user.profile.profile_picture %}
+          checkImageSize('{{ request.user.profile.profile_picture.url }}');
+      {% endif %}
+  } else {
+      expanded.style.display = 'none';
+      indicator.style.maxWidth = 'auto';
+      indicator.style.maxHeight = 'auto';
+  }
+}
+
+function checkImageSize(imageUrl) {
+  const img = new Image();
+  const sizeElement = document.getElementById('picture-size');
+  
+  img.onload = function() {
+      sizeElement.innerHTML = `<span style="color: #4CAF50;">${this.naturalWidth}x${this.naturalHeight}px (OK)</span>`;
+  };
+  
+  img.onerror = function() {
+      sizeElement.innerHTML = `<span style="color: #f44336;">Failed to load image</span>`;
+  };
+  
+  img.src = imageUrl;
+}
+
 (function() {
   function getMode() {
-    // Assumes window.BREAKPOINTS is defined in header.js and contains the breakpoint values
-    // Example: window.BREAKPOINTS = { desktop: 1250, tablet: 1000, mobileLg: 800, mobileMd: 768, mobile: 600, mobileXs: 480 };
-    const w = window.innerWidth;
-    const bp = window.BREAKPOINTS || {
-      desktop: 1250,
-      tablet: 1250,
-      mobileLg: 800,
-      mobileMd: 768,
-      mobile: 600,
-      mobileXs: 480
-    };
-    if (w <= bp.mobileXs) return `mobile-xs (≤${bp.mobileXs}px)`;
-    if (w <= bp.mobile) return `mobile (≤${bp.mobile}px)`;
-    if (w <= bp.mobileMd) return `mobile-md (≤${bp.mobileMd}px)`;
-    if (w <= bp.mobileLg) return `mobile-lg (≤${bp.mobileLg}px)`;
-    if (w <= bp.tablet) return `tablet (≤${bp.tablet}px)`;
-    return `desktop (>${bp.tablet}px)`;
+      // Assumes window.BREAKPOINTS is defined in header.js and contains the breakpoint values
+      const w = window.innerWidth;
+      const bp = window.BREAKPOINTS || {
+          desktop: 1250,
+          tablet: 1250,
+          mobileLg: 800,
+          mobileMd: 768,
+          mobile: 600,
+          mobileXs: 480
+      };
+      if (w <= bp.mobileXs) return `mobile-xs (≤${bp.mobileXs}px)`;
+      if (w <= bp.mobile) return `mobile (≤${bp.mobile}px)`;
+      if (w <= bp.mobileMd) return `mobile-md (≤${bp.mobileMd}px)`;
+      if (w <= bp.mobileLg) return `mobile-lg (≤${bp.mobileLg}px)`;
+      if (w <= bp.tablet) return `tablet (≤${bp.tablet}px)`;
+      return `desktop (>${bp.tablet}px)`;
   }
+  
   function updateDebugMode() {
-    document.getElementById('debug-mode-indicator').textContent = 'Mode: ' + getMode() + ' | Width: ' + window.innerWidth + 'px';
+      const basicDiv = document.getElementById('debug-basic');
+      if (basicDiv) {
+          basicDiv.textContent = 'Mode: ' + getMode() + ' | Width: ' + window.innerWidth + 'px | Click to expand';
+      }
   }
+  
   window.addEventListener('resize', updateDebugMode);
   document.addEventListener('DOMContentLoaded', updateDebugMode);
   updateDebugMode();
 })();
 </script>
-
 <!-- Elegant StoneWalker-style header -->
 {% comment %} Refactored navigation: use a Django include for nav links {% endcomment %}
 <header class="header avant-shadow">
@@ -96,7 +170,15 @@
   </div>
   <div id="profile-menu-container" class="flex-center position-relative">
     <button id="profile-menu-btn" class="avant-btn header-profile-menu-btn m-0 border-none bg-transparent h-full flex-center">
-      <img src="{% if request.user.profile.profile_picture %}{{ request.user.profile.profile_picture.url }}{% else %}{% static 'user_picture.png' %}{% endif %}" alt="Profile" class="header-profile-img">
+      {% with profile=request.user.profile %}
+      {% if profile and profile.profile_picture and profile.profile_picture.url %}
+          <img src="{{ profile.profile_picture.url }}" alt="Profile" class="header-profile-img">
+      {% else %}
+          <img src="{% static 'user_picture.png' %}" alt="Profile" class="header-profile-img">
+      {% endif %}
+  {% endwith %}
+ 
+ 
     </button>
   </div>
   {% else %}
