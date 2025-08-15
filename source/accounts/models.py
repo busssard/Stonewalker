@@ -19,7 +19,7 @@ class Activation(models.Model):
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    profile_picture = models.ImageField(upload_to='profile_pics/', blank=True, null=True, default='user_picture.png')
+    profile_picture = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
 
     def get_picture_url(self):
         if self.profile_picture:
