@@ -21,8 +21,11 @@ class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     profile_picture = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
 
+    def has_picture(self):
+        return self.profile_picture and hasattr(self.profile_picture, "url")
+    
     def get_picture_url(self):
-        if self.profile_picture:
+        if self.profile_picture and hasattr(self.profile_picture, "url"):
             return self.profile_picture.url
         return settings.STATIC_URL + 'user_picture.png'
 
