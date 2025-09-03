@@ -70,12 +70,23 @@ EMAIL_FILE_PATH = os.path.join(CONTENT_DIR, 'tmp/emails')
 EMAIL_HOST_USER = 'test@example.com'
 DEFAULT_FROM_EMAIL = 'test@example.com'
 
+# Database: prefer DATABASE_URL (e.g., local PostgreSQL) and fall back to SQLite
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
+
+try:
+    # If dj-database-url is available and DATABASE_URL is set, use it for dev
+    import dj_database_url  # type: ignore
+    _db_from_env = dj_database_url.config(default=f"sqlite:///{os.path.join(BASE_DIR, 'db.sqlite3')}")
+    if _db_from_env:
+        DATABASES['default'] = _db_from_env
+except Exception:
+    # Keep SQLite default if parsing fails or env not present
+    pass
 
 AUTH_PASSWORD_VALIDATORS = [
     {
