@@ -814,20 +814,20 @@ class StoneCreationTests(TestCase):
     def test_automatic_shape_selection_hidden(self):
         """Test that hidden stones automatically get circle shape"""
         response = self.client.post(reverse('add_stone'), {
-            'PK_stone': 'HIDDENSTONE',
+            'PK_stone': 'HIDDEN',
             'description': 'Hidden stone',
             'stone_type': 'hidden',
             'color': '#00FF00'
         })
         
         self.assertEqual(response.status_code, 302)
-        stone = Stone.objects.get(PK_stone='HIDDENSTONE')
+        stone = Stone.objects.get(PK_stone='HIDDEN')
         self.assertEqual(stone.shape, 'circle')
 
     def test_automatic_shape_selection_hunted(self):
         """Test that hunted stones automatically get triangle shape"""
         response = self.client.post(reverse('add_stone'), {
-            'PK_stone': 'HUNTEDSTONE',
+            'PK_stone': 'HUNTED',
             'description': 'Hunted stone',
             'stone_type': 'hunted',
             'color': '#0000FF',
@@ -836,7 +836,7 @@ class StoneCreationTests(TestCase):
         })
         
         self.assertEqual(response.status_code, 302)
-        stone = Stone.objects.get(PK_stone='HUNTEDSTONE')
+        stone = Stone.objects.get(PK_stone='HUNTED')
         self.assertEqual(stone.shape, 'triangle')
 
     def test_qr_code_generation(self):
@@ -860,7 +860,7 @@ class StoneCreationTests(TestCase):
         """Test QR code download functionality"""
         # Create a stone first
         stone = Stone.objects.create(
-            PK_stone='DOWNLOADSTONE',
+            PK_stone='DOWNLOAD',
             description='Test stone',
             FK_user=self.user,
             color='#FF0000',
@@ -931,7 +931,7 @@ class StoneCreationTests(TestCase):
     def test_stone_qr_view_with_uuid(self):
         """Test QR code generation view uses UUID"""
         stone = Stone.objects.create(
-            PK_stone='QRVIEWSTONE',
+            PK_stone='QRVIEW',
             description='Test stone',
             FK_user=self.user,
             color='#FF0000',
@@ -970,7 +970,7 @@ class StoneCreationTests(TestCase):
     def test_hunted_stone_requires_location(self):
         """Test that hunted stones require location"""
         response = self.client.post(reverse('add_stone'), {
-            'PK_stone': 'NOLOCATION',
+            'PK_stone': 'NOLOC',
             'description': 'Hunted stone without location',
             'stone_type': 'hunted',
             'color': '#FF0000'
@@ -978,11 +978,11 @@ class StoneCreationTests(TestCase):
         
         self.assertEqual(response.status_code, 302)  # Redirect due to error
         # Stone should not be created
-        self.assertFalse(Stone.objects.filter(PK_stone='NOLOCATION').exists())
+        self.assertFalse(Stone.objects.filter(PK_stone='NOLOC').exists())
         
         # Test with location - should succeed
         response = self.client.post(reverse('add_stone'), {
-            'PK_stone': 'WITHLOCATION',
+            'PK_stone': 'WITHLOC',
             'description': 'Hunted stone with location',
             'stone_type': 'hunted',
             'color': '#FF0000',
@@ -991,12 +991,12 @@ class StoneCreationTests(TestCase):
         })
         
         self.assertEqual(response.status_code, 302)  # Redirect after success
-        self.assertTrue(Stone.objects.filter(PK_stone='WITHLOCATION').exists())
+        self.assertTrue(Stone.objects.filter(PK_stone='WITHLOC').exists())
 
     def test_hidden_stone_optional_location(self):
         """Test that hidden stones don't require location"""
         response = self.client.post(reverse('add_stone'), {
-            'PK_stone': 'HIDDENNOLOC',
+            'PK_stone': 'HIDDENLOC',
             'description': 'Hidden stone without location',
             'stone_type': 'hidden',
             'color': '#FF0000'
@@ -1004,7 +1004,7 @@ class StoneCreationTests(TestCase):
         
         self.assertEqual(response.status_code, 302)
         # Stone should be created
-        self.assertTrue(Stone.objects.filter(PK_stone='HIDDENNOLOC').exists())
+        self.assertTrue(Stone.objects.filter(PK_stone='HIDDENLOC').exists())
 
     def test_unique_uuid_generation(self):
         """Test that each stone gets a unique UUID"""
@@ -1335,7 +1335,7 @@ class StoneCreationWithQRTests(TestCase):
     def test_stone_creation_stores_session_data(self):
         """Test that stone creation stores QR data in session"""
         response = self.client.post('/add_stone/', {
-            'PK_stone': 'SESSIONSTONE',
+            'PK_stone': 'SESSION',
             'description': 'A stone for session testing',
             'stone_type': 'hidden',
             'color': '#4CAF50',
@@ -1575,7 +1575,7 @@ class StoneFoundTests(TestCase):
             uuid=uuid_lib.uuid4()
         )
         self.hunted_stone = Stone.objects.create(
-            PK_stone='HuntedStone',
+            PK_stone='Hunted',
             description='A hunted test stone',
             FK_user=self.user,
             stone_type='hunted',
@@ -1821,7 +1821,7 @@ class StoneFoundTemplateTests(TestCase):
     def test_hunted_stone_template_extra_fields(self):
         """Test that hunted stone template includes extra fields"""
         hunted_stone = Stone.objects.create(
-            PK_stone='HuntedStone',
+            PK_stone='Hunted',
             description='A hunted stone',
             FK_user=self.user,
             stone_type='hunted',
