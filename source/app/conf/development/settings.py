@@ -96,28 +96,23 @@ if not DATABASE_URL:
     )
 
 # Parse DATABASE_URL for PostgreSQL
-try:
-    import dj_database_url  # type: ignore
+# Skip dj_database_url due to Python 3.8 compatibility issues
+# Use manual parsing instead
+if DATABASE_URL.startswith(('postgresql://', 'postgres://')):
+    import urllib.parse
+    parsed = urllib.parse.urlparse(DATABASE_URL)
     DATABASES = {
-        'default': dj_database_url.config()
-    }
-except Exception:
-    # Fallback: manual PostgreSQL parsing (dj_database_url has compatibility issues with Python 3.8)
-    if DATABASE_URL.startswith('postgresql://'):
-        import urllib.parse
-        parsed = urllib.parse.urlparse(DATABASE_URL)
-        DATABASES = {
-            'default': {
-                'ENGINE': 'django.db.backends.postgresql',
-                'NAME': parsed.path[1:],  # Remove leading /
-                'USER': parsed.username,
-                'PASSWORD': parsed.password,
-                'HOST': parsed.hostname,
-                'PORT': parsed.port or 5432,
-            }
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': parsed.path[1:],  # Remove leading /
+            'USER': parsed.username,
+            'PASSWORD': parsed.password,
+            'HOST': parsed.hostname,
+            'PORT': parsed.port or 5432,
         }
-    else:
-        raise ValueError(f"Invalid DATABASE_URL format: {DATABASE_URL}. Must be postgresql://...")
+    }
+else:
+    raise ValueError(f"Invalid DATABASE_URL format: {DATABASE_URL}. Must be postgresql://... or postgres://...")
 
 AUTH_PASSWORD_VALIDATORS = [
     {
