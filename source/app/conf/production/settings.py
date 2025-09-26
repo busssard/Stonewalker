@@ -75,23 +75,45 @@ EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
 
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
-}
+# Database: PostgreSQL required for production
+DATABASE_URL = os.environ.get('DATABASE_URL')
+if not DATABASE_URL:
+    raise ValueError(
+        "DATABASE_URL environment variable is required for production. "
+        "Please set it to your PostgreSQL connection string. "
+        "Example: postgresql://user:password@host:port/dbname"
+    )
 
-# Support DATABASE_URL on Render (PostgreSQL recommended)
+# Parse DATABASE_URL for PostgreSQL
 try:
     import dj_database_url  # type: ignore
-    DATABASES['default'] = dj_database_url.config(
-        default=f"sqlite:///{os.path.join(BASE_DIR, 'db.sqlite3')}",
-        conn_max_age=600,
-        ssl_require=True,
-    )
+    DATABASES = {
+        'default': dj_database_url.config(
+            conn_max_age=600,
+            ssl_require=True,
+        )
+    }
 except Exception:
-    pass
+    # Fallback: manual PostgreSQL parsing (dj_database_url has compatibility issues with Python 3.8)
+    if DATABASE_URL.startswith('postgresql://'):
+        import urllib.parse
+        parsed = urllib.parse.urlparse(DATABASE_URL)
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.postgresql',
+                'NAME': parsed.path[1:],  # Remove leading /
+                'USER': parsed.username,
+                'PASSWORD': parsed.password,
+                'HOST': parsed.hostname,
+                'PORT': parsed.port or 5432,
+                'CONN_MAX_AGE': 600,
+                'OPTIONS': {
+                    'sslmode': 'require',
+                }
+            }
+        }
+    else:
+        raise ValueError(f"Invalid DATABASE_URL format: {DATABASE_URL}. Must be postgresql://...")
 
 AUTH_PASSWORD_VALIDATORS = [
     {

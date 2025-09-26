@@ -74,16 +74,15 @@ Set up email backend, allowed hosts, and any other environment-specific options.
 - `DEBUG`: Set to `True` for development, `False` for production.
 - `ALLOWED_HOSTS`: List of allowed hostnames (e.g., `['localhost', '127.0.0.1']`).
 - `EMAIL_BACKEND`, `EMAIL_HOST`, `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`, `EMAIL_PORT`, `EMAIL_USE_TLS`, `EMAIL_USE_SSL`: Configure for email sending.
-- `DATABASES`: Default is SQLite, can be changed to Postgres/MySQL.
+- `DATABASES`: Uses PostgreSQL for both development and production.
 - `LANGUAGE_CODE`, `LANGUAGES`, `LOCALE_PATHS`: For internationalization.
 - `STATIC_ROOT`, `STATIC_URL`, `MEDIA_ROOT`, `MEDIA_URL`: For static/media files.
 
-#### Local development (SQLite)
+#### Local development (PostgreSQL)
 
 ```bash
-# Ensure production env is disabled
-unset IS_PRODUCTION
-unset DATABASE_URL  # optional
+# Set up local PostgreSQL database
+export DATABASE_URL="postgresql://stone_user:stone_pass@localhost:5432/stone_dev"
 
 # Run migrations and start server
 cd source
@@ -91,17 +90,14 @@ python manage.py migrate
 python manage.py runserver
 ```
 
-#### Run with production settings locally (Postgres via DATABASE_URL)
+#### Using the convenience script
 
 ```bash
-export IS_PRODUCTION=true
-export DATABASE_URL="postgresql://USER:PASS@HOST:PORT/DBNAME"
-cd source
-python manage.py migrate
-python manage.py runserver
+# Uses default local PostgreSQL database
+./run_dev.sh
 ```
 
-- With `IS_PRODUCTION=true`, `app.settings` loads production settings and uses `dj-database-url` to configure the DB from `DATABASE_URL`. Without it, development settings with SQLite are used.
+- The application requires PostgreSQL for both development and production. Set `DATABASE_URL` to your PostgreSQL connection string.
 
 ### 5. Apply Migrations
 
@@ -489,7 +485,7 @@ All tests should pass. The test suite is designed to be run automatically on eve
 - **Frontend:** HTML5, CSS3, JavaScript (Leaflet.js for maps, Bootstrap 4 for UI)
 - **Auth:** Django's built-in authentication system
 - **Package Management:** Poetry (see `pyproject.toml`) or pip/venv (see `requirements.txt`)
-- **Database:** SQLite (default, easy to swap for Postgres/MySQL)
+- **Database:** PostgreSQL (required for both development and production)
 
 ## Screenshots
 
@@ -658,28 +654,24 @@ The sign-up page (`/accounts/sign-up/`) now renders as a modal-style popup overl
 - Background scroll is locked while open
 - All styles live in `source/content/static/css/styles.css` and mirrored in `source/content/assets/css/styles.css`
 
-### Database: SQLite (dev) and PostgreSQL (prod)
+### Database: PostgreSQL (dev and prod)
 
-- Development uses SQLite by default (`source/app/conf/development/settings.py`).
-- Production supports `DATABASE_URL` using `dj-database-url` in `source/app/conf/production/settings.py`.
+- Both development and production use PostgreSQL.
+- Set `DATABASE_URL` environment variable to your PostgreSQL connection string.
 
-Run with Postgres locally:
+Run with PostgreSQL locally:
 
 ```bash
-export IS_PRODUCTION=true
-export DATABASE_URL="postgresql://USER:PASS@HOST:PORT/DBNAME"
+export DATABASE_URL="postgresql://stone_user:stone_pass@localhost:5432/stone_dev"
 cd source
 python manage.py migrate
 python manage.py runserver
 ```
 
-Run with SQLite (default):
+Or use the convenience script:
 
 ```bash
-unset IS_PRODUCTION
-cd source
-python manage.py migrate
-python manage.py runserver
+./run_dev.sh
 ```
 
 ## License
