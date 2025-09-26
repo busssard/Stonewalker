@@ -33,7 +33,6 @@ dependencies = [
     "django>=4.2,<5.0",
     "gunicorn>=23.0.0",
     "whitenoise>=6.7.0",
-    "dj-database-url>=3.0.1",
     "environs>=11.2.1",
     "django-bootstrap4>=24.4",
     "pillow>=10.4.0",
