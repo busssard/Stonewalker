@@ -272,6 +272,11 @@ n Issues
 | `/add_stone/` | Add a new stone (POST only, login required) (`add_stone`) |
 | `/stonescan/` | Scan a stone (GET/POST, login required, supports `?stone=PK_stone` for prefill/lock) (`StoneScanView`) |
 | `/stone/<PK_stone>/qr/` | QR code for a stone's update link (`StoneQRCodeView`) |
+| `/stone-link/<str:stone_uuid>/` | Stone found page with UUID-based routing (`StoneLinkView`) |
+| `/download-qr/` | Download QR code (`download_qr_code`) |
+| `/regenerate-qr/<str:stone_pk>/` | Regenerate QR code for existing stone (`regenerate_qr_code`) |
+| `/api/generate-qr/` | Generate QR code API (`generate_qr_code`) |
+| `/api/check-stone-uuid/<str:uuid>/` | Check if stone UUID exists (`check_stone_uuid`) |
 | `/forum/` | Forum placeholder page |
 | `/shop/` | Shop placeholder page |
 | `/about/` | About page |
@@ -522,6 +527,17 @@ This page features the interactive map, login modal, and personal dashboard.
 - **Debug Modals Integration**: Fixed QR code generation and display in debug modals with real image download
 - **API Authentication**: Removed login requirement from QR generation API for debug functionality
 - **Shared Modals System**: Created shared modals template for consistent modal behavior across pages with working JavaScript functions, resolved duplicate modal conflicts, fixed global function accessibility, centralized JavaScript functionality in shared_modals.html for code reuse, fixed circular reference issues between debug and shared modal functions, implemented complete QR scanner functionality in the shared scan stone modal with camera access, UUID validation, and stone information display, added hunted stone location field with map integration, implemented scan modal congratulations and automatic forwarding to stone UUID weblink, and created comprehensive stone found page with first-time user experience and hunted stone special handling
+
+### QR System Robustness Improvements (2025)
+- **Enhanced Error Handling**: Improved QR code generation with proper error handling that doesn't fail stone creation if QR generation fails
+- **Robust Stone Creation**: Stone creation now succeeds even if QR generation fails, with appropriate user feedback
+- **QR Code Regeneration**: Added `/regenerate-qr/<stone_pk>/` endpoint to regenerate QR codes for existing stones
+- **Improved Persistence**: QR codes are now more persistent with better file handling and error recovery
+- **Consistent URL Structure**: All QR codes now use stone-link URLs (`/stone-link/<uuid>/`) for consistency
+- **Better Logging**: Added proper error logging for QR generation failures without affecting user experience
+- **Session Management**: Improved session data handling for QR code downloads with proper cleanup on errors
+- **Comprehensive Testing**: Added 9 new tests covering improved error handling, regeneration functionality, and robustness
+- **Backward Compatibility**: Maintained all existing functionality while improving reliability and user experience
 
 ### Stone Creation Refactoring (2024)
 - **UUID Integration**: Added UUID field to Stone model for secure QR code generation and unique stone identification

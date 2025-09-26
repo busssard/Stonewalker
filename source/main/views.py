@@ -217,31 +217,48 @@ def add_stone(request):
         stone.save()
         
         # Generate QR code server-side using the stone's UUID
-        qr_url = request.build_absolute_uri(f'/stone-link/{stone.uuid}/')
-        qr = qrcode.QRCode(version=1, box_size=10, border=5)
-        qr.add_data(qr_url)
-        qr.make(fit=True)
-        qr_img = qr.make_image(fill_color="black", back_color="white")
+        # This happens AFTER stone creation to ensure robustness
+        try:
+            qr_url = request.build_absolute_uri(f'/stone-link/{stone.uuid}/')
+            qr = qrcode.QRCode(version=1, box_size=10, border=5)
+            qr.add_data(qr_url)
+            qr.make(fit=True)
+            qr_img = qr.make_image(fill_color="black", back_color="white")
+            
+            # Save QR code to media directory
+            import os
+            from django.conf import settings
+            qr_filename = f'qr_codes/{stone.PK_stone}_{stone.uuid}_qr.png'
+            qr_path = os.path.join(settings.MEDIA_ROOT, qr_filename)
+            os.makedirs(os.path.dirname(qr_path), exist_ok=True)
+            qr_img.save(qr_path)
+            
+            # Store QR path in session for download
+            request.session['qr_download_path'] = qr_filename
+            request.session['qr_stone_name'] = stone.PK_stone
+            request.session['qr_stone_uuid'] = str(stone.uuid)
+            request.session['qr_stone_url'] = qr_url
+            
+            messages.success(request, f'Stone "{PK_stone}" added successfully! QR code generated. <a href="/download-qr/" class="avant-btn">Download QR Code</a>')
+        except Exception as qr_error:
+            # QR generation failed, but stone was created successfully
+            # Log the error but don't fail the stone creation
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.error(f'QR code generation failed for stone {PK_stone}: {str(qr_error)}')
+            
+            # Clear any partial QR session data
+            request.session.pop('qr_download_path', None)
+            request.session.pop('qr_stone_name', None)
+            request.session.pop('qr_stone_uuid', None)
+            request.session.pop('qr_stone_url', None)
+            
+            messages.success(request, f'Stone "{PK_stone}" added successfully! Note: QR code generation failed, but you can generate it later.')
         
-        # Save QR code to media directory
-        import os
-        from django.conf import settings
-        qr_filename = f'qr_codes/{stone.PK_stone}_{stone.uuid}_qr.png'
-        qr_path = os.path.join(settings.MEDIA_ROOT, qr_filename)
-        os.makedirs(os.path.dirname(qr_path), exist_ok=True)
-        qr_img.save(qr_path)
-        
-        # Store QR path in session for download
-        request.session['qr_download_path'] = qr_filename
-        request.session['qr_stone_name'] = stone.PK_stone
-        request.session['qr_stone_uuid'] = str(stone.uuid)
-        request.session['qr_stone_url'] = qr_url
-        
-        messages.success(request, f'Stone "{PK_stone}" added successfully! QR code generated. <a href="/download-qr/" class="avant-btn">Download QR Code</a>')
         return redirect(f'/stonewalker/?focus={PK_stone}')
     except Exception as e:
         messages.error(request, f'Could not add stone: {str(e)}')
-    return redirect('stonewalker_start')
+        return redirect('stonewalker_start')
 
 
 class StoneScanView(View):
@@ -360,8 +377,10 @@ class StoneQRCodeView(View):
         # Generate the update link for this stone using UUID
         try:
             stone = Stone.objects.get(PK_stone=pk)
+            # Use the stone-link URL instead of stonescan for consistency
+            qr_url = request.build_absolute_uri(f'/stone-link/{stone.uuid}/')
             qr = qrcode.QRCode(version=1, box_size=10, border=5)
-            qr.add_data(request.build_absolute_uri(f'/stonescan/?stone={stone.uuid}'))
+            qr.add_data(qr_url)
             qr.make(fit=True)
             img = qr.make_image(fill_color="black", back_color="white")
             response = HttpResponse(content_type="image/png")
@@ -551,6 +570,44 @@ def generate_qr_code(request):
         return JsonResponse({'error': 'Invalid UUID format'}, status=400)
     except Exception as e:
         return JsonResponse({'error': f'Error generating QR code: {str(e)}'}, status=500)
+
+
+@login_required
+def regenerate_qr_code(request, stone_pk):
+    """Regenerate QR code for an existing stone"""
+    try:
+        stone = Stone.objects.get(PK_stone=stone_pk, FK_user=request.user)
+        
+        # Generate QR code server-side using the stone's UUID
+        qr_url = request.build_absolute_uri(f'/stone-link/{stone.uuid}/')
+        qr = qrcode.QRCode(version=1, box_size=10, border=5)
+        qr.add_data(qr_url)
+        qr.make(fit=True)
+        qr_img = qr.make_image(fill_color="black", back_color="white")
+        
+        # Save QR code to media directory
+        import os
+        from django.conf import settings
+        qr_filename = f'qr_codes/{stone.PK_stone}_{stone.uuid}_qr.png'
+        qr_path = os.path.join(settings.MEDIA_ROOT, qr_filename)
+        os.makedirs(os.path.dirname(qr_path), exist_ok=True)
+        qr_img.save(qr_path)
+        
+        # Store QR path in session for download
+        request.session['qr_download_path'] = qr_filename
+        request.session['qr_stone_name'] = stone.PK_stone
+        request.session['qr_stone_uuid'] = str(stone.uuid)
+        request.session['qr_stone_url'] = qr_url
+        
+        messages.success(request, f'QR code regenerated for stone "{stone.PK_stone}"! <a href="/download-qr/" class="avant-btn">Download QR Code</a>')
+        return redirect(f'/stonewalker/?focus={stone.PK_stone}')
+        
+    except Stone.DoesNotExist:
+        messages.error(request, 'Stone not found or you do not have permission to access it.')
+        return redirect('stonewalker_start')
+    except Exception as e:
+        messages.error(request, f'Could not regenerate QR code: {str(e)}')
+        return redirect('stonewalker_start')
 
 
 
