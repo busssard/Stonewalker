@@ -1,6 +1,17 @@
 #!/bin/bash
 set -e
 
+# 🚨 SAFETY CHECK: Build script should NEVER touch the database
+# This script should only handle static files and dependencies
+DANGEROUS_COMMANDS=("migrate" "flush" "reset_db" "sqlflush" "sqlsequencereset" "loaddata" "dumpdata" "clear_cache" "dbshell")
+for cmd in "${DANGEROUS_COMMANDS[@]}"; do
+    if grep -q "manage.py $cmd" "$0"; then
+        echo "❌ DANGER: Found database command '$cmd' in render_build.sh"
+        echo "❌ Build script should NEVER touch the database! Aborting build."
+        exit 1
+    fi
+done
+
 echo "Starting Render.com build process (source/render_build.sh)..."
 
 # Upgrade pip and install build tools
