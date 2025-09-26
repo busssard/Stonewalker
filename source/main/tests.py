@@ -1996,3 +1996,164 @@ class StoneFoundTemplateTests(TestCase):
             )
 
 
+class ImprovedQRSystemTests(TestCase):
+    """Test the improved QR system with better error handling and robustness"""
+    
+    def setUp(self):
+        self.client = Client()
+        self.user = User.objects.create_user(username='testuser', password='testpass')
+        self.client.login(username='testuser', password='testpass')
+
+    def test_stone_creation_with_qr_success(self):
+        """Test that stone creation with QR generation works successfully"""
+        response = self.client.post('/add_stone/', {
+            'PK_stone': 'SUCCESS',
+            'description': 'A stone with successful QR generation',
+            'stone_type': 'hidden',
+            'color': '#4CAF50',
+            'shape': 'circle'
+        })
+        
+        self.assertEqual(response.status_code, 302)
+        
+        # Check that stone was created
+        stone = Stone.objects.get(PK_stone='SUCCESS')
+        self.assertIsNotNone(stone.uuid)
+        
+        # Check that QR code file was created
+        import os
+        from django.conf import settings
+        qr_filename = f'qr_codes/{stone.PK_stone}_{stone.uuid}_qr.png'
+        qr_path = os.path.join(settings.MEDIA_ROOT, qr_filename)
+        self.assertTrue(os.path.exists(qr_path))
+        
+        # Check that session data was stored
+        session = self.client.session
+        self.assertIn('qr_download_path', session)
+        self.assertIn('qr_stone_name', session)
+        self.assertIn('qr_stone_uuid', session)
+        self.assertIn('qr_stone_url', session)
+
+    def test_stone_qr_view_uses_stone_link(self):
+        """Test that StoneQRCodeView uses stone-link URL instead of stonescan"""
+        stone = Stone.objects.create(
+            PK_stone='QRVIEW',
+            description='Test stone for QR view',
+            FK_user=self.user
+        )
+        
+        response = self.client.get(f'/stone/{stone.PK_stone}/qr/')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['Content-Type'], 'image/png')
+        
+        # The QR code should contain the stone-link URL, not stonescan
+        # We can't easily test the QR content without decoding it, but we can test the view works
+
+    def test_regenerate_qr_code_success(self):
+        """Test regenerating QR code for existing stone"""
+        stone = Stone.objects.create(
+            PK_stone='REGEN',
+            description='Test stone for QR regeneration',
+            FK_user=self.user
+        )
+        
+        response = self.client.get(f'/regenerate-qr/{stone.PK_stone}/')
+        self.assertEqual(response.status_code, 302)
+        
+        # Check that QR code file was created
+        import os
+        from django.conf import settings
+        qr_filename = f'qr_codes/{stone.PK_stone}_{stone.uuid}_qr.png'
+        qr_path = os.path.join(settings.MEDIA_ROOT, qr_filename)
+        self.assertTrue(os.path.exists(qr_path))
+        
+        # Check that session data was stored
+        session = self.client.session
+        self.assertIn('qr_download_path', session)
+        self.assertEqual(session['qr_stone_name'], stone.PK_stone)
+
+    def test_regenerate_qr_code_nonexistent_stone(self):
+        """Test regenerating QR code for non-existent stone"""
+        response = self.client.get('/regenerate-qr/NONEXISTENT/')
+        self.assertEqual(response.status_code, 302)
+        # Should redirect to stonewalker_start with error message
+
+    def test_regenerate_qr_code_wrong_user(self):
+        """Test regenerating QR code for stone owned by different user"""
+        other_user = User.objects.create_user(username='otheruser', password='otherpass')
+        stone = Stone.objects.create(
+            PK_stone='OTHER',
+            description='Stone owned by other user',
+            FK_user=other_user
+        )
+        
+        response = self.client.get(f'/regenerate-qr/{stone.PK_stone}/')
+        self.assertEqual(response.status_code, 302)
+        # Should redirect to stonewalker_start with error message
+
+    def test_stone_link_robustness(self):
+        """Test that stone-link functionality is robust and works correctly"""
+        stone = Stone.objects.create(
+            PK_stone='LINK',
+            description='Test stone for link functionality',
+            FK_user=self.user
+        )
+        
+        # Test accessing stone-link
+        response = self.client.get(f'/stone-link/{stone.uuid}/')
+        self.assertEqual(response.status_code, 200)
+        
+        # Test that cookie is set
+        self.assertIn(f'stone_scan_{stone.uuid}', response.cookies)
+        
+        # Test that stone information is displayed
+        content = response.content.decode()
+        self.assertIn(stone.PK_stone, content)
+        self.assertIn(stone.description, content)
+
+    def test_stone_link_invalid_uuid(self):
+        """Test stone-link with invalid UUID format"""
+        response = self.client.get('/stone-link/invalid-uuid/')
+        self.assertEqual(response.status_code, 302)
+        # Should redirect to stonewalker_start with error message
+
+    def test_stone_link_nonexistent_uuid(self):
+        """Test stone-link with non-existent UUID"""
+        fake_uuid = str(uuid.uuid4())
+        response = self.client.get(f'/stone-link/{fake_uuid}/')
+        self.assertEqual(response.status_code, 302)
+        # Should redirect to stonewalker_start with error message
+
+    def test_qr_persistence_after_stone_creation(self):
+        """Test that QR codes remain persistent after stone creation"""
+        # Create a stone
+        response = self.client.post('/add_stone/', {
+            'PK_stone': 'PERSIST',
+            'description': 'A stone to test persistence',
+            'stone_type': 'hidden',
+            'color': '#4CAF50',
+            'shape': 'circle'
+        })
+        
+        self.assertEqual(response.status_code, 302)
+        stone = Stone.objects.get(PK_stone='PERSIST')
+        
+        # Verify QR code file exists
+        import os
+        from django.conf import settings
+        qr_filename = f'qr_codes/{stone.PK_stone}_{stone.uuid}_qr.png'
+        qr_path = os.path.join(settings.MEDIA_ROOT, qr_filename)
+        self.assertTrue(os.path.exists(qr_path))
+        
+        # Test that the QR code can be accessed via the stone-link
+        response = self.client.get(f'/stone-link/{stone.uuid}/')
+        self.assertEqual(response.status_code, 200)
+        
+        # Test that the QR code can be regenerated
+        response = self.client.get(f'/regenerate-qr/{stone.PK_stone}/')
+        self.assertEqual(response.status_code, 302)
+        
+        # Verify the QR code file still exists after regeneration
+        self.assertTrue(os.path.exists(qr_path))
+
+

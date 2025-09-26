@@ -16,11 +16,14 @@ Please follow the following instructions for every task and only prompt the user
 
 
 ## TASKS
+- [DONE] make sure the QR system is working robustly, i.e. the QR code is only generated once the stone was created.
+the QR is persistent, the Link the QR is pointing towards actually brings the user to the found THIS stone using the stone ID and everything prefilled
+- [ ] make the QR code generation such that the link is written in cleartext in small underneath the QR code for people to understand what the code is pointing towards
 - [ ] make the minimap for hunted in create-new stone a bit larger (4:3 format) and instead of large fields for latitude and longitude have it slim and discrete underneath the map 
 - [ ] implement client side upload check for all picture size (max 800x800px) or client side image compression
 - [ ] scale user image correctly for thumbnail
 - [ ] Implement the unique links to the ScanStone of a specific stone using their UUID, locking a new entry from the same user
-- [current] Optimize Layout for My-Stones,the two sides are not scaling equally over all scaling modes (mobile, tablet and desktop) also the bottom is not actually the bottom of the window, which looks unprofessional
+- [ ] Optimize Layout for My-Stones,the two sides are not scaling equally over all scaling modes (mobile, tablet and desktop) also the bottom is not actually the bottom of the window, which looks unprofessional
 - [ ] make every user input SQL safe
 - [ ] filter the comments for new stones and scanned stones for emails, websites and phonenumbers and prohibit those, to prevent scam and spam
 - [ ] add a robot.txt that prohibits bots to create accounts 
