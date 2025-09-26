@@ -11,7 +11,16 @@ def send_mail(to, template, context):
 
     msg = EmailMultiAlternatives(context['subject'], text_content, settings.DEFAULT_FROM_EMAIL, [to])
     msg.attach_alternative(html_content, 'text/html')
-    msg.send()
+    
+    try:
+        msg.send()
+        return True
+    except Exception as e:
+        # Log the error for debugging
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.error(f"Failed to send email to {to}: {str(e)}")
+        return False
 
 
 def send_activation_email(request, email, code):
@@ -20,7 +29,7 @@ def send_activation_email(request, email, code):
         'uri': request.build_absolute_uri(reverse('accounts:activate', kwargs={'code': code})),
     }
 
-    send_mail(email, 'activate_profile', context)
+    return send_mail(email, 'activate_profile', context)
 
 
 def send_activation_change_email(request, email, code):
@@ -29,7 +38,7 @@ def send_activation_change_email(request, email, code):
         'uri': request.build_absolute_uri(reverse('accounts:change_email_activation', kwargs={'code': code})),
     }
 
-    send_mail(email, 'change_email', context)
+    return send_mail(email, 'change_email', context)
 
 
 def send_reset_password_email(request, email, token, uid):
