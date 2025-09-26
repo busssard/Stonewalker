@@ -109,6 +109,9 @@ if DATABASE_URL.startswith(('postgresql://', 'postgres://')):
             'PASSWORD': parsed.password,
             'HOST': parsed.hostname,
             'PORT': parsed.port or 5432,
+            'OPTIONS': {
+                'sslmode': 'prefer',  # Use SSL if available, but don't require it for local dev
+            }
         }
     }
 else:
