@@ -15,6 +15,8 @@ class Activation(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     code = models.CharField(max_length=20, unique=True)
     email = models.EmailField(blank=True)
+    email_sent = models.BooleanField(default=False)
+    email_sent_at = models.DateTimeField(blank=True, null=True)
 
 
 class Profile(models.Model):

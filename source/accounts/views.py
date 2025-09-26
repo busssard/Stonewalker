@@ -14,6 +14,7 @@ from django.utils.http import url_has_allowed_host_and_scheme as is_safe_url
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 from django.utils.translation import gettext_lazy as _
+from django.utils import timezone
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
@@ -128,10 +129,27 @@ class SignUpView(GuestOnlyView, FormView):
             act.user = user
             act.save()
 
-            send_activation_email(request, user.email, code)
-
-            messages.success(
-                request, _('You are signed up. To activate the account, follow the link sent to the mail.'))
+            # Try to send activation email
+            email_sent = send_activation_email(request, user.email, code)
+            
+            if email_sent:
+                # Mark email as sent in database
+                act.email_sent = True
+                act.email_sent_at = timezone.now()
+                act.save()
+                
+                messages.success(
+                    request, _('You are signed up. To activate the account, follow the link sent to the mail.'))
+            else:
+                # Email failed to send, delete user and activation to allow re-registration
+                act.delete()
+                user.delete()
+                # Also delete the EmailAddressState
+                EmailAddressState.objects.filter(user=user).delete()
+                
+                messages.error(
+                    request, _('Failed to send activation email. Please try again or contact support.'))
+                return redirect('accounts:sign_up')
         else:
             raw_password = form.cleaned_data['password1']
 
@@ -192,9 +210,20 @@ class ResendActivationCodeView(GuestOnlyView, FormView):
         act.user = user
         act.save()
 
-        send_activation_email(self.request, user.email, code)
-
-        messages.success(self.request, _('A new activation code has been sent to your email address.'))
+        # Try to send activation email
+        email_sent = send_activation_email(self.request, user.email, code)
+        
+        if email_sent:
+            # Mark email as sent in database
+            act.email_sent = True
+            act.email_sent_at = timezone.now()
+            act.save()
+            
+            messages.success(self.request, _('A new activation code has been sent to your email address.'))
+        else:
+            # Email failed to send, delete activation to allow retry
+            act.delete()
+            messages.error(self.request, _('Failed to send activation email. Please try again or contact support.'))
 
         return redirect('accounts:resend_activation_code')
 
@@ -351,8 +380,22 @@ class ChangeProfileView(LoginRequiredMixin, FormView):
                     user=user,
                     defaults={'email': new_email, 'is_confirmed': False, 'old_email': user.email}
                 )
-                send_activation_change_email(self.request, new_email, code)
-                messages.success(self.request, _('To complete the change of email address, click on the link sent to it.'))
+                # Try to send activation email
+                email_sent = send_activation_change_email(self.request, new_email, code)
+                
+                if email_sent:
+                    # Mark email as sent in database
+                    act.email_sent = True
+                    act.email_sent_at = timezone.now()
+                    act.save()
+                    
+                    messages.success(self.request, _('To complete the change of email address, click on the link sent to it.'))
+                else:
+                    # Email failed to send, rollback changes
+                    act.delete()
+                    EmailAddressState.objects.filter(user=user).delete()
+                    
+                    messages.error(self.request, _('Failed to send activation email. Please try again or contact support.'))
             else:
                 # Immediate change (should not happen if activation is required)
                 user.email = new_email
@@ -421,8 +464,22 @@ class ResendEmailActivationView(View):
             from django.utils.crypto import get_random_string
             code = get_random_string(20)
             act = Activation.objects.create(user=user, email=email_state.email, code=code)
-        send_activation_change_email(request, email_state.email, act.code)
-        messages.success(request, _('A new activation link has been sent to your email address.'))
+        
+        # Try to send activation email
+        email_sent = send_activation_change_email(request, email_state.email, act.code)
+        
+        if email_sent:
+            # Mark email as sent in database
+            act.email_sent = True
+            act.email_sent_at = timezone.now()
+            act.save()
+            
+            messages.success(request, _('A new activation link has been sent to your email address.'))
+        else:
+            # Email failed to send, delete activation to allow retry
+            act.delete()
+            messages.error(request, _('Failed to send activation email. Please try again or contact support.'))
+            
         return redirect('accounts:change_profile')
 
 
