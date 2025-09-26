@@ -58,7 +58,10 @@ def run_tests(test_args):
     cmd = ["python", "-m", "pytest"] + test_args
     
     # Run tests from source directory with proper Django settings
-    env = dict(os.environ, DJANGO_SETTINGS_MODULE="app.settings")
+    # Use development settings for tests (no SSL requirement)
+    env = dict(os.environ, 
+               DJANGO_SETTINGS_MODULE="app.settings",
+               IS_PRODUCTION="false")
     result = subprocess.run(cmd, cwd=Path(__file__).parent / "source", env=env)
     return result.returncode
 
