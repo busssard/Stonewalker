@@ -1,5 +1,7 @@
 import os
 import warnings
+from pathlib import Path
+from dotenv import load_dotenv  # type: ignore
 from django.utils.translation import gettext_lazy as _
 from os.path import dirname
 
@@ -7,6 +9,20 @@ warnings.simplefilter('error', DeprecationWarning)
 
 BASE_DIR = dirname(dirname(dirname(dirname(os.path.abspath(__file__)))))
 CONTENT_DIR = os.path.join(BASE_DIR, 'content')
+
+# Load environment variables from .env files to avoid exporting each session
+# Try project root and source/.env
+_env_candidates = [
+    Path(BASE_DIR) / '.env',
+    Path(BASE_DIR) / 'source' / '.env',
+]
+for _env_path in _env_candidates:
+    try:
+        if _env_path.exists():
+            load_dotenv(dotenv_path=_env_path, override=False)
+    except Exception:
+        # Loading .env is best-effort for local dev
+        pass
 
 SECRET_KEY = 'NhfTvayqggTBPswCXXhWaN69HuglgZIkM'
 
@@ -70,23 +86,38 @@ EMAIL_FILE_PATH = os.path.join(CONTENT_DIR, 'tmp/emails')
 EMAIL_HOST_USER = 'test@example.com'
 DEFAULT_FROM_EMAIL = 'test@example.com'
 
-# Database: prefer DATABASE_URL (e.g., local PostgreSQL) and fall back to SQLite
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
-}
+# Database: PostgreSQL required for development
+DATABASE_URL = os.environ.get('DATABASE_URL')
+if not DATABASE_URL:
+    raise ValueError(
+        "DATABASE_URL environment variable is required. "
+        "Please set it to your PostgreSQL connection string. "
+        "Example: postgresql://user:password@localhost:5432/dbname"
+    )
 
+# Parse DATABASE_URL for PostgreSQL
 try:
-    # If dj-database-url is available and DATABASE_URL is set, use it for dev
     import dj_database_url  # type: ignore
-    _db_from_env = dj_database_url.config(default=f"sqlite:///{os.path.join(BASE_DIR, 'db.sqlite3')}")
-    if _db_from_env:
-        DATABASES['default'] = _db_from_env
+    DATABASES = {
+        'default': dj_database_url.config()
+    }
 except Exception:
-    # Keep SQLite default if parsing fails or env not present
-    pass
+    # Fallback: manual PostgreSQL parsing (dj_database_url has compatibility issues with Python 3.8)
+    if DATABASE_URL.startswith('postgresql://'):
+        import urllib.parse
+        parsed = urllib.parse.urlparse(DATABASE_URL)
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.postgresql',
+                'NAME': parsed.path[1:],  # Remove leading /
+                'USER': parsed.username,
+                'PASSWORD': parsed.password,
+                'HOST': parsed.hostname,
+                'PORT': parsed.port or 5432,
+            }
+        }
+    else:
+        raise ValueError(f"Invalid DATABASE_URL format: {DATABASE_URL}. Must be postgresql://...")
 
 AUTH_PASSWORD_VALIDATORS = [
     {
