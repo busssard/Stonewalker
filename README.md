@@ -539,6 +539,16 @@ This page features the interactive map, login modal, and personal dashboard.
 - **Comprehensive Testing**: Added 9 new tests covering improved error handling, regeneration functionality, and robustness
 - **Backward Compatibility**: Maintained all existing functionality while improving reliability and user experience
 
+### QR Code Cleartext Display (2025)
+- **Cleartext URL Display**: QR codes now display the actual URL in cleartext underneath the QR code image for better user understanding
+- **Improved User Experience**: Users can now see exactly what URL the QR code points to without needing to scan it
+- **Consistent Styling**: Cleartext URLs are styled with proper typography, background, and positioning for optimal readability
+- **Multiple Display Locations**: Cleartext URLs appear in both the main QR code display and QR code modal popups
+- **Responsive Design**: Cleartext URLs use word-break styling to handle long URLs gracefully on all screen sizes
+- **Template Integration**: Updated both shared_modals.html template and JavaScript QR code display functions
+- **Comprehensive Testing**: Added 5 new tests covering cleartext URL display, styling, positioning, and API integration
+- **User-Friendly**: Small, discrete text that doesn't interfere with QR code scanning but provides helpful context
+
 ### Stone Creation Refactoring (2024)
 - **UUID Integration**: Added UUID field to Stone model for secure QR code generation and unique stone identification
 - **Automatic Shape Selection**: Stones now automatically get circle shape for hidden stones and triangle shape for hunted stones

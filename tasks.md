@@ -18,7 +18,7 @@ Please follow the following instructions for every task and only prompt the user
 ## TASKS
 - [DONE] make sure the QR system is working robustly, i.e. the QR code is only generated once the stone was created.
 the QR is persistent, the Link the QR is pointing towards actually brings the user to the found THIS stone using the stone ID and everything prefilled
-- [ ] make the QR code generation such that the link is written in cleartext in small underneath the QR code for people to understand what the code is pointing towards
+- [DONE] make the QR code generation such that the link is written in cleartext in small underneath the QR code for people to understand what the code is pointing towards
 - [ ] make the minimap for hunted in create-new stone a bit larger (4:3 format) and instead of large fields for latitude and longitude have it slim and discrete underneath the map 
 - [ ] implement client side upload check for all picture size (max 800x800px) or client side image compression
 - [ ] scale user image correctly for thumbnail

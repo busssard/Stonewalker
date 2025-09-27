@@ -2157,3 +2157,95 @@ class ImprovedQRSystemTests(TestCase):
         self.assertTrue(os.path.exists(qr_path))
 
 
+class QRCleartextDisplayTests(TestCase):
+    """Test QR code cleartext URL display functionality"""
+    
+    def setUp(self):
+        self.client = Client()
+        self.user = User.objects.create_user(username='testuser', password='testpass')
+        self.client.login(username='testuser', password='testpass')
+
+    def test_qr_code_generation_includes_cleartext_url(self):
+        """Test that QR code generation API includes cleartext URL in response"""
+        stone_name = 'CLEARTEST'
+        stone_uuid = str(uuid.uuid4())
+        
+        response = self.client.get('/api/generate-qr/', {
+            'stone_name': stone_name,
+            'stone_uuid': stone_uuid
+        })
+        
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertTrue(data['success'])
+        self.assertIn('qr_url', data)
+        self.assertIn('stone-link', data['qr_url'])
+        self.assertIn(stone_uuid, data['qr_url'])
+
+    def test_qr_code_display_template_has_cleartext_elements(self):
+        """Test that QR code display templates have cleartext URL elements"""
+        # Test shared_modals.html template
+        response = self.client.get('/debug/modals/')
+        self.assertEqual(response.status_code, 200)
+        
+        content = response.content.decode()
+        # Check for cleartext URL elements in the template
+        self.assertIn('qr-cleartext-url', content)
+        self.assertIn('qr-url-text', content)
+        self.assertIn('qr-modal-cleartext-url', content)
+        self.assertIn('qr-modal-url-text', content)
+
+    def test_qr_code_generation_shows_cleartext_in_modal(self):
+        """Test that QR code generation in modal shows cleartext URL"""
+        # Create a stone first
+        stone = Stone.objects.create(
+            PK_stone='MODALTEST',
+            description='Test stone for modal QR display',
+            FK_user=self.user
+        )
+        
+        # Test the QR code generation API
+        response = self.client.get('/api/generate-qr/', {
+            'stone_name': stone.PK_stone,
+            'stone_uuid': str(stone.uuid)
+        })
+        
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertTrue(data['success'])
+        
+        # Verify the URL structure
+        expected_url_pattern = f'/stone-link/{stone.uuid}/'
+        self.assertIn(expected_url_pattern, data['qr_url'])
+
+    def test_qr_code_cleartext_styling(self):
+        """Test that cleartext URL has proper styling for readability"""
+        response = self.client.get('/debug/modals/')
+        self.assertEqual(response.status_code, 200)
+        
+        content = response.content.decode()
+        
+        # Check for styling attributes that make the URL readable
+        self.assertIn('word-break: break-all', content)
+        self.assertIn('font-size: 10px', content)
+        self.assertIn('background: #f8f8f8', content)
+        self.assertIn('border: 1px solid #e0e0e0', content)
+        self.assertIn('border-radius: 3px', content)
+
+    def test_qr_code_cleartext_positioning(self):
+        """Test that cleartext URL is positioned underneath QR code"""
+        response = self.client.get('/debug/modals/')
+        self.assertEqual(response.status_code, 200)
+        
+        content = response.content.decode()
+        
+        # Check for positioning styles
+        self.assertIn('margin-top: 8px', content)
+        self.assertIn('text-align: center', content)
+        
+        # Verify the cleartext div is inside the QR code display container
+        # The structure should be: qr-code-display > qr-code-placeholder + qr-cleartext-url
+        self.assertIn('qr-code-display', content)
+        self.assertIn('qr-cleartext-url', content)
+
+
