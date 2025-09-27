@@ -61,3 +61,7 @@ venv/
 
 # Local git hooks
 .git/hooks/pre-push
+
+# Production database access data
+postgres_production.json
+db
