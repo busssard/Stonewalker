@@ -46,6 +46,17 @@ class QRCodeManager {
         container.innerHTML = '';
         container.appendChild(img);
 
+        // Add cleartext URL underneath QR code
+        const cleartextDiv = document.createElement('div');
+        cleartextDiv.style.marginTop = '8px';
+        cleartextDiv.style.textAlign = 'center';
+        cleartextDiv.innerHTML = `
+            <p style="margin: 0; color: #666; font-size: 10px; word-break: break-all; line-height: 1.2; background: #f8f8f8; padding: 4px 6px; border-radius: 3px; border: 1px solid #e0e0e0;">
+                ${qrCodeData.qrUrl}
+            </p>
+        `;
+        container.appendChild(cleartextDiv);
+
         // Update info display
         this.updateQRInfo(qrCodeData);
     }
