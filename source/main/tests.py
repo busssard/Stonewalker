@@ -896,6 +896,28 @@ class StoneCreationTests(TestCase):
         response = self.client.get(reverse('download_qr'))
         self.assertEqual(response.status_code, 302)  # Redirect
 
+    def test_create_stone_modal_auth_check(self):
+        """Test that create stone modal checks authentication"""
+        # Test as unauthenticated user
+        response = self.client.get(reverse('stonewalker_start'))
+        self.assertEqual(response.status_code, 200)
+        
+        # Check that the JavaScript function includes authentication check
+        content = response.content.decode('utf-8')
+        self.assertIn('openSharedCreateStoneModal', content)
+        self.assertIn('isAuthenticated', content)
+        self.assertIn('/accounts/log-in/', content)
+        
+        # Test as authenticated user
+        self.client.force_login(self.user)
+        response = self.client.get(reverse('stonewalker_start'))
+        self.assertEqual(response.status_code, 200)
+        
+        # Check that the JavaScript function is still present
+        content = response.content.decode('utf-8')
+        self.assertIn('openSharedCreateStoneModal', content)
+        self.assertIn('isAuthenticated', content)
+
     def test_stone_scan_with_uuid(self):
         """Test that stone scanning works with UUID"""
         stone = Stone.objects.create(
@@ -2247,5 +2269,41 @@ class QRCleartextDisplayTests(TestCase):
         # The structure should be: qr-code-display > qr-code-placeholder + qr-cleartext-url
         self.assertIn('qr-code-display', content)
         self.assertIn('qr-cleartext-url', content)
+
+    def test_download_qr_code_includes_cleartext_url(self):
+        """Test that downloaded QR code includes cleartext URL"""
+        # Create a stone and generate QR code
+        response = self.client.post('/add_stone/', {
+            'PK_stone': 'DOWNLOAD',
+            'description': 'A stone for download test',
+            'stone_type': 'hidden',
+            'color': '#4CAF50',
+            'shape': 'circle'
+        })
+        
+        self.assertEqual(response.status_code, 302)
+        
+        # Check that session data is stored
+        self.assertIn('qr_download_path', self.client.session)
+        self.assertIn('qr_stone_url', self.client.session)
+        
+        # Download the QR code
+        download_response = self.client.get('/download-qr/')
+        self.assertEqual(download_response.status_code, 200)
+        self.assertEqual(download_response['Content-Type'], 'image/png')
+        
+        # Check that the filename includes "with_url"
+        self.assertIn('qr_with_url.png', download_response['Content-Disposition'])
+        
+        # Verify the image is larger than a standard QR code (should have extra space for text)
+        from PIL import Image
+        import io
+        
+        img_data = download_response.content
+        img = Image.open(io.BytesIO(img_data))
+        
+        # The image should be taller than it is wide (QR code + text space)
+        self.assertGreater(img.height, img.width)
+        self.assertGreaterEqual(img.height, 150)  # QR code height + text space
 
 
