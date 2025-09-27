@@ -368,6 +368,109 @@ Stone <1----*> StoneMove
 User <1----*> Activation
 ```
 
+## Database Management
+
+For production database management, the project includes a comprehensive CLI tool for CRUD operations on users and stones.
+
+### Setup
+
+1. **Create production credentials file:**
+   ```bash
+   # Create postgres_production.json (excluded from git)
+   {
+     "host": "your-production-host",
+     "port": 5432,
+     "database": "your-database-name", 
+     "user": "your-username",
+     "password": "your-password",
+     "sslmode": "require"
+   }
+   ```
+
+2. **Make the database manager executable:**
+   ```bash
+   chmod +x db
+   ```
+
+### Usage
+
+The database manager provides easy-to-use commands for managing your production PostgreSQL database:
+
+#### User Management
+```bash
+# List users (active only by default)
+./db list-users --limit 10
+
+# List all users including inactive
+./db list-users --all
+
+# Get specific user
+./db get-user --username john_doe
+./db get-user --id 123
+./db get-user --email user@example.com
+
+# Create new user
+./db create-user --username newuser --email user@example.com --password secretpass
+
+# Update user
+./db update-user --id 123 --first_name John --last_name Doe
+
+# Delete specific user
+./db delete-user --id 123 --confirm
+
+# Delete old inactive users (older than 5 minutes by default)
+./db delete-old-inactive --confirm --minutes 10
+```
+
+#### Stone Management
+```bash
+# List stones
+./db list-stones --limit 20
+
+# List stones for specific user
+./db list-stones --user-id 123
+
+# List stones by type
+./db list-stones --type hidden
+
+# Get specific stone
+./db get-stone --id STONE001
+
+# Create new stone
+./db create-stone --id STONE001 --user-id 123 --description "My test stone"
+
+# Update stone
+./db update-stone --id STONE001 --description "Updated description" --color "#FF0000"
+
+# Delete stone
+./db delete-stone --id STONE001 --confirm
+```
+
+#### Utility Commands
+```bash
+# Show database statistics
+./db stats
+
+# Find problematic users/stones
+./db find-problems
+
+# Test database connection
+./db test-connection
+```
+
+### Safety Features
+
+- **Confirmation required** for all destructive operations
+- **Preview before deletion** - shows exactly what will be deleted
+- **Detailed logging** - shows each operation as it happens
+- **Error handling** - graceful failure with helpful error messages
+
+### Security
+
+- Database credentials are stored in `postgres_production.json` (excluded from git)
+- All management scripts are excluded from version control
+- Production database access requires explicit confirmation flags
+
 ## Backend Logic
 
 The backend of StoneWalker is built with Django and follows a modular, class-based view structure:
