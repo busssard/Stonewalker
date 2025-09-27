@@ -867,14 +867,17 @@ class StoneCreationTests(TestCase):
             shape='circle'
         )
         
-        # Create a dummy QR file for testing
+        # Create a dummy QR file for testing (proper PNG format)
         import os
         from django.conf import settings
+        from PIL import Image
         qr_dir = os.path.join(settings.MEDIA_ROOT, 'qr_codes')
         os.makedirs(qr_dir, exist_ok=True)
         qr_path = os.path.join(qr_dir, 'DOWNLOADSTONE_qr.png')
-        with open(qr_path, 'w') as f:
-            f.write('dummy qr content')
+        
+        # Create a small dummy PNG image
+        dummy_img = Image.new('RGB', (100, 100), 'white')
+        dummy_img.save(qr_path, 'PNG')
         
         # Set up session data
         session = self.client.session
@@ -2287,20 +2290,8 @@ class QRCleartextDisplayTests(TestCase):
         self.assertIn('qr_download_path', self.client.session)
         self.assertIn('qr_stone_url', self.client.session)
         
-        # Check if QR code file actually exists
-        from django.conf import settings
-        import os
-        qr_path = os.path.join(settings.MEDIA_ROOT, self.client.session['qr_download_path'])
-        print(f"QR file path: {qr_path}")
-        print(f"QR file exists: {os.path.exists(qr_path)}")
-        if os.path.exists(qr_path):
-            print(f"QR file size: {os.path.getsize(qr_path)} bytes")
-        
         # Download the QR code
         download_response = self.client.get('/download-qr/')
-        print(f"Download response status: {download_response.status_code}")
-        print(f"Download response content: {download_response.content[:200]}")
-        print(f"Session data: {dict(self.client.session)}")
         self.assertEqual(download_response.status_code, 200)
         self.assertEqual(download_response['Content-Type'], 'image/png')
         
