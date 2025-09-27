@@ -605,9 +605,14 @@ document.addEventListener('DOMContentLoaded', function() {
         // Display cleartext URL underneath QR code
         const qrCleartextUrl = document.getElementById('qr-cleartext-url');
         const qrUrlText = document.getElementById('qr-url-text');
+        console.log('Cleartext elements found:', { qrCleartextUrl, qrUrlText });
+        console.log('QR URL to display:', data.qr_url);
         if (qrCleartextUrl && qrUrlText) {
           qrUrlText.textContent = data.qr_url;
           qrCleartextUrl.style.display = 'block';
+          console.log('Cleartext URL displayed successfully');
+        } else {
+          console.error('Cleartext URL elements not found');
         }
         
         // Update QR code information
@@ -897,6 +902,18 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // Global functions for opening modals
   window.openSharedCreateStoneModal = function() {
+    // Check if user is authenticated by looking for authentication indicators
+    const isAuthenticated = document.querySelector('a[href*="accounts/log-out"]') || 
+                           document.querySelector('a[href*="accounts/change_profile"]') ||
+                           document.querySelector('img[alt="Profile"]') ||
+                           document.querySelector('.header-profile-main-nav');
+    
+    if (!isAuthenticated) {
+      // User is not authenticated, redirect to login page
+      window.location.href = '{% url "accounts:log_in" %}';
+      return;
+    }
+    
     // Reset modal to step 1
     if (step1) {
       step1.style.display = 'flex';
@@ -944,6 +961,18 @@ document.addEventListener('DOMContentLoaded', function() {
   };
   
   window.openSharedScanStoneModal = function() {
+    // Check if user is authenticated by looking for authentication indicators
+    const isAuthenticated = document.querySelector('a[href*="accounts/log-out"]') || 
+                           document.querySelector('a[href*="accounts/change_profile"]') ||
+                           document.querySelector('img[alt="Profile"]') ||
+                           document.querySelector('.header-profile-main-nav');
+    
+    if (!isAuthenticated) {
+      // User is not authenticated, redirect to login page
+      window.location.href = '{% url "accounts:log_in" %}';
+      return;
+    }
+    
     if (scanModal) {
       scanModal.classList.remove('display-none');
       scanModal.style.display = 'flex';

@@ -505,9 +505,10 @@ class StoneLinkView(View):
 
 @login_required
 def download_qr_code(request):
-    """Download the QR code that was generated after stone creation"""
+    """Download the QR code that was generated after stone creation with cleartext URL"""
     qr_path = request.session.get('qr_download_path')
     stone_name = request.session.get('qr_stone_name')
+    qr_url = request.session.get('qr_stone_url')
     
     if not qr_path or not stone_name:
         messages.error(request, 'No QR code available for download.')
@@ -516,13 +517,63 @@ def download_qr_code(request):
     try:
         from django.conf import settings
         import os
+        from PIL import Image, ImageDraw, ImageFont
+        import io
+        
         full_path = os.path.join(settings.MEDIA_ROOT, qr_path)
         
         if os.path.exists(full_path):
-            with open(full_path, 'rb') as f:
-                response = HttpResponse(f.read(), content_type='image/png')
-                response['Content-Disposition'] = f'attachment; filename="{stone_name}_qr.png"'
-                return response
+            # Load the existing QR code image
+            qr_img = Image.open(full_path)
+            
+            # Create a new image with extra space for the cleartext URL
+            # QR code is 150x150, add 40px height for text
+            new_width = qr_img.width
+            new_height = qr_img.height + 40
+            
+            # Create new image with white background
+            new_img = Image.new('RGB', (new_width, new_height), 'white')
+            
+            # Paste QR code at the top
+            new_img.paste(qr_img, (0, 0))
+            
+            # Add cleartext URL at the bottom
+            draw = ImageDraw.Draw(new_img)
+            
+            # Try to use a smaller font, fallback to default if not available
+            try:
+                font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 10)
+            except:
+                try:
+                    font = ImageFont.truetype("arial.ttf", 10)
+                except:
+                    font = ImageFont.load_default()
+            
+            # Calculate text position (centered)
+            text = qr_url or "QR Code URL"
+            bbox = draw.textbbox((0, 0), text, font=font)
+            text_width = bbox[2] - bbox[0]
+            text_x = (new_width - text_width) // 2
+            text_y = qr_img.height + 5
+            
+            # Draw background rectangle for text
+            padding = 4
+            draw.rectangle([
+                text_x - padding, text_y - padding,
+                text_x + text_width + padding, text_y + 15 + padding
+            ], fill='#f8f8f8', outline='#e0e0e0')
+            
+            # Draw the text
+            draw.text((text_x, text_y), text, fill='#666', font=font)
+            
+            # Save to bytes
+            img_io = io.BytesIO()
+            new_img.save(img_io, format='PNG')
+            img_io.seek(0)
+            
+            response = HttpResponse(img_io.getvalue(), content_type='image/png')
+            response['Content-Disposition'] = f'attachment; filename="{stone_name}_qr_with_url.png"'
+            return response
         else:
             messages.error(request, 'QR code file not found.')
             return redirect('stonewalker_start')
