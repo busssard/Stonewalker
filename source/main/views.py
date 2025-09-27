@@ -551,8 +551,13 @@ def download_qr_code(request):
             
             # Calculate text position (centered)
             text = qr_url or "QR Code URL"
-            bbox = draw.textbbox((0, 0), text, font=font)
-            text_width = bbox[2] - bbox[0]
+            try:
+                # Try newer textbbox method first
+                bbox = draw.textbbox((0, 0), text, font=font)
+                text_width = bbox[2] - bbox[0]
+            except AttributeError:
+                # Fallback to older textsize method
+                text_width, text_height = draw.textsize(text, font=font)
             text_x = (new_width - text_width) // 2
             text_y = qr_img.height + 5
             
@@ -578,6 +583,9 @@ def download_qr_code(request):
             messages.error(request, 'QR code file not found.')
             return redirect('stonewalker_start')
     except Exception as e:
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.error(f'Error downloading QR code: {str(e)}')
         messages.error(request, f'Error downloading QR code: {str(e)}')
         return redirect('stonewalker_start')
 
