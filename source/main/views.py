@@ -527,9 +527,9 @@ def download_qr_code(request):
             qr_img = Image.open(full_path)
             
             # Create a new image with extra space for the cleartext URL
-            # QR code is 150x150, add 40px height for text
+            # Add 60px height for text (increased for larger font)
             new_width = qr_img.width
-            new_height = qr_img.height + 40
+            new_height = qr_img.height + 60
             
             # Create new image with white background
             new_img = Image.new('RGB', (new_width, new_height), 'white')
@@ -540,12 +540,12 @@ def download_qr_code(request):
             # Add cleartext URL at the bottom
             draw = ImageDraw.Draw(new_img)
             
-            # Try to use a smaller font, fallback to default if not available
+            # Try to use a larger font for better OCR readability
             try:
-                font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 10)
+                font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 14)
             except:
                 try:
-                    font = ImageFont.truetype("arial.ttf", 10)
+                    font = ImageFont.truetype("arial.ttf", 14)
                 except:
                     font = ImageFont.load_default()
             
@@ -555,17 +555,35 @@ def download_qr_code(request):
                 # Try newer textbbox method first
                 bbox = draw.textbbox((0, 0), text, font=font)
                 text_width = bbox[2] - bbox[0]
+                text_height = bbox[3] - bbox[1]
             except AttributeError:
                 # Fallback to older textsize method
                 text_width, text_height = draw.textsize(text, font=font)
-            text_x = (new_width - text_width) // 2
-            text_y = qr_img.height + 5
+            
+            # Ensure text fits within the image width
+            if text_width > new_width:
+                # If text is too wide, use a smaller font
+                try:
+                    font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 8)
+                    bbox = draw.textbbox((0, 0), text, font=font)
+                    text_width = bbox[2] - bbox[0]
+                    text_height = bbox[3] - bbox[1]
+                except:
+                    # If still too wide, truncate the text
+                    while text_width > new_width - 10 and len(text) > 10:
+                        text = text[:-1]
+                        bbox = draw.textbbox((0, 0), text, font=font)
+                        text_width = bbox[2] - bbox[0]
+                        text_height = bbox[3] - bbox[1]
+            
+            text_x = max(5, (new_width - text_width) // 2)  # Ensure text is not positioned off-screen
+            text_y = qr_img.height + 10  # More space from QR code
             
             # Draw background rectangle for text
             padding = 4
             draw.rectangle([
                 text_x - padding, text_y - padding,
-                text_x + text_width + padding, text_y + 15 + padding
+                text_x + text_width + padding, text_y + text_height + padding
             ], fill='#f8f8f8', outline='#e0e0e0')
             
             # Draw the text

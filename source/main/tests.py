@@ -2309,4 +2309,87 @@ class QRCleartextDisplayTests(TestCase):
         self.assertGreater(img.height, img.width)
         self.assertGreaterEqual(img.height, 150)  # QR code height + text space
 
+    def test_download_qr_code_contains_cleartext_url_ocr(self):
+        """Test that downloaded QR code PNG contains cleartext URL using OCR verification"""
+        # Create a stone and generate QR code
+        response = self.client.post('/add_stone/', {
+            'PK_stone': 'OCRTEST',
+            'description': 'OCR test stone',
+            'stone_type': 'hidden',
+            'color': '#4CAF50',
+            'shape': 'circle'
+        })
+        
+        self.assertEqual(response.status_code, 302)
+        
+        # Check that session data is stored
+        self.assertIn('qr_download_path', self.client.session)
+        self.assertIn('qr_stone_url', self.client.session)
+        
+        # Get the expected URL from session
+        expected_url = self.client.session.get('qr_stone_url')
+        self.assertIsNotNone(expected_url)
+        
+        # Download the QR code
+        download_response = self.client.get('/download-qr/')
+        self.assertEqual(download_response.status_code, 200)
+        self.assertEqual(download_response['Content-Type'], 'image/png')
+        
+        # Use OCR to verify the text is actually in the image
+        try:
+            import pytesseract
+            from PIL import Image
+            import io
+            
+            # Load the downloaded image
+            img = Image.open(io.BytesIO(download_response.content))
+            
+            # Try different OCR configurations to find the text
+            configs = [
+                '--psm 3',  # Fully automatic page segmentation
+                '--psm 6',  # Assume a single uniform block of text
+                '--psm 7',  # Treat the image as a single text line
+                '--psm 8',  # Treat the image as a single word
+                '--psm 13', # Raw line. Treat the image as a single text line
+            ]
+            
+            found_url = False
+            all_extracted_texts = []
+            
+            for config in configs:
+                try:
+                    extracted_text = pytesseract.image_to_string(img, config=config)
+                    all_extracted_texts.append(f"Config {config}: '{extracted_text.strip()}'")
+                    if expected_url in extracted_text:
+                        found_url = True
+                        break
+                except Exception as e:
+                    all_extracted_texts.append(f"Config {config}: ERROR - {e}")
+                    continue
+            
+            # If no config found the URL, try the default config
+            if not found_url:
+                try:
+                    extracted_text = pytesseract.image_to_string(img)
+                    all_extracted_texts.append(f"Default config: '{extracted_text.strip()}'")
+                    if expected_url in extracted_text:
+                        found_url = True
+                except Exception as e:
+                    all_extracted_texts.append(f"Default config: ERROR - {e}")
+            
+            # Debug output
+            print(f"Expected URL: {expected_url}")
+            print("OCR Results:")
+            for text in all_extracted_texts:
+                print(f"  {text}")
+            
+            self.assertTrue(found_url, 
+                f"Expected URL '{expected_url}' not found in OCR text. "
+                f"Image size: {img.size}, Content length: {len(download_response.content)} bytes")
+                
+        except ImportError:
+            self.skipTest("pytesseract not available - skipping OCR test")
+        except Exception as e:
+            self.fail(f"OCR test failed with error: {e}")
+
 
