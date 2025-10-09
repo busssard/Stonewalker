@@ -526,26 +526,33 @@ def download_qr_code(request):
             # Load the existing QR code image
             qr_img = Image.open(full_path)
             
-            # Create a new image with extra space for the cleartext URL
-            # Add 60px height for text (increased for larger font)
-            new_width = qr_img.width
-            new_height = qr_img.height + 60
+            # Create a 3:4 portrait format image with QR code at top and text at bottom
+            # Calculate dimensions for 3:4 aspect ratio
+            qr_size = qr_img.width  # QR code is square
+            # For 3:4 portrait: width = 3/4 * height, so height = 4/3 * width
+            # We want the QR code to fit in the top portion, so:
+            # height = qr_size + text_area_height
+            # width = 3/4 * height = 3/4 * (qr_size + text_area_height)
+            text_area_height = 120  # Generous space for text
+            new_height = qr_size + text_area_height
+            new_width = int(3 * new_height / 4)  # 3:4 aspect ratio
             
             # Create new image with white background
             new_img = Image.new('RGB', (new_width, new_height), 'white')
             
-            # Paste QR code at the top
-            new_img.paste(qr_img, (0, 0))
+            # Paste QR code at the top, centered horizontally
+            qr_x = (new_width - qr_size) // 2  # Center QR code horizontally
+            new_img.paste(qr_img, (qr_x, 0))
             
             # Add cleartext URL at the bottom
             draw = ImageDraw.Draw(new_img)
             
-            # Try to use a larger font for better OCR readability
+            # Use a much larger font for better OCR readability
             try:
-                font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 14)
+                font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 18)
             except:
                 try:
-                    font = ImageFont.truetype("arial.ttf", 14)
+                    font = ImageFont.truetype("arial.ttf", 18)
                 except:
                     font = ImageFont.load_default()
             
@@ -576,8 +583,8 @@ def download_qr_code(request):
                         text_width = bbox[2] - bbox[0]
                         text_height = bbox[3] - bbox[1]
             
-            text_x = max(5, (new_width - text_width) // 2)  # Ensure text is not positioned off-screen
-            text_y = qr_img.height + 10  # More space from QR code
+            text_x = max(10, (new_width - text_width) // 2)  # Center text horizontally
+            text_y = qr_size + 20  # Position text in the text area below QR code
             
             # Draw background rectangle for text
             padding = 4
@@ -586,8 +593,8 @@ def download_qr_code(request):
                 text_x + text_width + padding, text_y + text_height + padding
             ], fill='#f8f8f8', outline='#e0e0e0')
             
-            # Draw the text
-            draw.text((text_x, text_y), text, fill='#666', font=font)
+            # Draw the text with high contrast for better OCR
+            draw.text((text_x, text_y), text, fill='#000000', font=font)
             
             # Save to bytes
             img_io = io.BytesIO()
