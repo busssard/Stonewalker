@@ -5,6 +5,7 @@ Please follow the following instructions for every task and only prompt the user
 1. Mark the current task as [current]
 2. Read the README.md file to understand the structure of the current repo
 3. Create an implementation plan and put this plan into your Todos.
+   Double check with the product manager if you understood the task correctly.
 4. Write premium code in a high performance way, encourage good design, but make sure that the page still loads 
 4b. Ask manager if the issue is fixed.
 5. Write tests for all features you added!
@@ -18,7 +19,7 @@ Please follow the following instructions for every task and only prompt the user
 ## TASKS
 - [DONE] make sure the QR system is working robustly, i.e. the QR code is only generated once the stone was created.
 the QR is persistent, the Link the QR is pointing towards actually brings the user to the found THIS stone using the stone ID and everything prefilled
-- [DONE] make the QR code generation such that the link is written in cleartext in small underneath the QR code for people to understand what the code is pointing toward
+- [DONE] make the QR code generation such that the link is written in cleartext in small underneath the QR code for people to understand what the code is pointing toward (verified working - cleartext URL embedded in downloaded PNG image)
 - [ ] make the minimap for hunted in create-new stone a bit larger (4:3 format) and instead of large fields for latitude and longitude have it slim and discrete underneath the map 
 - [ ] implement client side upload check for all picture size (max 800x800px) or client side image compression
 - [ ] scale user image correctly for thumbnail

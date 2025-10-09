@@ -643,13 +643,14 @@ This page features the interactive map, login modal, and personal dashboard.
 - **Backward Compatibility**: Maintained all existing functionality while improving reliability and user experience
 
 ### QR Code Cleartext Display (2025)
-- **Cleartext URL Display**: QR codes now display the actual URL in cleartext underneath the QR code image for better user understanding
-- **Improved User Experience**: Users can now see exactly what URL the QR code points to without needing to scan it
+- **Cleartext URL Display**: QR codes display the actual URL in cleartext underneath the QR code image for better user understanding
+- **Embedded in Downloaded PNG**: The cleartext URL is embedded directly in the PNG image file that users download, making it visible when printed or shared
+- **Improved User Experience**: Users can see exactly what URL the QR code points to without needing to scan it, both on screen and in downloaded images
 - **Consistent Styling**: Cleartext URLs are styled with proper typography, background, and positioning for optimal readability
-- **Multiple Display Locations**: Cleartext URLs appear in both the main QR code display and QR code modal popups
+- **Multiple Display Locations**: Cleartext URLs appear in both the main QR code display, QR code modal popups, and downloaded PNG files
 - **Responsive Design**: Cleartext URLs use word-break styling to handle long URLs gracefully on all screen sizes
 - **Template Integration**: Updated both shared_modals.html template and JavaScript QR code display functions
-- **Comprehensive Testing**: Added 5 new tests covering cleartext URL display, styling, positioning, and API integration
+- **Comprehensive Testing**: Added 6 tests covering cleartext URL display, styling, positioning, API integration, and PNG embedding
 - **User-Friendly**: Small, discrete text that doesn't interfere with QR code scanning but provides helpful context
 - **Verified Working**: All QR code functionality has been verified to work correctly with 24 passing tests covering QR generation, cleartext display, and API integration
 
