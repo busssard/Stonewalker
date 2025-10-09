@@ -644,15 +644,18 @@ This page features the interactive map, login modal, and personal dashboard.
 
 ### QR Code Cleartext Display (2025)
 - **Cleartext URL Display**: QR codes display the actual URL in cleartext underneath the QR code image for better user understanding
+- **3:4 Portrait PNG Format**: Downloaded QR code images are in 3:4 portrait format with QR code at top and cleartext URL at bottom
 - **Embedded in Downloaded PNG**: The cleartext URL is embedded directly in the PNG image file that users download, making it visible when printed or shared
 - **Improved User Experience**: Users can see exactly what URL the QR code points to without needing to scan it, both on screen and in downloaded images
-- **Consistent Styling**: Cleartext URLs are styled with proper typography, background, and positioning for optimal readability
+- **High Contrast Text**: Cleartext URLs use black text (#000000) on light background with 18px font size for maximum readability
+- **Generous Text Space**: 120px dedicated space below QR code ensures text is clearly visible and readable
+- **Centered Layout**: QR code is centered horizontally in the top portion, text is centered in the bottom portion
 - **Multiple Display Locations**: Cleartext URLs appear in both the main QR code display, QR code modal popups, and downloaded PNG files
 - **Responsive Design**: Cleartext URLs use word-break styling to handle long URLs gracefully on all screen sizes
 - **Template Integration**: Updated both shared_modals.html template and JavaScript QR code display functions
-- **Comprehensive Testing**: Added 6 tests covering cleartext URL display, styling, positioning, API integration, and PNG embedding
-- **User-Friendly**: Small, discrete text that doesn't interfere with QR code scanning but provides helpful context
-- **Verified Working**: All QR code functionality has been verified to work correctly with 24 passing tests covering QR generation, cleartext display, and API integration
+- **Comprehensive Testing**: Added 7 tests covering cleartext URL display, 3:4 format verification, text rendering validation, and PNG embedding
+- **User-Friendly**: Text is positioned to not interfere with QR code scanning but provides helpful context
+- **Verified Working**: All QR code functionality has been verified to work correctly with 25 passing tests covering QR generation, cleartext display, and API integration
 
 ### Stone Creation Refactoring (2024)
 - **UUID Integration**: Added UUID field to Stone model for secure QR code generation and unique stone identification
