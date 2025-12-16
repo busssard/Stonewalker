@@ -13,6 +13,12 @@ def validate_no_whitespace(value):
         raise ValidationError('Stone name cannot contain whitespace.')
 
 class Stone(models.Model):
+    STATUS_CHOICES = [
+        ('draft', 'Draft'),
+        ('published', 'Published'),
+        ('sent_off', 'Sent Off'),
+    ]
+    
     PK_stone = models.CharField(
         max_length=10,
         unique=True,
@@ -22,6 +28,7 @@ class Stone(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     description = models.TextField(blank=True, max_length=500)
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     FK_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='stones')
     image = models.ImageField(upload_to='stones/', blank=True, null=True)
     color = models.CharField(max_length=7, default='#4CAF50')
@@ -31,9 +38,68 @@ class Stone(models.Model):
         ('hidden', 'Hidden'),
         ('hunted', 'Hunted'),
     ])
+    status = models.CharField(max_length=20, default='draft', choices=STATUS_CHOICES)
+    qr_code_url = models.URLField(blank=True, help_text='Persistent QR code URL')
+    sent_off_at = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
-        return f"{self.PK_stone}"
+        return f"{self.PK_stone} ({self.status})"
+    
+    def can_be_edited(self):
+        """Check if stone can be edited (only drafts can be edited)"""
+        return self.status == 'draft'
+    
+    def can_be_published(self):
+        """Check if stone can be published"""
+        return self.status == 'draft'
+    
+    def can_be_sent_off(self):
+        """Check if stone can be sent off"""
+        return self.status == 'published'
+    
+    def publish(self):
+        """Publish the stone (make it visible on map)"""
+        if self.can_be_published():
+            self.status = 'published'
+            self.save()
+            return True
+        return False
+    
+    def send_off(self):
+        """Send off the stone (finalize it, no more editing)"""
+        if self.can_be_sent_off():
+            self.status = 'sent_off'
+            self.sent_off_at = timezone.now()
+            self.save()
+            return True
+        return False
+    
+    def get_qr_url(self):
+        """Get the QR code URL for this stone"""
+        if not self.qr_code_url:
+            from django.urls import reverse
+            from django.contrib.sites.models import Site
+            try:
+                current_site = Site.objects.get_current()
+                self.qr_code_url = f'https://{current_site.domain}/stone-link/{self.uuid}/'
+            except:
+                self.qr_code_url = f'/stone-link/{self.uuid}/'
+            self.save()
+        return self.qr_code_url
+    
+    @classmethod
+    def user_can_create_stone(cls, user):
+        """Check if user can create a new stone (non-premium users limited to 1 draft)"""
+        if hasattr(user, 'is_premium') and user.is_premium:
+            return True
+        # Non-premium users can only have one draft stone at a time
+        draft_count = cls.objects.filter(FK_user=user, status='draft').count()
+        return draft_count == 0
+    
+    @classmethod
+    def get_user_draft_stone(cls, user):
+        """Get user's current draft stone if any"""
+        return cls.objects.filter(FK_user=user, status='draft').first()
 
 class StoneMove(models.Model):
     FK_stone = models.ForeignKey(Stone, on_delete=models.CASCADE, to_field='PK_stone', related_name='moves')

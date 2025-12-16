@@ -28,7 +28,6 @@ INSTALLED_APPS = [
     'main',
     'accounts',
 ]
-DEFAULT_FROM_EMAIL = ['mail@stonewalker.org']
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -64,15 +63,14 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'app.wsgi.application'
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-
-EMAIL_HOST = "smtp.sendgrid.net"
-EMAIL_HOST_USER = os.environ.get('SENDGRID_EMAIL_USERNAME')
+# Mailjet Email Configuration
+EMAIL_BACKEND = 'app.backends.MailjetEmailBackend'
 DEFAULT_FROM_EMAIL = 'noreply@stonewalker.org'
-EMAIL_HOST_PASSWORD = os.environ.get('SENDGRID_EMAIL_PASSWORD')
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_USE_SSL = False
+
+# Mailjet API credentials are read from environment variables:
+# MJ_APIKEY_PUBLIC - Your Mailjet API Key (public)
+# MJ_APIKEY_PRIVATE - Your Mailjet Secret Key (private)
+# These are used by the MailjetEmailBackend
 
 
 # Database: PostgreSQL required for production

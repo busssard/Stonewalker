@@ -1,8 +1,8 @@
 {% load static %}
 {% load i18n %}
 
-<!-- Create Stone Modal -->
-<div id="add-stone-modal" class="modal display-none position-fixed z-2000 left-0 top-0 w-100vw h-100vh bg-modal-overlay flex-center">
+<!-- OLD Create Stone Modal - DISABLED -->
+<div id="add-stone-modal-DISABLED" class="modal display-none position-fixed z-2000 left-0 top-0 w-100vw h-100vh bg-modal-overlay flex-center">
   <div class="avant-modal max-w-600 min-w-320 w-90vw max-h-90vh m-auto p-2 position-relative" style="display: flex; flex-direction: column; max-height: 90vh;">
     <span id="add-stone-close" class="close position-absolute top-1 right-1 fs-2 cursor-pointer">&times;</span>
     <h2 class="avant-header mb-1">{% trans 'Add New Stone' %}</h2>
@@ -39,6 +39,10 @@
           </div>
           <input type="hidden" name="stone_type" id="stone-type-input" value="hidden">
           <input type="hidden" name="shape" id="stone-shape-input" value="square">
+          <!-- Stone type description (inline) -->
+          <div id="stone-type-flavor" style="font-size: 0.85em; color: #666; margin-top: 8px;">
+            Hidden stones do not have a known location. When found, the finder will be asked to add the location.
+          </div>
         </div>
         
         <!-- Location field for hunted stones -->
@@ -536,6 +540,7 @@ document.addEventListener('DOMContentLoaded', function() {
   
   if (nextBtn) {
     nextBtn.onclick = function() {
+      console.log('=== NEXT BUTTON CLICKED ===');
       // Validate required fields
       if (!nameInput.value.trim()) {
         alert('Please enter a stone name.');
@@ -547,6 +552,8 @@ document.addEventListener('DOMContentLoaded', function() {
         descInput.focus();
         return;
       }
+      
+      console.log('Validation passed, proceeding to step 2');
       
       // Validate hunted stone location
       const stoneType = stoneTypeInput.value;
@@ -570,13 +577,29 @@ document.addEventListener('DOMContentLoaded', function() {
       generateQRCodeForStone(nameInput.value.trim(), stoneUUID);
       
       // Go to step 2 (QR Code)
+      console.log('=== TRANSITIONING TO STEP 2 ===');
+      console.log('Step1 element:', !!step1);
+      console.log('Step2 element:', !!step2);
+      
       if (step1) {
+        console.log('Hiding step1 - before:', step1.style.display, step1.className);
         step1.style.display = 'none';
         step1.classList.add('display-none');
+        console.log('Hiding step1 - after:', step1.style.display, step1.className);
       }
       if (step2) {
+        console.log('Showing step2 - before:', step2.style.display, step2.className);
         step2.style.display = 'flex';
         step2.classList.remove('display-none');
+        console.log('Showing step2 - after:', step2.style.display, step2.className);
+        console.log('Step2 visible:', step2.offsetParent !== null);
+        
+        // Debug step2 content
+        const step2Children = step2.children;
+        console.log('Step2 has', step2Children.length, 'children');
+        for (let i = 0; i < step2Children.length; i++) {
+          console.log('Step2 child', i, ':', step2Children[i].tagName, step2Children[i].className, 'visible:', step2Children[i].offsetParent !== null);
+        }
       }
     };
   }
@@ -900,63 +923,14 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
   
-  // Global functions for opening modals
+  // OLD MODAL DISABLED
   window.openSharedCreateStoneModal = function() {
-    // Check if user is authenticated by looking for authentication indicators
-    const isAuthenticated = document.querySelector('a[href*="accounts/log-out"]') || 
-                           document.querySelector('a[href*="accounts/change_profile"]') ||
-                           document.querySelector('img[alt="Profile"]') ||
-                           document.querySelector('.header-profile-main-nav');
-    
-    if (!isAuthenticated) {
-      // User is not authenticated, redirect to login page
-      window.location.href = '{% url "accounts:log_in" %}';
-      return;
-    }
-    
-    // Reset modal to step 1
-    if (step1) {
-      step1.style.display = 'flex';
-      step1.classList.remove('display-none');
-    }
-    if (step2) {
-      step2.style.display = 'none';
-      step2.classList.add('display-none');
-    }
-    if (step3) {
-      step3.style.display = 'none';
-      step3.classList.add('display-none');
-    }
-    
-    // Reset form fields
-    const form = document.getElementById('add-stone-form');
-    if (form) form.reset();
-    
-    // Reset stone type buttons
-    stoneTypeButtons.forEach(b => b.classList.remove('bg-accent', 'text-white'));
-    stoneTypeButtons.forEach(b => b.classList.add('bg-gray', 'text-dark'));
-    
-    // Set hidden stone as default
-    if (hiddenBtn) {
-      hiddenBtn.classList.remove('bg-gray', 'text-dark');
-      hiddenBtn.classList.add('bg-accent', 'text-white');
-    }
-    
-    // Reset hunted location section
-    if (huntedLocationSection) huntedLocationSection.style.display = 'none';
-    
-    // Reset QR code sections
-    if (existingCodeSection) existingCodeSection.style.display = 'none';
-    if (newCodeSection) newCodeSection.style.display = 'none';
-    
-    // Reset QR option buttons
-    qrOptionButtons.forEach(b => b.classList.remove('bg-accent', 'text-white'));
-    qrOptionButtons.forEach(b => b.classList.add('bg-gray', 'text-dark'));
-    
-    // Show modal
-    if (createModal) {
-      createModal.classList.remove('display-none');
-      createModal.style.display = 'flex';
+    console.log('Old modal function called - redirecting to new modal');
+    const newModal = document.getElementById('new-add-stone-modal');
+    if (newModal) {
+      newModal.style.display = 'block';
+    } else {
+      console.error('New modal not found!');
     }
   };
   

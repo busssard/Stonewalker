@@ -5,6 +5,7 @@
 {% block content %}
 <!-- Include Shared Modals -->
 {% include 'main/shared_modals.html' %}
+{% include 'main/new_add_stone_modal.html' %}
 
 <!-- Welcome Modal for Guests -->
 {% if show_welcome_modal %}
@@ -91,10 +92,15 @@ document.addEventListener('DOMContentLoaded', function() {
       addStoneFab.style.background = originalBg;
     });
     
-    // Add click handler to open create modal
+    // Add click handler to open NEW create modal
     addStoneFab.addEventListener('click', function() {
-      if (window.openSharedCreateStoneModal) {
-        window.openSharedCreateStoneModal();
+      console.log('FAB clicked - opening NEW modal');
+      const newModal = document.getElementById('new-add-stone-modal');
+      if (newModal) {
+        newModal.style.display = 'block';
+        console.log('New modal opened');
+      } else {
+        console.error('New modal not found!');
       }
     });
   }
@@ -225,31 +231,8 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  // Floating button opens modal
-  const fab = document.getElementById('add-stone-fab');
-  const modal = document.getElementById('add-stone-modal');
-  const closeBtn = document.getElementById('add-stone-close');
-  const cancelBtn = document.getElementById('add-stone-cancel');
-  
-  if (fab && modal) {
-    fab.onclick = () => { 
-      console.log('Opening modal, current display:', modal.style.display);
-      modal.classList.remove('display-none');
-      modal.style.display = 'flex'; 
-      console.log('Modal display after setting:', modal.style.display);
-      console.log('Modal visible:', modal.offsetParent !== null);
-    };
-    closeBtn.onclick = cancelBtn.onclick = () => { 
-      modal.style.display = 'none'; 
-      modal.classList.add('display-none');
-    };
-    window.onclick = (e) => { 
-      if (e.target === modal) {
-        modal.style.display = 'none'; 
-        modal.classList.add('display-none');
-      }
-    };
-  }
+  // OLD MODAL CODE - DISABLED
+  console.log('Old modal JavaScript disabled - using new modal instead');
 
   // Image preview and other functionality
   const imgInput = document.getElementById('stone-image-input');
