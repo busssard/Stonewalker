@@ -2,14 +2,13 @@ from django.views.generic import TemplateView
 from .models import Stone, StoneMove, calculate_stone_distance, StoneScanAttempt
 import json
 from django.views.decorators.csrf import csrf_exempt
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from django.http import HttpResponse
 from django.contrib.auth.models import User
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.contrib import messages
-from django.shortcuts import render
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.http import JsonResponse
@@ -162,6 +161,16 @@ def debug_add_stone(request):
 @login_required
 @require_POST
 def add_stone(request):
+    """Create a new stone as a draft"""
+    # Check if user can create a stone (non-premium users limited to 1 draft)
+    if not Stone.user_can_create_stone(request.user):
+        existing_draft = Stone.get_user_draft_stone(request.user)
+        if existing_draft:
+            messages.error(request, f'You already have a draft stone "{existing_draft.PK_stone}". Please publish or edit it before creating a new one.')
+        else:
+            messages.error(request, 'You have reached your stone creation limit.')
+        return redirect('stonewalker_start')
+    
     PK_stone = request.POST.get('PK_stone')
     description = request.POST.get('description', '')
     image = request.FILES.get('image')
@@ -190,19 +199,21 @@ def add_stone(request):
             return redirect('stonewalker_start')
     
     try:
-        # Create stone with UUID (will be auto-generated)
+        # Create stone as draft with the new fields
         stone = Stone(
             PK_stone=PK_stone,
             description=description,
             FK_user=request.user,
             image=image,
             color=color,
-            shape=shape
+            shape=shape,
+            stone_type=stone_type,
+            status='draft'  # Always start as draft
         )
-        stone.save()  # This will generate the UUID
+        stone.save()  # This will generate the UUID and set qr_code_url
         
-        # Create initial move for hunted stones
-        if stone_type == 'hunted':
+        # Create initial move for hunted stones (only if publishing immediately)
+        if stone_type == 'hunted' and latitude and longitude:
             StoneMove.objects.create(
                 FK_stone=stone,
                 FK_user=request.user,
@@ -211,51 +222,20 @@ def add_stone(request):
                 latitude=float(latitude),
                 longitude=float(longitude)
             )
+            # Update distance
+            stone.distance_km = calculate_stone_distance(stone)
+            stone.save()
         
-        # Update distance
-        stone.distance_km = calculate_stone_distance(stone)
-        stone.save()
+        # Generate QR code using new service
+        from .qr_service import QRCodeService
+        qr_result = QRCodeService.generate_qr_for_stone(stone, request)
         
-        # Generate QR code server-side using the stone's UUID
-        # This happens AFTER stone creation to ensure robustness
-        try:
-            qr_url = request.build_absolute_uri(f'/stone-link/{stone.uuid}/')
-            qr = qrcode.QRCode(version=1, box_size=10, border=5)
-            qr.add_data(qr_url)
-            qr.make(fit=True)
-            qr_img = qr.make_image(fill_color="black", back_color="white")
-            
-            # Save QR code to media directory
-            import os
-            from django.conf import settings
-            qr_filename = f'qr_codes/{stone.PK_stone}_{stone.uuid}_qr.png'
-            qr_path = os.path.join(settings.MEDIA_ROOT, qr_filename)
-            os.makedirs(os.path.dirname(qr_path), exist_ok=True)
-            qr_img.save(qr_path)
-            
-            # Store QR path in session for download
-            request.session['qr_download_path'] = qr_filename
-            request.session['qr_stone_name'] = stone.PK_stone
-            request.session['qr_stone_uuid'] = str(stone.uuid)
-            request.session['qr_stone_url'] = qr_url
-            
-            messages.success(request, f'Stone "{PK_stone}" added successfully! QR code generated. <a href="/download-qr/" class="avant-btn">Download QR Code</a>')
-        except Exception as qr_error:
-            # QR generation failed, but stone was created successfully
-            # Log the error but don't fail the stone creation
-            import logging
-            logger = logging.getLogger(__name__)
-            logger.error(f'QR code generation failed for stone {PK_stone}: {str(qr_error)}')
-            
-            # Clear any partial QR session data
-            request.session.pop('qr_download_path', None)
-            request.session.pop('qr_stone_name', None)
-            request.session.pop('qr_stone_uuid', None)
-            request.session.pop('qr_stone_url', None)
-            
-            messages.success(request, f'Stone "{PK_stone}" added successfully! Note: QR code generation failed, but you can generate it later.')
+        if qr_result['success']:
+            messages.success(request, f'Stone "{PK_stone}" created as draft! You can edit it until you\'re ready to publish. <a href="/stone/{PK_stone}/edit/" class="avant-btn">Edit Stone</a> or <a href="/stone/{PK_stone}/qr/" class="avant-btn">Download QR Code</a>')
+        else:
+            messages.success(request, f'Stone "{PK_stone}" created as draft! You can edit it until you\'re ready to publish. Note: QR code generation failed, but you can generate it later.')
         
-        return redirect(f'/stonewalker/?focus={PK_stone}')
+        return redirect(f'/stone/{PK_stone}/edit/')
     except Exception as e:
         messages.error(request, f'Could not add stone: {str(e)}')
         return redirect('stonewalker_start')
@@ -372,22 +352,87 @@ def check_stone_uuid(request, uuid):
         return JsonResponse({'exists': False, 'error': 'Invalid UUID format'})
 
 
-class StoneQRCodeView(View):
+class StoneEditView(LoginRequiredMixin, TemplateView):
+    template_name = 'main/stone_edit.html'
+    
     def get(self, request, pk):
-        # Generate the update link for this stone using UUID
         try:
-            stone = Stone.objects.get(PK_stone=pk)
-            # Use the stone-link URL instead of stonescan for consistency
-            qr_url = request.build_absolute_uri(f'/stone-link/{stone.uuid}/')
-            qr = qrcode.QRCode(version=1, box_size=10, border=5)
-            qr.add_data(qr_url)
-            qr.make(fit=True)
-            img = qr.make_image(fill_color="black", back_color="white")
-            response = HttpResponse(content_type="image/png")
-            img.save(response, "PNG")
-            return response
+            stone = Stone.objects.get(PK_stone=pk, FK_user=request.user)
+            if not stone.can_be_edited():
+                messages.error(request, f'Stone "{stone.PK_stone}" cannot be edited because it has been {stone.status}.')
+                return redirect('stonewalker_start')
+            return render(request, self.template_name, {'stone': stone})
         except Stone.DoesNotExist:
-            return HttpResponse("Stone not found", status=404)
+            messages.error(request, 'Stone not found or you do not have permission to edit it.')
+            return redirect('stonewalker_start')
+    
+    def post(self, request, pk):
+        try:
+            stone = Stone.objects.get(PK_stone=pk, FK_user=request.user)
+            if not stone.can_be_edited():
+                messages.error(request, f'Stone "{stone.PK_stone}" cannot be edited because it has been {stone.status}.')
+                return redirect('stonewalker_start')
+            
+            # Update stone fields
+            stone.description = request.POST.get('description', '')[:500]
+            image = request.FILES.get('image')
+            if image:
+                stone.image = image
+            stone.color = request.POST.get('color', stone.color)
+            
+            action = request.POST.get('action')
+            if action == 'save':
+                stone.save()
+                messages.success(request, f'Stone "{stone.PK_stone}" updated successfully!')
+                return redirect(f'/stone/{pk}/edit/')
+            elif action == 'publish':
+                if stone.publish():
+                    messages.success(request, f'Stone "{stone.PK_stone}" published successfully! It\'s now visible on the map.')
+                    return redirect(f'/stonewalker/?focus={pk}')
+                else:
+                    messages.error(request, 'Could not publish stone.')
+                    return redirect(f'/stone/{pk}/edit/')
+            
+        except Stone.DoesNotExist:
+            messages.error(request, 'Stone not found or you do not have permission to edit it.')
+            return redirect('stonewalker_start')
+        except Exception as e:
+            messages.error(request, f'Error updating stone: {str(e)}')
+            return redirect(f'/stone/{pk}/edit/')
+
+
+class StoneQRCodeView(View):
+    """Download QR code for a stone"""
+    def get(self, request, pk):
+        try:
+            stone = Stone.objects.get(PK_stone=pk, FK_user=request.user)
+            from .qr_service import QRCodeService
+            response = QRCodeService.create_download_response(stone, request)
+            if response:
+                return response
+            else:
+                messages.error(request, 'Failed to generate QR code.')
+                return redirect('stonewalker_start')
+        except Stone.DoesNotExist:
+            messages.error(request, 'Stone not found or you do not have permission to access it.')
+            return redirect('stonewalker_start')
+
+
+class StoneSendOffView(View):
+    """Send off a published stone (finalize it)"""
+    @method_decorator(login_required)
+    def post(self, request, pk):
+        try:
+            stone = Stone.objects.get(PK_stone=pk, FK_user=request.user)
+            if stone.send_off():
+                messages.success(request, f'Stone "{stone.PK_stone}" sent off successfully! It\'s now finalized and ready for its journey.')
+                return redirect(f'/stonewalker/?focus={pk}')
+            else:
+                messages.error(request, f'Cannot send off stone "{stone.PK_stone}". It must be published first.')
+                return redirect(f'/stonewalker/?focus={pk}')
+        except Stone.DoesNotExist:
+            messages.error(request, 'Stone not found or you do not have permission to access it.')
+            return redirect('stonewalker_start')
 
 
 class StoneLinkView(View):
@@ -503,120 +548,11 @@ class StoneLinkView(View):
             return redirect(f'/stone-link/{stone_uuid}/')
 
 
-@login_required
-def download_qr_code(request):
-    """Download the QR code that was generated after stone creation with cleartext URL"""
-    qr_path = request.session.get('qr_download_path')
-    stone_name = request.session.get('qr_stone_name')
-    qr_url = request.session.get('qr_stone_url')
-    
-    if not qr_path or not stone_name:
-        messages.error(request, 'No QR code available for download.')
-        return redirect('stonewalker_start')
-    
-    try:
-        from django.conf import settings
-        import os
-        from PIL import Image, ImageDraw, ImageFont
-        import io
-        
-        full_path = os.path.join(settings.MEDIA_ROOT, qr_path)
-        
-        if os.path.exists(full_path):
-            # Load the existing QR code image
-            qr_img = Image.open(full_path)
-            
-            # Create a 3:4 portrait format image with QR code at top and text at bottom
-            # Calculate dimensions for 3:4 aspect ratio
-            qr_size = qr_img.width  # QR code is square
-            # For 3:4 portrait: width = 3/4 * height, so height = 4/3 * width
-            # We want the QR code to fit in the top portion, so:
-            # height = qr_size + text_area_height
-            # width = 3/4 * height = 3/4 * (qr_size + text_area_height)
-            text_area_height = 120  # Generous space for text
-            new_height = qr_size + text_area_height
-            new_width = int(3 * new_height / 4)  # 3:4 aspect ratio
-            
-            # Create new image with white background
-            new_img = Image.new('RGB', (new_width, new_height), 'white')
-            
-            # Paste QR code at the top, centered horizontally
-            qr_x = (new_width - qr_size) // 2  # Center QR code horizontally
-            new_img.paste(qr_img, (qr_x, 0))
-            
-            # Add cleartext URL at the bottom
-            draw = ImageDraw.Draw(new_img)
-            
-            # Use a much larger font for better OCR readability
-            try:
-                font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 18)
-            except:
-                try:
-                    font = ImageFont.truetype("arial.ttf", 18)
-                except:
-                    font = ImageFont.load_default()
-            
-            # Calculate text position (centered)
-            text = qr_url or "QR Code URL"
-            try:
-                # Try newer textbbox method first
-                bbox = draw.textbbox((0, 0), text, font=font)
-                text_width = bbox[2] - bbox[0]
-                text_height = bbox[3] - bbox[1]
-            except AttributeError:
-                # Fallback to older textsize method
-                text_width, text_height = draw.textsize(text, font=font)
-            
-            # Ensure text fits within the image width
-            if text_width > new_width:
-                # If text is too wide, use a smaller font
-                try:
-                    font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 8)
-                    bbox = draw.textbbox((0, 0), text, font=font)
-                    text_width = bbox[2] - bbox[0]
-                    text_height = bbox[3] - bbox[1]
-                except:
-                    # If still too wide, truncate the text
-                    while text_width > new_width - 10 and len(text) > 10:
-                        text = text[:-1]
-                        bbox = draw.textbbox((0, 0), text, font=font)
-                        text_width = bbox[2] - bbox[0]
-                        text_height = bbox[3] - bbox[1]
-            
-            text_x = max(10, (new_width - text_width) // 2)  # Center text horizontally
-            text_y = qr_size + 20  # Position text in the text area below QR code
-            
-            # Draw background rectangle for text
-            padding = 4
-            draw.rectangle([
-                text_x - padding, text_y - padding,
-                text_x + text_width + padding, text_y + text_height + padding
-            ], fill='#f8f8f8', outline='#e0e0e0')
-            
-            # Draw the text with high contrast for better OCR
-            draw.text((text_x, text_y), text, fill='#000000', font=font)
-            
-            # Save to bytes
-            img_io = io.BytesIO()
-            new_img.save(img_io, format='PNG')
-            img_io.seek(0)
-            
-            response = HttpResponse(img_io.getvalue(), content_type='image/png')
-            response['Content-Disposition'] = f'attachment; filename="{stone_name}_qr_with_url.png"'
-            return response
-        else:
-            messages.error(request, 'QR code file not found.')
-            return redirect('stonewalker_start')
-    except Exception as e:
-        import logging
-        logger = logging.getLogger(__name__)
-        logger.error(f'Error downloading QR code: {str(e)}')
-        messages.error(request, f'Error downloading QR code: {str(e)}')
-        return redirect('stonewalker_start')
-
-
-def generate_qr_code(request):
-    """Generate QR code for a stone and return as JSON"""
+def generate_qr_code_api(request):
+    """
+    API endpoint for QR code generation that works for any valid UUID
+    (even if stone doesn't exist in database yet)
+    """
     stone_name = request.GET.get('stone_name')
     stone_uuid = request.GET.get('stone_uuid')
     
@@ -625,21 +561,103 @@ def generate_qr_code(request):
     
     try:
         # Validate UUID format
-        uuid_lib.UUID(stone_uuid)
+        uuid_obj = uuid_lib.UUID(stone_uuid)
+        
+        # Generate QR code directly without needing stone in database
+        # This allows the frontend to show QR codes before stone creation
+        qr_url = request.build_absolute_uri(f'/stone-link/{stone_uuid}/')
+        
+        # Create QR code
+        import qrcode
+        from PIL import Image, ImageDraw, ImageFont
+        from io import BytesIO
+        import base64
+        import os
         
         # Generate QR code
-        qr_url = request.build_absolute_uri(f'/stone-link/{stone_uuid}/')
-        qr = qrcode.QRCode(version=1, box_size=10, border=5)
+        qr = qrcode.QRCode(
+            version=1,
+            error_correction=qrcode.constants.ERROR_CORRECT_M,
+            box_size=10,
+            border=4,
+        )
         qr.add_data(qr_url)
         qr.make(fit=True)
+        
+        # Generate QR code image
         qr_img = qr.make_image(fill_color="black", back_color="white")
         
-        # Convert to base64 for download
-        import base64
-        from io import BytesIO
+        # Create 3:4 portrait format with text
+        qr_size = 400
+        text_area_height = 100
+        total_height = qr_size + text_area_height
+        total_width = int(3 * total_height / 4)
         
+        # Handle older PIL versions
+        try:
+            resample_method = Image.Resampling.LANCZOS
+        except AttributeError:
+            resample_method = Image.LANCZOS
+            
+        qr_img = qr_img.resize((qr_size, qr_size), resample_method)
+        
+        # Create final image
+        final_img = Image.new('RGB', (total_width, total_height), 'white')
+        qr_x = (total_width - qr_size) // 2
+        final_img.paste(qr_img, (qr_x, 0))
+        
+        # Add readable text
+        draw = ImageDraw.Draw(final_img)
+        font_size = 16
+        
+        # Try to get a font
+        try:
+            font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", font_size)
+        except:
+            try:
+                font = ImageFont.truetype("arial.ttf", font_size)
+            except:
+                font = ImageFont.load_default()
+        
+        # Calculate text dimensions with fallback
+        try:
+            text_bbox = draw.textbbox((0, 0), qr_url, font=font)
+            text_width = text_bbox[2] - text_bbox[0]
+            text_height = text_bbox[3] - text_bbox[1]
+        except AttributeError:
+            text_width, text_height = draw.textsize(qr_url, font=font)
+        
+        # If text too wide, use smaller font
+        if text_width > total_width - 20:
+            font_size = 12
+            try:
+                font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", font_size)
+            except:
+                font = ImageFont.load_default()
+            try:
+                text_bbox = draw.textbbox((0, 0), qr_url, font=font)
+                text_width = text_bbox[2] - text_bbox[0]
+                text_height = text_bbox[3] - text_bbox[1]
+            except AttributeError:
+                text_width, text_height = draw.textsize(qr_url, font=font)
+        
+        # Position text
+        text_x = (total_width - text_width) // 2
+        text_y = qr_size + 20
+        
+        # Draw background for text
+        padding = 3
+        draw.rectangle([
+            text_x - padding, text_y - padding,
+            text_x + text_width + padding, text_y + text_height + padding
+        ], fill='#f5f5f5', outline='#ddd')
+        
+        # Draw text
+        draw.text((text_x, text_y), qr_url, fill='#000000', font=font)
+        
+        # Convert to base64
         buffer = BytesIO()
-        qr_img.save(buffer, format='PNG')
+        final_img.save(buffer, format='PNG')
         qr_base64 = base64.b64encode(buffer.getvalue()).decode()
         
         return JsonResponse({
@@ -656,42 +674,47 @@ def generate_qr_code(request):
         return JsonResponse({'error': f'Error generating QR code: {str(e)}'}, status=500)
 
 
-@login_required
-def regenerate_qr_code(request, stone_pk):
-    """Regenerate QR code for an existing stone"""
+def download_enhanced_qr_code(request):
+    """
+    Download enhanced QR code with StoneWalker branding
+    Works for both existing stones and preview downloads
+    """
+    stone_name = request.GET.get('stone_name')
+    stone_uuid = request.GET.get('stone_uuid')
+    
+    if not stone_name or not stone_uuid:
+        return JsonResponse({'error': 'Missing stone name or UUID'}, status=400)
+    
     try:
-        stone = Stone.objects.get(PK_stone=stone_pk, FK_user=request.user)
+        # Validate UUID format
+        uuid_obj = uuid_lib.UUID(stone_uuid)
         
-        # Generate QR code server-side using the stone's UUID
-        qr_url = request.build_absolute_uri(f'/stone-link/{stone.uuid}/')
-        qr = qrcode.QRCode(version=1, box_size=10, border=5)
-        qr.add_data(qr_url)
-        qr.make(fit=True)
-        qr_img = qr.make_image(fill_color="black", back_color="white")
+        # Create a temporary stone-like object for QR generation
+        class TempStone:
+            def __init__(self, name, uuid_str):
+                self.PK_stone = name
+                self.uuid = uuid_str
+            
+            def get_qr_url(self):
+                return f'/stone-link/{self.uuid}/'
         
-        # Save QR code to media directory
-        import os
-        from django.conf import settings
-        qr_filename = f'qr_codes/{stone.PK_stone}_{stone.uuid}_qr.png'
-        qr_path = os.path.join(settings.MEDIA_ROOT, qr_filename)
-        os.makedirs(os.path.dirname(qr_path), exist_ok=True)
-        qr_img.save(qr_path)
+        temp_stone = TempStone(stone_name, stone_uuid)
         
-        # Store QR path in session for download
-        request.session['qr_download_path'] = qr_filename
-        request.session['qr_stone_name'] = stone.PK_stone
-        request.session['qr_stone_uuid'] = str(stone.uuid)
-        request.session['qr_stone_url'] = qr_url
+        # Generate enhanced QR code
+        from .qr_service import QRCodeService
+        enhanced_result = QRCodeService.generate_enhanced_qr_for_download(temp_stone, request)
         
-        messages.success(request, f'QR code regenerated for stone "{stone.PK_stone}"! <a href="/download-qr/" class="avant-btn">Download QR Code</a>')
-        return redirect(f'/stonewalker/?focus={stone.PK_stone}')
-        
-    except Stone.DoesNotExist:
-        messages.error(request, 'Stone not found or you do not have permission to access it.')
-        return redirect('stonewalker_start')
+        if enhanced_result['success']:
+            response = HttpResponse(enhanced_result['image_data'], content_type='image/png')
+            response['Content-Disposition'] = f'attachment; filename="{stone_name}_stonewalker_qr.png"'
+            return response
+        else:
+            return JsonResponse({'error': 'Failed to generate enhanced QR code'}, status=500)
+            
+    except ValueError:
+        return JsonResponse({'error': 'Invalid UUID format'}, status=400)
     except Exception as e:
-        messages.error(request, f'Could not regenerate QR code: {str(e)}')
-        return redirect('stonewalker_start')
+        return JsonResponse({'error': f'Error generating enhanced QR code: {str(e)}'}, status=500)
 
 
 

@@ -69,6 +69,8 @@ const creationsData = [
       shape: "{{ stone.shape|default:'circle' }}",
       distance_km: {{ stone.distance_km|default:0|floatformat:1 }},
       username: "{{ stone.FK_user.username|escapejs }}",
+      status: "{{ stone.status }}",
+      can_be_edited: {{ stone.can_be_edited|yesno:"true,false" }},
       moves: [
         {% for move in stone.moves.all %}
         {
@@ -130,6 +132,10 @@ function renderStonesList(listId, data, page, perPage) {
     item.className = 'stone-list-item';
     item.style.setProperty('--stone-color', stone.color || '#4CAF50');
     item.setAttribute('data-pk', stone.PK_stone);
+    const statusColor = stone.status === 'draft' ? '#ffc107' : stone.status === 'published' ? '#28a745' : '#17a2b8';
+    const statusLabel = stone.status === 'draft' ? 'Draft' : stone.status === 'published' ? 'Published' : 'Sent Off';
+    const editLink = stone.can_be_edited ? `<a href="/stone/${stone.PK_stone}/edit/" title="Edit this stone" class="ml-1 fs-1-1 text-decoration-none">✏️</a>` : '';
+    
     item.innerHTML = `
       <img class="stone-list-img" src="${stone.image}" alt="${stone.PK_stone}">
       <div class="stone-list-info">
@@ -138,12 +144,14 @@ function renderStonesList(listId, data, page, perPage) {
           <span class="stone-list-distance">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
             ${stone.distance_km ? stone.distance_km + ' km' : '0 km'}
-            <a href="/stone/${stone.PK_stone}/qr/" target="_blank" title="QR code for this stone" class="ml-1 fs-1-2 text-decoration-none">🔗 QR</a>
+            <a href="/stone/${stone.PK_stone}/qr/" target="_blank" title="Download QR code" class="ml-1 fs-1-2 text-decoration-none">🔗</a>
+            ${editLink}
           </span>
         </div>
         <div class="stone-list-meta-row">
           <span>Age: ${getAgeString(stone.created_at)}</span>
           <span>Moves: ${stone.moves ? stone.moves.length : 0}</span>
+          <span class="stone-status-badge" style="background-color: ${statusColor}; color: white; padding: 2px 6px; border-radius: 12px; font-size: 0.8em;">${statusLabel}</span>
         </div>
       </div>
     `;
