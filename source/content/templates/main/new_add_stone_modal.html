@@ -2,21 +2,21 @@
 {% load i18n %}
 
 <!-- New Simple Add Stone Modal -->
-<div id="new-add-stone-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999;">
-  <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; border-radius: 12px; padding: 24px; max-width: 500px; width: 90%; max-height: 90%; overflow-y: auto; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
-    
+<div id="new-add-stone-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); z-index: 9999;">
+  <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-radius: 28px; padding: 28px; max-width: 500px; width: 90%; max-height: 90%; overflow-y: auto; box-shadow: 0 24px 64px rgba(0,0,0,0.2); border: 1px solid rgba(255, 255, 255, 0.5);">
+
     <!-- Close Button -->
-    <button id="new-modal-close" style="position: absolute; top: 10px; right: 15px; background: none; border: none; font-size: 24px; cursor: pointer; color: #666;">&times;</button>
-    
+    <button id="new-modal-close" style="position: absolute; top: 12px; right: 16px; background: none; border: none; font-size: 24px; cursor: pointer; color: #718096; transition: all 0.2s ease;">&times;</button>
+
     <!-- Modal Header -->
-    <h2 style="margin: 0 0 20px 0; font-size: 24px; color: #333;">{% trans 'Add New Stone' %}</h2>
+    <h2 style="margin: 0 0 20px 0; font-size: 24px; color: #2D3748; font-family: 'GiantBoom', sans-serif;">{% trans 'Add New Stone' %}</h2>
     
     <!-- Step 1: Stone Details -->
     <div id="new-step-1" style="display: block;">
       
       <!-- Preview Image -->
       <div style="text-align: center; margin-bottom: 20px;">
-        <div id="new-stone-preview" style="width: 120px; height: 120px; border: 4px solid #4CAF50; border-radius: 12px; background: #f5f5f5; margin: 0 auto; display: flex; align-items: center; justify-content: center; font-size: 48px;">
+        <div id="new-stone-preview" style="width: 120px; height: 120px; border: 4px solid #00D4AA; border-radius: 20px; background: linear-gradient(135deg, #F0FDF9 0%, #F5F3FF 100%); margin: 0 auto; display: flex; align-items: center; justify-content: center; font-size: 48px; box-shadow: 0 8px 24px rgba(0, 212, 170, 0.15);">
           🪨
         </div>
       </div>
@@ -26,82 +26,82 @@
         
         <!-- Stone Name -->
         <div style="margin-bottom: 16px;">
-          <label style="display: block; margin-bottom: 6px; font-weight: bold; color: #333;">{% trans 'Stone Name' %} *</label>
+          <label style="display: block; margin-bottom: 6px; font-weight: 600; color: #2D3748;">{% trans 'Stone Name' %} *</label>
           <div style="display: flex; gap: 8px; align-items: center;">
-            <input type="text" name="PK_stone" id="new-stone-name" maxlength="10" required 
-                   style="flex: 1; padding: 8px 12px; border: 2px solid #ddd; border-radius: 6px; font-size: 16px;"
+            <input type="text" name="PK_stone" id="new-stone-name" maxlength="10" required
+                   style="flex: 1; padding: 12px 16px; border: 2px solid #E2E8F0; border-radius: 20px; font-size: 16px; transition: all 0.3s ease;"
                    placeholder="Enter stone name">
             <span id="new-name-status" style="font-size: 20px;">⚪</span>
           </div>
-          <div id="new-name-message" style="font-size: 12px; margin-top: 4px; color: #666;"></div>
+          <div id="new-name-message" style="font-size: 12px; margin-top: 4px; color: #718096;"></div>
         </div>
         
         <!-- Stone Type -->
         <div style="margin-bottom: 16px;">
-          <label style="display: block; margin-bottom: 6px; font-weight: bold; color: #333;">{% trans 'Stone Type' %}</label>
+          <label style="display: block; margin-bottom: 6px; font-weight: 600; color: #2D3748;">{% trans 'Stone Type' %}</label>
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-            <button type="button" id="new-type-hidden" data-type="hidden" 
-                    style="padding: 12px; border: 2px solid #4CAF50; background: #4CAF50; color: white; border-radius: 8px; cursor: pointer; text-align: center;">
+            <button type="button" id="new-type-hidden" data-type="hidden"
+                    style="padding: 14px; border: 2px solid #00D4AA; background: #00D4AA; color: white; border-radius: 16px; cursor: pointer; text-align: center; transition: all 0.3s ease;">
               <div style="font-size: 20px; margin-bottom: 4px;">🕵️</div>
-              <div style="font-weight: bold;">{% trans 'Hidden' %}</div>
+              <div style="font-weight: 600;">{% trans 'Hidden' %}</div>
               <div style="font-size: 12px; opacity: 0.9;">{% trans 'No known location' %}</div>
             </button>
             <button type="button" id="new-type-hunted" data-type="hunted"
-                    style="padding: 12px; border: 2px solid #ddd; background: white; color: #333; border-radius: 8px; cursor: pointer; text-align: center;">
+                    style="padding: 14px; border: 2px solid #E2E8F0; background: white; color: #2D3748; border-radius: 16px; cursor: pointer; text-align: center; transition: all 0.3s ease;">
               <div style="font-size: 20px; margin-bottom: 4px;">🎯</div>
-              <div style="font-weight: bold;">{% trans 'Hunted' %}</div>
+              <div style="font-weight: 600;">{% trans 'Hunted' %}</div>
               <div style="font-size: 12px; opacity: 0.7;">{% trans 'Placed at location' %}</div>
             </button>
           </div>
           <input type="hidden" name="stone_type" id="new-stone-type-input" value="hidden">
           <input type="hidden" name="shape" id="new-stone-shape-input" value="circle">
-          <div id="new-type-description" style="margin-top: 8px; padding: 8px; background: #f8f9fa; border-radius: 6px; font-size: 14px; color: #666;">
+          <div id="new-type-description" style="margin-top: 8px; padding: 10px 12px; background: linear-gradient(135deg, rgba(0, 212, 170, 0.08) 0%, rgba(56, 189, 248, 0.08) 100%); border-radius: 12px; font-size: 14px; color: #718096;">
             Hidden stones do not have a known location. When found, the finder will be asked to add the location.
           </div>
         </div>
         
         <!-- Location (for hunted stones) -->
         <div id="new-location-section" style="margin-bottom: 16px; display: none;">
-          <label style="display: block; margin-bottom: 6px; font-weight: bold; color: #333;">{% trans 'Stone Location' %} *</label>
+          <label style="display: block; margin-bottom: 6px; font-weight: 600; color: #2D3748;">{% trans 'Stone Location' %} *</label>
           <div style="display: flex; gap: 8px;">
-            <input type="number" name="latitude" id="new-latitude" step="any" placeholder="Latitude" 
-                   style="flex: 1; padding: 8px 12px; border: 2px solid #ddd; border-radius: 6px;">
-            <input type="number" name="longitude" id="new-longitude" step="any" placeholder="Longitude" 
-                   style="flex: 1; padding: 8px 12px; border: 2px solid #ddd; border-radius: 6px;">
+            <input type="number" name="latitude" id="new-latitude" step="any" placeholder="Latitude"
+                   style="flex: 1; padding: 12px 16px; border: 2px solid #E2E8F0; border-radius: 20px; transition: all 0.3s ease;">
+            <input type="number" name="longitude" id="new-longitude" step="any" placeholder="Longitude"
+                   style="flex: 1; padding: 12px 16px; border: 2px solid #E2E8F0; border-radius: 20px; transition: all 0.3s ease;">
           </div>
         </div>
-        
+
         <!-- Image Upload -->
         <div style="margin-bottom: 16px;">
-          <label style="display: block; margin-bottom: 6px; font-weight: bold; color: #333;">{% trans 'Picture' %}</label>
+          <label style="display: block; margin-bottom: 6px; font-weight: 600; color: #2D3748;">{% trans 'Picture' %}</label>
           <input type="file" name="image" accept="image/*" id="new-stone-image"
-                 style="width: 100%; padding: 8px; border: 2px solid #ddd; border-radius: 6px;">
+                 style="width: 100%; padding: 12px; border: 2px solid #E2E8F0; border-radius: 16px; background: #F8FAFC;">
         </div>
-        
+
         <!-- Description -->
         <div style="margin-bottom: 20px;">
-          <label style="display: block; margin-bottom: 6px; font-weight: bold; color: #333;">{% trans 'Description' %} *</label>
+          <label style="display: block; margin-bottom: 6px; font-weight: 600; color: #2D3748;">{% trans 'Description' %} *</label>
           <textarea name="description" id="new-stone-description" rows="3" maxlength="500" required
-                    style="width: 100%; padding: 8px 12px; border: 2px solid #ddd; border-radius: 6px; resize: vertical; font-family: inherit;"
+                    style="width: 100%; padding: 12px 16px; border: 2px solid #E2E8F0; border-radius: 16px; resize: vertical; font-family: inherit; transition: all 0.3s ease;"
                     placeholder="Say something about your stone..."></textarea>
-          <div style="text-align: right; font-size: 12px; color: #666; margin-top: 4px;">
+          <div style="text-align: right; font-size: 12px; color: #718096; margin-top: 4px;">
             <span id="new-char-count">0</span>/500
           </div>
         </div>
         
         <!-- Hidden fields -->
-        <input type="hidden" name="color" id="new-stone-color" value="#4CAF50">
-        
+        <input type="hidden" name="color" id="new-stone-color" value="#00D4AA">
+
       </form>
-      
+
       <!-- Step 1 Buttons -->
       <div style="display: flex; gap: 12px; justify-content: flex-end;">
-        <button type="button" id="new-modal-cancel" 
-                style="padding: 10px 20px; border: 2px solid #ddd; background: white; color: #666; border-radius: 6px; cursor: pointer;">
+        <button type="button" id="new-modal-cancel"
+                style="padding: 12px 24px; border: 2px solid #E2E8F0; background: white; color: #718096; border-radius: 9999px; cursor: pointer; font-weight: 600; transition: all 0.3s ease;">
           {% trans 'Cancel' %}
         </button>
         <button type="button" id="new-next-button"
-                style="padding: 10px 20px; border: 2px solid #4CAF50; background: #4CAF50; color: white; border-radius: 6px; cursor: pointer;">
+                style="padding: 12px 24px; border: none; background: linear-gradient(135deg, #FF6B6B 0%, #FF8E8E 100%); color: white; border-radius: 9999px; cursor: pointer; font-weight: 600; box-shadow: 0 4px 20px rgba(255, 107, 107, 0.25); transition: all 0.3s ease;">
           {% trans 'Next' %}
         </button>
       </div>
@@ -110,39 +110,39 @@
     <!-- Step 2: QR Code -->
     <div id="new-step-2" style="display: none;">
       <div style="text-align: center;">
-        <h3 style="margin: 0 0 16px 0; font-size: 20px; color: #333;">{% trans 'Your Stone QR Code' %}</h3>
-        <p style="margin: 0 0 20px 0; color: #666;">{% trans 'Here is your stone QR code with readable URL' %}</p>
-        
+        <h3 style="margin: 0 0 16px 0; font-size: 20px; color: #2D3748; font-family: 'GiantBoom', sans-serif;">{% trans 'Your Stone QR Code' %}</h3>
+        <p style="margin: 0 0 20px 0; color: #718096;">{% trans 'Here is your stone QR code with readable URL' %}</p>
+
         <!-- QR Code Display -->
         <div id="new-qr-container" style="margin: 20px 0; text-align: center;">
-          <div id="new-qr-loading" style="padding: 40px; border: 2px dashed #ddd; border-radius: 8px; color: #666;">
+          <div id="new-qr-loading" style="padding: 40px; border: 2px dashed #E2E8F0; border-radius: 16px; color: #718096; background: linear-gradient(135deg, rgba(0, 212, 170, 0.05) 0%, rgba(56, 189, 248, 0.05) 100%);">
             <div style="font-size: 24px; margin-bottom: 8px;">⏳</div>
             <div>Generating QR code...</div>
           </div>
           <div id="new-qr-image" style="display: none;"></div>
-          <div id="new-qr-error" style="display: none; padding: 20px; border: 2px solid #f44336; background: #ffebee; border-radius: 8px; color: #d32f2f;">
+          <div id="new-qr-error" style="display: none; padding: 20px; border: 2px solid #FF6B6B; background: rgba(255, 107, 107, 0.1); border-radius: 16px; color: #E85555;">
             Failed to generate QR code. You can create it later from your stones list.
           </div>
         </div>
-        
+
         <!-- Download Button -->
         <div style="text-align: center; margin-bottom: 16px;">
-          <button type="button" id="new-download-qr-button" style="display: none; padding: 8px 16px; border: 2px solid #ff9800; background: #ff9800; color: white; border-radius: 6px; cursor: pointer; margin-bottom: 12px;">
+          <button type="button" id="new-download-qr-button" style="display: none; padding: 12px 24px; border: none; background: linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%); color: white; border-radius: 9999px; cursor: pointer; margin-bottom: 12px; font-weight: 600; box-shadow: 0 4px 20px rgba(139, 92, 246, 0.25); transition: all 0.3s ease;">
             📥 {% trans 'Download Stone Label' %}
           </button>
-          <div style="font-size: 12px; color: #666; margin-top: 4px;">
+          <div style="font-size: 12px; color: #718096; margin-top: 4px;">
             {% trans 'Compact QR label (2-5cm) perfect for placing on stones!' %}
           </div>
         </div>
-        
+
         <!-- Step 2 Buttons -->
         <div style="display: flex; gap: 12px; justify-content: space-between; margin-top: 24px;">
           <button type="button" id="new-back-button"
-                  style="padding: 10px 20px; border: 2px solid #ddd; background: white; color: #666; border-radius: 6px; cursor: pointer;">
+                  style="padding: 12px 24px; border: 2px solid #E2E8F0; background: white; color: #718096; border-radius: 9999px; cursor: pointer; font-weight: 600; transition: all 0.3s ease;">
             ← {% trans 'Back' %}
           </button>
           <button type="button" id="new-create-stone-button"
-                  style="padding: 10px 20px; border: 2px solid #4CAF50; background: #4CAF50; color: white; border-radius: 6px; cursor: pointer;">
+                  style="padding: 12px 24px; border: none; background: linear-gradient(135deg, #00D4AA 0%, #38BDF8 100%); color: white; border-radius: 9999px; cursor: pointer; font-weight: 600; box-shadow: 0 4px 20px rgba(0, 212, 170, 0.3); transition: all 0.3s ease;">
             {% trans 'Create Stone' %}
           </button>
         </div>
@@ -244,29 +244,29 @@
   function setStoneType(type) {
     console.log('Setting stone type:', type);
     typeInput.value = type;
-    
+
     if (type === 'hidden') {
-      typeHidden.style.background = '#4CAF50';
+      typeHidden.style.background = '#00D4AA';
       typeHidden.style.color = 'white';
-      typeHidden.style.borderColor = '#4CAF50';
-      
+      typeHidden.style.borderColor = '#00D4AA';
+
       typeHunted.style.background = 'white';
-      typeHunted.style.color = '#333';
-      typeHunted.style.borderColor = '#ddd';
-      
+      typeHunted.style.color = '#2D3748';
+      typeHunted.style.borderColor = '#E2E8F0';
+
       typeDesc.textContent = 'Hidden stones do not have a known location. When found, the finder will be asked to add the location.';
       locationSection.style.display = 'none';
       latInput.removeAttribute('required');
       lngInput.removeAttribute('required');
     } else {
-      typeHunted.style.background = '#4CAF50';
+      typeHunted.style.background = '#00D4AA';
       typeHunted.style.color = 'white';
-      typeHunted.style.borderColor = '#4CAF50';
-      
+      typeHunted.style.borderColor = '#00D4AA';
+
       typeHidden.style.background = 'white';
-      typeHidden.style.color = '#333';
-      typeHidden.style.borderColor = '#ddd';
-      
+      typeHidden.style.color = '#2D3748';
+      typeHidden.style.borderColor = '#E2E8F0';
+
       typeDesc.textContent = 'Hunted stones are placed at a specific spot and must be found there.';
       locationSection.style.display = 'block';
       latInput.setAttribute('required', 'required');
@@ -292,17 +292,17 @@
         if (data.taken) {
           nameStatus.textContent = '❌';
           nameMessage.textContent = 'Name already taken';
-          nameMessage.style.color = '#f44336';
+          nameMessage.style.color = '#FF6B6B';
         } else {
           nameStatus.textContent = '✅';
           nameMessage.textContent = 'Available';
-          nameMessage.style.color = '#4CAF50';
+          nameMessage.style.color = '#00D4AA';
         }
       })
       .catch(() => {
         nameStatus.textContent = '❓';
         nameMessage.textContent = 'Could not check';
-        nameMessage.style.color = '#ff9800';
+        nameMessage.style.color = '#FBBF24';
       });
   }
   
