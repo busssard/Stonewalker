@@ -195,7 +195,14 @@
   display: flex;
   position: relative;
   background: none;
+  overflow-x: hidden;
   overflow-y: auto;
+}
+
+/* Prevent horizontal scroll on main container */
+.container-fluid {
+  overflow-x: hidden;
+  max-width: 100vw;
 }
 .avant-card-title {
   font-family: var(--font-title);
@@ -2987,6 +2994,7 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
   min-height: calc(100vh - var(--header-height));
   position: relative;
   background: none;
+  overflow-x: hidden;
 }
 .my-stones-left, .my-stones-right {
   flex: 1 1 0px;
@@ -2996,6 +3004,7 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
   display: flex;
   flex-direction: column;
   align-items: stretch;
+  overflow-x: hidden;
   overflow-y: auto;
   min-height: 0; /* allow flex children to size properly */
 }
