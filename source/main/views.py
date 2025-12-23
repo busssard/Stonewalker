@@ -563,10 +563,10 @@ def generate_qr_code_api(request):
     try:
         # Validate UUID format
         uuid_obj = uuid_lib.UUID(stone_uuid)
-        
-        # Generate QR code directly without needing stone in database
+
+        # Generate QR code with production domain
         # This allows the frontend to show QR codes before stone creation
-        qr_url = request.build_absolute_uri(f'/stone-link/{stone_uuid}/')
+        qr_url = f'https://{Stone.PRODUCTION_DOMAIN}/stone-link/{stone_uuid}/'
         
         # Create QR code
         import qrcode
