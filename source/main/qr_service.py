@@ -25,14 +25,13 @@ class QRCodeService:
         """
         Generate a QR code for a stone with readable URL underneath
         Returns the full URL to the QR code and the stone URL
+        Always uses production domain (stonewalker.org) for QR codes
         """
         try:
-            # Generate the stone URL
+            # Generate the stone URL - always uses production domain
             stone_url = stone.get_qr_url()
-            
-            # If we have a request, make it absolute
-            if request:
-                stone_url = request.build_absolute_uri(stone_url)
+            # Note: We don't use request.build_absolute_uri() because
+            # get_qr_url() already returns the full production URL
             
             # Create QR code
             qr = qrcode.QRCode(
@@ -242,14 +241,13 @@ class QRCodeService:
     def generate_enhanced_qr_for_download(cls, stone, request=None):
         """
         Generate an enhanced QR code with StoneWalker branding for download
+        Always uses production domain (stonewalker.org) for QR codes
         """
         try:
-            # Generate the stone URL
+            # Generate the stone URL - always uses production domain
             stone_url = stone.get_qr_url()
-            
-            # If we have a request, make it absolute
-            if request:
-                stone_url = request.build_absolute_uri(stone_url)
+            # Note: We don't use request.build_absolute_uri() because
+            # get_qr_url() already returns the full production URL
             
             # Create QR code optimized for small physical labels
             qr = qrcode.QRCode(

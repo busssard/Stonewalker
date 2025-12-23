@@ -74,17 +74,19 @@ class Stone(models.Model):
             return True
         return False
     
+    # Production domain for QR codes
+    PRODUCTION_DOMAIN = 'stonewalker.org'
+
     def get_qr_url(self):
-        """Get the QR code URL for this stone"""
-        if not self.qr_code_url:
-            from django.urls import reverse
-            from django.contrib.sites.models import Site
-            try:
-                current_site = Site.objects.get_current()
-                self.qr_code_url = f'https://{current_site.domain}/stone-link/{self.uuid}/'
-            except:
-                self.qr_code_url = f'/stone-link/{self.uuid}/'
-            self.save()
+        """Get the QR code URL for this stone - always uses production domain"""
+        # Always generate the production URL for QR codes
+        production_url = f'https://{self.PRODUCTION_DOMAIN}/stone-link/{self.uuid}/'
+
+        # Update stored URL if different
+        if self.qr_code_url != production_url:
+            self.qr_code_url = production_url
+            self.save(update_fields=['qr_code_url'])
+
         return self.qr_code_url
     
     @classmethod
