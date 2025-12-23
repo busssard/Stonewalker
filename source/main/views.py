@@ -33,11 +33,12 @@ class IndexPageView(TemplateView):
 
 class ChangeLanguageView(TemplateView):
     template_name = 'main/change_language.html'
-    
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # Set redirect to main page after language change
-        context['redirect_to'] = reverse('stonewalker_start')
+        # Set redirect to root - this works for both prefixed and unprefixed languages
+        # Using '/' ensures we go to the root which will use the new language setting
+        context['redirect_to'] = '/'
         return context
 
 
