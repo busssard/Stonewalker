@@ -3218,15 +3218,34 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
 }
 .my-stones-split .arrow-btn img { width: 24px; height: 24px; display: block; transition: filter 0.3s ease; }
 
-/* Tablet: 900px - stack panels, keep item layout horizontal but more compact */
-@media (max-width: 900px) {
+/* Tablet: 1250px - stack panels top/bottom, keep item layout horizontal */
+@media (max-width: 1250px) {
   .my-stones-split { flex-direction: column; }
   .my-stones-left, .my-stones-right {
     min-height: auto;
-    padding: 1.5rem 1rem;
+    padding: 1.5rem 1.5rem;
+    max-height: none;
   }
   .my-stones-split .stone-list-item {
     max-width: 100%;
+  }
+  .my-stones-split .stone-header {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .my-stones-split #creations-title,
+  .my-stones-split #interactions-title {
+    font-size: 1.8rem;
+  }
+}
+
+/* Smaller tablet: 900px - more compact */
+@media (max-width: 900px) {
+  .my-stones-left, .my-stones-right {
+    padding: 1.2rem 1rem;
+  }
+  .my-stones-split .stone-list-item {
     padding: 1rem 1.2rem;
   }
   .my-stones-split .stone-list-img {
