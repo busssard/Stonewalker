@@ -373,6 +373,10 @@ body::after {
 }
 
 /* Add top padding to body to account for fixed header */
+html, body {
+    overflow-x: hidden;
+    max-width: 100vw;
+}
 body {
     padding-top: var(--header-height);
 }
