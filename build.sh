@@ -1,4 +1,6 @@
 #!/bin/bash
+# NOTE: This is a legacy Netlify build script. The project now deploys on Render
+# (see DEPLOYMENT.md and render_build.sh). This file is kept for reference.
 
 # Exit on any error
 set -e

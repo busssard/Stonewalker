@@ -53,22 +53,22 @@ Render.com is a modern cloud platform that natively supports Django, PostgreSQL,
 
 **Notes:**
 - Make sure your `.env` file is not committed to Git. Use Render’s environment variable settings instead.
-- If you use `environs` and `dj-database-url`, your `settings.py` should read the `DATABASE_URL` from the environment.
-- For background tasks (e.g., Celery), use Render’s Background Worker service.
+- For background tasks (e.g., Celery), use Render's Background Worker service.
 
 #### Local vs Production settings
 
 - The app switches settings via `IS_PRODUCTION` env var:
-  - Unset/False: development settings (SQLite) for local debugging
-  - True: production settings (`DATABASE_URL` via `dj-database-url`)
-  
+  - Unset/False: development settings (PostgreSQL with local defaults)
+  - True: production settings (PostgreSQL with SSL required)
+- Both environments require PostgreSQL. Set `DATABASE_URL` to your connection string.
+
 Examples:
 ```bash
-# Local dev (SQLite)
-unset IS_PRODUCTION
+# Local dev (PostgreSQL)
+export DATABASE_URL="postgresql://stone_user:stone_pass@localhost:5432/stone_dev"
 cd source && python manage.py runserver
 
-# Local prod-like (Postgres)
+# Production-like (PostgreSQL with SSL)
 export IS_PRODUCTION=true
 export DATABASE_URL="postgresql://USER:PASS@HOST:PORT/DBNAME"
 cd source && python manage.py runserver
@@ -114,6 +114,16 @@ Gunicorn is a production-grade WSGI server recommended for serving Django applic
 
 ## Testing the Deployment
 
+After deploying, verify the application is working:
+
+1. Visit your Render URL and confirm the main page loads
+2. Test user registration and login flows
+3. Run the test suite against your deployment environment:
+   ```bash
+   cd source && python manage.py test accounts main
+   ```
+4. Verify static files are served correctly (CSS, JS, images)
+5. Check that database migrations were applied by browsing `/admin/`
 
 ## Custom Domain
 
