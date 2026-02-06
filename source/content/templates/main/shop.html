@@ -1,11 +1,364 @@
 {% extends 'layouts/default/page.html' %}
 {% load static %}
 {% load i18n %}
+
 {% block content %}
 <div class="avant-section avant-bg-left flex-center min-h-60vh">
-  <div class="avant-card max-w-520 m-2-auto text-center">
-    <div class="avant-card-title mb-1-2 fs-2-1">{% trans 'Shop' %}</div>
-    <div class="fs-1-2 text-muted">{% trans 'The StoneWalker shop is coming soon. Stay tuned!' %}</div>
+  <div class="avant-card max-w-800 m-2-auto">
+    <div class="avant-card-title mb-1-2 fs-2-1 text-center">{% trans 'StoneWalker Shop' %}</div>
+    <p class="text-center text-muted mb-2">{% trans 'Get QR codes for your painted stones' %}</p>
+
+    {% if messages %}
+      {% for message in messages %}
+        <div class="text-center mb-1 p-1 border-radius-8 {% if message.tags == 'error' %}bg-error-light text-error{% elif message.tags == 'success' %}bg-success-light text-success{% else %}bg-info-light text-info{% endif %}">
+          {{ message }}
+        </div>
+      {% endfor %}
+    {% endif %}
+
+    <div class="shop-products">
+      {% for product in products %}
+      <div class="shop-product-card">
+        <div class="shop-product-content">
+          <div class="shop-product-icon">
+            {% if product.pack_size == 1 %}
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="18" height="18" rx="2"/>
+              <path d="M7 7h3v3H7zM14 7h3v3h-3zM7 14h3v3H7zM14 14h3v3h-3z"/>
+            </svg>
+            {% else %}
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="2" y="2" width="8" height="8" rx="1"/>
+              <rect x="14" y="2" width="8" height="8" rx="1"/>
+              <rect x="2" y="14" width="8" height="8" rx="1"/>
+              <rect x="14" y="14" width="8" height="8" rx="1"/>
+            </svg>
+            {% endif %}
+          </div>
+
+          <div class="shop-product-info">
+            <h3 class="shop-product-name">{{ product.name }}</h3>
+            <p class="shop-product-description">{{ product.description }}</p>
+            {% if product.pack_size > 1 %}
+            <p class="shop-product-pack-info">{% blocktrans with size=product.pack_size %}{{ size }} QR codes included{% endblocktrans %}</p>
+            {% endif %}
+          </div>
+
+          <div class="shop-product-action">
+            <span class="shop-product-price {% if product.is_free %}text-success{% else %}text-primary{% endif %}">
+              {{ product.price_display }}
+            </span>
+
+            {% if product.disabled %}
+              <button class="avant-btn avant-btn-disabled" disabled title="{{ product.disabled_reason }}">
+                {% trans 'Claimed' %}
+              </button>
+            {% elif not user.is_authenticated %}
+              <a href="{% url 'accounts:log_in' %}?next={{ request.path }}" class="avant-btn">
+                {% trans 'Log in' %}
+              </a>
+            {% else %}
+              <form method="post" action="{% url 'checkout' product.id %}">
+                {% csrf_token %}
+                <button type="submit" class="avant-btn {% if product.is_free %}avant-btn-success{% endif %}">
+                  {% if product.is_free %}{% trans 'Get Free' %}{% else %}{% trans 'Buy Now' %}{% endif %}
+                </button>
+              </form>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      <p class="text-muted text-center">{% trans 'No products available at this time.' %}</p>
+      {% endfor %}
+    </div>
+
+    <div class="shop-info mt-2 text-center">
+      <p class="text-muted fs-0-9">
+        {% trans 'Scan a QR code to claim and name your stone. Perfect for classrooms and groups!' %}
+      </p>
+    </div>
   </div>
 </div>
-{% endblock %} 
+
+{% if user_packs %}
+<div class="floating-purchases" id="floatingPurchases">
+  <div class="floating-purchases-header" onclick="togglePurchases()">
+    <span class="floating-title">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+        <polyline points="7 10 12 15 17 10"/>
+        <line x1="12" y1="15" x2="12" y2="3"/>
+      </svg>
+      {% trans 'Your Purchases' %}
+      <span class="pack-count">({{ user_packs|length }})</span>
+    </span>
+    <span class="toggle-icon" id="toggleIcon">&#9650;</span>
+  </div>
+  <div class="floating-purchases-body" id="purchasesBody">
+    {% for pack in user_packs %}
+    <div class="floating-pack">
+      <span class="floating-pack-type">{{ pack.get_pack_type_display }}</span>
+      <div class="floating-pack-stones">
+        {% for stone in pack.stones.all %}
+        <a href="{% url 'download_stone_qr' stone.uuid %}" class="floating-stone-btn" title="{% if stone.status == 'unclaimed' %}{% trans 'Download QR' %}{% else %}{{ stone.PK_stone }}{% endif %}">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="18" height="18" rx="2"/>
+            <path d="M7 7h3v3H7zM14 7h3v3h-3zM7 14h3v3H7z"/>
+          </svg>
+        </a>
+        {% endfor %}
+      </div>
+      {% if pack.pdf_generated %}
+      <a href="{% url 'download_pack_pdf' pack.id %}" class="floating-pdf-btn" title="{% trans 'Download PDF' %}">
+        PDF
+      </a>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<script>
+function togglePurchases() {
+  const body = document.getElementById('purchasesBody');
+  const icon = document.getElementById('toggleIcon');
+  const container = document.getElementById('floatingPurchases');
+
+  if (body.style.display === 'none') {
+    body.style.display = 'flex';
+    icon.innerHTML = '&#9650;';
+    container.classList.remove('collapsed');
+  } else {
+    body.style.display = 'none';
+    icon.innerHTML = '&#9660;';
+    container.classList.add('collapsed');
+  }
+}
+</script>
+{% endif %}
+
+<style>
+.shop-products {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.shop-product-card {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  transition: all 0.2s ease;
+}
+
+.shop-product-card:hover {
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+  transform: translateY(-2px);
+}
+
+.shop-product-content {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.shop-product-icon {
+  flex-shrink: 0;
+  color: #4CAF50;
+}
+
+.shop-product-info {
+  flex: 1;
+}
+
+.shop-product-name {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0 0 0.25rem 0;
+  color: #333;
+}
+
+.shop-product-description {
+  font-size: 0.9rem;
+  color: #666;
+  margin: 0;
+}
+
+.shop-product-pack-info {
+  font-size: 0.8rem;
+  color: #888;
+  margin: 0.25rem 0 0 0;
+}
+
+.shop-product-action {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5rem;
+}
+
+.shop-product-price {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.avant-btn-disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.avant-btn-success {
+  background-color: #4CAF50;
+}
+
+.avant-btn-success:hover {
+  background-color: #45a049;
+}
+
+.bg-error-light { background-color: #ffebee; }
+.text-error { color: #c62828; }
+.bg-success-light { background-color: #e8f5e9; }
+.text-success { color: #2e7d32; }
+.bg-info-light { background-color: #e3f2fd; }
+.text-info { color: #1565c0; }
+
+@media (max-width: 600px) {
+  .shop-product-content {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .shop-product-action {
+    align-items: center;
+    width: 100%;
+  }
+
+  .shop-product-action form {
+    width: 100%;
+  }
+
+  .shop-product-action .avant-btn {
+    width: 100%;
+  }
+}
+
+/* Floating Purchases Bar */
+.floating-purchases {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: white;
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.15);
+  z-index: 1000;
+  border-radius: 16px 16px 0 0;
+}
+
+.floating-purchases-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1.5rem;
+  cursor: pointer;
+  background: #4CAF50;
+  color: white;
+  border-radius: 16px 16px 0 0;
+}
+
+.floating-purchases.collapsed .floating-purchases-header {
+  border-radius: 16px 16px 0 0;
+}
+
+.floating-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+}
+
+.pack-count {
+  opacity: 0.8;
+  font-weight: normal;
+}
+
+.toggle-icon {
+  font-size: 0.8rem;
+}
+
+.floating-purchases-body {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  max-height: 150px;
+  overflow-y: auto;
+  background: #fafafa;
+}
+
+.floating-pack {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: white;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.floating-pack-type {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #555;
+  white-space: nowrap;
+}
+
+.floating-pack-stones {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.floating-stone-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: #e8f5e9;
+  color: #4CAF50;
+  border-radius: 4px;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.floating-stone-btn:hover {
+  background: #4CAF50;
+  color: white;
+}
+
+.floating-pdf-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem 0.5rem;
+  background: #2196F3;
+  color: white;
+  border-radius: 4px;
+  text-decoration: none;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.floating-pdf-btn:hover {
+  background: #1976D2;
+}
+
+.avant-btn-small {
+  padding: 0.4rem 1rem;
+  font-size: 0.9rem;
+}
+</style>
+{% endblock %}

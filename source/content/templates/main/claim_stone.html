@@ -1,0 +1,78 @@
+{% extends 'layouts/default/page.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block content %}
+<div class="avant-section avant-bg-right flex-center min-h-70vh overflow-auto">
+  <div class="avant-card max-w-600 m-2-5-auto">
+    <div class="avant-header text-center mb-1-2">🎨 {% trans 'Name Your Stone!' %}</div>
+
+    {% if messages %}
+      {% for message in messages %}
+        <div class="text-center mb-1 {% if message.tags == 'error' %}text-error{% else %}text-success{% endif %}">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+
+    <!-- Welcome Message -->
+    <div class="bg-blue p-2 border-radius-8 mb-2">
+      <h4 style="margin: 0 0 10px 0; color: #1976d2;">🎉 {% trans 'Congratulations!' %}</h4>
+      <p style="margin: 5px 0; color: #1976d2;">{% trans "You've scanned a brand new stone that's waiting to be claimed! Give it a unique name and make it your own." %}</p>
+    </div>
+
+    <!-- Instructions -->
+    <div class="bg-gray p-2 border-radius-8 mb-2">
+      <h4 style="margin: 0 0 10px 0;">{% trans 'How it works:' %}</h4>
+      <ul style="margin: 5px 0; padding-left: 20px;">
+        <li>{% trans 'Choose a unique name for your stone (max 10 characters, no spaces)' %}</li>
+        <li>{% trans 'Add a description if you like' %}</li>
+        <li>{% trans 'After claiming, you can paint your stone and add a photo' %}</li>
+        <li>{% trans 'When ready, send it off into the world for others to find!' %}</li>
+      </ul>
+    </div>
+
+    <form class="claim-stone-form flex-column gap-0-7" method="post" enctype="multipart/form-data" autocomplete="off">
+      {% csrf_token %}
+
+      <label class="avant-label" for="id_stone_name">{% trans 'Stone Name' %} <span class="text-error">*</span></label>
+      <input type="text"
+             name="stone_name"
+             id="id_stone_name"
+             maxlength="10"
+             class="avant-input"
+             placeholder="{% trans 'e.g., Rocky, Luna, Star...' %}"
+             value="{{ stone_name|default:'' }}"
+             pattern="[^\s]+"
+             title="{% trans 'No spaces allowed' %}"
+             required>
+      <small class="text-muted">{% trans 'Max 10 characters, no spaces. This will be your stone\'s unique identifier.' %}</small>
+
+      <label class="avant-label mt-1" for="id_description">{% trans 'Description (optional)' %}</label>
+      <textarea name="description"
+                id="id_description"
+                rows="3"
+                maxlength="500"
+                class="avant-input"
+                placeholder="{% trans 'Tell the world about your stone...' %}">{{ description|default:'' }}</textarea>
+
+      <label class="avant-label mt-1" for="id_image">{% trans 'Stone Photo (optional)' %}</label>
+      <input type="file" name="image" id="id_image" accept="image/*" class="avant-input">
+      <small class="text-muted">{% trans 'You can add a photo now or later after painting your stone.' %}</small>
+
+      <button type="submit" class="avant-btn mt-1-2">{% trans 'Claim My Stone!' %}</button>
+    </form>
+
+    <div class="text-center mt-2">
+      <a href="{% url 'stonewalker_start' %}" class="text-muted">{% trans 'Cancel' %}</a>
+    </div>
+  </div>
+</div>
+
+<style>
+.claim-stone-form .avant-input:invalid {
+  border-color: #FF6B6B;
+}
+.claim-stone-form .avant-input:valid {
+  border-color: #00D4AA;
+}
+</style>
+{% endblock %}

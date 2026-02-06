@@ -1,0 +1,44 @@
+{
+  "version": "1.0",
+  "currency": "USD",
+  "categories": [
+    {
+      "id": "starter",
+      "name": "Starter Packs",
+      "description": "Perfect for beginners",
+      "order": 1
+    },
+    {
+      "id": "classroom",
+      "name": "Classroom Packs",
+      "description": "Great for schools and groups",
+      "order": 2
+    }
+  ],
+  "products": [
+    {
+      "id": "free_single",
+      "category": "starter",
+      "name": "Free Single QR",
+      "description": "One free QR code to start your StoneWalker journey",
+      "price_cents": 0,
+      "is_free": true,
+      "pack_size": 1,
+      "enabled": true,
+      "picture": "/static/images/shop/free_qr.png",
+      "limit_per_user": 1
+    },
+    {
+      "id": "paid_10pack",
+      "category": "classroom",
+      "name": "10-Pack QR Codes",
+      "description": "Ten QR codes on a printable PDF sheet - perfect for classrooms and groups!",
+      "price_cents": 999,
+      "is_free": false,
+      "pack_size": 10,
+      "enabled": true,
+      "picture": "/static/images/shop/10pack.png",
+      "limit_per_user": null
+    }
+  ]
+}
