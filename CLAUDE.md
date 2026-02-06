@@ -221,3 +221,20 @@ This is a production-ready application with comprehensive testing, so maintain t
 ### Claude Code Session Notes
 - Regularly update this CLAUDE.md file with new learnings and preferences
 - Document any new patterns or conventions discovered during development
+
+## Learnings & Gotchas (Session Notes)
+
+### Test Structure (February 2026)
+- **Never have both `tests.py` and `tests/` directory** - Python/pytest gets confused when importing
+- If using a `tests/` package, delete any `tests.py` file and move its contents to `tests/__init__.py`
+- After changing test structure, clear `__pycache__` directories: `find source -name "__pycache__" -exec rm -rf {} +`
+- The pre-push hook at `.git/hooks/pre-push` references test paths - update it when test structure changes
+
+### CSS Inline Style Tests
+- The `CSSUtilityClassTests` in `accounts/tests.py` check for inline styles in templates
+- Allowed inline styles are explicitly listed (font-size, font-weight, font-family, margin, padding, etc.)
+- When adding new inline styles to templates, add them to the regex exclusion list in the test
+
+### Dependencies
+- `stripe` package must be installed for tests to run (imported in `stripe_service.py` via `app/urls.py`)
+- Run `pip3 install stripe reportlab` if tests fail with ModuleNotFoundError
