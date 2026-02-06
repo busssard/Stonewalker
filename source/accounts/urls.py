@@ -5,7 +5,7 @@ from .views import (
     LogInView, ResendActivationCodeView, RemindUsernameView, SignUpView, ActivateView, LogOutView,
     ChangeProfileView, ChangeEmailActivateView, ResendEmailActivationView, CancelEmailChangeView,
     RestorePasswordView, RestorePasswordDoneView, RestorePasswordConfirmView, LogOutConfirmView,
-    check_username,
+    DiscourseSSOView, check_username,
 )
 
 app_name = 'accounts'
@@ -32,4 +32,6 @@ urlpatterns = [
     path('cancel-email-change/', CancelEmailChangeView.as_view(), name='cancel_email_change'),
     path('api/check_username/', check_username, name='check_username'),
 
+    # Discourse SSO
+    path('discourse-sso/', DiscourseSSOView.as_view(), name='discourse_sso'),
 ] 
