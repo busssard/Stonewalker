@@ -1,0 +1,128 @@
+# =============================================================================
+#
+#    _____ _                    _    _       _ _
+#   / ____| |                  | |  | |     | | |
+#  | (___ | |_ ___  _ __   ___| |  | | __ _| | | _____ _ __
+#   \___ \| __/ _ \| '_ \ / _ \ |/\| |/ _` | | |/ / _ \ '__|
+#   ____) | || (_) | | | |  __/\  /\  / (_| | |   <  __/ |
+#  |_____/ \__\___/|_| |_|\___| \/  \/ \__,_|_|_|\_\___|_|
+#
+#   Continuous Integration Pipeline
+#   Painted stones don't test themselves.
+#
+# =============================================================================
+
+name: Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# Cancel in-flight CI runs for the same branch/PR to save resources
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Run Test Suite
+    runs-on: ubuntu-latest
+
+    # ---------------------------------------------------------------------------
+    # PostgreSQL service container
+    # The application requires PostgreSQL -- no SQLite fallback exists.
+    # ---------------------------------------------------------------------------
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_DB: stonewalker_test
+          POSTGRES_USER: stonewalker
+          POSTGRES_PASSWORD: stonewalker_ci
+        options: >-
+          --health-cmd "pg_isready -U stonewalker"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    # ---------------------------------------------------------------------------
+    # Environment variables available to every step
+    # ---------------------------------------------------------------------------
+    env:
+      DATABASE_URL: postgresql://stonewalker:stonewalker_ci@localhost:5432/stonewalker_test
+      DJANGO_SETTINGS_MODULE: app.settings
+      IS_PRODUCTION: "false"
+      SECRET_KEY: ci-test-secret-key-not-for-production
+      PYTHONDONTWRITEBYTECODE: "1"
+
+    steps:
+      # --------------------------------------------------
+      # 1. Checkout the repository
+      # --------------------------------------------------
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # --------------------------------------------------
+      # 2. Set up Python
+      # --------------------------------------------------
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      # --------------------------------------------------
+      # 3. Install system dependencies
+      #    gettext is required for Django translation compilation
+      # --------------------------------------------------
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update -q
+          sudo apt-get install -yq gettext libpq-dev
+
+      # --------------------------------------------------
+      # 4. Install Python dependencies
+      # --------------------------------------------------
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      # --------------------------------------------------
+      # 5. Wait for PostgreSQL to be fully ready
+      # --------------------------------------------------
+      - name: Verify PostgreSQL connection
+        run: |
+          python -c "
+          import psycopg2
+          conn = psycopg2.connect('${{ env.DATABASE_URL }}')
+          cur = conn.cursor()
+          cur.execute('SELECT version();')
+          print('PostgreSQL ready:', cur.fetchone()[0])
+          conn.close()
+          "
+
+      # --------------------------------------------------
+      # 6. Run the full test suite
+      #    run_tests.py handles translation compilation
+      #    and then invokes pytest with coverage
+      # --------------------------------------------------
+      - name: Run tests with coverage
+        run: |
+          python run_tests.py --cov --cov-report=xml --cov-report=term
+
+      # --------------------------------------------------
+      # 7. Upload coverage report as an artifact
+      # --------------------------------------------------
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: source/coverage.xml
+          retention-days: 30
