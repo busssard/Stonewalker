@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 """
-Pytest configuration for Django project with automatic translation compilation.
+Pytest configuration for Django project.
+Compact output: tqdm progress bar, TEST_FAIL: lines for failures.
 """
 
 import os
 import sys
-import subprocess
 import django
 from pathlib import Path
 
@@ -17,44 +17,66 @@ sys.path.insert(0, str(source_dir))
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "app.settings")
 django.setup()
 
-def compile_translations():
-    """Compile translations before running tests."""
-    try:
-        # Change to source directory
-        os.chdir(source_dir)
-        
-        # Run translation compilation
-        result = subprocess.run(
-            ["python", "manage.py", "compilemessages"],
-            capture_output=True,
-            text=True,
-            cwd=source_dir
-        )
-        
-        if result.returncode == 0:
-            print("✅ Translations compiled successfully")
-        else:
-            print(f"⚠️  Translation compilation warnings: {result.stderr}")
-            
-    except Exception as e:
-        print(f"⚠️  Translation compilation failed: {e}")
-        # Don't fail tests if translation compilation fails
-        pass
-
-def pytest_configure(config):
-    """Configure pytest and compile translations."""
-    # Set Django settings
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "app.settings")
-    
-    # Compile translations before tests
-    compile_translations()
 
 def pytest_collection_modifyitems(config, items):
     """Add markers to tests based on their location."""
     for item in items:
-        # Mark tests in main app as integration tests
         if "main" in str(item.fspath):
             item.add_marker("integration")
-        # Mark tests in accounts app as unit tests
         elif "accounts" in str(item.fspath):
-            item.add_marker("unit") 
+            item.add_marker("unit")
+
+
+# ---------------------------------------------------------------------------
+# Minimal output: tqdm progress bar + TEST_FAIL: for failures
+# ---------------------------------------------------------------------------
+
+_bar = None
+_failures = []
+
+
+def pytest_collection_finish(session):
+    """Create tqdm bar once we know total test count."""
+    global _bar
+    try:
+        from tqdm import tqdm
+        _bar = tqdm(total=len(session.items), desc="Tests", unit="test",
+                    bar_format="{desc}: {bar} {n_fmt}/{total_fmt} [{elapsed}]",
+                    file=sys.stderr)
+    except ImportError:
+        pass
+
+
+def pytest_runtest_logreport(report):
+    """Update progress bar on each test result."""
+    if report.when == "call":
+        if _bar:
+            _bar.update(1)
+        if report.failed:
+            msg = str(report.longrepr).strip().split("\n")[-1]
+            _failures.append(f"TEST_FAIL: {report.nodeid.split('::')[-1]} - {msg}")
+    elif report.when == "setup" and report.failed:
+        if _bar:
+            _bar.update(1)
+        msg = str(report.longrepr).strip().split("\n")[-1]
+        _failures.append(f"TEST_FAIL: {report.nodeid.split('::')[-1]} (setup) - {msg}")
+
+
+def pytest_report_teststatus(report, config):
+    """Suppress default per-test output (dots/F/E)."""
+    if report.when == "call" or (report.when == "setup" and report.failed):
+        return report.outcome, "", ""
+
+
+def pytest_terminal_summary(terminalreporter, exitstatus, config):
+    """Print failures and final count after bar completes."""
+    if _bar:
+        _bar.close()
+    for f in _failures:
+        terminalreporter.write_line(f)
+    total = sum(len(v) for v in terminalreporter.stats.values() if isinstance(v, list))
+    passed = len(terminalreporter.stats.get("passed", []))
+    failed = len(_failures)
+    terminalreporter.write_line(
+        f"{passed} passed, {failed} failed" if failed else f"{passed} passed"
+    )
