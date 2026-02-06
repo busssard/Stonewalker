@@ -107,7 +107,7 @@ make clean       # Clean generated files
 - **Activation** - Email verification and account activation
 
 ### Settings Configuration
-- **Development**: `source/app/conf/development/settings.py` (uses file-based email, relaxed SSL)
+- **Development**: `source/app/conf/development/settings.py` (console email backend, relaxed SSL)
 - **Production**: `source/app/conf/production/settings.py` (requires PostgreSQL, Mailjet email, SSL)
 - **Environment detection**: `IS_PRODUCTION` environment variable controls which settings are used
 
@@ -156,23 +156,35 @@ make clean       # Clean generated files
 ## Testing Strategy
 
 ### Test Organization
-- **Unit tests**: `accounts` app (marked with `@pytest.mark.unit`)
-- **Integration tests**: `main` app (marked with `@pytest.mark.integration`)
-- **Translation QA**: Automated validation of PO files and functionality
-- **Pre-push hook**: Automatic test running before git push
+- **Unit tests**: `accounts/tests.py` (auto-marked `unit` by conftest.py based on directory)
+- **Integration tests**: `main/tests/` directory with 6 test modules (auto-marked `integration`)
+- **Translation QA**: `main/translation_tests.py` - automated PO file validation
+- **Pre-push hook**: `.git/hooks/pre-push` runs full suite before every push
+- **Markers are auto-applied** by `conftest.py` based on file path - no need for `@pytest.mark` decorators
+
+### Test Files (118 tests total)
+- `accounts/tests.py` - Auth, profiles, navigation, CSS utility checks (15 tests)
+- `main/tests/test_models.py` - Stone model, StoneMove, scan attempts (23 tests)
+- `main/tests/test_qr_system.py` - QR generation, download, display (10 tests)
+- `main/tests/test_stone_scanning.py` - Scanning, blackout periods (8 tests)
+- `main/tests/test_stone_workflow.py` - Creation, editing, status transitions, name validation (26 tests)
+- `main/tests/test_api_endpoints.py` - AJAX endpoints, name availability (15+ tests)
+- `main/tests/test_ui_templates.py` - Page loading, modals, auth gates (15+ tests)
+- `main/tests/base.py` - Shared base classes: `BaseStoneWalkerTestCase`, `BaseQRTestCase`, `BaseAuthenticatedTestCase`, `BaseAnonymousTestCase`
+
+### Test Runner
+- **Entry point**: `./venv/bin/python run_tests.py` - compiles translations, then runs pytest
+- **Config**: `pytest.ini` is the single source of truth (not pyproject.toml)
+- **Output**: tqdm progress bar during run, `TEST_FAIL: [name] - [reason]` for failures
+- **Coverage**: `source/pyproject.toml` has `[tool.coverage.*]` config; run with `make test-cov`
+- **CI/CD**: GitHub Actions workflow at `.github/workflows/tests.yml`
 
 ### Coverage Areas
 - User authentication and profile management
-- Stone creation, scanning, QR code generation
+- Stone creation, name validation, scanning, QR code generation
 - Translation compilation and functionality
 - API endpoints and permissions
 - CSS utility classes and responsive design
-
-### Test Runner Features
-- Automatic translation compilation before tests
-- Django settings isolation (uses development config)
-- Pytest with custom markers and configuration
-- Coverage reporting with HTML output
 
 ## Security & Performance
 
@@ -197,12 +209,16 @@ make clean       # Clean generated files
 
 ## Common Gotchas
 
-1. **PostgreSQL is required** - SQLite not supported
-2. **Translation compilation** - Must run `compilemessages` before production deploy
-3. **Environment variables** - `DATABASE_URL` and `SECRET_KEY` required for production
-4. **QR code permissions** - Media directory must be writable
-5. **Email backend** - Development uses file-based, production uses Mailjet
-6. **Static files** - Run `collectstatic` before production deployment
+1. **PostgreSQL is required** - SQLite not supported, never was, never will be
+2. **Always use the venv** - `./venv/bin/python`, never system python
+3. **Translation compilation** - Must run `compilemessages` before production deploy
+4. **Environment variables** - `DATABASE_URL` and `SECRET_KEY` required for production
+5. **QR code permissions** - Media directory must be writable
+6. **Email backend** - Development uses console (prints to terminal), production uses Mailjet
+7. **Static files** - Run `collectstatic` before production deployment
+8. **GitHub PAT scope** - Needs `workflow` scope to push `.github/workflows/` changes
+9. **pytest.ini section header** - Must be `[pytest]` not `[tool:pytest]` (that's the setup.cfg format)
+10. **Pre-push hook runs full suite** - Budget ~3 minutes per push; stderr from `git push` appears after the hook output
 
 ## File Structure Key Points
 
@@ -211,7 +227,11 @@ make clean       # Clean generated files
 - **Media uploads**: `source/content/media/` (profile pics, QR codes)
 - **Translations**: `source/content/locale/` (PO/MO files)
 - **Database scripts**: Root level `db` script for production management
-- **Build scripts**: `build.sh`, `run_dev.sh` convenience scripts
+- **Build scripts**: `build.sh` (legacy Netlify), `run_dev.sh` convenience script
+- **CI/CD**: `.github/workflows/tests.yml` - GitHub Actions test pipeline
+- **Test config**: `pytest.ini` (pytest settings), `conftest.py` (Django setup + tqdm output), `run_tests.py` (entry point)
+- **Translation docs**: `TRANSLATION.md` (single consolidated file)
+- **Deployment docs**: `DEPLOYMENT.md` (Render.com focused)
 
 ## When Working on This Project
 
@@ -251,13 +271,34 @@ This is a production-ready application with comprehensive testing, so maintain t
 
 ### Dependencies
 - `stripe` package must be installed for tests to run (imported in `stripe_service.py` via `app/urls.py`)
-- Run `pip3 install stripe reportlab` if tests fail with ModuleNotFoundError
+- `tqdm` is required for test progress bar output
+- Run `./venv/bin/pip install stripe reportlab tqdm` if tests fail with ModuleNotFoundError
 
 ### Test Output Convention
-- **Minimal output**: pytest is configured with `-q --tb=line --no-header` so passing tests show only `.` and the context stays brief
-- **Failure format**: Failures print `TEST_FAIL: [test_name] - [failure message]` via the conftest.py `pytest_terminal_summary` hook
-- **Always run tests this way** - do not add `-v` or `--tb=short` unless actively debugging a specific failure
-- This keeps Claude Code context lean when running test suites
+- **Always run tests via**: `./venv/bin/python run_tests.py`
+- **Progress**: tqdm progress bar shows real-time progress during test runs
+- **Failure format**: Failures print `TEST_FAIL: [test_name] - [failure message]` via conftest.py hooks
+- **No verbose flags**: Do not add `-v` or `--tb=short` unless actively debugging a specific failure
+- **Configured in**: `pytest.ini` (`--tb=no -q --no-header --no-summary`) + `conftest.py` (custom tqdm reporter)
+- This keeps Claude Code context lean - a full 118-test run produces ~3 lines of output
+
+### Django TestCase vs TransactionTestCase
+- Django's `TestCase` wraps each test in an `atomic()` block for speed
+- If a test triggers a **database-level error** (IntegrityError for duplicate PK, DataError for varchar overflow), PostgreSQL aborts the transaction
+- After that, **no further DB queries work** in that test (you get `TransactionManagementError`)
+- Workaround: don't query the DB after an expected DB error, or use `TransactionTestCase` instead
+- The view's generic `except Exception` catches these errors and redirects, but the test's atomic block is already broken
+
+### Stone Creation Modal (Frontend/Backend Contract)
+- The stone creation form lives in `source/content/templates/main/new_add_stone_modal.html`
+- It's a two-step modal: Step 1 (fill form) → Step 2 (preview QR) → submit
+- **Critical**: `form.submit()` must happen BEFORE any `closeModal()` / `resetForm()` calls, because `resetForm()` clears all form fields
+- The form field `PK_stone` maps to the Stone model's primary key (CharField, max 50, unique)
+- The view (`main/views.py:add_stone`) checks `if not PK_stone` but does NOT strip whitespace - whitespace-only names currently slip through to the database (known limitation)
+
+### Known Validation Gaps
+- **Whitespace-only stone names**: The view checks `if not PK_stone` but `'   '` is truthy. The model has `validate_no_whitespace` but Django's `save()` doesn't call `full_clean()`. Whitespace names get saved.
+- **Name length**: The model enforces `max_length=50` at the database level but the view doesn't pre-validate length - it relies on the DB constraint and the generic `except` block
 
 ### Bug-Driven Testing Policy
 - **Every bug reported by the user must get a thorough regression test** before or alongside the fix
@@ -292,3 +333,19 @@ This is a production-ready application with comprehensive testing, so maintain t
 - Documentation-only agents should never touch test files and vice versa
 - CLAUDE.md updates should be done by the team lead after all agents finish to avoid conflicts
 - Creative agents are great for CI/CD and holistic review tasks where fresh eyes add value
+
+#### Stone Creation Bug Fix
+- **Bug**: "Missing stone name" error even when name was entered
+- **Root cause**: `new_add_stone_modal.html` line 406 called `closeModal()` before `form.submit()`. `closeModal()` calls `resetForm()` which clears all form fields. The backend then received an empty `PK_stone`.
+- **Fix**: Call `form.submit()` first, removed the premature `closeModal()` call
+- **Regression tests**: 12 tests in `StoneNameSubmissionTests` covering valid names, empty/missing names, whitespace, unicode, boundary lengths, field integrity, hunted stones with location
+
+#### Dev Environment Updates
+- Email backend changed from `filebased` to `console` in development settings - emails now print directly to the terminal instead of being written to `source/content/tmp/emails/`
+- Deleted `run_dev_postgres.sh` - was a redundant subset of `run_dev.sh`
+- `run_tests.py` had hardcoded `main/tests.py` path - fixed to `main/tests/` (the tests directory)
+
+#### Git Push & Pre-Push Hook
+- The pre-push hook at `.git/hooks/pre-push` runs the full test suite (~3 min) before every push
+- `git push` outputs progress/errors to **stderr** - if running in background, make sure to capture stderr with `2>&1`
+- GitHub PAT needs the `workflow` scope to push `.github/workflows/` files - without it you get `remote rejected` with no obvious error unless stderr is captured
