@@ -438,7 +438,7 @@ class StoneSendOffView(View):
 
 class StoneLinkView(View):
     """Handle stone-link functionality with cookie tracking and database storage"""
-    
+
     def get(self, request, stone_uuid):
         try:
             # Parse UUID and find stone
@@ -447,17 +447,31 @@ class StoneLinkView(View):
         except (ValueError, Stone.DoesNotExist):
             messages.error(request, 'Invalid stone link.')
             return redirect('stonewalker_start')
-        
+
+        # Check if this is an unclaimed stone from the shop
+        if stone.is_unclaimed():
+            # Unclaimed stones need to be claimed first
+            if request.user.is_authenticated:
+                # Redirect to claim page
+                return redirect('claim_stone', stone_uuid=stone_uuid)
+            else:
+                # Not logged in - redirect to login with next URL
+                from django.contrib.auth.views import redirect_to_login
+                return redirect_to_login(
+                    next=request.get_full_path(),
+                    login_url='accounts:log_in'
+                )
+
         # If user is authenticated, record scan attempt
         if request.user.is_authenticated:
             StoneScanAttempt.record_scan_attempt(stone, request.user, request)
-        
+
         # Check if this is user's first stone
         is_first_stone = False
         if request.user.is_authenticated:
             user_stone_count = StoneMove.objects.filter(FK_user=request.user).count()
             is_first_stone = user_stone_count == 0
-        
+
         # Create response with cookie
         response = render(request, 'main/stone_found.html', {
             'stone': stone,
@@ -471,7 +485,7 @@ class StoneLinkView(View):
             httponly=True,
             samesite='Lax'
         )
-        
+
         return response
     
     @method_decorator(login_required)

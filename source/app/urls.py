@@ -12,6 +12,13 @@ from main.views import MyStonesView
 from main.views import add_stone, StoneScanView, check_stone_name
 from main.views import StoneQRCodeView, StoneLinkView, check_stone_uuid, StoneEditView, StoneSendOffView, generate_qr_code_api, download_enhanced_qr_code
 
+# Shop views
+from main.shop_views import (
+    ShopView, ClaimStoneView, CheckoutView,
+    CheckoutSuccessView, DownloadPackPDFView, FreeQRView, DownloadStoneQRView
+)
+from main.stripe_service import stripe_webhook
+
 # URLs that should not have language prefix
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -21,6 +28,8 @@ urlpatterns = [
     path('api/download-enhanced-qr/', download_enhanced_qr_code, name='download_enhanced_qr'),
     path('api/check-stone-uuid/<str:uuid>/', check_stone_uuid, name='check_stone_uuid'),
     path('api/check_stone_name/', check_stone_name, name='check_stone_name'),
+    # Stripe webhook (no language prefix, no CSRF)
+    path('webhooks/stripe/', stripe_webhook, name='stripe_webhook'),
 ]
 
 # URLs that should have language prefix
@@ -34,7 +43,18 @@ urlpatterns += i18n_patterns(
     path('add_stone/', add_stone, name='add_stone'),
     path('stonescan/', StoneScanView.as_view(), name='stone_scan'),
     path('forum/', TemplateView.as_view(template_name='main/forum.html'), name='forum'),
-    path('shop/', TemplateView.as_view(template_name='main/shop.html'), name='shop'),
+
+    # Shop URLs
+    path('shop/', ShopView.as_view(), name='shop'),
+    path('shop/checkout/<str:product_id>/', CheckoutView.as_view(), name='checkout'),
+    path('shop/success/', CheckoutSuccessView.as_view(), name='checkout_success'),
+    path('shop/download/<uuid:pack_id>/', DownloadPackPDFView.as_view(), name='download_pack_pdf'),
+    path('shop/download-qr/<str:stone_uuid>/', DownloadStoneQRView.as_view(), name='download_stone_qr'),
+    path('shop/free-qr/', FreeQRView.as_view(), name='free_qr'),
+
+    # Stone claiming
+    path('claim-stone/<str:stone_uuid>/', ClaimStoneView.as_view(), name='claim_stone'),
+
     path('about/', TemplateView.as_view(template_name='main/about.html'), name='about'),
     # New stone management URLs
     path('stone/<str:pk>/edit/', StoneEditView.as_view(), name='stone_edit'),
