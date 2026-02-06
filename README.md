@@ -34,14 +34,8 @@ cd simple-django-login-and-register
 #### Option A: Local Development
 Follow the steps below for local development.
 
-#### Option B: Netlify Deployment (Static Site)
-For hosting the static frontend on Netlify, see [NETLIFY_DEPLOYMENT.md](NETLIFY_DEPLOYMENT.md) for detailed instructions.
-
-**Note:** Netlify is primarily for static sites. For full Django functionality with database, user sessions, and file uploads, consider:
-- **Heroku** - Excellent Django support with PostgreSQL
-- **Railway** - Modern platform with great Python support  
-- **DigitalOcean App Platform** - Reliable Django hosting
-- **Render** - Modern platform with good Django support
+#### Option B: Render Deployment (Recommended)
+For deploying the full Django application, see [DEPLOYMENT.md](DEPLOYMENT.md) for detailed Render deployment instructions.
 
 ### 3. Set Up a Virtual Environment
 
@@ -122,134 +116,7 @@ Visit [http://localhost:8000/stonewalker/](http://localhost:8000/stonewalker/) t
 
 This project includes a comprehensive translation quality assurance system to ensure all translations work correctly and maintain high quality standards.
 
-> 📖 **For detailed information about the translation testing setup, see [TRANSLATION_TESTING_SETUP.md](TRANSLATION_TESTING_SETUP.md)**
-> 
-> 📖 **For translation workflow instructions, see [TRANSLATION_README.md](TRANSLATION_README.md)**
-
-### Translation QA Tests
-
-The project includes automated tests located in `source/main/translation_tests.py` that validate:
-
-#### 1. PO File Structure Validation (`TranslationQualityAssuranceTests`)
-- **Proper Headers**: Ensures all PO files have correct charset and language specifications
-- **No Empty Translations**: Checks that no `msgstr` entries are empty (except headers)
-- **No Duplicate Entries**: Prevents duplicate `msgid` entries that cause compilation errors
-- **Compilation Success**: Verifies all PO files can be compiled without errors
-
-#### 2. Translation Functionality Tests (`TranslationFunctionalityTests`)
-- **Cross-Language Testing**: Tests that translations work for all configured languages
-- **Page Content Verification**: Ensures specific pages show translated content
-- **Language Switching**: Validates URL-based language switching works correctly
-
-#### 3. Translation Coverage Tests (`TranslationCoverageTests`)
-- **Critical String Coverage**: Ensures important user-facing strings are translated
-- **Translation Quality**: Checks that translations are actually different from source text
-
-### Common Translation Issues Detected
-
-The QA system automatically detects and reports these common issues:
-
-#### 1. **Forbidden Characters** (Cause encoding errors)
-- Smart quotes (`"`, `"`, `'`, `'`) - Use regular quotes (`"`, `'`)
-- Ellipsis (`…`) - Use three dots (`...`)
-- En/Em dashes (`–`, `—`) - Use regular hyphens (`-`)
-- German quotes (`„`, `"`, `‚`, `'`) - Use regular quotes
-
-#### 2. **PO File Structure Issues**
-- Missing charset specification (`Content-Type: text/plain; charset=UTF-8`)
-- Missing language specification (`Language: xx`)
-- Empty `msgstr` entries (untranslated strings)
-- Duplicate `msgid` entries (causes compilation failures)
-
-#### 3. **Compilation Errors**
-- Syntax errors in PO files
-- Invalid escape sequences
-- Malformed headers
-
-### Running Translation Tests
-
-```bash
-# Run all translation QA tests
-python source/manage.py test main.translation_tests
-
-# Run specific test classes
-python source/manage.py test main.translation_tests.TranslationQualityAssuranceTests
-python source/manage.py test main.translation_tests.TranslationFunctionalityTests
-python source/manage.py test main.translation_tests.TranslationCoverageTests
-```
-
-### Translation Workflow
-
-1. **Extract Strings**: `python source/manage.py makemessages -l [language_code]`
-2. **Edit Translations**: Modify the `.po` files in `source/content/locale/[lang]/LC_MESSAGES/`
-3. **Run QA Tests**: `python source/manage.py test main.translation_tests`
-4. **Fix Issues**: Address any errors reported by the QA tests
-5. **Compile Messages**: `python source/manage.py compilemessages`
-6. **Test Functionality**: Verify translations work in the browser
-
-### Adding New Languages
-
-1. Add language to `LANGUAGES` in settings:
-   ```python
-   LANGUAGES = [
-       ('en', _('English')),
-       ('de', _('German')),
-       # Add new language here
-       ('xx', _('Language Name')),
-   ]
-   ```
-
-2. Create locale directory: `mkdir -p source/content/locale/xx/LC_MESSAGES/`
-
-3. Extract messages: `python source/manage.py makemessages -l xx`
-
-4. Run QA tests to ensure proper setup
-
-### Translation Best Practices
-n Issues
-
-#### Common Error: "compilemessages generated one or more errors"
-
-1. **Check for Duplicates**: Look for duplicate `msgid` entries
-2. **Validate Syntax**: Check for unescaped quotes or invalid characters
-3. **Verify Headers**: Ensure proper PO file headers are present
-4. **Run QA Tests**: Use the automated tests to identify specific issues
-
-#### Common Error: "UnicodeDecodeError"
-
-1. **Check File Encoding**: Ensure PO files are saved as UTF-8
-2. **Remove Smart Quotes**: Replace with regular quotes
-3. **Clean Special Characters**: Use `iconv` to clean encoding issues
-
-#### Common Error: "Translation not appearing"
-
-1. **Check msgstr**: Ensure the translation is not empty
-2. **Verify Compilation**: Run `compilemessages` after editing
-3. **Clear Cache**: Restart Django server after changes
-4. **Check Template Tags**: Ensure `{% trans %}` tags are properly usedse consistent terminology across all translations
-5. **Context Matters**: Consider cultural context when translating
-
-### Troubleshooting Translation Issues
-
-#### Common Error: "compilemessages generated one or more errors"
-
-1. **Check for Duplicates**: Look for duplicate `msgid` entries
-2. **Validate Syntax**: Check for unescaped quotes or invalid characters
-3. **Verify Headers**: Ensure proper PO file headers are present
-4. **Run QA Tests**: Use the automated tests to identify specific issues
-
-#### Common Error: "UnicodeDecodeError"
-
-1. **Check File Encoding**: Ensure PO files are saved as UTF-8
-2. **Remove Smart Quotes**: Replace with regular quotes
-3. **Clean Special Characters**: Use `iconv` to clean encoding issues
-
-#### Common Error: "Translation not appearing"
-
-1. **Check msgstr**: Ensure the translation is not empty
-2. **Verify Compilation**: Run `compilemessages` after editing
-3. **Clear Cache**: Restart Django server after changes
-4. **Check Template Tags**: Ensure `{% trans %}` tags are properly used
+> For detailed information about translation management, testing, and workflows, see [TRANSLATION.md](TRANSLATION.md)
 
 ## Project Structure
 
