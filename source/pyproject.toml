@@ -69,23 +69,6 @@ where = ["source"]
 [tool.setuptools.package-data]
 "*" = ["*.txt", "*.md", "*.po", "*.mo"]
 
-[tool.pytest.ini_options]
-DJANGO_SETTINGS_MODULE = "app.settings"
-python_files = ["tests.py", "test_*.py", "*_tests.py"]
-addopts = [
-    "--strict-markers",
-    "--strict-config",
-    "--cov=source",
-    "--cov-report=term-missing",
-    "--cov-report=html",
-    "--cov-report=xml",
-]
-markers = [
-    "unit: marks tests as unit tests",
-    "integration: marks tests as integration tests",
-    "slow: marks tests as slow",
-]
-
 [tool.coverage.run]
 source = ["source"]
 omit = [

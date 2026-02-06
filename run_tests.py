@@ -51,7 +51,7 @@ def run_tests(test_args):
         test_args = list(test_args) if test_args else []
         test_args += [
             "accounts/tests.py",
-            "main/tests.py",
+            "main/tests/",
         ]
     
     # Build pytest command
