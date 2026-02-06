@@ -8,6 +8,7 @@ from django.contrib.auth.views import (
 )
 from django.views.generic.base import TemplateView
 from django.shortcuts import get_object_or_404, redirect
+from django.urls import reverse
 from django.utils.crypto import get_random_string
 from django.utils.decorators import method_decorator
 from django.utils.http import url_has_allowed_host_and_scheme as is_safe_url
@@ -20,7 +21,7 @@ from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
 from django.views.generic import View, FormView
 from django.conf import settings
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseBadRequest
 from django.contrib.auth.models import User
 import re
 
@@ -502,3 +503,68 @@ class CancelEmailChangeView(View):
             messages.error(request, _('No pending email change to cancel.'))
         from django.shortcuts import redirect
         return redirect('accounts:change_profile')
+
+
+class DiscourseSSOView(View):
+    """
+    Handle Discourse SSO (DiscourseConnect) authentication.
+
+    When a user tries to access Discourse, Discourse redirects them here with
+    a signed payload. If the user is logged in, we return their user data.
+    If not, we redirect them to log in first.
+    """
+
+    def get(self, request):
+        from .discourse_sso import (
+            validate_discourse_payload,
+            parse_discourse_payload,
+            generate_discourse_payload,
+        )
+
+        # Check if Discourse SSO is enabled
+        if not getattr(settings, 'DISCOURSE_SSO_ENABLED', False):
+            return HttpResponseBadRequest('Discourse SSO is not enabled')
+
+        discourse_url = getattr(settings, 'DISCOURSE_URL', '')
+        sso_secret = getattr(settings, 'DISCOURSE_SSO_SECRET', '')
+
+        if not discourse_url or not sso_secret:
+            return HttpResponseBadRequest('Discourse SSO is not configured')
+
+        # Get SSO params - either from query string or from session (after login redirect)
+        sso = request.GET.get('sso') or request.session.get('discourse_sso')
+        sig = request.GET.get('sig') or request.session.get('discourse_sig')
+
+        if not sso or not sig:
+            return HttpResponseBadRequest('Missing SSO parameters')
+
+        # Validate the payload signature
+        if not validate_discourse_payload(sso, sig, sso_secret):
+            return HttpResponseBadRequest('Invalid SSO signature')
+
+        # Check if user is logged in
+        if not request.user.is_authenticated:
+            # Store SSO params in session and redirect to login
+            request.session['discourse_sso'] = sso
+            request.session['discourse_sig'] = sig
+            login_url = reverse('accounts:log_in')
+            next_url = reverse('accounts:discourse_sso')
+            return redirect(f'{login_url}?next={next_url}')
+
+        # User is logged in - generate response payload
+        try:
+            nonce = parse_discourse_payload(sso)
+        except ValueError as e:
+            return HttpResponseBadRequest(f'Invalid payload: {e}')
+
+        # Clear session SSO params
+        request.session.pop('discourse_sso', None)
+        request.session.pop('discourse_sig', None)
+
+        # Generate signed payload with user data
+        response_payload = generate_discourse_payload(
+            request.user, nonce, sso_secret, request
+        )
+
+        # Redirect back to Discourse
+        return redirect(f'{discourse_url}/session/sso_login?{response_payload}')
