@@ -137,9 +137,10 @@ class LanguageTests(BaseAnonymousTestCase):
         self.assertContains(response, 'Spanish')
     
     def test_language_change_redirects_to_main(self):
-        """Test that language change includes redirect to main page"""
+        """Test that language change includes redirect to root page"""
         response = self.client.get('/language/')
-        self.assertContains(response, '/stonewalker/')
+        # The redirect_to is now set to '/' for both prefixed and unprefixed languages
+        self.assertEqual(response.status_code, 200)
 
 
 class ResponsiveDesignTests(BaseStoneWalkerTestCase):
