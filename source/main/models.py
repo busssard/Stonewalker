@@ -12,15 +12,66 @@ def validate_no_whitespace(value):
     if re.search(r'\s', value):
         raise ValidationError('Stone name cannot contain whitespace.')
 
+
+class QRPack(models.Model):
+    """Tracks purchased QR code packs from the shop"""
+    PACK_TYPES = [
+        ('free_single', 'Free Single QR'),
+        ('paid_10pack', 'Paid 10-Pack'),
+    ]
+
+    STATUS_CHOICES = [
+        ('pending', 'Payment Pending'),
+        ('paid', 'Paid'),
+        ('fulfilled', 'Fulfilled'),
+        ('failed', 'Payment Failed'),
+    ]
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    FK_user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='qr_packs',
+        null=True,
+        blank=True,
+        help_text='User who purchased the pack'
+    )
+    pack_type = models.CharField(max_length=20, choices=PACK_TYPES)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+
+    # Stripe fields
+    stripe_payment_intent_id = models.CharField(max_length=255, blank=True, null=True)
+
+    # Pricing
+    price_cents = models.IntegerField(default=0, help_text='Price in cents')
+    currency = models.CharField(max_length=3, default='USD')
+
+    # Timestamps
+    created_at = models.DateTimeField(auto_now_add=True)
+    paid_at = models.DateTimeField(null=True, blank=True)
+    fulfilled_at = models.DateTimeField(null=True, blank=True)
+
+    # Download tracking
+    pdf_generated = models.BooleanField(default=False)
+    download_count = models.IntegerField(default=0)
+
+    def __str__(self):
+        return f"{self.get_pack_type_display()} - {self.get_status_display()} ({self.id})"
+
+    class Meta:
+        ordering = ['-created_at']
+
+
 class Stone(models.Model):
     STATUS_CHOICES = [
+        ('unclaimed', 'Unclaimed'),  # Pre-generated, no owner yet
         ('draft', 'Draft'),
         ('published', 'Published'),
         ('sent_off', 'Sent Off'),
     ]
-    
+
     PK_stone = models.CharField(
-        max_length=10,
+        max_length=50,  # Increased for temporary unclaimed names like UNCLAIMED-ABC12345
         unique=True,
         validators=[validate_no_whitespace],
         primary_key=True
@@ -29,7 +80,21 @@ class Stone(models.Model):
     description = models.TextField(blank=True, max_length=500)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    FK_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='stones')
+    FK_user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='stones',
+        null=True,  # Nullable for unclaimed stones
+        blank=True
+    )
+    FK_pack = models.ForeignKey(
+        QRPack,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='stones',
+        help_text='QR pack this stone belongs to (if from shop)'
+    )
     image = models.ImageField(upload_to='stones/', blank=True, null=True)
     color = models.CharField(max_length=7, default='#4CAF50')
     shape = models.CharField(max_length=20, default='circle')
@@ -41,14 +106,39 @@ class Stone(models.Model):
     status = models.CharField(max_length=20, default='draft', choices=STATUS_CHOICES)
     qr_code_url = models.URLField(blank=True, help_text='Persistent QR code URL')
     sent_off_at = models.DateTimeField(null=True, blank=True)
+    claimed_at = models.DateTimeField(null=True, blank=True, help_text='When this stone was claimed by a user')
 
     def __str__(self):
         return f"{self.PK_stone} ({self.status})"
-    
+
+    def is_unclaimed(self):
+        """Check if stone is unclaimed and available to be claimed"""
+        return self.status == 'unclaimed'
+
+    def can_be_claimed(self):
+        """Check if stone can be claimed by a user"""
+        return self.status == 'unclaimed' and self.FK_user is None
+
+    def claim(self, user, new_name, description='', image=None):
+        """Claim this stone for a user"""
+        if not self.can_be_claimed():
+            return False
+
+        self.PK_stone = new_name
+        self.FK_user = user
+        self.status = 'draft'
+        self.claimed_at = timezone.now()
+        if description:
+            self.description = description[:500]
+        if image:
+            self.image = image
+        self.save()
+        return True
+
     def can_be_edited(self):
         """Check if stone can be edited (only drafts can be edited)"""
         return self.status == 'draft'
-    
+
     def can_be_published(self):
         """Check if stone can be published"""
         return self.status == 'draft'
