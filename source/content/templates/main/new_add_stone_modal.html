@@ -402,9 +402,8 @@
   if (createBtn) {
     createBtn.addEventListener('click', () => {
       console.log('Creating stone...');
-      // Close modal immediately to provide feedback
-      closeModal();
-      // Submit form
+      // Submit form first, then close modal
+      // (closeModal resets the form, so submitting after would send empty data)
       form.submit();
     });
   }
