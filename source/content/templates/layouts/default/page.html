@@ -39,8 +39,8 @@
 </head>
 
 <body>
-<!-- Expandable Debug mode indicator -->
-<div id="debug-mode-indicator" class="position-fixed bottom-12 left-12 bg-dark text-white fs-1 p-0-4 border-radius-8 z-99999 opacity-0-8 font-monospace cursor-pointer select-none transition-all-300ms" onclick="toggleDebugInfo()">
+<!-- Expandable Debug mode indicator (hidden by default - set display:flex to show) -->
+<div id="debug-mode-indicator" class="position-fixed bottom-12 left-12 bg-dark text-white fs-1 p-0-4 border-radius-8 z-99999 opacity-0-8 font-monospace cursor-pointer select-none transition-all-300ms" style="display: none;" onclick="toggleDebugInfo()">
   <div id="debug-basic">Mode: ...</div>
   <div id="debug-expanded" class="display-none fs-0-75 mt-0-5 line-height-1-4 max-w-300 word-wrap-break-word">
       <div><strong>User Info:</strong></div>
