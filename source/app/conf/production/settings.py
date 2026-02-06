@@ -196,3 +196,16 @@ LOGGING = {
         },
     },
 }
+
+# Stripe Configuration
+STRIPE_PUBLIC_KEY = os.environ.get('STRIPE_PUBLIC_KEY', '')
+STRIPE_SECRET_KEY = os.environ.get('STRIPE_SECRET_KEY', '')
+STRIPE_WEBHOOK_SECRET = os.environ.get('STRIPE_WEBHOOK_SECRET', '')
+
+# Shop Configuration
+SHOP_CONFIG_PATH = os.path.join(BASE_DIR, 'main', 'shop_config.json')
+
+# Discourse SSO Configuration
+DISCOURSE_URL = os.environ.get('DISCOURSE_URL', 'https://forum.stonewalker.org')
+DISCOURSE_SSO_SECRET = os.environ.get('DISCOURSE_SSO_SECRET', '')
+DISCOURSE_SSO_ENABLED = bool(os.environ.get('DISCOURSE_SSO_SECRET'))

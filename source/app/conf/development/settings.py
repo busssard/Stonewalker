@@ -187,3 +187,16 @@ LOCALE_PATHS = [
 ]
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Stripe Configuration
+STRIPE_PUBLIC_KEY = os.environ.get('STRIPE_PUBLIC_KEY', '')
+STRIPE_SECRET_KEY = os.environ.get('STRIPE_SECRET_KEY', '')
+STRIPE_WEBHOOK_SECRET = os.environ.get('STRIPE_WEBHOOK_SECRET', '')
+
+# Shop Configuration
+SHOP_CONFIG_PATH = os.path.join(BASE_DIR, 'main', 'shop_config.json')
+
+# Discourse SSO Configuration
+DISCOURSE_URL = os.environ.get('DISCOURSE_URL', 'http://localhost:4200')
+DISCOURSE_SSO_SECRET = os.environ.get('DISCOURSE_SSO_SECRET', 'dev_secret_change_me')
+DISCOURSE_SSO_ENABLED = True
