@@ -6,6 +6,19 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 StoneWalker is a Django-based web application for tracking painted stones as they travel the world. This is a complex, feature-rich application with multi-language support, QR code generation, user authentication, and stone movement tracking.
 
+## CRITICAL: Always Use the Virtual Environment
+
+**NEVER use system Python.** Always use the project venv for ALL commands - running tests, installing packages, running the dev server, manage.py commands, everything.
+
+```bash
+# The venv lives at the project root
+./venv/bin/python       # Use this, not 'python'
+./venv/bin/pip          # Use this, not 'pip'
+
+# Or activate it first
+source venv/bin/activate
+```
+
 ## Key Development Commands
 
 ### Development Setup
@@ -13,10 +26,11 @@ StoneWalker is a Django-based web application for tracking painted stones as the
 # Environment setup with PostgreSQL (required)
 export DATABASE_URL="postgresql://stone_user:stone_pass@localhost:5432/stone_dev"
 
-# Quick development start
+# Quick development start (activates venv automatically)
 ./run_dev.sh
 
 # Manual setup
+source venv/bin/activate
 cd source
 python manage.py migrate
 python manage.py runserver
@@ -25,7 +39,7 @@ python manage.py runserver
 ### Testing
 ```bash
 # Run all tests (includes translation compilation)
-python run_tests.py
+./venv/bin/python run_tests.py
 
 # Run specific test types
 make test-fast     # Unit tests only
@@ -238,3 +252,43 @@ This is a production-ready application with comprehensive testing, so maintain t
 ### Dependencies
 - `stripe` package must be installed for tests to run (imported in `stripe_service.py` via `app/urls.py`)
 - Run `pip3 install stripe reportlab` if tests fail with ModuleNotFoundError
+
+### Test Output Convention
+- **Minimal output**: pytest is configured with `-q --tb=line --no-header` so passing tests show only `.` and the context stays brief
+- **Failure format**: Failures print `TEST_FAIL: [test_name] - [failure message]` via the conftest.py `pytest_terminal_summary` hook
+- **Always run tests this way** - do not add `-v` or `--tb=short` unless actively debugging a specific failure
+- This keeps Claude Code context lean when running test suites
+
+### Bug-Driven Testing Policy
+- **Every bug reported by the user must get a thorough regression test** before or alongside the fix
+- Tests should be resilient: not break on simple refactors, but also not just test one narrow case
+- Think through edge cases, boundary conditions, and related scenarios
+- Test the behavior, not the implementation - if the form field name changes, the test should still validate the concept
+- Include both the exact failing case and reasonable variations (empty string, whitespace, unicode, long names, etc.)
+
+### Quality Sweep (February 2026)
+
+#### Testing Infrastructure Cleanup
+- **Deleted 2,700+ lines of dead backup test files**: `source/main/tests_backup_original.py` and `source/main/test_new_qr_system_backup.py` were deprecated backups never run by pytest - removed to reduce confusion
+- **Consolidated pytest config**: `pytest.ini` (project root) is now the single source of truth. Removed conflicting `[tool.pytest.ini_options]` from `source/pyproject.toml` (coverage config sections retained there). The old pyproject.toml had `--cov` in addopts which ran coverage on every invocation.
+- **Fixed `--disable-warnings`**: Replaced blanket warning suppression with targeted `-W ignore::DeprecationWarning` in pytest.ini so real warnings surface
+- **Fixed double translation compilation**: `conftest.py` was compiling translations in `pytest_configure` AND `run_tests.py` compiled them too. Removed the conftest.py compilation. Translation compilation now only happens via `run_tests.py` or `make compile-translations`
+- **conftest.py is now lean**: Only does path setup, Django init, and auto-marking tests as unit/integration by directory
+
+#### CI/CD Pipeline Added
+- **GitHub Actions workflow**: `.github/workflows/tests.yml` runs on push/PR to main
+- Uses PostgreSQL 15 service container, Python 3.10, gettext for translations
+- Runs `python run_tests.py` with coverage, uploads XML coverage artifact
+- Has concurrency control to cancel stale in-flight runs
+
+#### Documentation Consolidation
+- **Translation docs merged**: `TRANSLATION_README.md` + `TRANSLATION_TESTING_SETUP.md` → single `TRANSLATION.md`. Fixed internal duplicate sections and formatting corruption in old files
+- **DEPLOYMENT.md fixed**: Removed incorrect SQLite references (PostgreSQL is required everywhere), added content to empty "Testing the Deployment" section
+- **Cleaned up redundant scripts**: Deleted `run_dev_postgres.sh` (was a strict subset of `run_dev.sh`)
+- **Fixed broken cross-references**: README.md reference to nonexistent `NETLIFY_DEPLOYMENT.md` now points to `DEPLOYMENT.md`. Added legacy note to `build.sh` header.
+
+#### Team Workflow Notes
+- When spawning agent teams, assign non-overlapping file sets to avoid merge conflicts
+- Documentation-only agents should never touch test files and vice versa
+- CLAUDE.md updates should be done by the team lead after all agents finish to avoid conflicts
+- Creative agents are great for CI/CD and holistic review tasks where fresh eyes add value
