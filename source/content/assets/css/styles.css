@@ -3007,15 +3007,13 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
 .my-stones-split {
   display: flex;
   flex-direction: row;
-  min-height: calc(100vh - var(--header-height));
   height: calc(100vh - var(--header-height));
   position: relative;
   background: none;
   overflow-x: hidden;
   overflow-y: hidden;
-  /* Remove any gap from parent container-fluid padding */
-  margin-left: -15px;
-  margin-right: -15px;
+  /* Remove gap from parent container-fluid padding */
+  margin: -15px -15px 0 -15px;
 }
 .my-stones-left, .my-stones-right {
   flex: 1 1 0px;
@@ -3256,9 +3254,6 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
 @media (max-width: 1250px) {
   .my-stones-split {
     flex-direction: column;
-    height: calc(100vh - var(--header-height));
-    min-height: calc(100vh - var(--header-height));
-    overflow-y: hidden;
   }
   .my-stones-left, .my-stones-right {
     flex: 1 1 50%;
