@@ -12,11 +12,11 @@
       </svg>
     </div>
 
-    <div class="avant-card-title mb-1">{% trans 'Thank You!' %}</div>
+    <div class="avant-card-title mb-1">{% trans 'You are all set!' %}</div>
 
     <div class="success-message bg-success-light p-1-5 border-radius-8 mb-2">
-      <p class="text-success mb-0">{% trans 'Your purchase is complete!' %}</p>
-      <p class="text-success-dark fs-0-9 mb-0">{% trans 'Your QR codes are ready for download.' %}</p>
+      <p class="text-success mb-0">{% trans 'Your QR codes are ready.' %}</p>
+      <p class="text-success-dark fs-0-9 mb-0">{% trans 'Download, print, and attach them to your painted stones.' %}</p>
     </div>
 
     {% if pack %}
@@ -42,7 +42,7 @@
     {% if pack.pdf_generated %}
     <div class="download-section mb-2">
       <a href="{% url 'download_pack_pdf' pack.id %}" class="avant-btn avant-btn-large avant-btn-primary">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px; vertical-align: middle;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="checkout-download-icon">
           <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
           <polyline points="7 10 12 15 17 10"/>
           <line x1="12" y1="15" x2="12" y2="3"/>
@@ -60,13 +60,37 @@
     {% endif %}
 
     <div class="next-steps mt-2">
-      <h4 class="fs-1 mb-1">{% trans 'What\'s Next?' %}</h4>
-      <ol class="steps-list text-left">
-        <li>{% trans 'Download and print your QR code(s)' %}</li>
-        <li>{% trans 'Paint your stone and attach the QR code' %}</li>
-        <li>{% trans 'Hide your stone for someone to find' %}</li>
-        <li>{% trans 'When someone scans it, they\'ll name and claim the stone!' %}</li>
-      </ol>
+      <h4 class="fs-1 mb-1">{% trans 'What to do next' %}</h4>
+      <div class="next-steps-cards">
+        <div class="next-step-card">
+          <div class="next-step-num">1</div>
+          <div class="next-step-text">
+            <strong>{% trans 'Print' %}</strong>
+            <span>{% trans 'Download and print your QR code(s) on regular paper.' %}</span>
+          </div>
+        </div>
+        <div class="next-step-card">
+          <div class="next-step-num">2</div>
+          <div class="next-step-text">
+            <strong>{% trans 'Paint & Attach' %}</strong>
+            <span>{% trans 'Paint a stone, then attach the QR code with clear tape or varnish.' %}</span>
+          </div>
+        </div>
+        <div class="next-step-card">
+          <div class="next-step-num">3</div>
+          <div class="next-step-text">
+            <strong>{% trans 'Hide' %}</strong>
+            <span>{% trans 'Leave your stone somewhere fun for someone to discover.' %}</span>
+          </div>
+        </div>
+        <div class="next-step-card">
+          <div class="next-step-num">4</div>
+          <div class="next-step-text">
+            <strong>{% trans 'Track' %}</strong>
+            <span>{% trans 'When someone scans the QR code, the stone appears on the world map.' %}</span>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="action-links mt-2 pt-1 border-top">
@@ -79,108 +103,4 @@
   </div>
 </div>
 
-<style>
-.success-icon {
-  display: inline-block;
-}
-
-.bg-success-light {
-  background-color: #e8f5e9;
-}
-
-.text-success {
-  color: #2e7d32;
-}
-
-.text-success-dark {
-  color: #1b5e20;
-}
-
-.bg-gray-light {
-  background-color: #f5f5f5;
-}
-
-.pack-info-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1rem;
-  text-align: center;
-}
-
-.pack-info-item {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.pack-info-label {
-  font-size: 0.8rem;
-  color: #888;
-  text-transform: uppercase;
-}
-
-.pack-info-value {
-  font-size: 1rem;
-  font-weight: 600;
-  color: #333;
-}
-
-.status-fulfilled {
-  color: #2e7d32;
-}
-
-.status-paid {
-  color: #1565c0;
-}
-
-.status-pending {
-  color: #ef6c00;
-}
-
-.avant-btn-large {
-  padding: 1rem 2rem;
-  font-size: 1.1rem;
-}
-
-.avant-btn-primary {
-  background-color: #4CAF50;
-  color: white;
-}
-
-.avant-btn-primary:hover {
-  background-color: #45a049;
-}
-
-.steps-list {
-  padding-left: 1.5rem;
-  margin: 0;
-}
-
-.steps-list li {
-  margin-bottom: 0.5rem;
-  color: #555;
-}
-
-.border-top {
-  border-top: 1px solid #eee;
-}
-
-@media (max-width: 480px) {
-  .pack-info-grid {
-    grid-template-columns: 1fr;
-    gap: 0.5rem;
-  }
-
-  .pack-info-item {
-    flex-direction: row;
-    justify-content: space-between;
-    padding: 0.5rem 0;
-    border-bottom: 1px solid #eee;
-  }
-
-  .pack-info-item:last-child {
-    border-bottom: none;
-  }
-}
-</style>
 {% endblock %}

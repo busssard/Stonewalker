@@ -5,7 +5,7 @@
 {% block content %}
 <div class="avant-section avant-bg-right flex-center min-h-70vh overflow-auto">
   <div class="avant-card max-w-600 m-2-5-auto">
-    <div class="avant-header text-center mb-1-2">🎨 {% trans 'Name Your Stone!' %}</div>
+    <div class="avant-header text-center mb-1-2">{% trans 'Name Your Stone' %}</div>
 
     {% if messages %}
       {% for message in messages %}
@@ -13,21 +13,30 @@
       {% endfor %}
     {% endif %}
 
-    <!-- Welcome Message -->
-    <div class="bg-blue p-2 border-radius-8 mb-2">
-      <h4 style="margin: 0 0 10px 0; color: #1976d2;">🎉 {% trans 'Congratulations!' %}</h4>
-      <p style="margin: 5px 0; color: #1976d2;">{% trans "You've scanned a brand new stone that's waiting to be claimed! Give it a unique name and make it your own." %}</p>
+    <!-- Context: Where You Are in the Process -->
+    <div class="claim-progress mb-2">
+      <div class="claim-progress-steps">
+        <div class="claim-progress-step done">
+          <div class="claim-progress-dot"></div>
+          <span>{% trans 'QR Code' %}</span>
+        </div>
+        <div class="claim-progress-line done"></div>
+        <div class="claim-progress-step active">
+          <div class="claim-progress-dot"></div>
+          <span>{% trans 'Name It' %}</span>
+        </div>
+        <div class="claim-progress-line"></div>
+        <div class="claim-progress-step">
+          <div class="claim-progress-dot"></div>
+          <span>{% trans 'Paint & Hide' %}</span>
+        </div>
+      </div>
     </div>
 
-    <!-- Instructions -->
-    <div class="bg-gray p-2 border-radius-8 mb-2">
-      <h4 style="margin: 0 0 10px 0;">{% trans 'How it works:' %}</h4>
-      <ul style="margin: 5px 0; padding-left: 20px;">
-        <li>{% trans 'Choose a unique name for your stone (max 10 characters, no spaces)' %}</li>
-        <li>{% trans 'Add a description if you like' %}</li>
-        <li>{% trans 'After claiming, you can paint your stone and add a photo' %}</li>
-        <li>{% trans 'When ready, send it off into the world for others to find!' %}</li>
-      </ul>
+    <!-- Welcome Message -->
+    <div class="bg-blue p-2 border-radius-8 mb-2">
+      <h4 class="claim-info-heading">{% trans 'This stone is ready to be yours!' %}</h4>
+      <p class="claim-info-text">{% trans "Give it a unique name. After claiming, you can paint your stone, attach the QR code, and hide it for someone to find. Every time it gets scanned, you will see its journey on the map." %}</p>
     </div>
 
     <form class="claim-stone-form flex-column gap-0-7" method="post" enctype="multipart/form-data" autocomplete="off">
@@ -58,7 +67,7 @@
       <input type="file" name="image" id="id_image" accept="image/*" class="avant-input">
       <small class="text-muted">{% trans 'You can add a photo now or later after painting your stone.' %}</small>
 
-      <button type="submit" class="avant-btn mt-1-2">{% trans 'Claim My Stone!' %}</button>
+      <button type="submit" class="avant-btn mt-1-2">{% trans 'Claim My Stone' %}</button>
     </form>
 
     <div class="text-center mt-2">
@@ -66,13 +75,4 @@
     </div>
   </div>
 </div>
-
-<style>
-.claim-stone-form .avant-input:invalid {
-  border-color: #FF6B6B;
-}
-.claim-stone-form .avant-input:valid {
-  border-color: #00D4AA;
-}
-</style>
 {% endblock %}

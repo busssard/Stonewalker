@@ -2,153 +2,150 @@
 {% load i18n %}
 
 <!-- New Simple Add Stone Modal -->
-<div id="new-add-stone-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); z-index: 9999;">
-  <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-radius: 28px; padding: 28px; max-width: 500px; width: 90%; max-height: 90%; overflow-y: auto; box-shadow: 0 24px 64px rgba(0,0,0,0.2); border: 1px solid rgba(255, 255, 255, 0.5);">
+<div id="new-add-stone-modal" class="new-modal-overlay">
+  <div class="new-modal-container">
 
     <!-- Close Button -->
-    <button id="new-modal-close" style="position: absolute; top: 12px; right: 16px; background: none; border: none; font-size: 24px; cursor: pointer; color: #718096; transition: all 0.2s ease;">&times;</button>
+    <button id="new-modal-close" class="new-modal-close">&times;</button>
 
     <!-- Modal Header -->
-    <h2 style="margin: 0 0 20px 0; font-size: 24px; color: #2D3748; font-family: 'GiantBoom', sans-serif;">{% trans 'Add New Stone' %}</h2>
-    
+    <h2 class="new-modal-title">{% trans 'Add New Stone' %}</h2>
+
     <!-- Step 1: Stone Details -->
-    <div id="new-step-1" style="display: block;">
-      
+    <div id="new-step-1" class="display-block">
+
       <!-- Preview Image -->
-      <div style="text-align: center; margin-bottom: 20px;">
-        <div id="new-stone-preview" style="width: 120px; height: 120px; border: 4px solid #00D4AA; border-radius: 20px; background: linear-gradient(135deg, #F0FDF9 0%, #F5F3FF 100%); margin: 0 auto; display: flex; align-items: center; justify-content: center; font-size: 48px; box-shadow: 0 8px 24px rgba(0, 212, 170, 0.15);">
+      <div class="new-modal-preview-wrap">
+        <div id="new-stone-preview" class="new-modal-preview">
           🪨
         </div>
       </div>
-      
+
       <form id="new-add-stone-form" method="post" action="{% url 'add_stone' %}" enctype="multipart/form-data">
         {% csrf_token %}
-        
+
         <!-- Stone Name -->
-        <div style="margin-bottom: 16px;">
-          <label style="display: block; margin-bottom: 6px; font-weight: 600; color: #2D3748;">{% trans 'Stone Name' %} *</label>
-          <div style="display: flex; gap: 8px; align-items: center;">
+        <div class="new-modal-field">
+          <label class="new-modal-label">{% trans 'Stone Name' %} *</label>
+          <div class="new-modal-input-row">
             <input type="text" name="PK_stone" id="new-stone-name" maxlength="10" required
-                   style="flex: 1; padding: 12px 16px; border: 2px solid #E2E8F0; border-radius: 20px; font-size: 16px; transition: all 0.3s ease;"
+                   class="new-modal-input"
                    placeholder="Enter stone name">
-            <span id="new-name-status" style="font-size: 20px;">⚪</span>
+            <span id="new-name-status" class="new-modal-status-icon">⚪</span>
           </div>
-          <div id="new-name-message" style="font-size: 12px; margin-top: 4px; color: #718096;"></div>
+          <div id="new-name-message" class="new-modal-hint"></div>
         </div>
-        
+
         <!-- Stone Type -->
-        <div style="margin-bottom: 16px;">
-          <label style="display: block; margin-bottom: 6px; font-weight: 600; color: #2D3748;">{% trans 'Stone Type' %}</label>
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+        <div class="new-modal-field">
+          <label class="new-modal-label">{% trans 'Stone Type' %}</label>
+          <div class="new-modal-type-grid">
             <button type="button" id="new-type-hidden" data-type="hidden"
-                    style="padding: 14px; border: 2px solid #00D4AA; background: #00D4AA; color: white; border-radius: 16px; cursor: pointer; text-align: center; transition: all 0.3s ease;">
-              <div style="font-size: 20px; margin-bottom: 4px;">🕵️</div>
-              <div style="font-weight: 600;">{% trans 'Hidden' %}</div>
-              <div style="font-size: 12px; opacity: 0.9;">{% trans 'No known location' %}</div>
+                    class="new-modal-type-btn new-modal-type-btn--active">
+              <div class="new-modal-type-icon">🕵️</div>
+              <div class="fw-bold">{% trans 'Hidden' %}</div>
+              <div class="new-modal-type-sublabel">{% trans 'No known location' %}</div>
             </button>
             <button type="button" id="new-type-hunted" data-type="hunted"
-                    style="padding: 14px; border: 2px solid #E2E8F0; background: white; color: #2D3748; border-radius: 16px; cursor: pointer; text-align: center; transition: all 0.3s ease;">
-              <div style="font-size: 20px; margin-bottom: 4px;">🎯</div>
-              <div style="font-weight: 600;">{% trans 'Hunted' %}</div>
-              <div style="font-size: 12px; opacity: 0.7;">{% trans 'Placed at location' %}</div>
+                    class="new-modal-type-btn">
+              <div class="new-modal-type-icon">🎯</div>
+              <div class="fw-bold">{% trans 'Hunted' %}</div>
+              <div class="new-modal-type-sublabel new-modal-type-sublabel--muted">{% trans 'Placed at location' %}</div>
             </button>
           </div>
           <input type="hidden" name="stone_type" id="new-stone-type-input" value="hidden">
           <input type="hidden" name="shape" id="new-stone-shape-input" value="circle">
-          <div id="new-type-description" style="margin-top: 8px; padding: 10px 12px; background: linear-gradient(135deg, rgba(0, 212, 170, 0.08) 0%, rgba(56, 189, 248, 0.08) 100%); border-radius: 12px; font-size: 14px; color: #718096;">
+          <div id="new-type-description" class="new-modal-type-desc">
             Hidden stones do not have a known location. When found, the finder will be asked to add the location.
           </div>
         </div>
-        
+
         <!-- Location (for hunted stones) -->
-        <div id="new-location-section" style="margin-bottom: 16px; display: none;">
-          <label style="display: block; margin-bottom: 6px; font-weight: 600; color: #2D3748;">{% trans 'Stone Location' %} *</label>
-          <div style="display: flex; gap: 8px;">
+        <div id="new-location-section" class="new-modal-field display-none">
+          <label class="new-modal-label">{% trans 'Stone Location' %} *</label>
+          <div class="new-modal-input-row">
             <input type="number" name="latitude" id="new-latitude" step="any" placeholder="Latitude"
-                   style="flex: 1; padding: 12px 16px; border: 2px solid #E2E8F0; border-radius: 20px; transition: all 0.3s ease;">
+                   class="new-modal-input">
             <input type="number" name="longitude" id="new-longitude" step="any" placeholder="Longitude"
-                   style="flex: 1; padding: 12px 16px; border: 2px solid #E2E8F0; border-radius: 20px; transition: all 0.3s ease;">
+                   class="new-modal-input">
           </div>
         </div>
 
         <!-- Image Upload -->
-        <div style="margin-bottom: 16px;">
-          <label style="display: block; margin-bottom: 6px; font-weight: 600; color: #2D3748;">{% trans 'Picture' %}</label>
+        <div class="new-modal-field">
+          <label class="new-modal-label">{% trans 'Picture' %}</label>
           <input type="file" name="image" accept="image/*" id="new-stone-image"
-                 style="width: 100%; padding: 12px; border: 2px solid #E2E8F0; border-radius: 16px; background: #F8FAFC;">
+                 class="new-modal-file-input">
         </div>
 
         <!-- Description -->
-        <div style="margin-bottom: 20px;">
-          <label style="display: block; margin-bottom: 6px; font-weight: 600; color: #2D3748;">{% trans 'Description' %} *</label>
+        <div class="new-modal-field-lg">
+          <label class="new-modal-label">{% trans 'Description' %} *</label>
           <textarea name="description" id="new-stone-description" rows="3" maxlength="500" required
-                    style="width: 100%; padding: 12px 16px; border: 2px solid #E2E8F0; border-radius: 16px; resize: vertical; font-family: inherit; transition: all 0.3s ease;"
+                    class="new-modal-textarea"
                     placeholder="Say something about your stone..."></textarea>
-          <div style="text-align: right; font-size: 12px; color: #718096; margin-top: 4px;">
+          <div class="new-modal-char-count">
             <span id="new-char-count">0</span>/500
           </div>
         </div>
-        
+
         <!-- Hidden fields -->
         <input type="hidden" name="color" id="new-stone-color" value="#00D4AA">
+        <input type="hidden" name="stone_uuid" id="new-stone-uuid" value="">
 
       </form>
 
       <!-- Step 1 Buttons -->
-      <div style="display: flex; gap: 12px; justify-content: flex-end;">
-        <button type="button" id="new-modal-cancel"
-                style="padding: 12px 24px; border: 2px solid #E2E8F0; background: white; color: #718096; border-radius: 9999px; cursor: pointer; font-weight: 600; transition: all 0.3s ease;">
+      <div class="new-modal-actions">
+        <button type="button" id="new-modal-cancel" class="new-modal-btn-secondary">
           {% trans 'Cancel' %}
         </button>
-        <button type="button" id="new-next-button"
-                style="padding: 12px 24px; border: none; background: linear-gradient(135deg, #FF6B6B 0%, #FF8E8E 100%); color: white; border-radius: 9999px; cursor: pointer; font-weight: 600; box-shadow: 0 4px 20px rgba(255, 107, 107, 0.25); transition: all 0.3s ease;">
+        <button type="button" id="new-next-button" class="new-modal-btn-primary">
           {% trans 'Next' %}
         </button>
       </div>
     </div>
-    
+
     <!-- Step 2: QR Code -->
-    <div id="new-step-2" style="display: none;">
-      <div style="text-align: center;">
-        <h3 style="margin: 0 0 16px 0; font-size: 20px; color: #2D3748; font-family: 'GiantBoom', sans-serif;">{% trans 'Your Stone QR Code' %}</h3>
-        <p style="margin: 0 0 20px 0; color: #718096;">{% trans 'Here is your stone QR code with readable URL' %}</p>
+    <div id="new-step-2" class="display-none">
+      <div class="text-center">
+        <h3 class="new-modal-qr-title">{% trans 'Your Stone QR Code' %}</h3>
+        <p class="new-modal-qr-subtitle">{% trans 'Here is your stone QR code with readable URL' %}</p>
 
         <!-- QR Code Display -->
-        <div id="new-qr-container" style="margin: 20px 0; text-align: center;">
-          <div id="new-qr-loading" style="padding: 40px; border: 2px dashed #E2E8F0; border-radius: 16px; color: #718096; background: linear-gradient(135deg, rgba(0, 212, 170, 0.05) 0%, rgba(56, 189, 248, 0.05) 100%);">
-            <div style="font-size: 24px; margin-bottom: 8px;">⏳</div>
+        <div id="new-qr-container" class="new-modal-qr-wrap">
+          <div id="new-qr-loading" class="new-modal-qr-loading">
+            <div class="new-modal-qr-loading-icon">⏳</div>
             <div>Generating QR code...</div>
           </div>
-          <div id="new-qr-image" style="display: none;"></div>
-          <div id="new-qr-error" style="display: none; padding: 20px; border: 2px solid #FF6B6B; background: rgba(255, 107, 107, 0.1); border-radius: 16px; color: #E85555;">
+          <div id="new-qr-image" class="display-none"></div>
+          <div id="new-qr-error" class="new-modal-qr-error">
             Failed to generate QR code. You can create it later from your stones list.
           </div>
         </div>
 
         <!-- Download Button -->
-        <div style="text-align: center; margin-bottom: 16px;">
-          <button type="button" id="new-download-qr-button" style="display: none; padding: 12px 24px; border: none; background: linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%); color: white; border-radius: 9999px; cursor: pointer; margin-bottom: 12px; font-weight: 600; box-shadow: 0 4px 20px rgba(139, 92, 246, 0.25); transition: all 0.3s ease;">
+        <div class="new-modal-download-wrap">
+          <button type="button" id="new-download-qr-button" class="new-modal-btn-accent display-none">
             📥 {% trans 'Download Stone Label' %}
           </button>
-          <div style="font-size: 12px; color: #718096; margin-top: 4px;">
+          <div class="new-modal-hint">
             {% trans 'Compact QR label (2-5cm) perfect for placing on stones!' %}
           </div>
         </div>
 
         <!-- Step 2 Buttons -->
-        <div style="display: flex; gap: 12px; justify-content: space-between; margin-top: 24px;">
-          <button type="button" id="new-back-button"
-                  style="padding: 12px 24px; border: 2px solid #E2E8F0; background: white; color: #718096; border-radius: 9999px; cursor: pointer; font-weight: 600; transition: all 0.3s ease;">
+        <div class="new-modal-actions--between">
+          <button type="button" id="new-back-button" class="new-modal-btn-secondary">
             ← {% trans 'Back' %}
           </button>
-          <button type="button" id="new-create-stone-button"
-                  style="padding: 12px 24px; border: none; background: linear-gradient(135deg, #00D4AA 0%, #38BDF8 100%); color: white; border-radius: 9999px; cursor: pointer; font-weight: 600; box-shadow: 0 4px 20px rgba(0, 212, 170, 0.3); transition: all 0.3s ease;">
+          <button type="button" id="new-create-stone-button" class="new-modal-btn-teal">
             {% trans 'Create Stone' %}
           </button>
         </div>
       </div>
     </div>
-    
+
   </div>
 </div>
 
@@ -156,12 +153,12 @@
 // New Add Stone Modal JavaScript
 (function() {
   console.log('Loading new add stone modal...');
-  
+
   const modal = document.getElementById('new-add-stone-modal');
   const step1 = document.getElementById('new-step-1');
   const step2 = document.getElementById('new-step-2');
   const form = document.getElementById('new-add-stone-form');
-  
+
   // Form elements
   const nameInput = document.getElementById('new-stone-name');
   const nameStatus = document.getElementById('new-name-status');
@@ -175,7 +172,7 @@
   const locationSection = document.getElementById('new-location-section');
   const latInput = document.getElementById('new-latitude');
   const lngInput = document.getElementById('new-longitude');
-  
+
   // Buttons
   const nextBtn = document.getElementById('new-next-button');
   const backBtn = document.getElementById('new-back-button');
@@ -183,15 +180,15 @@
   const closeBtn = document.getElementById('new-modal-close');
   const cancelBtn = document.getElementById('new-modal-cancel');
   const downloadBtn = document.getElementById('new-download-qr-button');
-  
+
   // QR elements
   const qrContainer = document.getElementById('new-qr-container');
   const qrLoading = document.getElementById('new-qr-loading');
   const qrImage = document.getElementById('new-qr-image');
   const qrError = document.getElementById('new-qr-error');
-  
+
   let currentUUID = null;
-  
+
   // Utility functions
   function generateUUID() {
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
@@ -200,7 +197,7 @@
       return v.toString(16);
     });
   }
-  
+
   function showStep(stepNum) {
     console.log('Showing step:', stepNum);
     if (stepNum === 1) {
@@ -211,20 +208,20 @@
       step2.style.display = 'block';
     }
   }
-  
+
   function openModal() {
     console.log('Opening new modal');
     modal.style.display = 'block';
     showStep(1);
     resetForm();
   }
-  
+
   function closeModal() {
     console.log('Closing new modal');
     modal.style.display = 'none';
     resetForm();
   }
-  
+
   function resetForm() {
     if (form) form.reset();
     nameInput.value = '';
@@ -234,38 +231,28 @@
     nameMessage.textContent = '';
     setStoneType('hidden');
     currentUUID = null;
-    
+
     // Reset QR section
     qrLoading.style.display = 'block';
     qrImage.style.display = 'none';
     qrError.style.display = 'none';
   }
-  
+
   function setStoneType(type) {
     console.log('Setting stone type:', type);
     typeInput.value = type;
 
     if (type === 'hidden') {
-      typeHidden.style.background = '#00D4AA';
-      typeHidden.style.color = 'white';
-      typeHidden.style.borderColor = '#00D4AA';
-
-      typeHunted.style.background = 'white';
-      typeHunted.style.color = '#2D3748';
-      typeHunted.style.borderColor = '#E2E8F0';
+      typeHidden.classList.add('new-modal-type-btn--active');
+      typeHunted.classList.remove('new-modal-type-btn--active');
 
       typeDesc.textContent = 'Hidden stones do not have a known location. When found, the finder will be asked to add the location.';
       locationSection.style.display = 'none';
       latInput.removeAttribute('required');
       lngInput.removeAttribute('required');
     } else {
-      typeHunted.style.background = '#00D4AA';
-      typeHunted.style.color = 'white';
-      typeHunted.style.borderColor = '#00D4AA';
-
-      typeHidden.style.background = 'white';
-      typeHidden.style.color = '#2D3748';
-      typeHidden.style.borderColor = '#E2E8F0';
+      typeHunted.classList.add('new-modal-type-btn--active');
+      typeHidden.classList.remove('new-modal-type-btn--active');
 
       typeDesc.textContent = 'Hunted stones are placed at a specific spot and must be found there.';
       locationSection.style.display = 'block';
@@ -273,7 +260,7 @@
       lngInput.setAttribute('required', 'required');
     }
   }
-  
+
   // Check name availability
   function checkNameAvailability() {
     const name = nameInput.value.trim();
@@ -282,10 +269,10 @@
       nameMessage.textContent = '';
       return;
     }
-    
+
     nameStatus.textContent = '⏳';
     nameMessage.textContent = 'Checking...';
-    
+
     fetch(`/api/check_stone_name/?PK_stone=${encodeURIComponent(name)}`)
       .then(response => response.json())
       .then(data => {
@@ -305,17 +292,17 @@
         nameMessage.style.color = '#FBBF24';
       });
   }
-  
+
   // Generate QR code
   function generateQR() {
     console.log('Generating QR for:', nameInput.value, currentUUID);
-    
+
     qrLoading.style.display = 'block';
     qrImage.style.display = 'none';
     qrError.style.display = 'none';
-    
+
     const stoneName = nameInput.value.trim();
-    
+
     fetch(`/api/generate-qr/?stone_name=${encodeURIComponent(stoneName)}&stone_uuid=${currentUUID}`)
       .then(response => response.json())
       .then(data => {
@@ -323,8 +310,8 @@
         if (data.success) {
           qrLoading.style.display = 'none';
           qrImage.style.display = 'block';
-          qrImage.innerHTML = `<img src="data:image/png;base64,${data.qr_code}" style="max-width: 100%; height: auto; border-radius: 8px;">`;
-          
+          qrImage.innerHTML = `<img src="data:image/png;base64,${data.qr_code}" class="w-full border-radius-8">`;
+
           // Show download button and store QR data
           if (downloadBtn) {
             downloadBtn.style.display = 'inline-block';
@@ -341,43 +328,43 @@
         qrError.style.display = 'block';
       });
   }
-  
+
   // Event listeners
   if (nameInput) {
     nameInput.addEventListener('input', checkNameAvailability);
   }
-  
+
   if (descInput) {
     descInput.addEventListener('input', () => {
       charCount.textContent = descInput.value.length;
     });
   }
-  
+
   if (typeHidden) {
     typeHidden.addEventListener('click', () => setStoneType('hidden'));
   }
-  
+
   if (typeHunted) {
     typeHunted.addEventListener('click', () => setStoneType('hunted'));
   }
-  
+
   if (nextBtn) {
     nextBtn.addEventListener('click', () => {
       console.log('Next button clicked');
-      
+
       // Validate
       if (!nameInput.value.trim()) {
         alert('Please enter a stone name');
         nameInput.focus();
         return;
       }
-      
+
       if (!descInput.value.trim()) {
         alert('Please enter a description');
         descInput.focus();
         return;
       }
-      
+
       if (typeInput.value === 'hunted') {
         if (!latInput.value || !lngInput.value) {
           alert('Please enter location for hunted stone');
@@ -385,20 +372,21 @@
           return;
         }
       }
-      
-      // Generate UUID and show QR
+
+      // Generate UUID, store in hidden field, and show QR
       currentUUID = generateUUID();
+      document.getElementById('new-stone-uuid').value = currentUUID;
       showStep(2);
       generateQR();
     });
   }
-  
+
   if (backBtn) {
     backBtn.addEventListener('click', () => {
       showStep(1);
     });
   }
-  
+
   if (createBtn) {
     createBtn.addEventListener('click', () => {
       console.log('Creating stone...');
@@ -407,15 +395,15 @@
       form.submit();
     });
   }
-  
+
   if (closeBtn) {
     closeBtn.addEventListener('click', closeModal);
   }
-  
+
   if (cancelBtn) {
     cancelBtn.addEventListener('click', closeModal);
   }
-  
+
   if (downloadBtn) {
     downloadBtn.addEventListener('click', () => {
       if (window.currentQRData && currentUUID) {
@@ -424,7 +412,7 @@
         const stoneName = encodeURIComponent(nameInput.value.trim());
         const stoneUuid = encodeURIComponent(currentUUID);
         const downloadUrl = `/api/download-enhanced-qr/?stone_name=${stoneName}&stone_uuid=${stoneUuid}`;
-        
+
         // Create download link
         const link = document.createElement('a');
         link.href = downloadUrl;
@@ -432,14 +420,14 @@
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
-        
+
         console.log('Download initiated');
       } else {
         console.error('No QR data available for download');
       }
     });
   }
-  
+
   // Close modal when clicking outside
   if (modal) {
     modal.addEventListener('click', (e) => {
@@ -448,10 +436,10 @@
       }
     });
   }
-  
+
   // FAB button is handled in main template
   console.log('New modal ready - FAB handled elsewhere');
-  
+
   // Initialize
   setStoneType('hidden');
   console.log('New add stone modal initialized');

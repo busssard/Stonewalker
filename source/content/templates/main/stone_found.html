@@ -15,19 +15,19 @@
     
     <!-- Stone Information -->
     <div class="bg-gray p-2 border-radius-8 mb-2">
-      <h4 style="margin: 0 0 10px 0;">{% trans 'Stone Information' %}</h4>
-      <p style="margin: 5px 0;"><strong>{% trans 'Name:' %}</strong> {{ stone.PK_stone }}</p>
-      <p style="margin: 5px 0;"><strong>{% trans 'Type:' %}</strong> {{ stone.stone_type|title }}</p>
-      <p style="margin: 5px 0;"><strong>{% trans 'Description:' %}</strong> {{ stone.description|default:"No description" }}</p>
-      <p style="margin: 5px 0;"><strong>{% trans 'Created by:' %}</strong> {{ stone.user|default:"Unknown" }}</p>
+      <h4 class="stone-found-heading">{% trans 'Stone Information' %}</h4>
+      <p class="stone-found-info-line"><strong>{% trans 'Name:' %}</strong> {{ stone.PK_stone }}</p>
+      <p class="stone-found-info-line"><strong>{% trans 'Type:' %}</strong> {{ stone.stone_type|title }}</p>
+      <p class="stone-found-info-line"><strong>{% trans 'Description:' %}</strong> {{ stone.description|default:"No description" }}</p>
+      <p class="stone-found-info-line"><strong>{% trans 'Created by:' %}</strong> {{ stone.user|default:"Unknown" }}</p>
     </div>
     
     <!-- First Stone Welcome -->
     {% if is_first_stone %}
     <div class="bg-blue p-2 border-radius-8 mb-2">
-      <h4 style="margin: 0 0 10px 0; color: #1976d2;">🎯 {% trans 'Welcome to StoneWalker!' %}</h4>
-      <p style="margin: 5px 0; color: #1976d2;">{% trans 'This is your first stone! Here\'s how it works:' %}</p>
-      <ul style="margin: 5px 0; padding-left: 20px; color: #1976d2;">
+      <h4 class="stone-found-welcome-heading">🎯 {% trans 'Welcome to StoneWalker!' %}</h4>
+      <p class="stone-found-welcome-text">{% trans 'This is your first stone! Here\'s how it works:' %}</p>
+      <ul class="stone-found-welcome-list">
         <li>{% trans 'You found a stone that someone else placed' %}</li>
         <li>{% trans 'Now you need to tell us where you found it' %}</li>
         <li>{% trans 'If it\'s a hunted stone, you\'ll place it somewhere new next week' %}</li>
@@ -39,9 +39,9 @@
     <!-- Special Message for Hunted Stones -->
     {% if stone.stone_type == 'hunted' %}
     <div class="bg-orange p-2 border-radius-8 mb-2">
-      <h4 style="margin: 0 0 10px 0; color: #e65100;">🎯 {% trans 'Hunted Stone Found!' %}</h4>
-      <p style="margin: 5px 0; color: #e65100;">{% trans 'Congratulations! Many others were probably looking for this stone. You\'ve found it!' %}</p>
-      <p style="margin: 5px 0; color: #e65100;">{% trans 'Next week, you\'ll place it in a new location for others to find.' %}</p>
+      <h4 class="stone-found-hunted-heading">🎯 {% trans 'Hunted Stone Found!' %}</h4>
+      <p class="stone-found-hunted-text">{% trans 'Congratulations! Many others were probably looking for this stone. You\'ve found it!' %}</p>
+      <p class="stone-found-hunted-text">{% trans 'Next week, you\'ll place it in a new location for others to find.' %}</p>
     </div>
     {% endif %}
     
@@ -66,8 +66,8 @@
       <!-- New Location for Hunted Stones -->
       {% if stone.stone_type == 'hunted' %}
       <div class="bg-orange p-2 border-radius-8 mb-2">
-        <h4 style="margin: 0 0 10px 0; color: #e65100;">🗺️ {% trans 'Where will you place this stone next week?' %}</h4>
-        <p style="margin: 5px 0; color: #e65100;">{% trans 'Choose a new location where others can find it.' %}</p>
+        <h4 class="stone-found-hunted-heading">🗺️ {% trans 'Where will you place this stone next week?' %}</h4>
+        <p class="stone-found-hunted-text">{% trans 'Choose a new location where others can find it.' %}</p>
         <div class="flex gap-1 mt-1">
           <input type="number" name="new_latitude" id="id_new_latitude" step="any" placeholder="New Latitude" class="avant-input flex-1" required>
           <input type="number" name="new_longitude" id="id_new_longitude" step="any" placeholder="New Longitude" class="avant-input flex-1" required>
