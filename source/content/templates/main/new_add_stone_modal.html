@@ -63,11 +63,12 @@
         <!-- Location (for hunted stones) -->
         <div id="new-location-section" class="new-modal-field display-none">
           <label class="new-modal-label">{% trans 'Stone Location' %} *</label>
-          <div class="new-modal-input-row">
-            <input type="number" name="latitude" id="new-latitude" step="any" placeholder="Latitude"
-                   class="new-modal-input">
-            <input type="number" name="longitude" id="new-longitude" step="any" placeholder="Longitude"
-                   class="new-modal-input">
+          <div id="new-hunted-map" class="hunted-minimap"></div>
+          <div class="hunted-coords-row">
+            <input type="number" name="latitude" id="new-latitude" step="any" placeholder="Lat"
+                   class="hunted-coord-input" aria-label="{% trans 'Latitude' %}">
+            <input type="number" name="longitude" id="new-longitude" step="any" placeholder="Lng"
+                   class="hunted-coord-input" aria-label="{% trans 'Longitude' %}">
           </div>
         </div>
 
@@ -239,8 +240,43 @@
     qrError.style.display = 'none';
   }
 
+  let huntedMap = null;
+  let huntedMarker = null;
+
+  function initHuntedMap() {
+    if (huntedMap) {
+      huntedMap.invalidateSize();
+      return;
+    }
+    var mapEl = document.getElementById('new-hunted-map');
+    if (!mapEl || typeof L === 'undefined') return;
+    huntedMap = L.map('new-hunted-map').setView([20, 0], 3);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '\u00a9 OpenStreetMap'
+    }).addTo(huntedMap);
+    huntedMarker = L.marker([20, 0], {draggable: true}).addTo(huntedMap);
+    huntedMarker.on('dragend', function() {
+      var pos = huntedMarker.getLatLng();
+      latInput.value = pos.lat.toFixed(6);
+      lngInput.value = pos.lng.toFixed(6);
+    });
+    huntedMap.on('click', function(e) {
+      huntedMarker.setLatLng(e.latlng);
+      latInput.value = e.latlng.lat.toFixed(6);
+      lngInput.value = e.latlng.lng.toFixed(6);
+    });
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(function(pos) {
+        huntedMarker.setLatLng([pos.coords.latitude, pos.coords.longitude]);
+        huntedMap.setView([pos.coords.latitude, pos.coords.longitude], 13);
+        latInput.value = pos.coords.latitude.toFixed(6);
+        lngInput.value = pos.coords.longitude.toFixed(6);
+      });
+    }
+  }
+
   function setStoneType(type) {
-    console.log('Setting stone type:', type);
     typeInput.value = type;
 
     if (type === 'hidden') {
@@ -259,6 +295,7 @@
       locationSection.style.display = 'block';
       latInput.setAttribute('required', 'required');
       lngInput.setAttribute('required', 'required');
+      setTimeout(initHuntedMap, 150);
     }
   }
 

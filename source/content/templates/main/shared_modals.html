@@ -48,18 +48,10 @@
         <!-- Location field for hunted stones -->
         <div id="hunted-location-section" class="w-full display-none">
           <label class="avant-label">{% trans 'Stone Location' %}</label>
-          <div class="flex gap-1 mt-0-5">
-            <input type="number" name="latitude" id="hunted-latitude" step="any" placeholder="Latitude" class="avant-input flex-1" required>
-            <input type="number" name="longitude" id="hunted-longitude" step="any" placeholder="Longitude" class="avant-input flex-1" required>
-          </div>
-          <div id="hunted-location-map" class="w-full h-200 border-radius-12 mb-1 mt-0-5 shared-modal-map-placeholder">
-            <div class="shared-modal-map-inner">
-              <div class="shared-modal-map-content">
-                <div class="shared-modal-map-icon">🗺️</div>
-                <p class="shared-modal-map-label">Location Map</p>
-                <p class="shared-modal-map-hint">Click to set location</p>
-              </div>
-            </div>
+          <div id="hunted-location-map" class="hunted-minimap mt-0-5"></div>
+          <div class="hunted-coords-row">
+            <input type="number" name="latitude" id="hunted-latitude" step="any" placeholder="Lat" class="hunted-coord-input" required aria-label="{% trans 'Latitude' %}">
+            <input type="number" name="longitude" id="hunted-longitude" step="any" placeholder="Lng" class="hunted-coord-input" required aria-label="{% trans 'Longitude' %}">
           </div>
         </div>
         

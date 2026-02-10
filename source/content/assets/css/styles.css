@@ -3665,6 +3665,41 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
 /* EXTRACTED INLINE STYLES        */
 /* ============================== */
 
+/* --- Hunted Stone Minimap --- */
+.hunted-minimap {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  min-height: 180px;
+  max-height: 360px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #E2E8F0;
+  z-index: 0;
+}
+
+.hunted-coords-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.hunted-coord-input {
+  flex: 1;
+  padding: 6px 10px;
+  font-size: 0.82rem;
+  font-family: monospace;
+  border: 1px solid #E2E8F0;
+  border-radius: 6px;
+  background: #F7FAFC;
+  color: #718096;
+}
+
+.hunted-coord-input:focus {
+  outline: none;
+  border-color: #00D4AA;
+  box-shadow: 0 0 0 2px rgba(0, 212, 170, 0.15);
+}
+
 /* --- New Add Stone Modal --- */
 .new-modal-overlay {
   display: none;
