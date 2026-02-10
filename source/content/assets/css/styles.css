@@ -4915,6 +4915,11 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
   display: none;
 }
 
+/* Profile picture in edit form - center crop towards face region */
+#profile-picture-preview {
+  object-position: center 20%;
+}
+
 /* --- Utility additions --- */
 .p-1 {
   padding: 1rem !important;

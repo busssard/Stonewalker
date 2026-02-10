@@ -16,8 +16,8 @@
     <div class="flex-center gap-1-5 mb-2-2">
       <!-- Upload Button (left, triangle) -->
       <div class="flex-column items-center">
-        <label for="id_profile_picture" class="cursor-pointer flex-center w-48 h-48 bg-transparent border-none outline-none">
-          <svg width="38" height="38" viewBox="0 0 38 38"><polygon points="19,4 34,34 4,34" fill="#222"/><polygon points="19,10 29,32 9,32" fill="#4CAF50"/></svg>
+        <label for="id_profile_picture" class="cursor-pointer flex-center w-48 h-48 bg-transparent border-none outline-none" aria-label="{% trans 'Upload profile picture' %}">
+          <svg width="38" height="38" viewBox="0 0 38 38" role="img" aria-hidden="true"><polygon points="19,4 34,34 4,34" fill="#222"/><polygon points="19,10 29,32 9,32" fill="#4CAF50"/></svg>
           <input type="file" name="profile_picture" id="id_profile_picture" accept="image/*" class="display-none">
         </label>
         <span class="fs-0-98 text-muted mt-0-2">{% trans 'Upload Pic' %}</span>
@@ -30,8 +30,8 @@
       <div class="flex-column items-center">
         {% if user.profile.profile_picture %}
         <input type="hidden" name="profile_picture-clear" id="profile_picture_clear" value="">
-        <button type="button" id="clear-picture-btn" onclick="clearProfilePicture()" class="bg-transparent border-none outline-none cursor-pointer flex-center w-48 h-48" title="{% trans 'Clear picture' %}">
-          <svg width="38" height="38" viewBox="0 0 38 38"><polygon points="19,34 34,4 4,4" fill="#c00"/><polygon points="19,28 29,6 9,6" fill="#fff"/></svg>
+        <button type="button" id="clear-picture-btn" onclick="clearProfilePicture()" class="bg-transparent border-none outline-none cursor-pointer flex-center w-48 h-48" title="{% trans 'Clear picture' %}" aria-label="{% trans 'Delete profile picture' %}">
+          <svg width="38" height="38" viewBox="0 0 38 38" role="img" aria-hidden="true"><polygon points="19,34 34,4 4,4" fill="#c00"/><polygon points="19,28 29,6 9,6" fill="#fff"/></svg>
         </button>
         <span class="fs-0-98 text-muted mt-0-2">{% trans 'Delete Pic' %}</span>
         {% else %}
@@ -39,8 +39,8 @@
         <span class="fs-0-98 text-muted mt-0-2">&nbsp;</span>
         {% endif %}
         <!-- Cancel preview button (shown after selecting a new file) -->
-        <button type="button" id="cancel-preview-btn" onclick="cancelProfilePreview()" class="bg-transparent border-none outline-none cursor-pointer flex-center w-48 h-48 change-profile-cancel-preview" title="{% trans 'Cancel preview' %}">
-          <svg width="38" height="38" viewBox="0 0 38 38"><polygon points="19,34 34,4 4,4" fill="#888"/><polygon points="19,28 29,6 9,6" fill="#fff"/></svg>
+        <button type="button" id="cancel-preview-btn" onclick="cancelProfilePreview()" class="bg-transparent border-none outline-none cursor-pointer flex-center w-48 h-48 change-profile-cancel-preview" title="{% trans 'Cancel preview' %}" aria-label="{% trans 'Cancel image preview' %}">
+          <svg width="38" height="38" viewBox="0 0 38 38" role="img" aria-hidden="true"><polygon points="19,34 34,4 4,4" fill="#888"/><polygon points="19,28 29,6 9,6" fill="#fff"/></svg>
         </button>
       </div>
     </div>
