@@ -3,15 +3,15 @@
 
 <!-- OLD Create Stone Modal - DISABLED -->
 <div id="add-stone-modal-DISABLED" class="modal display-none position-fixed z-2000 left-0 top-0 w-100vw h-100vh bg-modal-overlay flex-center">
-  <div class="avant-modal max-w-600 min-w-320 w-90vw max-h-90vh m-auto p-2 position-relative" style="display: flex; flex-direction: column; max-height: 90vh;">
-    <span id="add-stone-close" class="close position-absolute top-1 right-1 fs-2 cursor-pointer">&times;</span>
+  <div class="avant-modal max-w-600 min-w-320 w-90vw max-h-90vh m-auto p-2 position-relative shared-modal-flex-col">
+    <span id="add-stone-close" class="close position-absolute top-1 right-1 fs-2 cursor-pointer shared-modal-close-touch">&times;</span>
     <h2 class="avant-header mb-1">{% trans 'Add New Stone' %}</h2>
-    <form id="add-stone-form" enctype="multipart/form-data" autocomplete="off" method="post" action="{% url 'add_stone' %}" style="display: flex; flex-direction: column; gap: 0.5rem; flex: 1; overflow-y: auto; padding-right: 0.5rem;">
+    <form id="add-stone-form" enctype="multipart/form-data" autocomplete="off" method="post" action="{% url 'add_stone' %}" class="shared-modal-form">
       {% csrf_token %}
-      <div id="add-stone-step1" style="display: flex; flex-direction: column; gap: 0.5rem;">
+      <div id="add-stone-step1" class="shared-modal-step1">
         <!-- Image preview -->
-        <div id="stone-shape-preview-container" style="margin-bottom: 0;">
-          <div id="stone-shape-preview" class="w-120 h-120 m-auto overflow-hidden" style="border: 4px solid #4CAF50; background: #f5f5f5; border-radius: 12px;">
+        <div id="stone-shape-preview-container" class="shared-modal-shape-preview-wrap">
+          <div id="stone-shape-preview" class="w-120 h-120 m-auto overflow-hidden shared-modal-shape-preview">
           </div>
         </div>
         
@@ -26,13 +26,13 @@
         <div class="w-full">
           <label class="avant-label mb-1">{% trans 'Stone Type' %}</label>
           <div class="display-grid grid-cols-2 grid-gap-2">
-            <button type="button" id="stone-type-hidden" class="stone-type-btn avant-btn p-1 text-center" data-type="hidden" style="min-height: 60px;">
-              <div style="font-size: 16px; margin-bottom: 2px;">🕵️</div>
+            <button type="button" id="stone-type-hidden" class="stone-type-btn avant-btn p-1 text-center shared-modal-type-btn-inner" data-type="hidden">
+              <div class="shared-modal-type-emoji">🕵️</div>
               <div class="fw-bold fs-0-98">{% trans 'Hidden' %}</div>
               <div class="fs-0-95 text-muted">{% trans 'No known location' %}</div>
             </button>
-            <button type="button" id="stone-type-hunted" class="stone-type-btn avant-btn p-1 text-center" data-type="hunted" style="min-height: 60px;">
-              <div style="font-size: 16px; margin-bottom: 2px;">🎯</div>
+            <button type="button" id="stone-type-hunted" class="stone-type-btn avant-btn p-1 text-center shared-modal-type-btn-inner" data-type="hunted">
+              <div class="shared-modal-type-emoji">🎯</div>
               <div class="fw-bold fs-0-98">{% trans 'Hunted' %}</div>
               <div class="fs-0-95 text-muted">{% trans 'Placed at location' %}</div>
             </button>
@@ -40,24 +40,24 @@
           <input type="hidden" name="stone_type" id="stone-type-input" value="hidden">
           <input type="hidden" name="shape" id="stone-shape-input" value="square">
           <!-- Stone type description (inline) -->
-          <div id="stone-type-flavor" style="font-size: 0.85em; color: #666; margin-top: 8px;">
+          <div id="stone-type-flavor" class="shared-modal-type-flavor">
             Hidden stones do not have a known location. When found, the finder will be asked to add the location.
           </div>
         </div>
         
         <!-- Location field for hunted stones -->
-        <div id="hunted-location-section" class="w-full" style="display: none;">
+        <div id="hunted-location-section" class="w-full display-none">
           <label class="avant-label">{% trans 'Stone Location' %}</label>
           <div class="flex gap-1 mt-0-5">
             <input type="number" name="latitude" id="hunted-latitude" step="any" placeholder="Latitude" class="avant-input flex-1" required>
             <input type="number" name="longitude" id="hunted-longitude" step="any" placeholder="Longitude" class="avant-input flex-1" required>
           </div>
-          <div id="hunted-location-map" class="w-full h-200 border-radius-12 mb-1 mt-0-5" style="background: #f5f5f5; border: 2px dashed #ccc;">
-            <div style="display: flex; align-items: center; justify-content: center; height: 100%;">
-              <div style="text-align: center;">
-                <div style="font-size: 24px; margin-bottom: 5px;">🗺️</div>
-                <p style="color: #666; margin: 0; font-size: 14px;">Location Map</p>
-                <p style="color: #999; font-size: 11px; margin: 2px 0 0 0;">Click to set location</p>
+          <div id="hunted-location-map" class="w-full h-200 border-radius-12 mb-1 mt-0-5 shared-modal-map-placeholder">
+            <div class="shared-modal-map-inner">
+              <div class="shared-modal-map-content">
+                <div class="shared-modal-map-icon">🗺️</div>
+                <p class="shared-modal-map-label">Location Map</p>
+                <p class="shared-modal-map-hint">Click to set location</p>
               </div>
             </div>
           </div>
@@ -68,7 +68,7 @@
           <label class="avant-label">{% trans 'Picture' %}</label>
           <div class="flex gap-1 mt-0-5 items-center">
             <input type="file" name="image" accept="image/*" id="stone-image-input" class="avant-input flex-1">
-            <button type="button" id="reset-image-btn" class="avant-btn bg-gray text-dark" style="white-space: nowrap;">{% trans 'Reset' %}</button>
+            <button type="button" id="reset-image-btn" class="avant-btn bg-gray text-dark ws-nowrap">{% trans 'Reset' %}</button>
           </div>
         </div>
         
@@ -98,14 +98,14 @@
         
         <!-- QR Code Option Buttons -->
         <div class="w-full">
-          <div class="display-grid grid-cols-2 grid-gap-2" style="max-width: 500px; margin: 0 auto;">
-            <button type="button" id="qr-option-existing" class="qr-option-btn avant-btn p-1 text-center" data-option="existing" style="min-height: 60px;">
-              <div style="font-size: 16px; margin-bottom: 2px;">📱</div>
+          <div class="display-grid grid-cols-2 grid-gap-2 shared-modal-grid-max">
+            <button type="button" id="qr-option-existing" class="qr-option-btn avant-btn p-1 text-center shared-modal-type-btn-inner" data-option="existing">
+              <div class="shared-modal-type-emoji">📱</div>
               <div class="fw-bold fs-0-98">{% trans 'I have a StoneWalker code already' %}</div>
               <div class="fs-0-95 text-muted">{% trans 'Scan or enter existing code' %}</div>
             </button>
-            <button type="button" id="qr-option-new" class="qr-option-btn avant-btn p-1 text-center" data-option="new" style="min-height: 60px;">
-              <div style="font-size: 16px; margin-bottom: 2px;">🆕</div>
+            <button type="button" id="qr-option-new" class="qr-option-btn avant-btn p-1 text-center shared-modal-type-btn-inner" data-option="new">
+              <div class="shared-modal-type-emoji">🆕</div>
               <div class="fw-bold fs-0-98">{% trans 'I need a new StoneWalker code' %}</div>
               <div class="fs-0-95 text-muted">{% trans 'Generate new code' %}</div>
             </button>
@@ -113,7 +113,7 @@
         </div>
         
         <!-- Existing Code Section -->
-        <div id="existing-code-section" class="w-full" style="display: none;">
+        <div id="existing-code-section" class="w-full display-none">
           <div class="w-full text-center mb-1">
             <h4 class="avant-header fs-1-1">{% trans 'Enter Your StoneWalker Code' %}</h4>
             <p class="text-muted fs-0-95">{% trans 'Scan QR code or enter UUID manually' %}</p>
@@ -121,30 +121,30 @@
           
           <!-- Camera Scanner Placeholder -->
           <div id="camera-scanner" class="w-full mb-1">
-            <div style="background: #f5f5f5; border: 2px dashed #ccc; border-radius: 8px; padding: 20px; text-align: center;">
-              <div style="font-size: 24px; margin-bottom: 5px;">📷</div>
-              <p style="color: #666; margin: 0; font-size: 14px;">QR Code Scanner</p>
-              <p style="color: #999; font-size: 11px; margin: 2px 0 0 0;">Point camera at StoneWalker QR code</p>
+            <div class="shared-modal-scanner-placeholder">
+              <div class="shared-modal-scanner-icon">📷</div>
+              <p class="shared-modal-scanner-label">QR Code Scanner</p>
+              <p class="shared-modal-scanner-hint">Point camera at StoneWalker QR code</p>
             </div>
           </div>
-          
+
           <!-- Manual UUID Input -->
           <div class="w-full mb-2">
             <label class="avant-label">{% trans 'Or enter UUID manually' %}
               <input type="text" id="manual-uuid-input" class="avant-input w-full mt-0-5" placeholder="Enter StoneWalker UUID">
             </label>
           </div>
-          
+
           <!-- Code Validation Result -->
-          <div id="code-validation" class="w-full bg-gray p-2 border-radius-8 mb-2" style="display: none;">
-            <h4 style="margin: 0 0 10px 0;">{% trans 'Code Information' %}</h4>
-            <p style="margin: 5px 0;"><strong>{% trans 'UUID:' %}</strong> <span id="validated-uuid"></span></p>
-            <p style="margin: 5px 0;"><strong>{% trans 'Status:' %}</strong> <span id="validation-status"></span></p>
+          <div id="code-validation" class="w-full bg-gray p-2 border-radius-8 mb-2 display-none">
+            <h4 class="shared-modal-info-heading">{% trans 'Code Information' %}</h4>
+            <p class="shared-modal-info-line"><strong>{% trans 'UUID:' %}</strong> <span id="validated-uuid"></span></p>
+            <p class="shared-modal-info-line"><strong>{% trans 'Status:' %}</strong> <span id="validation-status"></span></p>
           </div>
         </div>
         
         <!-- New Code Section -->
-        <div id="new-code-section" class="w-full" style="display: none;">
+        <div id="new-code-section" class="w-full display-none">
           <div class="w-full text-center mb-1">
             <h4 class="avant-header fs-1-1">{% trans 'New StoneWalker Code Generated' %}</h4>
             <p class="text-muted fs-0-95">{% trans 'Download and print this code for your stone' %}</p>
@@ -152,16 +152,16 @@
           
           <!-- QR Code Display -->
           <div id="qr-code-container" class="w-full flex-center mb-1">
-            <div id="qr-code-display" style="background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-              <div id="qr-code-placeholder" style="width: 150px; height: 150px; background: #f0f0f0; border: 1px solid #ddd; display: flex; align-items: center; justify-content: center; border-radius: 4px;">
-                <div style="text-align: center;">
-                  <div style="font-size: 32px; margin-bottom: 5px;">📱</div>
-                  <p style="margin: 0; color: #666; font-size: 11px;">QR Code will be generated</p>
+            <div id="qr-code-display" class="shared-modal-new-qr-container">
+              <div id="qr-code-placeholder" class="shared-modal-new-qr-placeholder">
+                <div class="shared-modal-new-qr-placeholder-inner">
+                  <div class="shared-modal-new-qr-icon">📱</div>
+                  <p class="shared-modal-new-qr-text">QR Code will be generated</p>
                 </div>
               </div>
               <!-- Cleartext URL underneath QR code -->
-              <div id="qr-cleartext-url" style="margin-top: 8px; text-align: center; display: none;">
-                <p style="margin: 0; color: #666; font-size: 10px; word-break: break-all; line-height: 1.2; background: #f8f8f8; padding: 4px 6px; border-radius: 3px; border: 1px solid #e0e0e0;">
+              <div id="qr-cleartext-url" class="shared-modal-new-qr-cleartext">
+                <p class="shared-modal-new-qr-cleartext-text">
                   <span id="qr-url-text"></span>
                 </p>
               </div>
@@ -169,16 +169,16 @@
           </div>
           
           <!-- QR Code Info -->
-          <div id="qr-code-info" class="w-full bg-gray p-2 border-radius-8 mb-2" style="display: none;">
-            <h4 style="margin: 0 0 10px 0;">{% trans 'QR Code Information' %}</h4>
-            <p style="margin: 5px 0;"><strong>{% trans 'Stone Name:' %}</strong> <span id="qr-stone-name"></span></p>
-            <p style="margin: 5px 0;"><strong>{% trans 'UUID:' %}</strong> <span id="qr-stone-uuid"></span></p>
-            <p style="margin: 5px 0;"><strong>{% trans 'Scan URL:' %}</strong> <code id="qr-scan-url" style="background: #e0e0e0; padding: 2px 4px; border-radius: 3px; font-size: 12px;"></code></p>
+          <div id="qr-code-info" class="w-full bg-gray p-2 border-radius-8 mb-2 display-none">
+            <h4 class="shared-modal-info-heading">{% trans 'QR Code Information' %}</h4>
+            <p class="shared-modal-info-line"><strong>{% trans 'Stone Name:' %}</strong> <span id="qr-stone-name"></span></p>
+            <p class="shared-modal-info-line"><strong>{% trans 'UUID:' %}</strong> <span id="qr-stone-uuid"></span></p>
+            <p class="shared-modal-info-line"><strong>{% trans 'Scan URL:' %}</strong> <code id="qr-scan-url" class="shared-modal-qr-scan-url"></code></p>
           </div>
-          
+
           <!-- Download Button -->
           <div class="flex gap-1 justify-center w-full mb-2">
-            <button type="button" id="download-qr-btn" class="avant-btn bg-accent text-white" style="display: none;">
+            <button type="button" id="download-qr-btn" class="avant-btn bg-accent text-white display-none">
               📥 {% trans 'Download QR Code' %}
             </button>
           </div>
@@ -208,10 +208,10 @@
 
 <!-- Scan Stone Modal -->
 <div id="scan-stone-modal" class="modal display-none position-fixed z-2000 left-0 top-0 w-100vw h-100vh bg-modal-overlay flex-center">
-  <div class="avant-modal max-w-600 min-w-320 w-90vw max-h-90vh m-auto p-2 position-relative" style="display: flex; flex-direction: column; max-height: 90vh;">
-    <span id="scan-stone-close" class="close position-absolute top-1 right-1 fs-2 cursor-pointer">&times;</span>
+  <div class="avant-modal max-w-600 min-w-320 w-90vw max-h-90vh m-auto p-2 position-relative shared-modal-flex-col">
+    <span id="scan-stone-close" class="close position-absolute top-1 right-1 fs-2 cursor-pointer shared-modal-close-touch">&times;</span>
     <h2 class="avant-header mb-1">{% trans 'Scan Stone' %}</h2>
-    <div style="display: flex; flex-direction: column; gap: 1rem; flex: 1; overflow-y: auto;">
+    <div class="shared-modal-scan-flex">
       <!-- Stone Name Input -->
       <div>
         <label class="avant-label">{% trans 'Stone Name or UUID' %}
@@ -223,41 +223,41 @@
       <div class="w-full mb-1">
         <label class="avant-label mb-1">{% trans 'Scan QR Code' %}</label>
         <div id="scan-camera-scanner" class="w-full">
-          <div style="background: #f5f5f5; border: 2px dashed #ccc; border-radius: 8px; padding: 20px; text-align: center;">
-            <div style="font-size: 24px; margin-bottom: 5px;">📷</div>
-            <p style="color: #666; margin: 0; font-size: 14px;">QR Code Scanner</p>
-            <p style="color: #999; font-size: 11px; margin: 2px 0 0 0;">Point camera at StoneWalker QR code</p>
+          <div class="shared-modal-scanner-placeholder">
+            <div class="shared-modal-scanner-icon">📷</div>
+            <p class="shared-modal-scanner-label">QR Code Scanner</p>
+            <p class="shared-modal-scanner-hint">Point camera at StoneWalker QR code</p>
           </div>
         </div>
       </div>
-      
+
       <!-- Manual UUID Input -->
       <div class="w-full mb-2">
         <label class="avant-label">{% trans 'Or enter UUID manually' %}
           <input type="text" id="scan-manual-uuid-input" class="avant-input w-full mt-0-5" placeholder="Enter StoneWalker UUID">
         </label>
       </div>
-      
+
       <!-- Code Validation Result -->
-      <div id="scan-code-validation" class="w-full bg-gray p-2 border-radius-8 mb-2" style="display: none;">
-        <h4 style="margin: 0 0 10px 0;">{% trans 'Code Information' %}</h4>
-        <p style="margin: 5px 0;"><strong>{% trans 'UUID:' %}</strong> <span id="scan-validated-uuid"></span></p>
-        <p style="margin: 5px 0;"><strong>{% trans 'Status:' %}</strong> <span id="scan-validation-status"></span></p>
+      <div id="scan-code-validation" class="w-full bg-gray p-2 border-radius-8 mb-2 display-none">
+        <h4 class="shared-modal-info-heading">{% trans 'Code Information' %}</h4>
+        <p class="shared-modal-info-line"><strong>{% trans 'UUID:' %}</strong> <span id="scan-validated-uuid"></span></p>
+        <p class="shared-modal-info-line"><strong>{% trans 'Status:' %}</strong> <span id="scan-validation-status"></span></p>
       </div>
-      
+
       <!-- Stone Info Display -->
-      <div id="scan-stone-info" class="w-full bg-gray p-2 border-radius-8 mb-2" style="display: none;">
-        <h4 style="margin: 0 0 10px 0;">{% trans 'Stone Information' %}</h4>
-        <p style="margin: 5px 0;"><strong>{% trans 'Name:' %}</strong> <span id="scan-stone-name"></span></p>
-        <p style="margin: 5px 0;"><strong>{% trans 'Type:' %}</strong> <span id="scan-stone-type"></span></p>
-        <p style="margin: 5px 0;"><strong>{% trans 'Description:' %}</strong> <span id="scan-stone-description"></span></p>
-        <p style="margin: 5px 0;"><strong>{% trans 'Created by:' %}</strong> <span id="scan-stone-creator"></span></p>
+      <div id="scan-stone-info" class="w-full bg-gray p-2 border-radius-8 mb-2 display-none">
+        <h4 class="shared-modal-info-heading">{% trans 'Stone Information' %}</h4>
+        <p class="shared-modal-info-line"><strong>{% trans 'Name:' %}</strong> <span id="scan-stone-name"></span></p>
+        <p class="shared-modal-info-line"><strong>{% trans 'Type:' %}</strong> <span id="scan-stone-type"></span></p>
+        <p class="shared-modal-info-line"><strong>{% trans 'Description:' %}</strong> <span id="scan-stone-description"></span></p>
+        <p class="shared-modal-info-line"><strong>{% trans 'Created by:' %}</strong> <span id="scan-stone-creator"></span></p>
       </div>
-      
+
       <!-- Action Buttons -->
       <div class="flex gap-1 justify-end">
         <button type="button" id="scan-stone-cancel" class="avant-btn bg-gray text-dark">{% trans 'Cancel' %}</button>
-        <button type="button" id="scan-stone-found" class="avant-btn" style="display: none;">{% trans 'Found This Stone' %}</button>
+        <button type="button" id="scan-stone-found" class="avant-btn display-none">{% trans 'Found This Stone' %}</button>
       </div>
     </div>
   </div>
@@ -265,32 +265,32 @@
 
 <!-- QR Code Display Modal -->
 <div id="qr-code-modal" class="modal display-none position-fixed z-2000 left-0 top-0 w-100vw h-100vh bg-modal-overlay flex-center">
-  <div class="avant-modal max-w-500 min-w-320 w-90vw max-h-90vh m-auto p-2 position-relative" style="display: flex; flex-direction: column; max-height: 90vh;">
-    <span id="qr-code-close" class="close position-absolute top-1 right-1 fs-2 cursor-pointer">&times;</span>
+  <div class="avant-modal max-w-500 min-w-320 w-90vw max-h-90vh m-auto p-2 position-relative shared-modal-flex-col">
+    <span id="qr-code-close" class="close position-absolute top-1 right-1 fs-2 cursor-pointer shared-modal-close-touch">&times;</span>
     <h2 class="avant-header mb-1">{% trans 'QR Code' %}</h2>
-    <div style="display: flex; flex-direction: column; gap: 1rem; flex: 1; overflow-y: auto; align-items: center;">
+    <div class="shared-modal-qr-col">
       <!-- QR Code Image -->
-      <div style="background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-        <div id="qr-modal-placeholder" style="width: 200px; height: 200px; background: #f0f0f0; border: 1px solid #ddd; display: flex; align-items: center; justify-content: center; border-radius: 5px;">
-          <div style="text-align: center;">
-            <div style="font-size: 48px; margin-bottom: 10px;">📱</div>
-            <p style="margin: 0; color: #666; font-size: 12px;">QR Code Placeholder</p>
+      <div class="shared-modal-qr-box">
+        <div id="qr-modal-placeholder" class="shared-modal-qr-placeholder">
+          <div class="shared-modal-qr-placeholder-inner">
+            <div class="shared-modal-qr-placeholder-icon">📱</div>
+            <p class="shared-modal-qr-placeholder-text">QR Code Placeholder</p>
           </div>
         </div>
         <!-- Cleartext URL underneath QR code in modal -->
-        <div id="qr-modal-cleartext-url" style="margin-top: 12px; text-align: center; display: none;">
-          <p style="margin: 0; color: #666; font-size: 11px; word-break: break-all; line-height: 1.3; background: #f8f8f8; padding: 6px 8px; border-radius: 4px; border: 1px solid #e0e0e0;">
+        <div id="qr-modal-cleartext-url" class="shared-modal-qr-cleartext">
+          <p class="shared-modal-qr-cleartext-text">
             <span id="qr-modal-url-text"></span>
           </p>
         </div>
       </div>
-      
+
       <!-- QR Code Info -->
-      <div style="background: #f5f5f5; padding: 15px; border-radius: 8px; width: 100%; max-width: 400px;">
-        <h4 style="margin: 0 0 10px 0;">{% trans 'QR Code Information' %}</h4>
-        <p style="margin: 5px 0;"><strong>{% trans 'Stone Name:' %}</strong> <span id="qr-modal-stone-name">Sample Stone</span></p>
-        <p style="margin: 5px 0;"><strong>{% trans 'UUID:' %}</strong> <span id="qr-modal-uuid">550e8400-e29b-41d4-a716-446655440000</span></p>
-        <p style="margin: 5px 0;"><strong>{% trans 'Scan URL:' %}</strong> <code id="qr-modal-url" style="background: #e0e0e0; padding: 2px 4px; border-radius: 3px; font-size: 12px;">http://localhost:8000/stone-link/550e8400-e29b-41d4-a716-446655440000/</code></p>
+      <div class="shared-modal-qr-info-box">
+        <h4 class="shared-modal-info-heading">{% trans 'QR Code Information' %}</h4>
+        <p class="shared-modal-info-line"><strong>{% trans 'Stone Name:' %}</strong> <span id="qr-modal-stone-name">Sample Stone</span></p>
+        <p class="shared-modal-info-line"><strong>{% trans 'UUID:' %}</strong> <span id="qr-modal-uuid">550e8400-e29b-41d4-a716-446655440000</span></p>
+        <p class="shared-modal-info-line"><strong>{% trans 'Scan URL:' %}</strong> <code id="qr-modal-url" class="shared-modal-qr-scan-url">http://localhost:8000/stone-link/550e8400-e29b-41d4-a716-446655440000/</code></p>
       </div>
       
       <!-- Download Button -->
@@ -383,10 +383,10 @@ document.addEventListener('DOMContentLoaded', function() {
       // Auto-select shape based on stone type
       if (stoneType === 'hidden') {
         stoneShapeInput.value = 'square';
-        if (huntedLocationSection) huntedLocationSection.style.display = 'none';
+        if (huntedLocationSection) huntedLocationSection.classList.add('display-none');
       } else if (stoneType === 'hunted') {
         stoneShapeInput.value = 'circle';
-        if (huntedLocationSection) huntedLocationSection.style.display = 'block';
+        if (huntedLocationSection) huntedLocationSection.classList.remove('display-none');
         // Initialize map for hunted stones
         setTimeout(initializeHuntedLocationMap, 100);
       }
@@ -650,8 +650,8 @@ document.addEventListener('DOMContentLoaded', function() {
         if (qrScanUrl) qrScanUrl.textContent = data.qr_url;
         
         // Show QR code info and download button
-        if (qrCodeInfo) qrCodeInfo.style.display = 'block';
-        if (downloadQrBtn) downloadQrBtn.style.display = 'inline-block';
+        if (qrCodeInfo) qrCodeInfo.classList.remove('display-none');
+        if (downloadQrBtn) downloadQrBtn.classList.remove('display-none');
         
         // Store QR data for download
         window.currentQRData = data;
@@ -705,12 +705,12 @@ document.addEventListener('DOMContentLoaded', function() {
       
       if (option === 'existing') {
         // Show existing code section
-        if (existingCodeSection) existingCodeSection.style.display = 'block';
-        if (newCodeSection) newCodeSection.style.display = 'none';
+        if (existingCodeSection) existingCodeSection.classList.remove('display-none');
+        if (newCodeSection) newCodeSection.classList.add('display-none');
       } else if (option === 'new') {
         // Show new code section and generate QR
-        if (existingCodeSection) existingCodeSection.style.display = 'none';
-        if (newCodeSection) newCodeSection.style.display = 'block';
+        if (existingCodeSection) existingCodeSection.classList.add('display-none');
+        if (newCodeSection) newCodeSection.classList.remove('display-none');
         
         // Generate new UUID and QR code
         const stoneUUID = generateUUID();
@@ -740,16 +740,16 @@ document.addEventListener('DOMContentLoaded', function() {
             validationStatus.textContent = 'Valid UUID';
             validationStatus.style.color = '#4CAF50';
           }
-          if (codeValidation) codeValidation.style.display = 'block';
+          if (codeValidation) codeValidation.classList.remove('display-none');
         } else {
           if (validationStatus) {
             validationStatus.textContent = 'Invalid UUID format';
             validationStatus.style.color = '#f44336';
           }
-          if (codeValidation) codeValidation.style.display = 'block';
+          if (codeValidation) codeValidation.classList.remove('display-none');
         }
       } else {
-        if (codeValidation) codeValidation.style.display = 'none';
+        if (codeValidation) codeValidation.classList.add('display-none');
       }
     });
   }
@@ -834,11 +834,11 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!container) return;
         
         container.innerHTML = `
-          <div style="background: #e8f5e8; border: 2px solid #4caf50; border-radius: 8px; padding: 20px; text-align: center;">
-            <div style="font-size: 24px; margin-bottom: 10px;">🎉</div>
-            <p style="color: #2e7d32; margin: 0; font-size: 16px; font-weight: bold;">Congratulations!</p>
-            <p style="color: #2e7d32; margin: 5px 0; font-size: 14px;">You found a StoneWalker stone!</p>
-            <p style="color: #666; font-size: 11px; margin: 5px 0 0 0;">Redirecting to stone page...</p>
+          <div class="shared-modal-scan-success">
+            <div class="shared-modal-scan-success-icon">🎉</div>
+            <p class="shared-modal-scan-success-title">Congratulations!</p>
+            <p class="shared-modal-scan-success-text">You found a StoneWalker stone!</p>
+            <p class="shared-modal-scan-success-hint">Redirecting to stone page...</p>
           </div>
         `;
       };
@@ -861,27 +861,27 @@ document.addEventListener('DOMContentLoaded', function() {
             scanValidationStatus.textContent = 'Valid UUID';
             scanValidationStatus.style.color = '#4CAF50';
           }
-          if (scanCodeValidation) scanCodeValidation.style.display = 'block';
-          
+          if (scanCodeValidation) scanCodeValidation.classList.remove('display-none');
+
           // Try to fetch stone information
           try {
             const response = await fetch(`/api/check-stone-uuid/${uuid}/`);
             const data = await response.json();
-            
+
             if (data.exists && data.stone) {
               // Show stone information
               const scanStoneName = document.getElementById('scan-stone-name');
               const scanStoneType = document.getElementById('scan-stone-type');
               const scanStoneDescription = document.getElementById('scan-stone-description');
               const scanStoneCreator = document.getElementById('scan-stone-creator');
-              
+
               if (scanStoneName) scanStoneName.textContent = data.stone.PK_stone || 'Unknown';
               if (scanStoneType) scanStoneType.textContent = data.stone.stone_type || 'Unknown';
               if (scanStoneDescription) scanStoneDescription.textContent = data.stone.description || 'No description';
               if (scanStoneCreator) scanStoneCreator.textContent = data.stone.user || 'Unknown';
-              
-              if (scanStoneInfo) scanStoneInfo.style.display = 'block';
-              if (scanStoneFoundBtn) scanStoneFoundBtn.style.display = 'inline-block';
+
+              if (scanStoneInfo) scanStoneInfo.classList.remove('display-none');
+              if (scanStoneFoundBtn) scanStoneFoundBtn.classList.remove('display-none');
             } else {
               if (scanValidationStatus) {
                 scanValidationStatus.textContent = 'Valid UUID - Stone not found';
@@ -900,12 +900,12 @@ document.addEventListener('DOMContentLoaded', function() {
             scanValidationStatus.textContent = 'Invalid UUID format';
             scanValidationStatus.style.color = '#f44336';
           }
-          if (scanCodeValidation) scanCodeValidation.style.display = 'block';
+          if (scanCodeValidation) scanCodeValidation.classList.remove('display-none');
         }
       } else {
-        if (scanCodeValidation) scanCodeValidation.style.display = 'none';
-        if (scanStoneInfo) scanStoneInfo.style.display = 'none';
-        if (scanStoneFoundBtn) scanStoneFoundBtn.style.display = 'none';
+        if (scanCodeValidation) scanCodeValidation.classList.add('display-none');
+        if (scanStoneInfo) scanStoneInfo.classList.add('display-none');
+        if (scanStoneFoundBtn) scanStoneFoundBtn.classList.add('display-none');
       }
     });
   }

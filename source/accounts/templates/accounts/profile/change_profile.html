@@ -20,48 +20,54 @@
           <svg width="38" height="38" viewBox="0 0 38 38"><polygon points="19,4 34,34 4,34" fill="#222"/><polygon points="19,10 29,32 9,32" fill="#4CAF50"/></svg>
           <input type="file" name="profile_picture" id="id_profile_picture" accept="image/*" class="display-none">
         </label>
-        <span class="fs-0-98 text-muted mt-0-2">Upload Pic</span>
+        <span class="fs-0-98 text-muted mt-0-2">{% trans 'Upload Pic' %}</span>
       </div>
       <!-- Profile Picture -->
       <div class="display-inline-block w-128 h-128 border-radius-50 bg-gradient-profile shadow-light border-3-5 overflow-hidden position-relative">
-        <img id="profile-picture-preview" src="{% if user.profile.profile_picture %}{{ user.profile.profile_picture.url }}{% else %}{% static 'user_picture.png' %}{% endif %}" class="w-full h-full object-fit-cover border-radius-50 filter-contrast transition-filter" alt="Profile picture"/>
+        <img id="profile-picture-preview" src="{% if user.profile.profile_picture %}{{ user.profile.profile_picture.url }}{% else %}{% static 'user_picture.png' %}{% endif %}" class="w-full h-full object-fit-cover border-radius-50 filter-contrast transition-filter" alt="{% trans 'Profile picture' %}"/>
       </div>
-      <!-- Clear Button (right, triangle) -->
+      <!-- Clear / Cancel Button (right, triangle) -->
       <div class="flex-column items-center">
         {% if user.profile.profile_picture %}
         <input type="hidden" name="profile_picture-clear" id="profile_picture_clear" value="">
-        <button type="button" onclick="clearProfilePicture()" class="bg-transparent border-none outline-none cursor-pointer flex-center w-48 h-48" title="Clear picture">
+        <button type="button" id="clear-picture-btn" onclick="clearProfilePicture()" class="bg-transparent border-none outline-none cursor-pointer flex-center w-48 h-48" title="{% trans 'Clear picture' %}">
           <svg width="38" height="38" viewBox="0 0 38 38"><polygon points="19,34 34,4 4,4" fill="#c00"/><polygon points="19,28 29,6 9,6" fill="#fff"/></svg>
         </button>
-        <span class="fs-0-98 text-muted mt-0-2">Delete Pic</span>
+        <span class="fs-0-98 text-muted mt-0-2">{% trans 'Delete Pic' %}</span>
         {% else %}
         <span class="w-48 h-48 display-inline-block"></span>
-        <span class="fs-0-98 text-muted mt-0-2">Delete Pic</span>
+        <span class="fs-0-98 text-muted mt-0-2">&nbsp;</span>
         {% endif %}
+        <!-- Cancel preview button (shown after selecting a new file) -->
+        <button type="button" id="cancel-preview-btn" onclick="cancelProfilePreview()" class="bg-transparent border-none outline-none cursor-pointer flex-center w-48 h-48 change-profile-cancel-preview" title="{% trans 'Cancel preview' %}">
+          <svg width="38" height="38" viewBox="0 0 38 38"><polygon points="19,34 34,4 4,4" fill="#888"/><polygon points="19,28 29,6 9,6" fill="#fff"/></svg>
+        </button>
       </div>
     </div>
+    <!-- Image validation feedback -->
+    <div id="image-validation-msg" class="text-center mb-1 js-hidden"></div>
     <div class="mb-2">
       <label for="id_username" class="font-serif fs-1-1 text-dark">{% trans 'Username' %}</label>
       <div class="flex-center gap-0-7 mt-0-3">
-        <input type="text" name="username" id="id_username" maxlength="150" required class="form-control fs-1-08 border-radius-7 border-1-5 p-0-7 border-gray" value="{{ form.username.value|default:user.username }}">
-        <span id="username-checkmark" class="js-checkmark js-checkmark-neutral">✔️</span>
+        <input type="text" name="username" id="id_username" maxlength="150" required class="form-control fs-1-08 border-radius-7 border-1-5 p-0-7 border-gray" value="{{ form.username.value|default:user.username }}" autocomplete="username">
+        <span id="username-checkmark" class="js-checkmark js-checkmark-neutral"></span>
       </div>
       <div id="username-check-result" aria-live="polite" class="js-result-text js-result-neutral"></div>
     </div>
     <div class="mb-2">
       <label for="id_email" class="font-serif fs-1-1 text-dark">{% trans 'Email' %}</label>
-      <input type="email" name="email" id="id_email" maxlength="254" required class="form-control fs-1-08 border-radius-7 border-1-5 p-0-7 border-gray" value="{{ form.email.value|default:user.email }}" {% if user.email_state and not user.email_state.is_confirmed %}disabled{% endif %}>
+      <input type="email" name="email" id="id_email" maxlength="254" required class="form-control fs-1-08 border-radius-7 border-1-5 p-0-7 border-gray" value="{{ form.email.value|default:user.email }}" {% if user.email_state and not user.email_state.is_confirmed %}disabled{% endif %} autocomplete="email">
       {% for error in form.email.errors %}
         <div class="text-error fs-0-95">{{ error }}</div>
       {% endfor %}
     </div>
     <div class="mb-2">
       <label for="id_password1" class="font-serif fs-1-1 text-dark">{% trans 'New password' %}</label>
-      <input type="password" name="password1" id="id_password1" class="form-control fs-1-08 border-radius-7 border-1-5 p-0-7 border-gray">
+      <input type="password" name="password1" id="id_password1" class="form-control fs-1-08 border-radius-7 border-1-5 p-0-7 border-gray" autocomplete="new-password" placeholder="{% trans 'Leave blank to keep current' %}">
     </div>
     <div class="mb-2">
       <label for="id_password2" class="font-serif fs-1-1 text-dark">{% trans 'Confirm new password' %}</label>
-      <input type="password" name="password2" id="id_password2" class="form-control fs-1-08 border-radius-7 border-1-5 p-0-7 border-gray">
+      <input type="password" name="password2" id="id_password2" class="form-control fs-1-08 border-radius-7 border-1-5 p-0-7 border-gray" autocomplete="new-password" placeholder="{% trans 'Leave blank to keep current' %}">
     </div>
     <div class="flex gap-1-2 items-center justify-center">
       <button class="btn btn-dark font-serif fs-1-13 p-0-7 border-radius-1-2 letter-spacing-0-03">{% trans 'Save profile' %}</button>
@@ -70,15 +76,15 @@
   </form>
   {% if user.email_state and not user.email_state.is_confirmed %}
     <div class="bg-warning text-warning-dark border border-warning-light p-1 border-radius-7 mb-1-5 text-center bg-warning-light text-warning-dark border-warning-light">
-      <b>Your email address ({{ user.email_state.email }}) is not confirmed.</b><br>
-      Please check your inbox and click the confirmation link. If you do not confirm soon, your email will be reset.<br>
+      <b>{% trans 'Your email address is not confirmed.' %} ({{ user.email_state.email }})</b><br>
+      {% trans 'Please check your inbox and click the confirmation link. If you do not confirm soon, your email will be reset.' %}<br>
       <form method="post" action="{% url 'accounts:resend_email_activation' %}" class="display-inline">
         {% csrf_token %}
-        <button type="submit" class="avant-btn mt-0-7">Resend activation code</button>
+        <button type="submit" class="avant-btn mt-0-7">{% trans 'Resend activation code' %}</button>
       </form>
       <form method="post" action="{% url 'accounts:cancel_email_change' %}" class="display-inline ml-1">
         {% csrf_token %}
-        <button type="submit" class="avant-btn mt-0-7 bg-gray text-dark">Cancel email change</button>
+        <button type="submit" class="avant-btn mt-0-7 bg-gray text-dark">{% trans 'Cancel email change' %}</button>
       </form>
     </div>
   {% endif %}
@@ -88,33 +94,130 @@ const originalProfilePic = document.getElementById('profile-picture-preview').sr
 const fileInput = document.getElementById('id_profile_picture');
 const previewImg = document.getElementById('profile-picture-preview');
 const cancelBtn = document.getElementById('cancel-preview-btn');
+const clearBtn = document.getElementById('clear-picture-btn');
+const validationMsg = document.getElementById('image-validation-msg');
+const MAX_IMAGE_DIM = 800;
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 
 function clearProfilePicture() {
   document.getElementById('profile_picture_clear').value = 'on';
   previewImg.src = "{% static 'user_picture.png' %}";
   fileInput.value = '';
-  cancelBtn.style.display = 'none';
+  if (cancelBtn) cancelBtn.style.display = 'none';
+  if (clearBtn) clearBtn.style.display = 'none';
   document.getElementById('profile-form').submit();
 }
 
-fileInput.addEventListener('change', function(e) {
-  const file = e.target.files[0];
-  if (file) {
-    const reader = new FileReader();
-    reader.onload = function(ev) {
-      previewImg.src = ev.target.result;
-      previewImg.style.filter = 'contrast(1.08) brightness(1.04) drop-shadow(0 0 8px #4CAF50)';
-      cancelBtn.style.display = 'inline-flex';
+/**
+ * Resize an image file to max dimensions using canvas.
+ * Returns a Promise that resolves with a File object.
+ */
+function resizeImage(file, maxDim) {
+  return new Promise(function(resolve) {
+    var img = new Image();
+    img.onload = function() {
+      var w = img.naturalWidth;
+      var h = img.naturalHeight;
+      if (w <= maxDim && h <= maxDim) {
+        resolve(file);
+        return;
+      }
+      // Scale down proportionally
+      if (w > h) {
+        h = Math.round(h * maxDim / w);
+        w = maxDim;
+      } else {
+        w = Math.round(w * maxDim / h);
+        h = maxDim;
+      }
+      var canvas = document.createElement('canvas');
+      canvas.width = w;
+      canvas.height = h;
+      var ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, w, h);
+      canvas.toBlob(function(blob) {
+        var resizedFile = new File([blob], file.name, {type: 'image/jpeg', lastModified: Date.now()});
+        resolve(resizedFile);
+      }, 'image/jpeg', 0.85);
     };
-    reader.readAsDataURL(file);
+    img.onerror = function() {
+      resolve(file);
+    };
+    img.src = URL.createObjectURL(file);
+  });
+}
+
+function showValidationMsg(text, isError) {
+  if (!validationMsg) return;
+  validationMsg.textContent = text;
+  validationMsg.style.display = text ? 'block' : 'none';
+  validationMsg.className = 'text-center mb-1 fs-0-95 ' + (isError ? 'text-error' : 'text-success');
+}
+
+fileInput.addEventListener('change', function(e) {
+  var file = e.target.files[0];
+  if (!file) return;
+
+  // Check file type
+  if (!file.type.startsWith('image/')) {
+    showValidationMsg('{% trans "Please select an image file." %}', true);
+    fileInput.value = '';
+    return;
   }
+
+  // Check file size
+  if (file.size > MAX_FILE_SIZE) {
+    showValidationMsg('{% trans "Image is too large (max 5MB). Please choose a smaller image." %}', true);
+    fileInput.value = '';
+    return;
+  }
+
+  // Check dimensions and resize if needed
+  var img = new Image();
+  img.onload = function() {
+    var w = img.naturalWidth;
+    var h = img.naturalHeight;
+    if (w > MAX_IMAGE_DIM || h > MAX_IMAGE_DIM) {
+      showValidationMsg('{% trans "Image resized to fit 800x800px." %}', false);
+      resizeImage(file, MAX_IMAGE_DIM).then(function(resizedFile) {
+        // Replace the file input with resized version via DataTransfer
+        var dt = new DataTransfer();
+        dt.items.add(resizedFile);
+        fileInput.files = dt.files;
+        // Show preview of resized image
+        var reader = new FileReader();
+        reader.onload = function(ev) {
+          previewImg.src = ev.target.result;
+          previewImg.style.filter = 'contrast(1.08) brightness(1.04) drop-shadow(0 0 8px #4CAF50)';
+          if (cancelBtn) cancelBtn.style.display = 'inline-flex';
+        };
+        reader.readAsDataURL(resizedFile);
+      });
+    } else {
+      showValidationMsg('', false);
+      // Show preview directly
+      var reader = new FileReader();
+      reader.onload = function(ev) {
+        previewImg.src = ev.target.result;
+        previewImg.style.filter = 'contrast(1.08) brightness(1.04) drop-shadow(0 0 8px #4CAF50)';
+        if (cancelBtn) cancelBtn.style.display = 'inline-flex';
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+  img.onerror = function() {
+    showValidationMsg('{% trans "Could not read the image. Please try a different file." %}', true);
+    fileInput.value = '';
+  };
+  img.src = URL.createObjectURL(file);
 });
 
 function cancelProfilePreview() {
   previewImg.src = originalProfilePic;
   previewImg.style.filter = 'contrast(1.08) brightness(1.04)';
   fileInput.value = '';
-  cancelBtn.style.display = 'none';
+  if (cancelBtn) cancelBtn.style.display = 'none';
+  showValidationMsg('', false);
 }
 
 // Username live check
@@ -128,13 +231,13 @@ function checkUsernameAvailability() {
   const username = usernameInput.value.trim();
   if (!username) {
     checkmark.textContent = '';
-    checkResult.textContent = 'Username cannot be empty.';
+    checkResult.textContent = '{% trans "Username cannot be empty." %}';
     checkResult.className = 'js-result-text js-result-neutral';
     return;
   }
   if (username === currentUsername) {
     checkmark.textContent = '';
-    checkResult.textContent = 'You can change your username';
+    checkResult.textContent = '{% trans "You can change your username" %}';
     checkResult.className = 'js-result-text js-result-neutral';
     return;
   }
@@ -144,27 +247,27 @@ function checkUsernameAvailability() {
       if (data.taken) {
         if (data.reason === 'whitespace') {
           checkmark.textContent = '';
-          checkResult.textContent = 'No spaces allowed.';
+          checkResult.textContent = '{% trans "No spaces allowed." %}';
           checkResult.className = 'js-result-text js-result-invalid';
         } else if (data.reason === 'taken') {
-          checkmark.textContent = '❌';
+          checkmark.textContent = '';
           checkmark.className = 'js-checkmark js-checkmark-invalid';
-          checkResult.textContent = 'This username is already taken.';
+          checkResult.textContent = '{% trans "This username is already taken." %}';
           checkResult.className = 'js-result-text js-result-invalid';
         } else if (data.reason === 'empty') {
           checkmark.textContent = '';
-          checkResult.textContent = 'Username cannot be empty.';
+          checkResult.textContent = '{% trans "Username cannot be empty." %}';
           checkResult.className = 'js-result-text js-result-neutral';
         } else {
           checkmark.textContent = '';
-          checkResult.textContent = 'Not available.';
+          checkResult.textContent = '{% trans "Not available." %}';
           checkResult.className = 'js-result-text js-result-invalid';
         }
       } else {
-        checkmark.textContent = '✔️';
+        checkmark.textContent = '';
         checkmark.className = 'js-checkmark js-checkmark-valid';
         checkResult.className = 'js-result-text js-result-valid';
-        checkResult.textContent = 'This username is available!';
+        checkResult.textContent = '{% trans "This username is available!" %}';
       }
     });
 }
