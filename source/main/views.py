@@ -12,6 +12,7 @@ from django.contrib import messages
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.http import JsonResponse
+from django.db.models import Prefetch
 import re
 from math import radians, sin, cos, sqrt, atan2
 import logging
@@ -36,9 +37,14 @@ class ChangeLanguageView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # Set redirect to root - this works for both prefixed and unprefixed languages
-        # Using '/' ensures we go to the root which will use the new language setting
-        context['redirect_to'] = '/'
+        # Redirect back to the referring page after language change.
+        # Using '/' as fallback if no referer is available.
+        referer = self.request.META.get('HTTP_REFERER', '/')
+        # Extract just the path to avoid open redirect issues
+        from urllib.parse import urlparse
+        parsed = urlparse(referer)
+        redirect_to = parsed.path or '/'
+        context['redirect_to'] = redirect_to
         return context
 
 
@@ -55,8 +61,17 @@ class StoneWalkerStartPageView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # Get all stones
-        stones = Stone.objects.all()
+        # Get all stones with related data pre-fetched to avoid N+1 queries
+        stones = Stone.objects.select_related(
+            'FK_user', 'FK_user__profile'
+        ).prefetch_related(
+            Prefetch(
+                'moves',
+                queryset=StoneMove.objects.order_by('timestamp').select_related(
+                    'FK_user', 'FK_user__profile'
+                ),
+            ),
+        ).all()
         # For each stone, get all moves ordered by timestamp
         stones_data = []
         logger.info(f"Calculating distances for {len(stones)} stones")
@@ -68,7 +83,8 @@ class StoneWalkerStartPageView(TemplateView):
             c = 2 * atan2(sqrt(a), sqrt(1-a))
             return R * c
         for stone in stones:
-            moves = list(stone.moves.order_by('timestamp').all())
+            # Use prefetched moves (already ordered by timestamp via Prefetch)
+            moves = list(stone.moves.all())
             # Use the stored distance_km field for display
             total_distance = stone.distance_km
             if moves:
@@ -121,13 +137,17 @@ class MyStonesView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user = self.request.user
-        my_stones = Stone.objects.filter(FK_user=user).prefetch_related('moves')
+        my_stones = Stone.objects.filter(FK_user=user).select_related(
+            'FK_user', 'FK_user__profile'
+        ).prefetch_related('moves')
         for stone in my_stones:
             stone.distance_km = round(stone.distance_km, 1)
         context['my_stones'] = my_stones
         # Stones where user has moved but is not the creator
         moved_stone_ids = StoneMove.objects.filter(FK_user=user).exclude(FK_stone__FK_user=user).values_list('FK_stone', flat=True).distinct()
-        my_interactions = Stone.objects.filter(PK_stone__in=moved_stone_ids).prefetch_related('moves')
+        my_interactions = Stone.objects.filter(PK_stone__in=moved_stone_ids).select_related(
+            'FK_user', 'FK_user__profile'
+        ).prefetch_related('moves')
         for stone in my_interactions:
             stone.distance_km = round(stone.distance_km, 1)
         context['my_interactions'] = my_interactions
@@ -180,6 +200,7 @@ def add_stone(request):
     latitude = request.POST.get('latitude')
     longitude = request.POST.get('longitude')
     stone_type = request.POST.get('stone_type', 'hidden')
+    stone_uuid = request.POST.get('stone_uuid')
     
     # Auto-select shape based on stone type
     if stone_type == 'hidden':
@@ -201,7 +222,8 @@ def add_stone(request):
     
     try:
         # Create stone as draft with the new fields
-        stone = Stone(
+        # Use the UUID from the modal preview so the QR code matches
+        stone_kwargs = dict(
             PK_stone=PK_stone,
             description=description,
             FK_user=request.user,
@@ -209,9 +231,15 @@ def add_stone(request):
             color=color,
             shape=shape,
             stone_type=stone_type,
-            status='draft'  # Always start as draft
+            status='draft',
         )
-        stone.save()  # This will generate the UUID and set qr_code_url
+        if stone_uuid:
+            try:
+                stone_kwargs['uuid'] = uuid_lib.UUID(stone_uuid)
+            except ValueError:
+                pass  # Invalid UUID from client, let the model generate one
+        stone = Stone(**stone_kwargs)
+        stone.save()
         
         # Create initial move for hunted stones (only if publishing immediately)
         if stone_type == 'hunted' and latitude and longitude:
