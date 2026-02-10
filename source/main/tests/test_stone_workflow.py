@@ -59,7 +59,8 @@ class DeprecatedAddStoneEndpointTests(BaseStoneWalkerTestCase):
     def test_add_stone_get_redirects_to_create_stone(self):
         """GET /add_stone/ should redirect to /create-stone/"""
         response = self.client.get(reverse('add_stone'))
-        self.assertRedirects(response, reverse('create_stone'))
+        self.assertEqual(response.status_code, 302)
+        self.assertIn('/create-stone/', response.url)
 
     def test_add_stone_post_redirects_to_create_stone(self):
         """POST /add_stone/ should redirect to /create-stone/"""
@@ -68,7 +69,8 @@ class DeprecatedAddStoneEndpointTests(BaseStoneWalkerTestCase):
             'description': 'Test stone',
             'stone_type': 'hidden',
         })
-        self.assertRedirects(response, reverse('create_stone'))
+        self.assertEqual(response.status_code, 302)
+        self.assertIn('/create-stone/', response.url)
         # Stone should NOT be created directly
         self.assertFalse(Stone.objects.filter(PK_stone='NEWSTONE').exists())
 

@@ -89,11 +89,10 @@ class StoneCreationModalTests(BaseStoneWalkerTestCase):
         self.assertContains(response, 'Hidden')
         self.assertContains(response, 'Hunted')
     
-    def test_modal_includes_validation(self):
-        """Test that modal includes name validation"""
-        response = self.client.get('/stonewalker/')
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'check_stone_name')
+    def test_create_stone_redirects_to_shop(self):
+        """Test that create-stone entry point redirects to shop flow"""
+        response = self.client.get('/create-stone/')
+        self.assertEqual(response.status_code, 302)
 
 
 class ScanModalTests(BaseStoneWalkerTestCase):
@@ -205,5 +204,6 @@ class HuntedStoneLocationTests(BaseStoneWalkerTestCase):
         })
 
         # Should redirect to create_stone (shop flow entry point)
-        self.assertRedirects(response, '/create-stone/')
+        self.assertEqual(response.status_code, 302)
+        self.assertIn('/create-stone/', response.url)
         self.assertFalse(Stone.objects.filter(PK_stone='HUNTED').exists())

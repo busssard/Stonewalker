@@ -3,8 +3,8 @@
 Pytest config for StoneWalker.
 Silent on pass. Verbose on failure. No dependencies.
 
-pytest.ini: --tb=no -q --no-header suppress default output.
-This plugin prints failure details. pytest -q prints the final count.
+pytest.ini: --tb=short -q --no-header for compact output.
+This plugin: suppresses per-test dots, captures failures for rendering.
 """
 
 import os
@@ -29,30 +29,23 @@ def pytest_collection_modifyitems(config, items):
             item.add_marker("unit")
 
 
-# ---------------------------------------------------------------------------
-# Output plugin: suppress dots, show failure details
-# ---------------------------------------------------------------------------
-
 _failure_reports = []
 
 
 def pytest_runtest_logreport(report):
-    if report.when == "call" and report.failed:
-        _failure_reports.append(report)
-    elif report.when == "setup" and report.failed:
+    """Capture failure reports for verbose output."""
+    if report.failed and report.when in ("call", "setup"):
         _failure_reports.append(report)
 
 
 def pytest_report_teststatus(report, config):
-    """No dots for passing. Count only call phase for pytest's summary."""
+    """Suppress call-phase dots. Let setup/teardown use defaults."""
     if report.when == "call":
         return report.outcome, "", ""
-    # Setup/teardown: invisible and uncounted
-    return "", "", ""
 
 
 def pytest_terminal_summary(terminalreporter, exitstatus, config):
-    """Print failure details. pytest -q handles the final count line."""
+    """Print failure details since --tb=no suppresses them."""
     for report in _failure_reports:
         terminalreporter.write_line("")
         terminalreporter.write_line("=" * 70)
