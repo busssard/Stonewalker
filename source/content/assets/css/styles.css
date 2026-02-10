@@ -4537,6 +4537,19 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
   }
 }
 
+/* --- Map Marker Thumbnails --- */
+.stone-map-icon {
+  background: transparent !important;
+  border: none !important;
+}
+
+.stone-map-icon img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 /* --- Stone Edit --- */
 .stone-edit-thumbnail {
   max-width: 200px;
