@@ -2,7 +2,7 @@
 {% load i18n %}
 
 <!-- New Simple Add Stone Modal -->
-<div id="new-add-stone-modal" class="new-modal-overlay">
+<div id="new-add-stone-modal" class="new-modal-overlay" role="dialog" aria-modal="true" aria-label="{% trans 'Add New Stone' %}">
   <div class="new-modal-container">
 
     <!-- Close Button -->
@@ -475,8 +475,12 @@
     });
   }
 
-  // FAB button is handled in main template
-  console.log('New modal ready - FAB handled elsewhere');
+  // Keyboard accessibility: Escape key closes modal
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal && modal.style.display !== 'none') {
+      closeModal();
+    }
+  });
 
   // Initialize
   setStoneType('hidden');

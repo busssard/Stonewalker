@@ -22,9 +22,9 @@
     </div>
     <div class="stone-list" id="creations-list"></div>
     <div class="page-arrows">
-      <button class="arrow-btn" id="creations-prev" disabled title="{% trans 'Previous page' %}"><img src="{% static 'arrow_left.png' %}" alt="{% trans 'Previous' %}"></button>
-      <span id="creations-page-info" class="fs-1-1"></span>
-      <button class="arrow-btn" id="creations-next" disabled title="{% trans 'Next page' %}"><img src="{% static 'arrow_right.png' %}" alt="{% trans 'Next' %}"></button>
+      <button class="arrow-btn" id="creations-prev" disabled title="{% trans 'Previous page' %}" aria-label="{% trans 'Previous page' %}"><img src="{% static 'arrow_left.png' %}" alt="" aria-hidden="true"></button>
+      <span id="creations-page-info" class="fs-1-1" aria-live="polite"></span>
+      <button class="arrow-btn" id="creations-next" disabled title="{% trans 'Next page' %}" aria-label="{% trans 'Next page' %}"><img src="{% static 'arrow_right.png' %}" alt="" aria-hidden="true"></button>
     </div>
   </div>
   <div class="my-stones-right">
@@ -44,16 +44,16 @@
     </div>
     <div class="stone-list" id="interactions-list"></div>
     <div class="page-arrows">
-      <button class="arrow-btn" id="interactions-prev" disabled title="{% trans 'Previous page' %}"><img src="{% static 'arrow_left.png' %}" alt="{% trans 'Previous' %}"></button>
-      <span id="interactions-page-info" class="fs-1-1"></span>
-      <button class="arrow-btn" id="interactions-next" disabled title="{% trans 'Next page' %}"><img src="{% static 'arrow_right.png' %}" alt="{% trans 'Next' %}"></button>
+      <button class="arrow-btn" id="interactions-prev" disabled title="{% trans 'Previous page' %}" aria-label="{% trans 'Previous page' %}"><img src="{% static 'arrow_left.png' %}" alt="" aria-hidden="true"></button>
+      <span id="interactions-page-info" class="fs-1-1" aria-live="polite"></span>
+      <button class="arrow-btn" id="interactions-next" disabled title="{% trans 'Next page' %}" aria-label="{% trans 'Next page' %}"><img src="{% static 'arrow_right.png' %}" alt="" aria-hidden="true"></button>
     </div>
   </div>
 </div>
 <!-- Gallery modal placeholder -->
-<div id="stone-gallery-modal" class="display-none position-fixed top-0 left-0 w-100vw h-100vh bg-modal-overlay flex-center z-3000">
+<div id="stone-gallery-modal" class="display-none position-fixed top-0 left-0 w-100vw h-100vh bg-modal-overlay flex-center z-3000" role="dialog" aria-modal="true" aria-label="{% trans 'Stone details' %}">
   <div id="stone-gallery-content" class="bg-white border-radius-18 max-w-600 w-90vw m-auto p-2 position-relative shadow-heavy">
-    <span id="stone-gallery-close" class="position-absolute top-1 right-1 fs-2 cursor-pointer shared-modal-close-touch">&times;</span>
+    <span id="stone-gallery-close" class="position-absolute top-1 right-1 fs-2 cursor-pointer shared-modal-close-touch" role="button" aria-label="{% trans 'Close' %}">&times;</span>
     <div id="stone-gallery-body"></div>
   </div>
 </div>

@@ -199,9 +199,9 @@
 </div>
 
 <!-- Scan Stone Modal -->
-<div id="scan-stone-modal" class="modal display-none position-fixed z-2000 left-0 top-0 w-100vw h-100vh bg-modal-overlay flex-center">
+<div id="scan-stone-modal" class="modal display-none position-fixed z-2000 left-0 top-0 w-100vw h-100vh bg-modal-overlay flex-center" role="dialog" aria-modal="true" aria-label="{% trans 'Scan Stone' %}">
   <div class="avant-modal max-w-600 min-w-320 w-90vw max-h-90vh m-auto p-2 position-relative shared-modal-flex-col">
-    <span id="scan-stone-close" class="close position-absolute top-1 right-1 fs-2 cursor-pointer shared-modal-close-touch">&times;</span>
+    <span id="scan-stone-close" class="close position-absolute top-1 right-1 fs-2 cursor-pointer shared-modal-close-touch" role="button" aria-label="{% trans 'Close' %}">&times;</span>
     <h2 class="avant-header mb-1">{% trans 'Scan Stone' %}</h2>
     <div class="shared-modal-scan-flex">
       <!-- Stone Name Input -->
@@ -256,9 +256,9 @@
 </div>
 
 <!-- QR Code Display Modal -->
-<div id="qr-code-modal" class="modal display-none position-fixed z-2000 left-0 top-0 w-100vw h-100vh bg-modal-overlay flex-center">
+<div id="qr-code-modal" class="modal display-none position-fixed z-2000 left-0 top-0 w-100vw h-100vh bg-modal-overlay flex-center" role="dialog" aria-modal="true" aria-label="{% trans 'QR Code' %}">
   <div class="avant-modal max-w-500 min-w-320 w-90vw max-h-90vh m-auto p-2 position-relative shared-modal-flex-col">
-    <span id="qr-code-close" class="close position-absolute top-1 right-1 fs-2 cursor-pointer shared-modal-close-touch">&times;</span>
+    <span id="qr-code-close" class="close position-absolute top-1 right-1 fs-2 cursor-pointer shared-modal-close-touch" role="button" aria-label="{% trans 'Close' %}">&times;</span>
     <h2 class="avant-header mb-1">{% trans 'QR Code' %}</h2>
     <div class="shared-modal-qr-col">
       <!-- QR Code Image -->
@@ -296,9 +296,9 @@
 </div>
 
 <!-- Welcome Banner Modal -->
-<div id="welcome-banner-modal" class="profile-modal-overlay display-none">
+<div id="welcome-banner-modal" class="profile-modal-overlay display-none" role="dialog" aria-modal="true" aria-label="{% trans 'Welcome' %}">
   <div id="welcome-modal-content" class="avant-modal">
-    <span id="welcome-modal-close" class="profile-modal-close">&times;</span>
+    <span id="welcome-modal-close" class="profile-modal-close" role="button" aria-label="{% trans 'Close' %}">&times;</span>
     <div class="avant-header">{% trans 'Welcome to StoneWalker!' %}</div>
     <div class="avant-card-desc">
       <span class="avant-header accent">{% trans 'You are a guest.' %}</span><br>
@@ -989,5 +989,20 @@ document.addEventListener('DOMContentLoaded', function() {
       welcomeModal.classList.add('display-none');
     }
   };
+
+  // Keyboard accessibility: Escape key closes any open modal
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      if (scanModal && scanModal.style.display !== 'none' && !scanModal.classList.contains('display-none')) {
+        closeModal(scanModal);
+      }
+      if (qrModal && qrModal.style.display !== 'none' && !qrModal.classList.contains('display-none')) {
+        closeModal(qrModal);
+      }
+      if (welcomeModal && welcomeModal.style.display !== 'none' && !welcomeModal.classList.contains('display-none')) {
+        closeWelcomeModal();
+      }
+    }
+  });
 });
 </script> 
