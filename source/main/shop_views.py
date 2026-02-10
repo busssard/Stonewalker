@@ -22,6 +22,24 @@ from .shop_utils import get_enabled_products, get_product_config, get_categories
 logger = logging.getLogger(__name__)
 
 
+class CreateNewStoneView(LoginRequiredMixin, View):
+    """Smart router: checks for unclaimed QR codes and directs user accordingly.
+
+    - If user has an unclaimed stone from a purchased pack → redirect to claim it
+    - Otherwise → redirect to the shop to acquire a QR code
+    """
+
+    def get(self, request):
+        # Find unclaimed stones belonging to the user's packs
+        user_packs = QRPack.objects.filter(FK_user=request.user, status='fulfilled')
+        for pack in user_packs:
+            unclaimed_stone = pack.stones.filter(status='unclaimed').first()
+            if unclaimed_stone:
+                return redirect('claim_stone', stone_uuid=str(unclaimed_stone.uuid))
+
+        return redirect('shop')
+
+
 class ClaimStoneView(LoginRequiredMixin, View):
     """Handle claiming an unclaimed stone"""
     template_name = 'main/claim_stone.html'
@@ -61,6 +79,20 @@ class ClaimStoneView(LoginRequiredMixin, View):
         stone_name = request.POST.get('stone_name', '').strip()
         description = request.POST.get('description', '').strip()
         image = request.FILES.get('image')
+
+        # Validate description content
+        from .validators import validate_no_contact_info
+        from django.core.exceptions import ValidationError as DjangoValidationError
+        try:
+            validate_no_contact_info(description)
+        except DjangoValidationError as e:
+            messages.error(request, e.message)
+            return render(request, self.template_name, {
+                'stone': stone,
+                'stone_uuid': stone_uuid,
+                'stone_name': stone_name,
+                'description': description,
+            })
 
         # Validate stone name
         errors = []
@@ -150,6 +182,8 @@ class ShopView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
+        dev_mode = getattr(settings, 'DEBUG', False)
+
         # Load products from config
         products = get_enabled_products()
         categories = get_categories()
@@ -159,9 +193,13 @@ class ShopView(TemplateView):
         for product in products:
             enhanced = product.copy()
 
+            # In dev mode, remove limit on free_single so devs can checkout repeatedly
+            if dev_mode and enhanced.get('id') == 'free_single':
+                enhanced['limit_per_user'] = None
+
             # Check user limits
             if self.request.user.is_authenticated:
-                limit = product.get('limit_per_user')
+                limit = enhanced.get('limit_per_user')
                 if limit:
                     user_count = QRPack.objects.filter(
                         FK_user=self.request.user,
@@ -185,11 +223,20 @@ class ShopView(TemplateView):
             else:
                 enhanced['price_display'] = format_price(enhanced.get('price_cents', 0))
 
+            # Calculate per-unit price for multi-packs
+            pack_size = enhanced.get('pack_size', 1)
+            if pack_size > 1 and not enhanced.get('is_free'):
+                per_unit_cents = enhanced.get('price_cents', 0) // pack_size
+                enhanced['price_per_unit'] = format_price(per_unit_cents)
+            else:
+                enhanced['price_per_unit'] = ''
+
             enhanced_products.append(enhanced)
 
         context['products'] = enhanced_products
         context['categories'] = categories
         context['stripe_public_key'] = getattr(settings, 'STRIPE_PUBLIC_KEY', '')
+        context['dev_mode'] = dev_mode
 
         # Add user's existing packs for re-download
         if self.request.user.is_authenticated:
@@ -216,9 +263,11 @@ class CheckoutView(LoginRequiredMixin, View):
             messages.error(request, _('This product is not available.'))
             return redirect('shop')
 
-        # Check user limits
+        dev_mode = getattr(settings, 'DEBUG', False)
+
+        # Check user limits (skipped in dev mode for free_single)
         limit = product.get('limit_per_user')
-        if limit:
+        if limit and not (dev_mode and product_id == 'free_single'):
             user_count = QRPack.objects.filter(
                 FK_user=request.user,
                 pack_type=product_id,
