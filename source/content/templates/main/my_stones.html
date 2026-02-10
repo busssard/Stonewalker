@@ -1,6 +1,7 @@
 {% extends 'layouts/default/page.html' %}
 {% load static %}
 {% load i18n %}
+{% load l10n %}
 
 {% block content %}
 <div class="my-stones-split">
@@ -52,12 +53,13 @@
 <!-- Gallery modal placeholder -->
 <div id="stone-gallery-modal" class="display-none position-fixed top-0 left-0 w-100vw h-100vh bg-modal-overlay flex-center z-3000">
   <div id="stone-gallery-content" class="bg-white border-radius-18 max-w-600 w-90vw m-auto p-2 position-relative shadow-heavy">
-    <span id="stone-gallery-close" class="position-absolute top-1 right-1 fs-2 cursor-pointer">&times;</span>
+    <span id="stone-gallery-close" class="position-absolute top-1 right-1 fs-2 cursor-pointer shared-modal-close-touch">&times;</span>
     <div id="stone-gallery-body"></div>
   </div>
 </div>
 <script>
 // Prepare data arrays for client-side pagination
+{% localize off %}
 const creationsData = [
   {% for stone in my_stones %}
     {
@@ -67,15 +69,15 @@ const creationsData = [
       created_at: "{{ stone.created_at|date:'c' }}",
       color: "{{ stone.color|default:'#4CAF50' }}",
       shape: "{{ stone.shape|default:'circle' }}",
-      distance_km: {{ stone.distance_km|default:0|floatformat:1 }},
+      distance_km: {{ stone.distance_km|default:0|unlocalize }},
       username: "{{ stone.FK_user.username|escapejs }}",
       status: "{{ stone.status }}",
       can_be_edited: {{ stone.can_be_edited|yesno:"true,false" }},
       moves: [
         {% for move in stone.moves.all %}
         {
-          latitude: {{ move.latitude|default:'null' }},
-          longitude: {{ move.longitude|default:'null' }},
+          latitude: {{ move.latitude|default:'null'|unlocalize }},
+          longitude: {{ move.longitude|default:'null'|unlocalize }},
           timestamp: "{{ move.timestamp|date:'c' }}",
           timestamp_display: "{{ move.timestamp|date:'M d, Y' }}",
           image: "{% if move.image %}{{ move.image.url }}{% else %}{% static 'stone.png' %}{% endif %}",
@@ -97,13 +99,13 @@ const interactionsData = [
       created_at: "{{ stone.created_at|date:'c' }}",
       color: "{{ stone.color|default:'#4CAF50' }}",
       shape: "{{ stone.shape|default:'circle' }}",
-      distance_km: {{ stone.distance_km|default:0|floatformat:1 }},
+      distance_km: {{ stone.distance_km|default:0|unlocalize }},
       username: "{{ stone.FK_user.username|escapejs }}",
       moves: [
         {% for move in stone.moves.all %}
         {
-          latitude: {{ move.latitude|default:'null' }},
-          longitude: {{ move.longitude|default:'null' }},
+          latitude: {{ move.latitude|default:'null'|unlocalize }},
+          longitude: {{ move.longitude|default:'null'|unlocalize }},
           timestamp: "{{ move.timestamp|date:'c' }}",
           timestamp_display: "{{ move.timestamp|date:'M d, Y' }}",
           image: "{% if move.image %}{{ move.image.url }}{% else %}{% static 'stone.png' %}{% endif %}",
@@ -116,6 +118,7 @@ const interactionsData = [
     }{% if not forloop.last %},{% endif %}
   {% endfor %}
 ];
+{% endlocalize %}
 
 function renderStonesList(listId, data, page, perPage) {
   const list = document.getElementById(listId);
