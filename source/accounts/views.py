@@ -409,7 +409,32 @@ class ChangeProfileView(LoginRequiredMixin, FormView):
         if self.request.POST.get('profile_picture-clear') == 'on':
             profile.profile_picture = None
         elif self.request.FILES.get('profile_picture'):
-            profile.profile_picture = self.request.FILES['profile_picture']
+            uploaded = self.request.FILES['profile_picture']
+            # Server-side image resize to max 800x800
+            try:
+                from PIL import Image
+                from io import BytesIO
+                from django.core.files.uploadedfile import InMemoryUploadedFile
+                img = Image.open(uploaded)
+                max_dim = 800
+                if img.width > max_dim or img.height > max_dim:
+                    img.thumbnail((max_dim, max_dim), Image.LANCZOS)
+                    buf = BytesIO()
+                    fmt = 'JPEG' if img.mode == 'RGB' else 'PNG'
+                    if img.mode == 'RGBA':
+                        fmt = 'PNG'
+                    elif img.mode != 'RGB':
+                        img = img.convert('RGB')
+                        fmt = 'JPEG'
+                    img.save(buf, format=fmt, quality=85)
+                    buf.seek(0)
+                    ext = 'jpg' if fmt == 'JPEG' else 'png'
+                    name = uploaded.name.rsplit('.', 1)[0] + '.' + ext
+                    content_type = 'image/jpeg' if fmt == 'JPEG' else 'image/png'
+                    uploaded = InMemoryUploadedFile(buf, 'profile_picture', name, content_type, buf.getbuffer().nbytes, None)
+            except Exception:
+                pass  # If resize fails, use original
+            profile.profile_picture = uploaded
         profile.save()
         # Password
         password1 = form.cleaned_data.get('password1')

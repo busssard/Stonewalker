@@ -60,6 +60,7 @@
                             {% endif %}
                             <input type="file" class="form-control-file" id="image" name="image" accept="image/*"
                                    {% if not stone.can_be_edited %}disabled{% endif %}>
+                            <div id="image-validation-msg" class="js-hidden"></div>
                             <small class="form-text text-muted">{% trans "Upload a new image to replace the current one" %}</small>
                         </div>
 
@@ -142,4 +143,9 @@
         </div>
     </div>
 </div>
+<script>
+if (typeof setupImageUpload === 'function') {
+  setupImageUpload({ inputId: 'image', msgId: 'image-validation-msg' });
+}
+</script>
 {% endblock %}

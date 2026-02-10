@@ -76,6 +76,7 @@
           <label class="new-modal-label">{% trans 'Picture' %}</label>
           <input type="file" name="image" accept="image/*" id="new-stone-image"
                  class="new-modal-file-input">
+          <div id="new-stone-image-msg" class="js-hidden"></div>
         </div>
 
         <!-- Description -->
@@ -442,6 +443,12 @@
 
   // Initialize
   setStoneType('hidden');
+
+  // Image upload validation
+  if (typeof setupImageUpload === 'function') {
+    setupImageUpload({ inputId: 'new-stone-image', msgId: 'new-stone-image-msg' });
+  }
+
   console.log('New add stone modal initialized');
 })();
 </script>
