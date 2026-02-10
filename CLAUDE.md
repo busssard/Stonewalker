@@ -194,6 +194,16 @@ make clean       # Clean generated files
 - User authentication required for stone operations
 - Cooldown enforcement prevents spam scanning
 - SSL required in production
+- Contact info validator blocks emails/URLs/phone numbers in comments
+
+### SQL Safety Audit (February 2026)
+- **No raw SQL anywhere**: Audited all Python files in `source/`. Zero instances of `raw()`, `extra()`, `cursor.execute()`, `RawSQL`, or string-formatted SQL.
+- **All queries use Django ORM** with parameterized inputs (`.filter()`, `.get()`, `.create()`, `.exists()`, etc.)
+- **Form handling is safe**: All user input goes through Django form validation or explicit `.strip()` / `.get()` before ORM calls
+- **Stripe webhook**: Uses `stripe.Webhook.construct_event()` for signature verification; raw JSON payload is never used in SQL
+- **f-strings in views**: Only used for log messages, file paths, and redirect URLs -- never for query construction
+- **One note**: The `check_stone_name` and `check_username` views take GET parameters and pass them to `.filter()` which is safe (Django parameterizes these)
+- **Conclusion**: No SQL injection vectors found. The codebase is ORM-only.
 
 ### Internationalization
 - Middleware-based language detection
