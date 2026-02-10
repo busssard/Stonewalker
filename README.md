@@ -189,7 +189,7 @@ The StoneWalker application uses Django ORM models to represent its core data:
 
 | Field        | Type         | Description                                 |
 |--------------|--------------|---------------------------------------------|
-| PK_stone     | CharField    | Primary Key (max 10 chars, unique, no whitespace) |
+| PK_stone     | CharField    | Primary Key (max 50 chars, unique, no whitespace) |
 | description  | TextField    | Optional description of the stone (max 500char) |
 | created_at   | DateTimeField| Timestamp when the stone was created        |
 | FK_user      | ForeignKey   | User who created the stone                  |

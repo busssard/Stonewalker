@@ -26,6 +26,35 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # ---------------------------------------------------------------------------
+  # Lint job - fast, no database needed
+  # ---------------------------------------------------------------------------
+  lint:
+    name: Lint & Format Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install ruff
+        run: pip install ruff
+
+      # Lint check (non-blocking: --exit-zero so CI doesn't fail on existing issues)
+      - name: Ruff lint check
+        run: ruff check source/ --config source/pyproject.toml --exit-zero
+
+      # Format check (non-blocking)
+      - name: Ruff format check
+        run: ruff format --check source/ --config source/pyproject.toml || true
+
+  # ---------------------------------------------------------------------------
+  # Test job - full test suite with PostgreSQL
+  # ---------------------------------------------------------------------------
   test:
     name: Run Test Suite
     runs-on: ubuntu-latest

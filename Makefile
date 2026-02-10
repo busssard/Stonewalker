@@ -1,4 +1,4 @@
-.PHONY: help test test-fast test-slow install clean translations compile-translations
+.PHONY: help test test-fast test-slow install clean translations compile-translations lint format quality-check security-scan
 
 help: ## Show this help message
 	@echo "Available commands:"
@@ -34,4 +34,20 @@ clean: ## Clean up generated files
 	rm -rf .pytest_cache/
 
 setup: install ## Setup the project (install dependencies and compile translations)
-	$(MAKE) compile-translations 
+	$(MAKE) compile-translations
+
+# =============================================================================
+# Code Quality
+# =============================================================================
+
+lint: ## Run ruff linter (check only, no fixes)
+	ruff check source/ --config source/pyproject.toml
+
+format: ## Check code formatting (no changes, diff only)
+	ruff format --check --diff source/ --config source/pyproject.toml
+
+quality-check: lint format ## Run all quality checks (lint + format)
+	@echo "All quality checks passed."
+
+security-scan: ## Run bandit security scanner
+	bandit -r source/ -c source/pyproject.toml --exit-zero
