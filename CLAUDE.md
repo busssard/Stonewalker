@@ -453,3 +453,36 @@ In Discourse Admin → Settings → Login:
 - `enable_discourse_connect` = true
 - `discourse_connect_url` = `http://host.docker.internal:8000/accounts/discourse-sso/`
 - `discourse_connect_secret` = `dev_secret_change_me`
+
+## Sprint Session Learnings (February 2026)
+
+### Test Infrastructure (Final Architecture)
+- **pytest.ini**: `--tb=no -q --no-header` suppresses ALL default pytest output
+- **conftest.py**: Custom plugin handles failure display with full tracebacks via `pytest_terminal_summary`. `pytest_report_teststatus` returns `report.outcome, "", ""` only for call phase (setup/teardown return None for default behavior). This gives correct test counts (145, not 435).
+- **run_tests.py**: Fixed `compile_translations` → `compilemessages`. Added `--skip-translations` flag for fast agent runs. Supports subset running: `run_tests.py accounts`, `run_tests.py -m unit`, `run_tests.py -k pattern`.
+- **Output**: `145 passed in 3:15` on all-pass. Full `FAIL: test_path::TestClass::test_name` + traceback on failure.
+- **Key lesson**: Never use `--no-summary` - it suppresses the `pytest_terminal_summary` hook too.
+
+### Multi-Agent Team Lessons (This Session)
+- **Don't spawn agents before test infra works** - 4 Opus agents all running the 3-min test suite simultaneously is wasteful chaos
+- **Fix foundation first** - test output, CI, then feature work
+- **Agents CAN make independent commits** - each agent committed its own work cleanly
+- **File conflict risk is real** - conftest.py was overwritten 3 times by different agents. Exclusive file ownership is critical.
+- **`assertRedirects` follows redirect chains** - when testing `/a/ → /b/ → /c/`, use `assertEqual(status_code, 302)` + `assertIn(url)` to check just the first hop
+- **Linters/hooks can revert changes** - pytest.ini kept getting `--tb=short` added back. Work WITH the linter, not against it.
+
+### Completed This Session
+1. N+1 query fix: StoneWalkerStartPageView O(N) → O(1) with select_related/prefetch_related
+2. Shop flow reroute: /add_stone/ now redirects to /create-stone/ (shop pipeline)
+3. Language bug: German locale broke JS floats (2.5 → 2,5), fixed with |unlocalize filter
+4. Security: removed CSRF-exempt debug endpoint, added comment filtering, robots.txt, 5MB upload limit
+5. CSS extraction: 600+ inline styles moved to styles.css
+6. Image upload: client-side 800x800 validation + server-side PIL resize
+7. Test infrastructure: silent pass, verbose fail, subset running
+8. File cleanup: removed 23 obsolete files (5700 lines deleted)
+
+### Performance Fixes Applied
+- **select_related('FK_user', 'FK_user__profile')** on main page stone queries
+- **Prefetch('moves', queryset=StoneMove.objects.order_by('timestamp').select_related('FK_user'))** eliminates N+1 for movement data
+- **CSS extraction** enables browser caching (styles.css cached separately from HTML)
+- **Image resize** prevents oversized uploads from hitting the server
