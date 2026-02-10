@@ -233,8 +233,8 @@ class CombinedProfileForm(forms.Form):
     username = forms.CharField(label=_('Username'), max_length=150, required=True)
     email = forms.EmailField(label=_('Email'), required=True)
     profile_picture = forms.ImageField(label=_('Profile picture'), required=False)
-    password1 = forms.CharField(label=_('New password'), widget=forms.PasswordInput, required=False)
-    password2 = forms.CharField(label=_('Confirm new password'), widget=forms.PasswordInput, required=False)
+    password1 = forms.CharField(label=_('New password'), widget=forms.PasswordInput(attrs={'autocomplete': 'new-password'}), required=False)
+    password2 = forms.CharField(label=_('Confirm new password'), widget=forms.PasswordInput(attrs={'autocomplete': 'new-password'}), required=False)
 
     def __init__(self, user, *args, **kwargs):
         self.user = user
@@ -242,6 +242,14 @@ class CombinedProfileForm(forms.Form):
         self.fields['username'].initial = user.username
         self.fields['email'].initial = user.email
         # Profile picture initial handled in view
+
+    def clean_profile_picture(self):
+        image = self.cleaned_data.get('profile_picture')
+        if image and hasattr(image, 'size'):
+            max_size = 5 * 1024 * 1024  # 5 MB
+            if image.size > max_size:
+                raise ValidationError(_('Image file is too large. Maximum size is 5 MB.'))
+        return image
 
     def clean_username(self):
         username = self.cleaned_data['username']

@@ -7,14 +7,13 @@ from django.views.generic import TemplateView
 
 from main.views import IndexPageView, ChangeLanguageView
 from main.views import StoneWalkerStartPageView
-from main.views import debug_add_stone
 from main.views import MyStonesView
 from main.views import add_stone, StoneScanView, check_stone_name
 from main.views import StoneQRCodeView, StoneLinkView, check_stone_uuid, StoneEditView, StoneSendOffView, generate_qr_code_api, download_enhanced_qr_code
 
 # Shop views
 from main.shop_views import (
-    ShopView, ClaimStoneView, CheckoutView,
+    ShopView, ClaimStoneView, CheckoutView, CreateNewStoneView,
     CheckoutSuccessView, DownloadPackPDFView, FreeQRView, DownloadStoneQRView
 )
 from main.stripe_service import stripe_webhook
@@ -30,6 +29,8 @@ urlpatterns = [
     path('api/check_stone_name/', check_stone_name, name='check_stone_name'),
     # Stripe webhook (no language prefix, no CSRF)
     path('webhooks/stripe/', stripe_webhook, name='stripe_webhook'),
+    # robots.txt for search engine crawlers
+    path('robots.txt', TemplateView.as_view(template_name='robots.txt', content_type='text/plain'), name='robots_txt'),
 ]
 
 # URLs that should have language prefix
@@ -37,12 +38,13 @@ urlpatterns += i18n_patterns(
     path('', StoneWalkerStartPageView.as_view(), name='index'),
     # path('', IndexPageView.as_view(), name='index'),
     path('stonewalker/', StoneWalkerStartPageView.as_view(), name='stonewalker_start'),
-    path('debug/add_stone/', debug_add_stone, name='debug_add_stone'),
-
     path('my-stones/', MyStonesView.as_view(), name='my_stones'),
     path('add_stone/', add_stone, name='add_stone'),
     path('stonescan/', StoneScanView.as_view(), name='stone_scan'),
     path('forum/', TemplateView.as_view(template_name='main/forum.html'), name='forum'),
+
+    # Create New Stone → smart router (unclaimed QR → claim, else → shop)
+    path('create-stone/', CreateNewStoneView.as_view(), name='create_stone'),
 
     # Shop URLs
     path('shop/', ShopView.as_view(), name='shop'),
