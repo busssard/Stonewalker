@@ -65,6 +65,7 @@
 
       <label class="avant-label mt-1" for="id_image">{% trans 'Stone Photo (optional)' %}</label>
       <input type="file" name="image" id="id_image" accept="image/*" class="avant-input">
+      <div id="image-validation-msg" class="js-hidden"></div>
       <small class="text-muted">{% trans 'You can add a photo now or later after painting your stone.' %}</small>
 
       <button type="submit" class="avant-btn mt-1-2">{% trans 'Claim My Stone' %}</button>
@@ -75,4 +76,9 @@
     </div>
   </div>
 </div>
+<script>
+if (typeof setupImageUpload === 'function') {
+  setupImageUpload({ inputId: 'id_image', msgId: 'image-validation-msg' });
+}
+</script>
 {% endblock %}

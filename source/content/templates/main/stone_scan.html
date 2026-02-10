@@ -28,6 +28,7 @@
       
       <label class="avant-label" for="id_image">{% trans 'Photo (optional)' %}</label>
       <input type="file" name="image" id="id_image" accept="image/*" class="avant-input">
+      <div id="image-validation-msg" class="js-hidden"></div>
       
       <label class="avant-label" for="id_latitude">{% trans 'Latitude' %}*</label>
       <input type="number" name="latitude" id="id_latitude" step="any" required class="avant-input" value="{{ latitude|default:'' }}">
@@ -72,6 +73,11 @@ document.addEventListener('DOMContentLoaded', function() {
   }
   // Set initial values
   setLatLng(20, 0);
+
+  // Image upload validation
+  if (typeof setupImageUpload === 'function') {
+    setupImageUpload({ inputId: 'id_image', msgId: 'image-validation-msg' });
+  }
 });
 </script>
 {% endblock %} 
