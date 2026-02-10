@@ -171,8 +171,8 @@ function checkImageSize(imageUrl) {
     </nav>
   </div>
   <div id="profile-menu-container" class="flex-center position-relative">
-    <button id="profile-menu-btn" class="avant-btn header-profile-menu-btn m-0 border-none bg-transparent h-full flex-center">
-      <img src="{{ request.user.profile.get_picture_url }}" alt="Profile" class="header-profile-img">
+    <button id="profile-menu-btn" class="avant-btn header-profile-menu-btn m-0 border-none bg-transparent h-full flex-center" aria-label="{% trans 'Profile menu' %}">
+      <img src="{{ request.user.profile.get_picture_url }}" alt="{% trans 'Profile picture' %}" class="header-profile-img">
     </button>
   </div>
   {% else %}
@@ -181,8 +181,8 @@ function checkImageSize(imageUrl) {
   </div>
   {% endif %}
   <div id="burger-menu-container" class="flex-center position-relative h-full">
-    <label for="menu-toggle" class="avant-btn header-burger-label" id="burger-label">
-      <svg viewBox="0 0 32 32" preserveAspectRatio="xMidYMid meet"><rect y="6" width="32" height="4" rx="2" fill="#FF6B6B"/><rect y="14" width="32" height="4" rx="2" fill="#FF6B6B"/><rect y="22" width="32" height="4" rx="2" fill="#FF6B6B"/></svg>
+    <label for="menu-toggle" class="avant-btn header-burger-label" id="burger-label" role="button" aria-label="{% trans 'Toggle navigation menu' %}">
+      <svg viewBox="0 0 32 32" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><rect y="6" width="32" height="4" rx="2" fill="#FF6B6B"/><rect y="14" width="32" height="4" rx="2" fill="#FF6B6B"/><rect y="22" width="32" height="4" rx="2" fill="#FF6B6B"/></svg>
     </label>
   </div>
   <div id="burger-overlay" class="header-burger-overlay"></div>
@@ -195,9 +195,9 @@ function checkImageSize(imageUrl) {
 <!-- JS for burger menu and profile modal moved to static/js/header.js -->
 
 <!-- Profile Edit Modal (hidden by default) -->
-<div id="profile-modal-overlay" class="profile-modal-overlay">
+<div id="profile-modal-overlay" class="profile-modal-overlay" role="dialog" aria-modal="true" aria-label="{% trans 'Edit Profile' %}">
   <div id="profile-modal-content" class="avant-modal profile-modal-content">
-    <span id="profile-modal-close" class="profile-modal-close">&times;</span>
+    <span id="profile-modal-close" class="profile-modal-close" role="button" aria-label="{% trans 'Close' %}">&times;</span>
     <div id="profile-modal-body" class="profile-modal-body"></div>
   </div>
 </div>
@@ -234,6 +234,12 @@ document.getElementById('profile-modal-close').onclick = closeProfileModal;
 document.getElementById('profile-modal-overlay').onclick = function(e) {
   if (e.target === this) closeProfileModal();
 };
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    var overlay = document.getElementById('profile-modal-overlay');
+    if (overlay && overlay.style.display === 'flex') closeProfileModal();
+  }
+});
 // Attach modal openers to Edit Profile and profile picture
 window.addEventListener('DOMContentLoaded', function() {
   document.querySelectorAll('a[href$="accounts/change_profile/"]').forEach(function(el) {

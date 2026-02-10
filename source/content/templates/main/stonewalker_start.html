@@ -63,13 +63,13 @@
   </div>
 </div>
 <!-- Floating action buttons (styled, side by side, bottom right) -->
-<div class="floating-action-bar">
-  <button id="add-stone-fab" title="{% trans 'Add new stone' %}" class="avant-btn floating-action-btn primary">
-    <img src="{% static 'hold_stone.png' %}" alt="{% trans 'Add new stone' %}" />
+<div class="floating-action-bar" role="group" aria-label="{% trans 'Stone actions' %}">
+  <button id="add-stone-fab" title="{% trans 'Add new stone' %}" aria-label="{% trans 'Create a new stone' %}" class="avant-btn floating-action-btn primary">
+    <img src="{% static 'hold_stone.png' %}" alt="" aria-hidden="true" />
     <span>{% trans 'Create New Stone' %}</span>
   </button>
-  <button id="scan-stone-fab" title="{% trans 'I found a stone' %}" class="avant-btn floating-action-btn secondary">
-    <img id="scan-stone-icon" src="{% static 'found_stone.png' %}" alt="{% trans 'Scan Stone' %}" />
+  <button id="scan-stone-fab" title="{% trans 'I found a stone' %}" aria-label="{% trans 'Scan a stone QR code' %}" class="avant-btn floating-action-btn secondary">
+    <img id="scan-stone-icon" src="{% static 'found_stone.png' %}" alt="" aria-hidden="true" />
     <span id="scan-stone-text">{% trans 'Scan a Stone' %}</span>
   </button>
 </div>
