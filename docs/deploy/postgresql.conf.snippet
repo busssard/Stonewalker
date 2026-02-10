@@ -1,0 +1,36 @@
+# PostgreSQL tuning for StoneWalker on a 2-4GB VPS
+# Apply by editing /etc/postgresql/15/main/postgresql.conf
+# Then: systemctl restart postgresql
+
+# --- Memory ---
+# 25% of total RAM for shared buffers
+shared_buffers = 512MB          # 2GB VPS: 512MB, 4GB VPS: 1GB
+effective_cache_size = 1536MB   # 2GB VPS: 1.5GB, 4GB VPS: 3GB
+work_mem = 8MB                  # Per-operation sort/hash memory
+maintenance_work_mem = 128MB    # VACUUM, CREATE INDEX, etc.
+
+# --- WAL / Checkpoints ---
+wal_buffers = 16MB
+checkpoint_completion_target = 0.9
+max_wal_size = 1GB
+min_wal_size = 80MB
+
+# --- Connections ---
+max_connections = 50            # StoneWalker needs ~10-15 (gunicorn workers * 2)
+
+# --- Query Planner ---
+random_page_cost = 1.1          # SSD storage (default 4.0 is for spinning disks)
+effective_io_concurrency = 200  # SSD storage
+
+# --- Logging ---
+log_min_duration_statement = 500  # Log queries slower than 500ms
+log_checkpoints = on
+log_connections = on
+log_disconnections = on
+log_lock_waits = on
+
+# --- Locale ---
+lc_messages = 'en_US.UTF-8'
+lc_monetary = 'en_US.UTF-8'
+lc_numeric = 'en_US.UTF-8'
+lc_time = 'en_US.UTF-8'

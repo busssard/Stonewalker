@@ -1,0 +1,33 @@
+# StoneWalker gunicorn systemd service
+# Place at: /etc/systemd/system/stonewalker.service
+# Then: systemctl daemon-reload && systemctl enable stonewalker && systemctl start stonewalker
+
+[Unit]
+Description=StoneWalker Django Application (Gunicorn)
+After=network.target postgresql.service
+Requires=postgresql.service
+
+[Service]
+Type=notify
+User=stonewalker
+Group=www-data
+RuntimeDirectory=stonewalker
+WorkingDirectory=/opt/stonewalker/source
+EnvironmentFile=/opt/stonewalker/.env
+ExecStart=/opt/stonewalker/venv/bin/gunicorn app.wsgi:application \
+    --bind unix:/run/stonewalker/gunicorn.sock \
+    --workers 5 \
+    --timeout 120 \
+    --max-requests 1000 \
+    --max-requests-jitter 100 \
+    --access-logfile /var/log/stonewalker/access.log \
+    --error-logfile /var/log/stonewalker/error.log \
+    --log-level info
+ExecReload=/bin/kill -s HUP $MAINPID
+KillMode=mixed
+Restart=on-failure
+RestartSec=5
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
