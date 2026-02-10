@@ -1,6 +1,0 @@
-{
-  "name": "stonewalker-netlify-functions",
-  "version": "1.0.0",
-  "main": "django.js",
-  "dependencies": {}
-} 
