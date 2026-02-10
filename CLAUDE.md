@@ -486,3 +486,30 @@ In Discourse Admin → Settings → Login:
 - **Prefetch('moves', queryset=StoneMove.objects.order_by('timestamp').select_related('FK_user'))** eliminates N+1 for movement data
 - **CSS extraction** enables browser caching (styles.css cached separately from HTML)
 - **Image resize** prevents oversized uploads from hitting the server
+
+## Business Strategy & Market Context
+
+### Market Research (February 2026)
+- **Geocaching**: 3.4M active caches, 3M+ players, ~124 employees at HQ. Premium subscription: $39.99/year or $6.99/month. Proves the "hide and find" model sustains a real business.
+- **Stone painting community**: The Kindness Rocks Project operates in 90+ countries. Single-city Facebook groups reach 6,800+ members with 100-200 new joins/week. Massive, active, and completely unserved by tech.
+- **The gap**: Nobody combines stone painting with digital tracking. Geocaching has tech but no art. Kindness Rocks has art but no tech. StoneWalker is the intersection.
+
+### Shop Architecture
+- **Config-driven**: Products defined in `source/main/shop_config.json`, loaded by `shop_utils.py` with caching
+- **Current products**: Free single QR (loss leader) + 10-pack at $9.99
+- **Expansion ready**: Adding new products requires only a JSON entry + Stripe price -- no code changes needed
+- **Stripe integration**: Full checkout flow with webhook fulfillment in `stripe_service.py`
+- **PDF generation**: Multi-pack QR codes delivered as printable PDFs via `pdf_service.py`
+
+### Revenue Strategy
+- Digital QR packs: ~95% margin (Stripe fees only)
+- Physical products (kits, metal plaques): 50-75% margin
+- Premium subscriptions: Recurring revenue anchor
+- Education/group packs: High-value, low-volume
+- Full strategy doc: `docs/BUSINESS_STRATEGY.md`
+
+### Cost Structure
+- Render.com hosting: ~$14/month (web + PostgreSQL)
+- Email (Mailjet free tier): $0/month
+- Domain: ~$12/year
+- Break-even: ~$15/month (nearly immediate with any revenue)
