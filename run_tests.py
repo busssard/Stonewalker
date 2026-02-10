@@ -1,85 +1,76 @@
 #!/usr/bin/env python3
 """
-Test runner that ensures translations are compiled before running tests.
-Usage: python run_tests.py [pytest-args...]
+StoneWalker test runner.
+
+Usage:
+    ./venv/bin/python run_tests.py                       # all tests
+    ./venv/bin/python run_tests.py accounts              # account tests only
+    ./venv/bin/python run_tests.py main/tests/           # main tests only
+    ./venv/bin/python run_tests.py -k test_scan          # by name pattern
+    ./venv/bin/python run_tests.py -m unit               # unit tests only
+    ./venv/bin/python run_tests.py -m integration        # integration only
+    ./venv/bin/python run_tests.py --skip-translations   # skip compilemessages
 """
 
 import os
 import sys
 import subprocess
-import argparse
 from pathlib import Path
+
+PROJECT_ROOT = Path(__file__).resolve().parent
+SOURCE_DIR = PROJECT_ROOT / "source"
+VENV_PYTHON = PROJECT_ROOT / "venv" / "bin" / "python"
+
+
+def get_python():
+    if VENV_PYTHON.exists():
+        return str(VENV_PYTHON)
+    return sys.executable
 
 
 def compile_translations():
-    """Compile translations before running tests."""
-    print("🔄 Compiling translations before tests...")
-    
+    python = get_python()
     try:
-        # Change to source directory
-        source_dir = Path(__file__).parent / "source"
-        
-        # Run translation compilation using the virtual environment
         result = subprocess.run(
-            ["python", "manage.py", "compile_translations", "--force"],
+            [python, "manage.py", "compilemessages"],
             capture_output=True,
             text=True,
-            cwd=source_dir,
-            env=dict(os.environ, PYTHONPATH=str(source_dir))
+            cwd=SOURCE_DIR,
         )
-        
-        if result.returncode == 0:
-            print("✅ Translations compiled successfully")
-            return True
-        else:
-            print(f"⚠️  Translation compilation warnings: {result.stderr}")
-            return True  # Don't fail tests for warnings
-            
+        if result.returncode != 0:
+            print(f"Warning: compilemessages failed: {result.stderr.strip()}")
     except Exception as e:
-        print(f"⚠️  Translation compilation failed: {e}")
-        return False  # Don't fail tests if compilation fails
+        print(f"Warning: compilemessages failed: {e}")
 
 
 def run_tests(test_args):
-    """Run the actual tests."""
-    print("🧪 Running tests...")
-    
-    # If no explicit test paths are provided (either no args or only flags),
-    # target app test files explicitly to avoid cwd/testpaths issues
-    only_flags = all(arg.startswith('-') for arg in test_args) if test_args else True
-    if only_flags:
-        test_args = list(test_args) if test_args else []
-        test_args += [
-            "accounts/tests.py",
-            "main/tests/",
-        ]
-    
-    # Build pytest command
-    cmd = ["python", "-m", "pytest"] + test_args
-    
-    # Run tests from source directory with proper Django settings
-    # Use development settings for tests (no SSL requirement)
-    env = dict(os.environ, 
-               DJANGO_SETTINGS_MODULE="app.settings",
-               IS_PRODUCTION="false")
-    result = subprocess.run(cmd, cwd=Path(__file__).parent / "source", env=env)
+    python = get_python()
+
+    has_path = any(not arg.startswith("-") for arg in test_args)
+    if not has_path:
+        test_args = list(test_args) + ["accounts/tests.py", "main/tests/"]
+
+    cmd = [python, "-m", "pytest"] + test_args
+    env = dict(
+        os.environ,
+        DJANGO_SETTINGS_MODULE="app.settings",
+        IS_PRODUCTION="false",
+    )
+    result = subprocess.run(cmd, cwd=SOURCE_DIR, env=env)
     return result.returncode
 
 
 def main():
-    # Get all command line arguments except the script name
-    test_args = sys.argv[1:]
-    
-    # Compile translations first
-    if compile_translations():
-        # Run tests
-        exit_code = run_tests(test_args)
-        sys.exit(exit_code)
-    else:
-        print("❌ Failed to compile translations, but continuing with tests...")
-        exit_code = run_tests(test_args)
-        sys.exit(exit_code)
+    args = list(sys.argv[1:])
+
+    skip = "--skip-translations" in args
+    args = [a for a in args if a != "--skip-translations"]
+
+    if not skip:
+        compile_translations()
+
+    sys.exit(run_tests(args))
 
 
-if __name__ == '__main__':
-    main() 
+if __name__ == "__main__":
+    main()

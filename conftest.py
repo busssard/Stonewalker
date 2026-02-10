@@ -1,25 +1,27 @@
 # -*- coding: utf-8 -*-
 """
-Pytest configuration for Django project.
-Compact output: tqdm progress bar, TEST_FAIL: lines for failures.
+Pytest config for StoneWalker.
+Silent on pass. Verbose on failure. No dependencies.
+
+pytest.ini: --tb=no -q --no-header suppress default output.
+This plugin prints failure details. pytest -q prints the final count.
 """
 
 import os
 import sys
+
 import django
 from pathlib import Path
 
-# Add the source directory to Python path
 source_dir = Path(__file__).parent / "source"
 sys.path.insert(0, str(source_dir))
 
-# Set Django settings and configure Django
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "app.settings")
 django.setup()
 
 
 def pytest_collection_modifyitems(config, items):
-    """Add markers to tests based on their location."""
+    """Auto-mark tests: main/ = integration, accounts/ = unit."""
     for item in items:
         if "main" in str(item.fspath):
             item.add_marker("integration")
@@ -28,55 +30,34 @@ def pytest_collection_modifyitems(config, items):
 
 
 # ---------------------------------------------------------------------------
-# Minimal output: tqdm progress bar + TEST_FAIL: for failures
+# Output plugin: suppress dots, show failure details
 # ---------------------------------------------------------------------------
 
-_bar = None
-_failures = []
-
-
-def pytest_collection_finish(session):
-    """Create tqdm bar once we know total test count."""
-    global _bar
-    try:
-        from tqdm import tqdm
-        _bar = tqdm(total=len(session.items), desc="Tests", unit="test",
-                    bar_format="{desc}: {bar} {n_fmt}/{total_fmt} [{elapsed}]",
-                    file=sys.stderr)
-    except ImportError:
-        pass
+_failure_reports = []
 
 
 def pytest_runtest_logreport(report):
-    """Update progress bar on each test result."""
-    if report.when == "call":
-        if _bar:
-            _bar.update(1)
-        if report.failed:
-            msg = str(report.longrepr).strip().split("\n")[-1]
-            _failures.append(f"TEST_FAIL: {report.nodeid.split('::')[-1]} - {msg}")
+    if report.when == "call" and report.failed:
+        _failure_reports.append(report)
     elif report.when == "setup" and report.failed:
-        if _bar:
-            _bar.update(1)
-        msg = str(report.longrepr).strip().split("\n")[-1]
-        _failures.append(f"TEST_FAIL: {report.nodeid.split('::')[-1]} (setup) - {msg}")
+        _failure_reports.append(report)
 
 
 def pytest_report_teststatus(report, config):
-    """Suppress default per-test output (dots/F/E)."""
-    if report.when == "call" or (report.when == "setup" and report.failed):
+    """No dots for passing. Count only call phase for pytest's summary."""
+    if report.when == "call":
         return report.outcome, "", ""
+    # Setup/teardown: invisible and uncounted
+    return "", "", ""
 
 
 def pytest_terminal_summary(terminalreporter, exitstatus, config):
-    """Print failures and final count after bar completes."""
-    if _bar:
-        _bar.close()
-    for f in _failures:
-        terminalreporter.write_line(f)
-    total = sum(len(v) for v in terminalreporter.stats.values() if isinstance(v, list))
-    passed = len(terminalreporter.stats.get("passed", []))
-    failed = len(_failures)
-    terminalreporter.write_line(
-        f"{passed} passed, {failed} failed" if failed else f"{passed} passed"
-    )
+    """Print failure details. pytest -q handles the final count line."""
+    for report in _failure_reports:
+        terminalreporter.write_line("")
+        terminalreporter.write_line("=" * 70)
+        terminalreporter.write_line(f"FAIL: {report.nodeid}")
+        terminalreporter.write_line("-" * 70)
+        if hasattr(report, "longrepr") and report.longrepr:
+            for line in str(report.longrepr).split("\n"):
+                terminalreporter.write_line(line)
