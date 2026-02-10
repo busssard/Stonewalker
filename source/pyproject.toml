@@ -157,4 +157,91 @@ exclude = [
     ".venv",
     "venv",
     "migrations",
+]
+
+# =============================================================================
+# Ruff - fast Python linter and formatter (replaces flake8, isort, black)
+# =============================================================================
+[tool.ruff]
+target-version = "py38"
+line-length = 88
+src = ["source"]
+
+# Exclude directories that should not be linted
+exclude = [
+    ".git",
+    "__pycache__",
+    "build",
+    "dist",
+    "*.egg-info",
+    ".venv",
+    "venv",
+    "migrations",
+    "_old_qr_implementation",
+    "content/static",
+    "content/assets/vendor",
+]
+
+[tool.ruff.lint]
+# Start lenient - only enable rules that catch real bugs and common mistakes.
+# Expand over time as the codebase is cleaned up.
+select = [
+    "E",    # pycodestyle errors
+    "W",    # pycodestyle warnings
+    "F",    # pyflakes
+    "I",    # isort
+    "S",    # flake8-bandit (security)
+    "B",    # flake8-bugbear
+    "UP",   # pyupgrade
+    "T20",  # flake8-print (catch stray print statements)
+]
+
+# Ignore rules that conflict with existing code patterns or are too noisy
+ignore = [
+    "E501",   # line too long (handled by formatter)
+    "E402",   # module level import not at top of file (Django patterns)
+    "S101",   # use of assert (fine in tests, and we exclude tests anyway)
+    "S105",   # possible hardcoded password (too many false positives)
+    "S110",   # try-except-pass (existing pattern in codebase)
+    "S308",   # mark_safe usage (reviewed manually, documented in security audit)
+    "B904",   # raise from (would require touching lots of existing code)
+    "UP031",  # printf-string-formatting (existing codebase uses % and f-strings)
+    "T201",   # print found (there are intentional prints, e.g. email debugging)
+]
+
+[tool.ruff.lint.per-file-ignores]
+# Tests can use assert, print, hardcoded passwords, etc.
+"**/tests/**" = ["S", "T20", "B"]
+"**/test_*.py" = ["S", "T20", "B"]
+"**/*_tests.py" = ["S", "T20", "B"]
+"**/conftest.py" = ["S", "T20", "B"]
+# Settings files have specific patterns
+"**/settings.py" = ["S105", "E501"]
+# Management commands can use print
+"**/management/**" = ["T201"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["app", "accounts", "main", "content"]
+
+[tool.ruff.format]
+# Match existing black config
+quote-style = "preserve"
+indent-style = "space"
+line-ending = "auto"
+
+# =============================================================================
+# Bandit - security linter
+# =============================================================================
+[tool.bandit]
+exclude_dirs = [
+    "tests",
+    "test",
+    "venv",
+    ".venv",
+    "migrations",
+    "_old_qr_implementation",
+]
+skips = [
+    "B101",  # assert used (fine in Django)
+    "B311",  # random (not used for crypto)
 ] 

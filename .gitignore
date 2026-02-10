@@ -64,4 +64,17 @@ venv/
 
 # Production database access data
 postgres_production.json
-db
+
+# Secrets and environment
+.secrets
+.env
+
+# Temporary cleanup folder
+_temp_cleanup/
+
+# Generated translation files
+translations.csv
+translations.xlsx
+
+# Discourse local development data
+forum/discourse_data/

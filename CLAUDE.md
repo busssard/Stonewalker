@@ -247,6 +247,12 @@ This is a production-ready application with comprehensive testing, so maintain t
 
 ## User Preferences & Workflow
 
+### Task Management via .claude/tasks.md
+- **The user gives tasks and reports bugs via `.claude/tasks.md`** - always read it at the start of a session
+- Follow the workflow defined at the top of tasks.md (mark current, plan, implement, test, document, migrate, push)
+- Use agent teams for parallelizable work where it makes sense
+- Mark tasks `[DONE]` when complete, `[current]` when in progress, `[BUG]` for reported bugs
+
 ### Git Commit Strategy
 - **Always create multiple commits** - separate features/changes logically rather than one large commit
 - Group related changes together (e.g., one commit for Stripe integration, another for PDF generation)
@@ -255,6 +261,65 @@ This is a production-ready application with comprehensive testing, so maintain t
 ### Claude Code Session Notes
 - Regularly update this CLAUDE.md file with new learnings and preferences
 - Document any new patterns or conventions discovered during development
+
+## Multi-Agent Team Workflow
+
+### Team Structure
+- **Optimal structure**: 3-5 specialist agents + 1 coordinating team lead
+- Each specialist should own a clear domain with minimal overlap
+- Give each agent a specific role, deliverable format, and file path to prevent overlap and confusion
+- The team lead should NOT do specialist work - focus on orchestration, conflict resolution, and synthesis
+
+### Model Selection for Agents
+Choose the model per agent based on what the task demands. This is about cost efficiency, not hard rules - use judgment.
+
+**Opus** is worth the cost when the task involves:
+- Debugging, complex problem solving, multi-step reasoning
+- Architecture decisions or resolving conflicting requirements
+- Code that touches tricky logic, concurrency, security, or subtle edge cases
+- Synthesizing information across many sources into coherent decisions
+
+**Sonnet** is the right pick when the task is primarily:
+- Writing documentation, analysis, marketing copy, or other prose
+- Generating straightforward, well-defined code (CRUD endpoints, boilerplate, tests from a clear spec)
+- Cross-review and refinement of existing drafts
+- Translating requirements into structured output (config files, migration scripts, data models)
+
+**Haiku** makes sense for:
+- Quick lookups, file searches, formatting, or validation checks
+- Simple boilerplate or template generation
+- Tasks where speed matters more than nuance
+
+The goal is to avoid running 5 Opus agents when 3 of them are writing docs. Match the model to the cognitive demand of the task.
+
+### The 2-3 Round Review Pattern
+1. **Round 1**: Independent specialist work with clear deliverable and file path
+2. **Round 2**: Each specialist reads ALL other outputs and refines their own, with specific cross-references called out by the coordinator. This is the biggest value-add - surfaces contradictions, sharpens estimates, creates interdisciplinary insights
+3. **Round 3** (optional): Final coherence pass with explicit resolution of all open tensions, number audit across documents. Diminishing returns beyond Round 2.
+
+### Communication
+- **Specific cross-team prompts outperform generic ones.** Messages that point to specific disagreements produce much better refinements than generic "review and update" instructions
+- **Direct messages to specific agents are more effective and cheaper than broadcasts.** Use broadcasts only for universal policy changes
+- **Direct agent-to-agent messaging resolves alignment issues faster** than routing everything through the team lead
+- Agents sometimes report completion without sending a summary message - be explicit in instructions about requiring a completion report
+
+### File Ownership
+- **Assign each deliverable to exactly one agent.** Other agents provide input via messages, not direct file edits
+- When spawning agent teams, assign non-overlapping file sets to avoid merge conflicts
+- Documentation-only agents should never touch code/test files and vice versa
+- CLAUDE.md updates should be done by the team lead after all agents finish
+
+### Task Dependencies & Parallel Execution
+- Use `blockedBy` for tasks that genuinely depend on prior work
+- Don't block tasks that can start in parallel - let agents read partial outputs from peers
+- All specialists working simultaneously saves significant time (5 agents can produce in ~10 min what would take 50 min sequentially)
+- Pre-reading during idle time accelerates cross-review rounds
+
+### Common Pitfalls
+- **Agent context limits cause stalling** - keep documents focused; consider summary sections for cross-team consumption
+- **Idle notifications create noise** - ignore them unless blocking on an agent's output
+- **Cold-start for agents requires full context** - include all critical context (file paths, team decisions, specific cross-references) in every round's message
+- **Consensus numbers must be established early** - key metrics should be locked in a shared location before cross-review to avoid agents diverging in opposite directions
 
 ## Learnings & Gotchas (Session Notes)
 
@@ -328,12 +393,6 @@ This is a production-ready application with comprehensive testing, so maintain t
 - **Cleaned up redundant scripts**: Deleted `run_dev_postgres.sh` (was a strict subset of `run_dev.sh`)
 - **Fixed broken cross-references**: README.md reference to nonexistent `NETLIFY_DEPLOYMENT.md` now points to `DEPLOYMENT.md`. Added legacy note to `build.sh` header.
 
-#### Team Workflow Notes
-- When spawning agent teams, assign non-overlapping file sets to avoid merge conflicts
-- Documentation-only agents should never touch test files and vice versa
-- CLAUDE.md updates should be done by the team lead after all agents finish to avoid conflicts
-- Creative agents are great for CI/CD and holistic review tasks where fresh eyes add value
-
 #### Stone Creation Bug Fix
 - **Bug**: "Missing stone name" error even when name was entered
 - **Root cause**: `new_add_stone_modal.html` line 406 called `closeModal()` before `form.submit()`. `closeModal()` calls `resetForm()` which clears all form fields. The backend then received an empty `PK_stone`.
@@ -349,3 +408,48 @@ This is a production-ready application with comprehensive testing, so maintain t
 - The pre-push hook at `.git/hooks/pre-push` runs the full test suite (~3 min) before every push
 - `git push` outputs progress/errors to **stderr** - if running in background, make sure to capture stderr with `2>&1`
 - GitHub PAT needs the `workflow` scope to push `.github/workflows/` files - without it you get `remote rejected` with no obvious error unless stderr is captured
+
+#### QR UUID Mismatch Bug Fix
+- **Bug**: Scanning a freshly created stone's QR code showed "Invalid stone link"
+- **Root cause**: The modal preview (step 2) generates a QR code using a JS-generated UUID. But when the form submits, `Stone(...)` creates with `default=uuid.uuid4` which generates a **different** UUID. The QR points to UUID-A, the DB has UUID-B.
+- **Fix**: Added hidden `<input name="stone_uuid">` to the form, populated by JS when the preview UUID is generated. The `add_stone` view now reads `stone_uuid` from POST and passes it to `Stone(uuid=...)`. Falls back to auto-generation if UUID is missing or invalid.
+- **Key lesson**: When frontend generates preview data (QR codes, links) before backend save, the identifiers MUST be passed through the form so they stay consistent
+
+## Discourse Forum Integration (In Progress)
+
+### Current Status
+- **Django SSO endpoint**: COMPLETE - `source/accounts/discourse_sso.py` and `DiscourseSSOView` in `views.py`
+- **Local Docker setup**: INCOMPLETE - base images work but Discourse dev image is empty
+
+### What's Built
+- `forum/docker-compose.yml` - Docker Compose with postgres:15-alpine, redis:7-alpine, discourse
+- `forum/README.md` - Quick reference docs
+- `run_dev.sh` - Helper commands: `discourse-start`, `discourse-stop`, `discourse-logs`, `discourse-reset`
+- `idea_scratchpad.md` - Full architecture documentation and production deployment checklist
+
+### The Problem
+The `discourse/discourse_dev:release` image is a **base development image** - it doesn't come with Discourse pre-installed. The `/var/www/discourse` directory is empty. This image is meant for contributors who clone the Discourse source code and mount it.
+
+### Next Steps (Pick One)
+1. **Official launcher approach**: Clone `discourse_docker` into `forum/`, use `./launcher` tool (heavyweight but official)
+2. **Remote VPS**: Skip local testing, spin up a $6/mo VPS for development testing
+3. **Test in production**: Django SSO code is complete and tested - could deploy directly and test there
+
+### Django Settings (Already Configured)
+```python
+# Development (source/app/conf/development/settings.py)
+DISCOURSE_URL = 'http://localhost:4200'
+DISCOURSE_SSO_SECRET = 'dev_secret_change_me'
+DISCOURSE_SSO_ENABLED = True
+
+# Production (source/app/conf/production/settings.py)
+DISCOURSE_URL = 'https://forum.stonewalker.org'
+DISCOURSE_SSO_SECRET = os.environ.get('DISCOURSE_SSO_SECRET', '')
+DISCOURSE_SSO_ENABLED = bool(os.environ.get('DISCOURSE_SSO_SECRET'))
+```
+
+### Discourse SSO Config (Once Running)
+In Discourse Admin → Settings → Login:
+- `enable_discourse_connect` = true
+- `discourse_connect_url` = `http://host.docker.internal:8000/accounts/discourse-sso/`
+- `discourse_connect_secret` = `dev_secret_change_me`

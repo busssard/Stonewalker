@@ -28,11 +28,11 @@ source/content/locale/
 
 ### Key Files
 
-- `po_to_excel.py` - Extract translations from .po files to Excel/CSV
-- `excel_to_po.py` - Convert Excel/CSV back to .po files
+- `scripts/translation/po_to_excel.py` - Extract translations from .po files to Excel/CSV
+- `scripts/translation/excel_to_po.py` - Convert Excel/CSV back to .po files
 - `run_tests.py` - Test runner with automatic translation compilation
 - `conftest.py` - Pytest configuration with translation compilation
-- `translation_requirements.txt` - Dependencies for Excel support
+- `scripts/translation/translation_requirements.txt` - Dependencies for Excel support
 - `source/main/management/commands/compile_translations.py` - Django command for translation compilation
 - `source/main/translation_tests.py` - Translation quality assurance tests
 
@@ -61,17 +61,17 @@ For bulk translation editing, you can export translations to a spreadsheet and i
 ### Install Dependencies
 
 ```bash
-pip install -r translation_requirements.txt
+pip install -r scripts/translation/translation_requirements.txt
 ```
 
 ### Step 1: Extract Translations
 
 ```bash
 # Extract to CSV (recommended for large files)
-python po_to_excel.py source/content/locale translations.csv
+python scripts/translation/po_to_excel.py source/content/locale translations.csv
 
 # Extract to Excel
-python po_to_excel.py source/content/locale translations.xlsx --format excel
+python scripts/translation/po_to_excel.py source/content/locale translations.xlsx --format excel
 ```
 
 This creates a file with all translations in spreadsheet format:
@@ -89,10 +89,10 @@ Open the generated CSV/Excel file and:
 
 ```bash
 # From CSV
-python excel_to_po.py translations.csv source/content/locale
+python scripts/translation/excel_to_po.py translations.csv source/content/locale
 
 # From Excel
-python excel_to_po.py translations.xlsx source/content/locale --format excel
+python scripts/translation/excel_to_po.py translations.xlsx source/content/locale --format excel
 ```
 
 ### Step 4: Compile the Translations
