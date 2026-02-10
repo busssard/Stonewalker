@@ -196,16 +196,14 @@ class HuntedStoneLocationTests(BaseStoneWalkerTestCase):
         self.assertContains(response, 'latitude')
         self.assertContains(response, 'longitude')
     
-    def test_hunted_stone_requires_location(self):
-        """Test that hunted stones require location"""
-        # Try to create hunted stone without location
+    def test_add_stone_redirects_to_shop_flow(self):
+        """Test that /add_stone/ redirects to the shop-based creation flow"""
         response = self.client.post('/add_stone/', {
             'PK_stone': 'HUNTED',
             'description': 'Hunted stone',
             'stone_type': 'hunted'
-            # No latitude/longitude provided
         })
-        
-        # Should redirect back due to validation error
-        self.assertRedirects(response, '/stonewalker/')
+
+        # Should redirect to create_stone (shop flow entry point)
+        self.assertRedirects(response, '/create-stone/')
         self.assertFalse(Stone.objects.filter(PK_stone='HUNTED').exists())

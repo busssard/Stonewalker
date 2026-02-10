@@ -1,7 +1,6 @@
 from django.views.generic import TemplateView
 from .models import Stone, StoneMove, calculate_stone_distance, StoneScanAttempt
 import json
-from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import redirect, render
 from django.http import HttpResponse
 from django.contrib.auth.models import User
@@ -154,120 +153,17 @@ class MyStonesView(LoginRequiredMixin, TemplateView):
         return context
 
 
-@csrf_exempt  # For quick debug, remove in production
-def debug_add_stone(request):
-    if request.method == 'POST':
-        PK_stone = request.POST.get('PK_stone')
-        description = request.POST.get('description', '')
-        image = request.FILES.get('image')
-        color = request.POST.get('color', '#4CAF50')
-        shape = request.POST.get('shape', 'circle')
-        user = request.user if request.user.is_authenticated else User.objects.first()
-        if PK_stone and user:
-            try:
-                Stone.objects.create(
-                    PK_stone=PK_stone,
-                    description=description[:500],
-                    FK_user=user,
-                    image=image,
-                    color=color,
-                    shape=shape
-                )
-            except Exception as e:
-                pass
-        return redirect(request.META.get('HTTP_REFERER', '/'))
-    return HttpResponse("Use POST to add a stone.")
 
 
 @login_required
-@require_POST
 def add_stone(request):
-    """Create a new stone as a draft"""
-    # Check if user can create a stone (non-premium users limited to 1 draft)
-    if not Stone.user_can_create_stone(request.user):
-        existing_draft = Stone.get_user_draft_stone(request.user)
-        if existing_draft:
-            messages.error(request, f'You already have a draft stone "{existing_draft.PK_stone}". Please publish or edit it before creating a new one.')
-        else:
-            messages.error(request, 'You have reached your stone creation limit.')
-        return redirect('stonewalker_start')
-    
-    PK_stone = request.POST.get('PK_stone')
-    description = request.POST.get('description', '')
-    image = request.FILES.get('image')
-    color = request.POST.get('color', '#4CAF50')
-    shape = request.POST.get('shape', 'circle')
-    latitude = request.POST.get('latitude')
-    longitude = request.POST.get('longitude')
-    stone_type = request.POST.get('stone_type', 'hidden')
-    stone_uuid = request.POST.get('stone_uuid')
-    
-    # Auto-select shape based on stone type
-    if stone_type == 'hidden':
-        shape = 'circle'
-    elif stone_type == 'hunted':
-        shape = 'triangle'
-    
-    if not PK_stone:
-        messages.error(request, 'Missing required stone name.')
-        return redirect('stonewalker_start')
-    if len(description) > 500:
-        description = description[:500]
-    
-    # Validate hunted stone location before creating the stone
-    if stone_type == 'hunted':
-        if not latitude or not longitude:
-            messages.error(request, 'Location is required for hunted stones.')
-            return redirect('stonewalker_start')
-    
-    try:
-        # Create stone as draft with the new fields
-        # Use the UUID from the modal preview so the QR code matches
-        stone_kwargs = dict(
-            PK_stone=PK_stone,
-            description=description,
-            FK_user=request.user,
-            image=image,
-            color=color,
-            shape=shape,
-            stone_type=stone_type,
-            status='draft',
-        )
-        if stone_uuid:
-            try:
-                stone_kwargs['uuid'] = uuid_lib.UUID(stone_uuid)
-            except ValueError:
-                pass  # Invalid UUID from client, let the model generate one
-        stone = Stone(**stone_kwargs)
-        stone.save()
-        
-        # Create initial move for hunted stones (only if publishing immediately)
-        if stone_type == 'hunted' and latitude and longitude:
-            StoneMove.objects.create(
-                FK_stone=stone,
-                FK_user=request.user,
-                image=None,  # Do NOT add image to StoneMove for hunted stones
-                comment='',
-                latitude=float(latitude),
-                longitude=float(longitude)
-            )
-            # Update distance
-            stone.distance_km = calculate_stone_distance(stone)
-            stone.save()
-        
-        # Generate QR code using new service
-        from .qr_service import QRCodeService
-        qr_result = QRCodeService.generate_qr_for_stone(stone, request)
-        
-        if qr_result['success']:
-            messages.success(request, f'Stone "{PK_stone}" created as draft! You can edit it until you\'re ready to publish. <a href="/stone/{PK_stone}/edit/" class="avant-btn">Edit Stone</a> or <a href="/stone/{PK_stone}/qr/" class="avant-btn">Download QR Code</a>')
-        else:
-            messages.success(request, f'Stone "{PK_stone}" created as draft! You can edit it until you\'re ready to publish. Note: QR code generation failed, but you can generate it later.')
-        
-        return redirect(f'/stone/{PK_stone}/edit/')
-    except Exception as e:
-        messages.error(request, f'Could not add stone: {str(e)}')
-        return redirect('stonewalker_start')
+    """Deprecated: redirects to the shop-based stone creation flow.
+
+    Stone creation now goes through: create-stone → shop → checkout → claim.
+    This endpoint is kept for backwards compatibility with old bookmarks/links.
+    """
+    messages.info(request, 'Stone creation now goes through the shop. Please use the button below to create a stone.')
+    return redirect('create_stone')
 
 
 class StoneScanView(View):
@@ -311,18 +207,27 @@ class StoneScanView(View):
         latitude = request.POST.get('latitude')
         longitude = request.POST.get('longitude')
         image = request.FILES.get('image')
-        
+
+        # Validate comment content
+        from .validators import validate_no_contact_info
+        from django.core.exceptions import ValidationError
+        try:
+            validate_no_contact_info(comment)
+        except ValidationError as e:
+            messages.error(request, e.message)
+            return render(request, self.template_name, {'prefill_stone': PK_stone})
+
         try:
             stone = Stone.objects.get(PK_stone=PK_stone)
         except Stone.DoesNotExist:
             messages.error(request, 'Stone not found.')
             return render(request, self.template_name)
-        
+
         # Check one-week blackout period
         if not StoneScanAttempt.can_scan_again(stone, request.user):
             messages.error(request, 'You have already scanned this stone in the last week. Please wait before scanning again.')
             return render(request, self.template_name, {'prefill_stone': PK_stone, 'locked': True, 'lock_message': 'You have already scanned this stone in the last week. Please wait before scanning again.'})
-        
+
         try:
             # Record the scan attempt
             StoneScanAttempt.record_scan_attempt(stone, request.user, request)
@@ -402,8 +307,18 @@ class StoneEditView(LoginRequiredMixin, TemplateView):
                 messages.error(request, f'Stone "{stone.PK_stone}" cannot be edited because it has been {stone.status}.')
                 return redirect('stonewalker_start')
             
+            # Validate description content
+            description = request.POST.get('description', '')[:500]
+            from .validators import validate_no_contact_info
+            from django.core.exceptions import ValidationError as DjangoValidationError
+            try:
+                validate_no_contact_info(description)
+            except DjangoValidationError as e:
+                messages.error(request, e.message)
+                return redirect(f'/stone/{pk}/edit/')
+
             # Update stone fields
-            stone.description = request.POST.get('description', '')[:500]
+            stone.description = description
             image = request.FILES.get('image')
             if image:
                 stone.image = image
@@ -538,7 +453,16 @@ class StoneLinkView(View):
         longitude = request.POST.get('longitude')
         new_latitude = request.POST.get('new_latitude')
         new_longitude = request.POST.get('new_longitude')
-        
+
+        # Validate comment content
+        from .validators import validate_no_contact_info
+        from django.core.exceptions import ValidationError as DjangoValidationError
+        try:
+            validate_no_contact_info(comment)
+        except DjangoValidationError as e:
+            messages.error(request, e.message)
+            return redirect(f'/stone-link/{stone_uuid}/')
+
         # Validate coordinates
         try:
             lat = float(latitude) if latitude else None
