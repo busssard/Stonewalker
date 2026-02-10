@@ -132,38 +132,76 @@ This project includes a comprehensive translation quality assurance system to en
 
 ## Site Map
 
+### Public Pages
+
 | URL Pattern | View / Description |
 |-------------|-------------------|
 | `/` or `/stonewalker/` | Main map and dashboard (`StoneWalkerStartPageView`) |
-| `/my-stones/` | User's personal stones dashboard (`MyStonesView`) |
-| `/add_stone/` | Add a new stone (POST only, login required) (`add_stone`) |
-| `/stonescan/` | Scan a stone (GET/POST, login required, supports `?stone=PK_stone` for prefill/lock) (`StoneScanView`) |
-| `/stone/<PK_stone>/qr/` | QR code for a stone's update link (`StoneQRCodeView`) |
-| `/stone-link/<str:stone_uuid>/` | Stone found page with UUID-based routing (`StoneLinkView`) |
-| `/download-qr/` | Download QR code (`download_qr_code`) |
-| `/regenerate-qr/<str:stone_pk>/` | Regenerate QR code for existing stone (`regenerate_qr_code`) |
-| `/api/generate-qr/` | Generate QR code API (`generate_qr_code`) |
-| `/api/check-stone-uuid/<str:uuid>/` | Check if stone UUID exists (`check_stone_uuid`) |
-| `/forum/` | Forum placeholder page |
-| `/shop/` | Shop placeholder page |
-| `/about/` | About page |
-| `/api/check_stone_name/` | API endpoint to check stone name availability |
+| `/about/` | About StoneWalker |
+| `/forum/` | Forum page |
 | `/language/` | Change language (`ChangeLanguageView`) |
+| `/robots.txt` | Search engine crawler rules |
+
+### Stone Management (login required)
+
+| URL Pattern | View / Description |
+|-------------|-------------------|
+| `/my-stones/` | User's personal stones dashboard (`MyStonesView`) |
+| `/create-stone/` | Smart router: unclaimed QR -> claim, else -> shop (`CreateNewStoneView`) |
+| `/add_stone/` | Legacy redirect to `/create-stone/` (`add_stone`) |
+| `/stonescan/` | Scan a stone (GET/POST, supports `?stone=<uuid or name>` for prefill/lock) (`StoneScanView`) |
+| `/stone/<pk>/edit/` | Edit a draft stone (`StoneEditView`) |
+| `/stone/<pk>/qr/` | Download QR code for a stone (`StoneQRCodeView`) |
+| `/stone/<pk>/send-off/` | Finalize a published stone (`StoneSendOffView`) |
+| `/stone-link/<uuid>/` | Stone found page from QR scan (`StoneLinkView`) |
+| `/claim-stone/<uuid>/` | Claim an unclaimed stone (`ClaimStoneView`) |
+
+### Shop (login required for checkout)
+
+| URL Pattern | View / Description |
+|-------------|-------------------|
+| `/shop/` | Browse QR code products (`ShopView`) |
+| `/shop/checkout/<product_id>/` | Checkout for a product (`CheckoutView`) |
+| `/shop/success/` | Post-checkout confirmation (`CheckoutSuccessView`) |
+| `/shop/download/<pack_id>/` | Download PDF of QR pack (`DownloadPackPDFView`) |
+| `/shop/download-qr/<uuid>/` | Download single QR from pack (`DownloadStoneQRView`) |
+| `/shop/free-qr/` | Legacy free QR endpoint (`FreeQRView`) |
+
+### API Endpoints (no language prefix)
+
+| URL Pattern | View / Description |
+|-------------|-------------------|
+| `/api/check_stone_name/` | Check stone name availability (JSON) |
+| `/api/check-stone-uuid/<uuid>/` | Check if stone UUID exists (JSON) |
+| `/api/generate-qr/` | Generate QR code preview (JSON + base64) |
+| `/api/download-enhanced-qr/` | Download branded QR code (PNG) |
+| `/webhooks/stripe/` | Stripe payment webhook (POST only) |
+
+### Authentication (`/accounts/`)
+
+| URL Pattern | View / Description |
+|-------------|-------------------|
 | `/accounts/log-in/` | Log in |
 | `/accounts/log-out/` | Log out |
 | `/accounts/log-out/confirm/` | Log out confirmation |
 | `/accounts/sign-up/` | Sign up |
-| `/accounts/activate/<code>/` | Activate account |
-| `/accounts/change/profile/` | Change profile (modal/profile page) |
-| `/accounts/change/email/<code>/` | Change email activation |
+| `/accounts/activate/<code>/` | Activate account via email link |
+| `/accounts/change/profile/` | Edit profile (modal or full page) |
+| `/accounts/change/email/<code>/` | Confirm email change |
 | `/accounts/resend/activation-code/` | Resend activation code |
-| `/accounts/resend-email-activation/` | Resend email activation |
-| `/accounts/cancel-email-change/` | Cancel email change |
-| `/accounts/restore/password/` | Restore password |
-| `/accounts/restore/password/done/` | Restore password done |
-| `/accounts/restore/<uidb64>/<token>/` | Restore password confirm |
-| `/accounts/remind/username/` | Remind username |
-| `/accounts/api/check_username/` | API endpoint to check username availability |
+| `/accounts/resend-email-activation/` | Resend email activation link |
+| `/accounts/cancel-email-change/` | Cancel pending email change |
+| `/accounts/restore/password/` | Request password reset |
+| `/accounts/restore/password/done/` | Password reset confirmation |
+| `/accounts/restore/<uidb64>/<token>/` | Set new password via reset link |
+| `/accounts/remind/username/` | Recover forgotten username |
+| `/accounts/api/check_username/` | Check username availability (JSON) |
+| `/accounts/discourse-sso/` | Discourse SSO endpoint |
+
+### Admin
+
+| URL Pattern | View / Description |
+|-------------|-------------------|
 | `/admin/` | Django admin panel |
 
 ## Database Architecture
