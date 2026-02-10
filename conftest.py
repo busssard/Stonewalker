@@ -45,7 +45,7 @@ def pytest_report_teststatus(report, config):
 
 
 def pytest_terminal_summary(terminalreporter, exitstatus, config):
-    """Print failure details since --tb=no suppresses them."""
+    """Print failure details with full traceback."""
     for report in _failure_reports:
         terminalreporter.write_line("")
         terminalreporter.write_line("=" * 70)
