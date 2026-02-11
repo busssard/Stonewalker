@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-27 18:03+0000\n"
+"POT-Creation-Date: 2026-02-11 07:36+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: IT <it@li.org>\n"
@@ -18,1020 +18,1661 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-msgid "%(from)s-%(to)s relationship"
-msgstr "Relazione %(from)s-%(to)s"
-
-msgid "%(from)s-%(to)s relationships"
-msgstr "Relazioni %(from)s-%(to)s"
-
-msgid "%(model)s instance with %(field)s %(value)r does not exist."
-msgstr "L'istanza %(model)s con %(field)s %(value)r non esiste!"
-
-msgid "%(model_name)s with this %(field_label)s already exists."
-msgstr "%(model_name)s con questo %(field_label)s esiste già!"
-
-msgid "%(model_name)s with this %(field_labels)s already exists."
-msgstr "%(model_name)s con questo %(field_labels)s esiste già!"
-
-msgid "%(path)s does not exist"
-msgstr "%(path)s does not exist"
-
-msgid "%(pk)s is not a valid value."
-msgstr "%(pk)s is not a valid value."
-
-msgid "%(truncated_text)s..."
-msgstr "%(truncated_text)s..."
-
-msgid "%(value)s value must be either True"
-msgstr "%(value)s value must be either True"
-
-msgid "%(value)s value must be either True or False."
-msgstr "%(value)s value must be either True or False."
-
-msgid "%s GB"
-msgstr "%s GB"
-
-msgid "%s KB"
-msgstr "%s KB"
-
-msgid "%s MB"
-msgstr "%s MB"
-
-msgid "%s PB"
-msgstr "%s PB"
-
-msgid "%s TB"
-msgstr "%s TB"
-
-msgid "(Hidden field %(name)s) %(error)s"
-msgstr "(Campo nascosto %(name)s) %(error)s"
-
-msgid "A JSON object"
-msgstr "Un oggetto JSON"
-
-msgid "A new activation code has been sent to your email address."
-msgstr "Ti abbiamo mandato un nuovo codice segreto via email!"
-
-msgid "A new activation link has been sent to your email address."
-msgstr "Ti abbiamo mandato un nuovo link magico via email!"
-
-msgid "AM"
-msgstr "MATT"
-
-msgid "About"
-msgstr "Chi Siamo"
-
-msgid "About StoneWalker"
-msgstr "Tutto su StoneWalker"
-
-msgid "Activation code not found."
-msgstr "Il codice segreto è sparito! Non lo troviamo da nessuna parte."
-
-msgid "Add New Stone"
-msgstr "Aggiungi Nuovo Sasso"
-
-msgid "Add new stone"
-msgstr "Aggiungi nuovo sasso"
-
-msgid "Already have an account?"
-msgstr "Hai già un account?"
-
-msgid "April"
-msgstr "Aprile"
-
-msgid "Are you sure you want to log out?"
-msgstr "Sei sicuro di voler uscire?"
-
-msgid "Aug."
-msgstr "Ago."
-
-msgid "August"
-msgstr "Agosto"
-
-msgid "Back"
-msgstr "Indietro"
-
-msgid "Be kind and respectful to other community members!"
-msgstr "Sii gentile e rispettoso con gli altri membri della comunità!"
-
-msgid "Big (8 byte) integer"
-msgstr "Numero intero grande (8 byte)"
-
-msgid "Boolean (Either True or False)"
-msgstr "Booleano (Vero o Falso)"
-
-msgid "Boolean (Either True, False or None)"
-msgstr "Booleano (Vero  Falso o Niente)"
-
-msgid "CSRF verification failed. Request aborted."
-msgstr "Verifica CSRF fallita! Richiesta interrotta."
-
-msgid "Cancel"
-msgstr "Annulla"
-
-msgid "Cancel and return home"
-msgstr "Annulla e torna a casa"
-
-msgid "Change"
-msgstr "Cambia"
-
-msgid "Change email"
-msgstr "Cambia Email"
-
-msgid "Change language"
-msgstr "Cambia Lingua"
-
-msgid "Change password"
-msgstr "Cambia Password"
-
-msgid "Change profile"
-msgstr "Cambia Profilo"
-
-msgid "Circle"
-msgstr "Cerchio"
-
-msgid "Clear"
-msgstr "Cancella"
-
-msgid "Click the \\\\"
-msgstr "Clicca sul pulsante \\\\"
-
-msgid "Comma-separated integers"
-msgstr "Numeri interi separati da virgole"
-
-msgid "Comment (optional)"
-msgstr "Commento (facoltativo)"
-
-msgid "Community Guidelines:"
-msgstr "Regole della Comunità:"
-
-msgid "Confirm new password"
-msgstr "Ripeti la Nuova Password"
-
-msgid "Confirm this action:"
-msgstr "Conferma questa azione:"
-
-msgid "Connect, get help, or contribute"
-msgstr "Connettiti, chiedi aiuto o contribuisci anche tu!"
-
-msgid "Constraint \"%(name)s\" is violated."
-msgstr "Constraint \"%(name)s\" is violated."
-
-msgid "Constraint \\\\"
-msgstr "Il vincolo \\\\"
-
-msgid "Create"
-msgstr "Crea"
-
-msgid "Create New Stone"
-msgstr "Crea Nuovo Sasso"
-
-msgid "Create an account"
-msgstr "Crea il Tuo Account"
-
-msgid "Currently"
-msgstr "Attualmente"
-
-msgid "Date (with time)"
-msgstr "Data (con ora)"
-
-msgid "Date (without time)"
-msgstr "Data (senza ora)"
-
-msgid "Date out of range"
-msgstr "Data fuori range!"
-
-msgid "Dec."
-msgstr "Dic."
-
-msgid "December"
-msgstr "Dicembre"
-
-msgid "Decimal number"
-msgstr "Numero decimale"
-
-msgid "Delete"
-msgstr "Cancella"
-
-msgid "Description"
-msgstr "Descrizione"
-
-msgid "Did you know:"
-msgstr "Lo sapevi che:"
-
-msgid "Directory indexes are not allowed here."
-msgstr "Gli elenchi delle cartelle non sono permessi qui!"
-
-msgid "Distance traveled (max)"
-msgstr "Distanza percorsa (massima)"
-
-msgid "Distance traveled (min)"
-msgstr "Distanza percorsa (minima)"
-
-msgid "Django Community"
-msgstr "La Comunità Django"
-
-msgid "Django Documentation"
-msgstr "Guida di Django"
-
-msgid "Django administration"
-msgstr "Amministrazione Django"
-
-msgid "Don't have an account?"
-msgstr "Non hai ancora un account?"
-
-msgid "Don't place stones in protected areas or private property!"
-msgstr "Don't place stones in protected areas or private property!"
-
-msgid "Don\\\\\\\\"
-msgstr "Non"
-
-msgid "Duration"
-msgstr "Durata"
-
-msgid "Edit Profile"
-msgstr "Modifica Profilo"
-
-msgid "Email"
-msgstr "Email"
-
-msgid "Email address"
-msgstr "Indirizzo email"
-
-msgid "Email change cancelled and reverted."
-msgstr "Cambio email annullato! Tutto come prima."
-
-msgid "Email or Username"
-msgstr "Email o Nome Utente"
-
-msgid "Email successfully changed."
-msgstr "Email cambiata con successo!"
-
-msgid "Empty list and \"%(class_name)s.allow_empty\" is False."
-msgstr "Empty list and \"%(class_name)s.allow_empty\" is False."
-
-msgid "Empty list and \\\\"
-msgstr "Lista vuota e \\\\"
-
-msgid "English"
-msgstr "Inglese"
-
-msgid "Ensure this value is %(limit_value)s (it is %(show_value)s)."
-msgstr "Questo valore deve essere %(limit_value)s (invece è %(show_value)s)!"
-
-msgid "Ensure this value is a multiple of step size %(limit_value)s."
-msgstr "Questo valore deve essere un multiplo di %(limit_value)s!"
-
-msgid "Ensure this value is greater than or equal to %(limit_value)s."
-msgstr "Questo valore deve essere maggiore o uguale a %(limit_value)s!"
-
-msgid "Ensure this value is less than or equal to %(limit_value)s."
-msgstr "Questo valore deve essere minore o uguale a %(limit_value)s!"
-
-msgid "Enter a complete value."
-msgstr "Inserisci un valore completo!"
-
-msgid "Enter a list of values."
-msgstr "Inserisci una lista di valori!"
-
-msgid "Enter a number."
-msgstr "Scrivi un numero!"
-
-msgid "Enter a valid IPv4 address."
-msgstr "Inserisci un indirizzo IPv4 valido!"
-
-msgid "Enter a valid IPv4 or IPv6 address."
-msgstr "Inserisci un indirizzo IPv4 o IPv6 che funzioni!"
-
-msgid "Enter a valid IPv6 address."
-msgstr "Inserisci un indirizzo IPv6 valido!"
-
-msgid "Enter a valid JSON."
-msgstr "Inserisci un JSON valido!"
-
-msgid "Enter a valid URL."
-msgstr "Inserisci un URL che funziona davvero!"
-
-msgid "Enter a valid UUID."
-msgstr "Inserisci un UUID valido!"
-
-msgid "Enter a valid date."
-msgstr "Inserisci una data corretta!"
-
-msgid "Enter a valid date/time."
-msgstr "Inserisci una data e un orario corretti!"
-
-msgid "Enter a valid duration."
-msgstr "Inserisci una durata valida!"
-
-msgid "Enter a valid email address."
-msgstr "Inserisci un indirizzo email che esiste!"
-
-msgid "Enter a valid integer."
-msgstr "Inserisci un numero intero)|^"
-
-msgid "Enter a valid time."
-msgstr "Inserisci un orario giusto!"
-
-msgid "Enter a valid value."
-msgstr "Inserisci un valore che funziona!"
-
-msgid "Enter a whole number."
-msgstr "Scrivi un numero intero, dai!"
-
-msgid "Enter only digits separated by commas."
-msgstr "Scrivi solo numeri separati dalle virgole!"
-
-msgid "Feb."
-msgstr "Feb."
-
-msgid "February"
-msgstr "Febbraio"
-
-msgid "Field of type: %(field_type)s"
-msgstr "Campo di tipo: %(field_type)s"
-
-msgid "File"
-msgstr "File"
-
-msgid "File path"
-msgstr "Percorso del file"
-
-msgid "First name"
-msgstr "Nome"
-
-msgid "Floating point number"
-msgstr "Numero con la virgola"
-
-msgid "Forbidden"
-msgstr "Vietato"
-
-msgid "Foreign Key (type determined by related field)"
-msgstr "Chiave esterna (tipo determinato dal campo collegato)"
-
-msgid "Forgot your password?"
-msgstr "Hai dimenticato la password?"
-
-msgid "Forgot your username?"
-msgstr "Hai dimenticato il nome utente?"
-
-msgid "Forum"
-msgstr "Forum"
-
-msgid "French"
-msgstr "Francese"
-
-msgid "Fri"
-msgstr "Ven"
-
-msgid "Friday"
-msgstr "Venerdì"
-
-msgid "German"
-msgstr "Tedesco"
-
-msgid "Get started with Django"
-msgstr "Inizia la tua avventura con Django!"
-
-msgid "Glue the custom QR code on the back of the stone."
-msgstr "Incolla il codice QR speciale sul retro del sasso."
-
-msgid "Hidden (no location, must be found by scanning)"
-msgstr "Nascosto (senza posizione  va trovato scansionando)"
-
-msgid "Home"
-msgstr "Casa"
-
-msgid "How it works:"
-msgstr "Come funziona:"
-
-msgid "Hunted (placed at a location, must be found at that spot)"
-msgstr "Da Cacciare (messo in un posto preciso  va trovato lì)"
-
-msgid "I found a stone"
-msgstr "I found a stone"
-
-msgid "IP address"
-msgstr "Indirizzo IP"
-
-msgid "IPv4 address"
-msgstr "Indirizzo IPv4"
-
-msgid "Image"
-msgstr "Immagine"
-
-msgid "Index of %(directory)s"
-msgstr "Contenuto di %(directory)s"
-
-msgid "Integer"
-msgstr "Numero intero"
-
-msgid "Invalid date string \"%(datestr)s\" given format \"%(format)s\""
-msgstr "Invalid date string \"%(datestr)s\" given format \"%(format)s\""
-
-msgid "Invalid date string \\\\"
-msgstr "Data non valida \\\\"
-
-msgid "Invalid page (%(page_number)s): %(message)s"
-msgstr "Pagina sbagliata (%(page_number)s): %(message)s!"
-
-msgid "Italian"
-msgstr "Italiano"
-
-msgid "Jan."
-msgstr "Gen."
-
-msgid "January"
-msgstr "Gennaio"
-
-msgid "July"
-msgstr "Luglio"
-
-msgid "June"
-msgstr "Giugno"
-
-msgid "Last name"
-msgstr "Cognome"
-
-msgid "Latitude"
-msgstr "Latitudine"
-
-msgid "Learn More"
-msgstr "Scopri di Più"
-
-msgid "Log In"
-msgstr "Entra"
-
-msgid "Log in"
-msgstr "Entra"
-
-msgid "Log in again"
-msgstr "Entra di Nuovo"
-
-msgid "Log out"
-msgstr "Esci"
-
-msgid "Logged out"
-msgstr "Sei Uscito!"
-
-msgid "Longitude"
-msgstr "Longitudine"
-
-msgid "MY INTERACTIONS"
-msgstr "Le Mie INTERAZIONI"
-
-msgid "Many-to-many relationship"
-msgstr "Relazione molti-a-molti"
-
-msgid "March"
-msgstr "Marzo"
-
-msgid "Marker Color"
-msgstr "Colore del Marcatore"
-
-msgid "Marker Shape"
-msgstr "Forma del Marcatore"
-
-msgid "May"
-msgstr "Maggio"
-
-msgid "Messages"
-msgstr "Messaggi"
-
-msgid "Mon"
-msgstr "Lun"
-
-msgid "Monday"
-msgstr "Lunedì"
-
-msgid "More information is available with DEBUG=True."
-msgstr "Più informazioni sono disponibili con DEBUG=True!"
-
-msgid "My CREATIONS"
-msgstr "Le Mie CREAZIONI"
-
-msgid "My Stones"
-msgstr "I Miei Sassi"
-
-msgid "New password"
-msgstr "Nuova Password Segreta"
-
-msgid "Next"
-msgstr "Avanti"
-
-msgid "Next page"
-msgstr "Pagina successiva"
-
-msgid "No"
-msgstr "No"
-
-msgid "No %(verbose_name)s found matching the query"
-msgstr "Nessun %(verbose_name)s trovato per la tua ricerca!"
-
-msgid "No %(verbose_name_plural)s available"
-msgstr "Nessun %(verbose_name_plural)s disponibile!"
-
-msgid "No day specified"
-msgstr "No day specified"
-
-msgid "No file was submitted."
-msgstr "Nessun file caricato!"
-
-msgid "No file was submitted. Check the encoding type on the form."
-msgstr "Nessun file caricato! Controlla le impostazioni del modulo."
-
-msgid "No month specified"
-msgstr "Nessun mese specificato!"
-
-msgid "No pending email change to cancel."
-msgstr "Non c'è nessun cambio email da annullare!"
-
-msgid "No pending email confirmation to resend."
-msgstr "Non c'è nessuna email da confermare!"
-
-msgid "No week specified"
-msgstr "Nessuna settimana specificata!"
-
-msgid "No year specified"
-msgstr "Nessun anno specificato!"
-
-msgid "Nov."
-msgstr "Nov."
-
-msgid "November"
-msgstr "Novembre"
-
-msgid "Null characters are not allowed."
-msgstr "I caratteri null non sono permessi!"
-
-msgid "Number of moves (max)"
-msgstr "Numero di spostamenti (massimo)"
-
-msgid "Number of moves (min)"
-msgstr "Numero di spostamenti (minimo)"
-
-msgid "Oct."
-msgstr "Ott."
-
-msgid "October"
-msgstr "Ottobre"
-
-msgid "Oldest"
-msgstr "Più Vecchio"
-
-msgid "One-to-one relationship"
-msgstr "Relazione uno-a-uno"
-
-msgid "Order"
-msgstr "Ordine"
-
-msgid "PM"
-msgstr "POM"
-
-msgid "Page is not \\\\"
-msgstr "La pagina non è \\\\"
-
+#: accounts/forms.py:21
 msgid "Password"
 msgstr "Password Segreta"
 
-msgid "Passwords do not match."
-msgstr "Le due password non sono uguali! Controlla bene!"
-
-msgid "Photo (optional)"
-msgstr "Foto (facoltativa)"
-
-msgid "Pick up a brush and paint a stone."
-msgstr "Prendi un pennello e dipingi un sasso!"
-
-msgid "Picture"
-msgstr "Foto"
-
-msgid "Please correct the duplicate data for %(field)s, which must be unique."
-msgstr "Correggi i dati duplicati per %(field)s, che deve essere unico!"
-
-msgid "Please correct the duplicate data for %(field)s."
-msgstr "Correggi i dati duplicati per %(field)s!"
-
-msgid "Please correct the duplicate values below."
-msgstr "Correggi i valori duplicati qui sotto!"
-
-msgid "Please either submit a file or check the clear checkbox, not both."
-msgstr "Carica un file OPPURE spunta la casella per cancellare, non entrambi!"
-
-msgid "Please enter another email."
-msgstr "Per favore, metti un'altra email!"
-
-msgid "Please, go to the following page and choose a new password:"
-msgstr "Vai a questa pagina e scegli una nuova password super sicura:"
-
-msgid "Positive big integer"
-msgstr "Numero intero grande positivo"
-
-msgid "Positive integer"
-msgstr "Numero intero positivo"
-
-msgid "Positive small integer"
-msgstr "Numero intero piccolo positivo"
-
-msgid "Previous"
-msgstr "Indietro"
-
-msgid "Previous page"
-msgstr "Pagina precedente"
-
-msgid "Profile activation"
-msgstr "Attivazione del Profilo"
-
-msgid "Profile data has been successfully updated."
-msgstr "Il tuo profilo è stato aggiornato alla grande!"
-
-msgid "Profile picture"
-msgstr "La Tua Foto"
-
-msgid "Raw binary data"
-msgstr "Dati binari grezzi"
-
-msgid "Read more about this discovery →"
-msgstr "Leggi di più su questa scoperta fantastica →"
-
+#: accounts/forms.py:27
 msgid "Remember me"
 msgstr "Ricordati di me!"
 
-msgid "Remind a username"
-msgstr "Ricordami il Nome Utente"
-
-msgid "Required. Enter an existing email address."
-msgstr "Serve un'email che esiste davvero!"
-
-msgid "Resend an activation code"
-msgstr "Rimanda il Codice Segreto"
-
-msgid "Restore password"
-msgstr "Recupera la Password"
-
-msgid "Return to StoneWalker Home"
-msgstr "Torna alla Casa di StoneWalker"
-
-msgid "Russian"
-msgstr "Russo"
-
-msgid "Sat"
-msgstr "Sab"
-
-msgid "Saturday"
-msgstr "Sabato"
-
-msgid "Save"
-msgstr "Salva"
-
-msgid "Save profile"
-msgstr "Salva il Profilo"
-
-msgid "Say something about your stone (max 500 chars)"
-msgstr "Racconta qualcosa del tuo sasso (massimo 500 caratteri)"
-
-msgid "Scan Stone"
-msgstr "Scansiona Sasso"
-
-msgid "Scan a Stone"
-msgstr "Scansiona un Sasso"
-
-msgid "Select a valid choice. %(value)s is not one of the available choices."
-msgstr "Scegli un'opzione valida! %(value)s non è tra le scelte disponibili."
-
-msgid "Select a valid choice. That choice is not one of the available choices."
-msgstr "Scegli un'opzione valida! Quella scelta non è tra quelle disponibili."
-
-msgid "Select the language"
-msgstr "Scegli la lingua"
-
-msgid "Select your preferred language"
-msgstr "Scegli la tua lingua preferita"
-
-msgid "Sept."
-msgstr "Sett."
-
-msgid "September"
-msgstr "Settembre"
-
-msgid "Set it free and watch it travel the world."
-msgstr "Liberalo e guardalo viaggiare per il mondo!"
-
-msgid "Shop"
-msgstr "Negozio"
-
-msgid "Sign up"
-msgstr "Registrati"
-
-msgid "Simplified Chinese"
-msgstr "Cinese Semplificato"
-
-msgid "Site Maps"
-msgstr "Mappe del Sito"
-
-msgid "Slug (up to %(max_length)s)"
-msgstr "Slug (fino a %(max_length)s caratteri)"
-
-msgid "Small integer"
-msgstr "Numero intero piccolo"
-
-msgid "Sort by:"
-msgstr "Ordina per:"
-
-msgid "Spanish"
-msgstr "Spagnolo"
-
-msgid "Square"
-msgstr "Quadrato"
-
-msgid "Star"
-msgstr "Stella"
-
-msgid "Start Exploring"
-msgstr "Inizia ad Esplorare"
-
-msgid "Start Your Journey"
-msgstr "Inizia la Tua Avventura"
-
-msgid "Static Files"
-msgstr "File Statici"
-
-msgid "Stone Name"
-msgstr "Nome del Sasso"
-
-msgid "Stone Type"
-msgstr "Tipo di Sasso"
-
-msgid "String (unlimited)"
-msgstr "Testo (senza limiti)"
-
-msgid "String (up to %(max_length)s)"
-msgstr "Testo (fino a %(max_length)s caratteri)"
-
-msgid "Submit Scan"
-msgstr "Invia Scansione"
-
-msgid "Sun"
-msgstr "Dom"
-
-msgid "Sunday"
-msgstr "Domenica"
-
-msgid "Syndication"
-msgstr "Syndication"
-
-msgid "Tell us about your stone adventure..."
-msgstr "Raccontaci della tua avventura con il sasso..."
-
-msgid "Text"
-msgstr "Testo"
-
-msgid "Thanks for spending some quality time with StoneWalker today!"
-msgstr "Grazie per aver passato del tempo fantastico con StoneWalker oggi!"
-
-msgid "That page contains no results"
-msgstr "Questa pagina è vuota come una scatola senza biscotti!"
-
-msgid "That page number is less than 1"
-msgstr "Quel numero di pagina è troppo piccolo!"
-
-msgid "That page number is not an integer"
-msgstr "Quel numero di pagina non è un numero intero!"
-
-msgid "The StoneWalker forum is coming soon. Stay tuned!"
-msgstr "Il forum di StoneWalker arriva presto! Resta sintonizzato!"
-
-msgid "The StoneWalker shop is coming soon. Stay tuned!"
-msgstr "Il negozio di StoneWalker arriva presto! Resta sintonizzato!"
-
-msgid "The inline value did not match the parent instance."
-msgstr "Il valore inline non corrisponde all'istanza principale!"
-
-msgid "The install worked successfully! Congratulations!"
-msgstr "L'installazione è andata benissimo! Complimenti!"
-
-msgid "The number of days must be between {min_days} and {max_days}."
-msgstr "Il numero di giorni deve essere tra {min_days} e {max_days}!"
-
-msgid "The submitted file is empty."
-msgstr "Il file che hai caricato è vuoto!"
-
-msgid "This account has already been activated."
-msgstr "Il tuo account è già sveglio e pronto!"
-
-msgid "This account is not active."
-msgstr "Questo account sta dormendo! Devi attivarlo prima."
-
-msgid "This email address is already in use by another account."
-msgstr "Un altro esploratore di sassi sta già usando questa email!"
-
-msgid "This field cannot be blank."
-msgstr "Questo campo deve essere riempito!"
-
-msgid "This field cannot be null."
-msgstr "Questo campo non può essere vuoto!"
-
-msgid "This field is required."
-msgstr "Ehi, questo campo è obbligatorio!"
-
-msgid "This is not a valid IPv6 address."
-msgstr "Questo non è un indirizzo IPv6 valido!"
-
-msgid "This username is already taken."
-msgstr "Qualcun altro ha già preso questo nome! Scegli qualcosa di più originale!"
-
-msgid "Thu"
-msgstr "Gio"
-
-msgid "Thursday"
-msgstr "Giovedì"
-
-msgid "Time"
-msgstr "Ora"
-
-msgid "To activate your profile, please follow this link:"
-msgstr "Per svegliare il tuo profilo, clicca su questo link magico:"
-
-msgid "To change your current email address, please follow the link:"
-msgstr "Per cambiare la tua email, segui questo link speciale:"
-
-msgid "To complete the change of email address, click on the link sent to it."
-msgstr "Per finire di cambiare l'email, clicca sul link che ti abbiamo mandato!"
-
-msgid "Topics, references, &amp; how-to's"
-msgstr "Argomenti, riferimenti e istruzioni!"
-
-msgid "Track the journey of painted stones around the world"
-msgstr "Segui il viaggio dei sassi dipinti in tutto il mondo"
-
-msgid "Triangle"
-msgstr "Triangolo"
-
-msgid "Tue"
-msgstr "Mar"
-
-msgid "Tuesday"
-msgstr "Martedì"
-
-msgid "Tutorial: A Polling App"
-msgstr "Tutorial: Un'App per Votazioni"
-
-msgid "URL"
-msgstr "URL"
-
-msgid "Universally unique identifier"
-msgstr "Identificatore universalmente unico"
-
-msgid "Unknown"
-msgstr "Sconosciuto"
-
-msgid "Use non-toxic, weather-resistant paint, like acrylic."
-msgstr "Usa colori non tossici e resistenti al tempo, come quelli acrilici."
-
-msgid "Username"
-msgstr "Nome Utente"
-
-msgid "Username cannot be empty."
-msgstr "Il nome utente non può essere vuoto! Scrivi qualcosa di figo!"
-
-msgid "Username cannot contain whitespace."
-msgstr "Il nome utente non può avere spazi. Tutto attaccato!"
-
-msgid "Value %(value)r is not a valid choice."
-msgstr "Il valore %(value)r non è una scelta valida!"
-
-msgid "Value must be valid JSON."
-msgstr "Il valore deve essere un JSON valido!"
-
-msgid "Wed"
-msgstr "Mer"
-
-msgid "Wednesday"
-msgstr "Mercoledì"
-
-msgid "Welcome to StoneWalker"
-msgstr "Benvenuto in StoneWalker"
-
-msgid "Welcome to StoneWalker!"
-msgstr "Benvenuto in StoneWalker!"
-
-msgid "Yes"
-msgstr "Sì"
-
-msgid "You are a guest."
-msgstr "Sei un ospite."
-
-msgid "You are successfully signed up!"
-msgstr "Fantastico! Ti sei registrato con successo!"
-
-msgid "You can not use this email address."
-msgstr "Questa email non si può usare. Scegline un'altra!"
-
-msgid "You can not use this mail."
-msgstr "Questa email non funziona. Provane un'altra!"
-
-msgid "You entered an invalid email address or username."
-msgstr "Ops! L'email o il nome utente non sono giusti. Riprova!"
-
-msgid "You entered an invalid email address."
-msgstr "Ehi! Questa email sembra un po' strana. Controllala bene!"
-
+#: accounts/forms.py:36
 msgid "You entered an invalid password."
 msgstr "Ops! La password non è corretta. Riprova!"
 
+#: accounts/forms.py:42 accounts/forms.py:195 accounts/forms.py:233
+#: accounts/templates/accounts/profile/change_profile.html:50
+msgid "Username"
+msgstr "Nome Utente"
+
+#: accounts/forms.py:55
 msgid "You entered an invalid username."
 msgstr "Mmm... questo nome utente non va bene. Prova con un altro!"
 
-msgid "You have successfully activated your account!"
-msgstr "Evviva! Hai attivato il tuo account con successo!"
+#: accounts/forms.py:58 accounts/forms.py:76 accounts/forms.py:102
+msgid "This account is not active."
+msgstr "Questo account sta dormendo! Devi attivarlo prima."
 
-msgid "You have successfully changed your email!"
-msgstr "Hai cambiato la tua email con successo!"
+#: accounts/forms.py:66 accounts/forms.py:122 accounts/forms.py:161
+#: accounts/forms.py:209 accounts/forms.py:234
+#: accounts/templates/accounts/profile/change_profile.html:58
+msgid "Email"
+msgstr "Email"
 
-msgid "You should receive them shortly."
-msgstr "Dovresti riceverle tra pochissimo!"
+#: accounts/forms.py:73 accounts/forms.py:168
+msgid "You entered an invalid email address."
+msgstr "Ehi! Questa email sembra un po' strana. Controllala bene!"
 
-msgid "Youngest"
-msgstr "Più Recente"
+#: accounts/forms.py:92 accounts/forms.py:135
+msgid "Email or Username"
+msgstr "Email o Nome Utente"
 
-msgid "Your password has been set. You may go ahead and log in now."
-msgstr "La tua password è pronta! Ora puoi entrare!"
+#: accounts/forms.py:99 accounts/forms.py:142
+msgid "You entered an invalid email address or username."
+msgstr "Ops! L'email o il nome utente non sono giusti. Riprova!"
 
-msgid "Your password was changed."
-msgstr "La tua password è stata cambiata!"
+#: accounts/forms.py:122
+msgid "Required. Enter an existing email address."
+msgstr "Serve un'email che esiste davvero!"
 
-msgid "Your username"
-msgstr "Il Tuo Nome Utente"
+#: accounts/forms.py:129
+msgid "You can not use this email address."
+msgstr "Questa email non si può usare. Scegline un'altra!"
 
-msgid "Your username has been successfully sent to your email."
-msgstr "Il tuo nome utente è stato mandato alla tua email!"
+#: accounts/forms.py:145 accounts/forms.py:171
+msgid "This account has already been activated."
+msgstr "Il tuo account è già sveglio e pronto!"
 
-msgid "Your username is"
-msgstr "Il tuo nome utente è"
+#: accounts/forms.py:149 accounts/forms.py:175
+msgid "Activation code not found."
+msgstr "Il codice segreto è sparito! Non lo troviamo da nessuna parte."
 
+#: accounts/forms.py:153 accounts/forms.py:179
+msgid ""
+"Activation code has already been sent. You can request a new code in 24 "
+"hours."
+msgstr ""
+"Il codice di attivazione è già stato inviato. Puoi richiederne uno nuovo tra"
+" 24 ore."
+
+#: accounts/forms.py:200 accounts/forms.py:257
+#: accounts/templates/accounts/profile/change_profile.html:234
+#: accounts/templates/accounts/profile/change_profile.html:259
+msgid "Username cannot be empty."
+msgstr "Il nome utente non può essere vuoto! Scrivi qualcosa di figo!"
+
+#: accounts/forms.py:202 accounts/forms.py:259
+msgid "Username cannot contain whitespace."
+msgstr "Il nome utente non può avere spazi. Tutto attaccato!"
+
+#: accounts/forms.py:204 accounts/forms.py:261
+#: accounts/templates/accounts/profile/change_profile.html:255
+msgid "This username is already taken."
+msgstr ""
+"Qualcun altro ha già preso questo nome! Scegli qualcosa di più originale!"
+
+#: accounts/forms.py:219
+msgid "Please enter another email."
+msgstr "Per favore, metti un'altra email!"
+
+#: accounts/forms.py:223
+msgid "You can not use this mail."
+msgstr "Questa email non funziona. Provane un'altra!"
+
+#: accounts/forms.py:235
+#: accounts/templates/accounts/profile/change_profile.html:27
+#: content/templates/layouts/default/page.html:176
+msgid "Profile picture"
+msgstr "La Tua Foto"
+
+#: accounts/forms.py:236
+#: accounts/templates/accounts/profile/change_profile.html:65
+msgid "New password"
+msgstr "Nuova Password Segreta"
+
+#: accounts/forms.py:237
+#: accounts/templates/accounts/profile/change_profile.html:69
+msgid "Confirm new password"
+msgstr "Ripeti la Nuova Password"
+
+#: accounts/forms.py:251
+msgid "Image file is too large. Maximum size is 5 MB."
+msgstr "Il file immagine è troppo grande. La dimensione massima è 5 MB."
+
+#: accounts/forms.py:277
+msgid ""
+"You have made too many email change attempts. Please wait 15 minutes and try"
+" again."
+msgstr ""
+"Hai effettuato troppi tentativi di cambio email. Attendi 15 minuti e "
+"riprova."
+
+#: accounts/forms.py:283 accounts/views.py:363
+msgid "This email address is already in use by another account."
+msgstr "Un altro esploratore di sassi sta già usando questa email!"
+
+#: accounts/forms.py:292
+msgid "Passwords do not match."
+msgstr "Le due password non sono uguali! Controlla bene!"
+
+#: accounts/templates/accounts/emails/activate_profile.html:15
+#: accounts/templates/accounts/emails/activate_profile.txt:3
+msgid "To activate your profile, please follow this link:"
+msgstr "Per svegliare il tuo profilo, clicca su questo link magico:"
+
+#: accounts/templates/accounts/emails/change_email.html:15
+#: accounts/templates/accounts/emails/change_email.txt:3
+msgid "To change your current email address, please follow the link:"
+msgstr "Per cambiare la tua email, segui questo link speciale:"
+
+#: accounts/templates/accounts/emails/forgotten_username.html:15
+#: accounts/templates/accounts/emails/forgotten_username.txt:3
 msgid "Your username is:"
 msgstr "Il tuo nome utente è:"
 
-msgid "\\\\"
-msgstr "\\\\"
+#: accounts/templates/accounts/emails/restore_password_email.html:15
+#: accounts/templates/accounts/emails/restore_password_email.txt:3
+msgid ""
+"You received this email because you requested a password reset for your user"
+" account."
+msgstr ""
 
-msgid "a.m."
-msgstr "matt."
+#: accounts/templates/accounts/emails/restore_password_email.html:19
+#: accounts/templates/accounts/emails/restore_password_email.txt:5
+msgid "Please, go to the following page and choose a new password:"
+msgstr "Vai a questa pagina e scegli una nuova password super sicura:"
 
-msgid "and"
-msgstr "e"
+#: accounts/templates/accounts/log_in.html:7
+#: accounts/templates/accounts/sign_up.html:10
+#: content/templates/layouts/default/page.html:201
+#: content/templates/main/my_stones.html:56
+#: content/templates/main/shared_modals.html:204
+#: content/templates/main/shared_modals.html:261
+#: content/templates/main/shared_modals.html:301
+#| msgid "close"
+msgid "Close"
+msgstr "Chiudi"
 
-msgid "apr"
-msgstr "apr"
+#: accounts/templates/accounts/log_in.html:10
+#: accounts/templates/accounts/log_in.html:16
+#: accounts/templates/accounts/remind_username.html:23
+#: accounts/templates/accounts/resend_activation_code.html:23
+#: accounts/templates/accounts/restore_password.html:23
+#: accounts/templates/accounts/sign_up.html:25
+#: content/templates/layouts/default/nav_links.html:15
+#: content/templates/layouts/default/nav_links.html:20
+#: content/templates/layouts/default/page.html:181
+#: content/templates/main/shop.html:132
+msgid "Log in"
+msgstr "Entra"
 
-msgid "aug"
-msgstr "ago"
+#: accounts/templates/accounts/log_in.html:11
+msgid "Welcome back! Log in to continue your journey."
+msgstr "Bentornato! Accedi per continuare il tuo viaggio."
 
-msgid "close"
-msgstr "chiudi"
+#: accounts/templates/accounts/log_in.html:19
+msgid "Don't have an account?"
+msgstr "Non hai ancora un account?"
 
-msgid "dec"
-msgstr "dic"
+#: accounts/templates/accounts/log_in.html:19
+#: content/templates/layouts/default/nav_links.html:16
+#: content/templates/layouts/default/nav_links.html:21
+msgid "Sign up"
+msgstr "Registrati"
 
-msgid "feb"
-msgstr "feb"
+#: accounts/templates/accounts/log_in.html:23
+msgid "Forgot your password?"
+msgstr "Hai dimenticato la password?"
 
-msgid "jan"
-msgstr "gen"
+#: accounts/templates/accounts/log_in.html:24
+msgid "Forgot your username?"
+msgstr "Hai dimenticato il nome utente?"
 
-msgid "jul"
-msgstr "lug"
+#: accounts/templates/accounts/log_out.html:11
+msgid "Logged out"
+msgstr "Sei Uscito!"
 
-msgid "jun"
-msgstr "giu"
+#: accounts/templates/accounts/log_out.html:12
+msgid "Thanks for spending some quality time with StoneWalker today!"
+msgstr "Grazie per aver passato del tempo fantastico con StoneWalker oggi!"
 
-msgid "mar"
-msgstr "mar"
+#: accounts/templates/accounts/log_out.html:15
+msgid "Log in again"
+msgstr "Entra di Nuovo"
 
-msgid "may"
-msgstr "mag"
+#: accounts/templates/accounts/log_out.html:17
+msgid "Return to StoneWalker Home"
+msgstr "Torna alla Casa di StoneWalker"
 
-msgid "midnight"
-msgstr "mezzanotte"
+#: accounts/templates/accounts/log_out_confirm.html:11
+#: accounts/templates/accounts/log_out_confirm.html:16
+#: content/templates/layouts/default/nav_links.html:13
+#: content/templates/layouts/default/page.html:171
+msgid "Log out"
+msgstr "Esci"
 
-msgid "noon"
-msgstr "mezzogiorno"
+#: accounts/templates/accounts/log_out_confirm.html:12
+msgid "Are you sure you want to log out?"
+msgstr "Sei sicuro di voler uscire?"
 
-msgid "nov"
-msgstr "nov"
+#: accounts/templates/accounts/log_out_confirm.html:19
+msgid "Cancel and return home"
+msgstr "Annulla e torna a casa"
 
-msgid "oct"
-msgstr "ott"
+#: accounts/templates/accounts/profile/change_profile.html:19
+#| msgid "Profile picture"
+msgid "Upload profile picture"
+msgstr "Carica foto profilo"
 
-msgid "or"
-msgstr "o"
+#: accounts/templates/accounts/profile/change_profile.html:23
+msgid "Upload Pic"
+msgstr "Carica foto"
 
-msgid "p.m."
-msgstr "pom."
+#: accounts/templates/accounts/profile/change_profile.html:33
+#| msgid "Profile picture"
+msgid "Clear picture"
+msgstr "Rimuovi immagine"
 
-msgid "sep"
-msgstr "set"
+#: accounts/templates/accounts/profile/change_profile.html:33
+#| msgid "Profile picture"
+msgid "Delete profile picture"
+msgstr "Elimina foto profilo"
 
-msgid "yes,no,maybe"
-msgstr "sì, no, forse"
+#: accounts/templates/accounts/profile/change_profile.html:36
+#| msgid "Delete"
+msgid "Delete Pic"
+msgstr "Elimina"
 
+#: accounts/templates/accounts/profile/change_profile.html:42
+#| msgid "Cancel"
+msgid "Cancel preview"
+msgstr "Annulla anteprima"
+
+#: accounts/templates/accounts/profile/change_profile.html:42
+msgid "Cancel image preview"
+msgstr "Annulla anteprima"
+
+#: accounts/templates/accounts/profile/change_profile.html:66
+#: accounts/templates/accounts/profile/change_profile.html:70
+msgid "Leave blank to keep current"
+msgstr "Lascia vuoto per mantenere l'attuale"
+
+#: accounts/templates/accounts/profile/change_profile.html:73
+msgid "Save profile"
+msgstr "Salva il Profilo"
+
+#: accounts/templates/accounts/profile/change_profile.html:74
+#: content/templates/main/claim_stone.html:75
+#: content/templates/main/new_add_stone_modal.html:103
+#: content/templates/main/shared_modals.html:79
+#: content/templates/main/shared_modals.html:251
+msgid "Cancel"
+msgstr "Annulla"
+
+#: accounts/templates/accounts/profile/change_profile.html:79
+msgid "Your email address is not confirmed."
+msgstr "Il tuo indirizzo email non è confermato."
+
+#: accounts/templates/accounts/profile/change_profile.html:80
+msgid ""
+"Please check your inbox and click the confirmation link. If you do not "
+"confirm soon, your email will be reset."
+msgstr ""
+
+#: accounts/templates/accounts/profile/change_profile.html:83
+#| msgid "Resend an activation code"
+msgid "Resend activation code"
+msgstr "Reinvia codice di attivazione"
+
+#: accounts/templates/accounts/profile/change_profile.html:87
+#| msgid "Change email"
+msgid "Cancel email change"
+msgstr "Annulla cambio email"
+
+#: accounts/templates/accounts/profile/change_profile.html:163
+#| msgid "Please enter another email."
+msgid "Please select an image file."
+msgstr "Seleziona un file immagine."
+
+#: accounts/templates/accounts/profile/change_profile.html:170
+msgid "Image is too large (max 5MB). Please choose a smaller image."
+msgstr ""
+"L'immagine è troppo grande (max 5 MB). Scegli un'immagine più piccola."
+
+#: accounts/templates/accounts/profile/change_profile.html:181
+msgid "Image resized to fit 800x800px."
+msgstr "Immagine ridimensionata a 800x800px."
+
+#: accounts/templates/accounts/profile/change_profile.html:209
+msgid "Could not read the image. Please try a different file."
+msgstr "Impossibile leggere l'immagine. Prova un file diverso."
+
+#: accounts/templates/accounts/profile/change_profile.html:240
+#| msgid "Forgot your username?"
+msgid "You can change your username"
+msgstr "Puoi cambiare il tuo nome utente"
+
+#: accounts/templates/accounts/profile/change_profile.html:250
+#| msgid "Null characters are not allowed."
+msgid "No spaces allowed."
+msgstr "Spazi non consentiti."
+
+#: accounts/templates/accounts/profile/change_profile.html:263
+msgid "Not available."
+msgstr "Non disponibile."
+
+#: accounts/templates/accounts/profile/change_profile.html:270
+#| msgid "This username is already taken."
+msgid "This username is available!"
+msgstr "Questo nome utente è disponibile!"
+
+#: accounts/templates/accounts/remind_username.html:8
+msgid "Remind a username"
+msgstr "Ricordami il Nome Utente"
+
+#: accounts/templates/accounts/remind_username.html:15
+#: accounts/templates/accounts/resend_activation_code.html:15
+#: accounts/templates/accounts/restore_password.html:15
+#: content/templates/main/new_add_stone_modal.html:106
+#: content/templates/main/shared_modals.html:80
+msgid "Next"
+msgstr "Avanti"
+
+#: accounts/templates/accounts/resend_activation_code.html:8
+msgid "Resend an activation code"
+msgstr "Rimanda il Codice Segreto"
+
+#: accounts/templates/accounts/restore_password.html:8
+#: accounts/templates/accounts/restore_password_confirm.html:8
+#: accounts/templates/accounts/restore_password_done.html:7
+#: accounts/utils.py:46
+msgid "Restore password"
+msgstr "Recupera la Password"
+
+#: accounts/templates/accounts/restore_password_confirm.html:13
+msgid ""
+"Please enter your new password twice so we can verify you typed it in "
+"correctly."
+msgstr ""
+
+#: accounts/templates/accounts/restore_password_confirm.html:21
+#: content/templates/main/change_language.html:32
+msgid "Change"
+msgstr "Cambia"
+
+#: accounts/templates/accounts/restore_password_confirm.html:28
+msgid ""
+"The password reset link was invalid, possibly because it has already been "
+"used. Please request a new password reset."
+msgstr ""
+
+#: accounts/templates/accounts/restore_password_done.html:10
+msgid ""
+"We've emailed you instructions for setting your password, if an account "
+"exists with the email you entered."
+msgstr ""
+
+#: accounts/templates/accounts/restore_password_done.html:11
+msgid "You should receive them shortly."
+msgstr "Dovresti riceverle tra pochissimo!"
+
+#: accounts/templates/accounts/restore_password_done.html:15
+msgid ""
+"If you don't receive an email, please make sure you've entered the address "
+"you signed up with, and check your spam folder."
+msgstr ""
+
+#: accounts/templates/accounts/sign_up.html:14
+msgid "Create an account"
+msgstr "Crea il Tuo Account"
+
+#: accounts/templates/accounts/sign_up.html:15
+#| msgid "Track the journey of painted stones around the world"
+msgid ""
+"Join the journey! Track, share, and discover painted stones around the "
+"world."
+msgstr ""
+"Unisciti al viaggio! Traccia, condividi e scopri pietre dipinte in tutto il "
+"mondo."
+
+#: accounts/templates/accounts/sign_up.html:21
+msgid "Create"
+msgstr "Crea"
+
+#: accounts/templates/accounts/sign_up.html:25
+msgid "Already have an account?"
+msgstr "Hai già un account?"
+
+#: accounts/utils.py:28
+msgid "Profile activation"
+msgstr "Attivazione del Profilo"
+
+#: accounts/utils.py:37
+msgid "Change email"
+msgstr "Cambia Email"
+
+#: accounts/utils.py:56
+msgid "Your username"
+msgstr "Il Tuo Nome Utente"
+
+#: accounts/views.py:143
+msgid ""
+"You are signed up. To activate the account, follow the link sent to the "
+"mail."
+msgstr ""
+"Ti sei registrato. Per attivare l'account, segui il link inviato via email."
+
+#: accounts/views.py:152 accounts/views.py:227 accounts/views.py:399
+#: accounts/views.py:507
+msgid "Failed to send activation email. Please try again or contact support."
+msgstr ""
+"Impossibile inviare l'email di attivazione. Riprova o contatta il supporto."
+
+#: accounts/views.py:160
+msgid "You are successfully signed up!"
+msgstr "Fantastico! Ti sei registrato con successo!"
+
+#: accounts/views.py:186
+msgid "You have successfully activated your account!"
+msgstr "Evviva! Hai attivato il tuo account con successo!"
+
+#: accounts/views.py:223
+msgid "A new activation code has been sent to your email address."
+msgstr "Ti abbiamo mandato un nuovo codice segreto via email!"
+
+#: accounts/views.py:263
+msgid "Your username has been successfully sent to your email."
+msgstr "Il tuo nome utente è stato mandato alla tua email!"
+
+#: accounts/views.py:275
+msgid "Your password has been set. You may go ahead and log in now."
+msgstr "La tua password è pronta! Ora puoi entrare!"
+
+#: accounts/views.py:368
+msgid ""
+"You have reached the maximum number of email change attempts. Please try "
+"again later."
+msgstr ""
+"Hai raggiunto il numero massimo di tentativi di cambio email. Riprova più "
+"tardi."
+
+#: accounts/views.py:393
+msgid "To complete the change of email address, click on the link sent to it."
+msgstr ""
+"Per finire di cambiare l'email, clicca sul link che ti abbiamo mandato!"
+
+#: accounts/views.py:405
+msgid "Email successfully changed."
+msgstr "Email cambiata con successo!"
+
+#: accounts/views.py:445
+msgid "Your password was changed."
+msgstr "La tua password è stata cambiata!"
+
+#: accounts/views.py:447
+msgid "Profile data has been successfully updated."
+msgstr "Il tuo profilo è stato aggiornato alla grande!"
+
+#: accounts/views.py:473
+msgid "You have successfully changed your email!"
+msgstr "Hai cambiato la tua email con successo!"
+
+#: accounts/views.py:485
+msgid "No pending email confirmation to resend."
+msgstr "Non c'è nessuna email da confermare!"
+
+#: accounts/views.py:503
+msgid "A new activation link has been sent to your email address."
+msgstr "Ti abbiamo mandato un nuovo link magico via email!"
+
+#: accounts/views.py:526
+msgid "Email change cancelled and reverted."
+msgstr "Cambio email annullato! Tutto come prima."
+
+#: accounts/views.py:528
+msgid "No pending email change to cancel."
+msgstr "Non c'è nessun cambio email da annullare!"
+
+#: app/conf/development/settings.py:154 app/conf/production/settings.py:139
+msgid "English"
+msgstr "Inglese"
+
+#: app/conf/development/settings.py:155 app/conf/production/settings.py:140
+msgid "Russian"
+msgstr "Russo"
+
+#: app/conf/development/settings.py:156 app/conf/production/settings.py:141
+msgid "Simplified Chinese"
+msgstr "Cinese Semplificato"
+
+#: app/conf/development/settings.py:157 app/conf/production/settings.py:142
+msgid "French"
+msgstr "Francese"
+
+#: app/conf/development/settings.py:158 app/conf/production/settings.py:143
+msgid "Spanish"
+msgstr "Spagnolo"
+
+#: app/conf/development/settings.py:159 app/conf/production/settings.py:144
+msgid "German"
+msgstr "Tedesco"
+
+#: app/conf/development/settings.py:160 app/conf/production/settings.py:145
+msgid "Italian"
+msgstr "Italiano"
+
+#: content/templates/layouts/default/nav_links.html:5
+msgid "About"
+msgstr "Chi Siamo"
+
+#: content/templates/layouts/default/nav_links.html:6
+msgid "Shop"
+msgstr "Negozio"
+
+#: content/templates/layouts/default/nav_links.html:7
+#: content/templates/main/forum.html:7
+msgid "Forum"
+msgstr "Forum"
+
+#: content/templates/layouts/default/nav_links.html:8
+#: content/templates/main/change_language.html:12
+msgid "Change language"
+msgstr "Cambia Lingua"
+
+#: content/templates/layouts/default/nav_links.html:11
+#: content/templates/layouts/default/page.html:169
+#: content/templates/main/checkout_success.html:99
+#: content/templates/main/stone_edit.html:138
+msgid "My Stones"
+msgstr "I Miei Sassi"
+
+#: content/templates/layouts/default/nav_links.html:12
+#: content/templates/layouts/default/page.html:170
+#: content/templates/layouts/default/page.html:199
+msgid "Edit Profile"
+msgstr "Modifica Profilo"
+
+#: content/templates/layouts/default/page.html:175
+#| msgid "Profile picture"
+msgid "Profile menu"
+msgstr "Menu profilo"
+
+#: content/templates/layouts/default/page.html:185
+msgid "Toggle navigation menu"
+msgstr "Attiva/disattiva menu di navigazione"
+
+#: content/templates/main/about.html:7
+msgid "About StoneWalker"
+msgstr "Tutto su StoneWalker"
+
+#: content/templates/main/about.html:14
+msgid ""
+"StoneWalker is a unique platform that combines the joy of geocaching with "
+"the beauty of collaborative art. Our mission is to create a global community"
+" of stone travelers who paint, hide, and track beautiful stones as they "
+"journey around the world."
+msgstr ""
+
+#: content/templates/main/about.html:20
+msgid "Did you know:"
+msgstr "Lo sapevi che:"
+
+#: content/templates/main/about.html:20
+msgid ""
+"One of the oldest known cave paintings, found in Indonesia, is over 45,000 "
+"years old. This shows that humans have always been drawn to creating art in "
+"unexpected places."
+msgstr ""
+
+#: content/templates/main/about.html:24
+msgid "Read more about this discovery →"
+msgstr "Leggi di più su questa scoperta fantastica →"
+
+#: content/templates/main/about.html:32
+msgid "How it works:"
+msgstr "Come funziona:"
+
+#: content/templates/main/about.html:35
+msgid "Pick up a brush and paint a stone."
+msgstr "Prendi un pennello e dipingi un sasso!"
+
+#: content/templates/main/about.html:39
+msgid "Click the \"Create a Stone\" button and follow the instructions."
+msgstr "Clicca il pulsante \"Crea una pietra\" e segui le istruzioni."
+
+#: content/templates/main/about.html:43
+msgid "Glue the custom QR code on the back of the stone."
+msgstr "Incolla il codice QR speciale sul retro del sasso."
+
+#: content/templates/main/about.html:47
+msgid "Set it free and watch it travel the world."
+msgstr "Liberalo e guardalo viaggiare per il mondo!"
+
+#: content/templates/main/about.html:54
+msgid "Community Guidelines:"
+msgstr "Regole della Comunità:"
+
+#: content/templates/main/about.html:55
+msgid "Use non-toxic, weather-resistant paint, like acrylic."
+msgstr "Usa colori non tossici e resistenti al tempo, come quelli acrilici."
+
+#: content/templates/main/about.html:56 content/templates/main/about.html:58
+#, fuzzy
+#| msgid "Don\\\\\\\\"
+msgid "Don\\"
+msgstr "Non"
+
+#: content/templates/main/about.html:57
+msgid "Be kind and respectful to other community members!"
+msgstr "Sii gentile e rispettoso con gli altri membri della comunità!"
+
+#: content/templates/main/about.html:60
+msgid ""
+"You never know where it might go, or who it might inspire along the way!"
+msgstr "Non si sa mai dove andrà o chi potrebbe ispirare lungo il cammino!"
+
+#: content/templates/main/about.html:66
+msgid "Start Your Journey"
+msgstr "Inizia la Tua Avventura"
+
+#: content/templates/main/change_language.html:20
+msgid "Select your preferred language"
+msgstr "Scegli la tua lingua preferita"
+
+#: content/templates/main/checkout_success.html:15
+#| msgid "You are a guest."
+msgid "You are all set!"
+msgstr "Tutto pronto!"
+
+#: content/templates/main/checkout_success.html:18
+msgid "Your QR codes are ready."
+msgstr "I tuoi codici QR sono pronti."
+
+#: content/templates/main/checkout_success.html:19
+msgid "Download, print, and attach them to your painted stones."
+msgstr "Scaricali, stampali e attaccali alle tue pietre dipinte."
+
+#: content/templates/main/checkout_success.html:24
+msgid "Your Pack"
+msgstr "Il tuo pacchetto"
+
+#: content/templates/main/checkout_success.html:28
+msgid "Pack Type"
+msgstr "Tipo pacchetto"
+
+#: content/templates/main/checkout_success.html:32
+msgid "Status"
+msgstr "Stato"
+
+#: content/templates/main/checkout_success.html:36
+msgid "QR Codes"
+msgstr "Codici QR"
+
+#: content/templates/main/checkout_success.html:50
+#: content/templates/main/shop.html:208
+msgid "Download PDF"
+msgstr "Scarica PDF"
+
+#: content/templates/main/checkout_success.html:52
+msgid "Print this PDF and cut out each QR code for your stones."
+msgstr "Stampa questo PDF e ritaglia ogni codice QR per le tue pietre."
+
+#: content/templates/main/checkout_success.html:56
+msgid ""
+"Your payment is being processed. Please wait a moment and refresh this page."
+msgstr ""
+"Il tuo pagamento è in fase di elaborazione. Attendi un momento e aggiorna "
+"questa pagina."
+
+#: content/templates/main/checkout_success.html:57
+msgid "Refresh"
+msgstr "Aggiorna"
+
+#: content/templates/main/checkout_success.html:63
+msgid "What to do next"
+msgstr "Passi successivi"
+
+#: content/templates/main/checkout_success.html:68
+msgid "Print"
+msgstr "Stampa"
+
+#: content/templates/main/checkout_success.html:69
+msgid "Download and print your QR code(s) on regular paper."
+msgstr "Scarica e stampa i tuoi codici QR su carta normale."
+
+#: content/templates/main/checkout_success.html:75
+msgid "Paint & Attach"
+msgstr "Dipingi e attacca"
+
+#: content/templates/main/checkout_success.html:76
+msgid "Paint a stone, then attach the QR code with clear tape or varnish."
+msgstr ""
+"Dipingi una pietra, poi attacca il codice QR con nastro trasparente o "
+"vernice."
+
+#: content/templates/main/checkout_success.html:82
+msgid "Hide"
+msgstr "Nascondi"
+
+#: content/templates/main/checkout_success.html:83
+msgid "Leave your stone somewhere fun for someone to discover."
+msgstr ""
+"Lascia la tua pietra in un posto divertente perché qualcuno la scopra."
+
+#: content/templates/main/checkout_success.html:89
+msgid "Track"
+msgstr "Traccia"
+
+#: content/templates/main/checkout_success.html:90
+msgid "When someone scans the QR code, the stone appears on the world map."
+msgstr ""
+"Quando qualcuno scansiona il codice QR, la pietra appare sulla mappa "
+"mondiale."
+
+#: content/templates/main/checkout_success.html:97
+msgid "Back to Shop"
+msgstr "Torna al negozio"
+
+#: content/templates/main/checkout_success.html:101
+msgid "Home"
+msgstr "Casa"
+
+#: content/templates/main/claim_stone.html:8
+#| msgid "Start Your Journey"
+msgid "Name Your Stone"
+msgstr "Dai un nome alla tua pietra"
+
+#: content/templates/main/claim_stone.html:21
+#: content/templates/main/shared_modals.html:259
+#: content/templates/main/shared_modals.html:262
+#: content/templates/main/stone_edit.html:98
+msgid "QR Code"
+msgstr "Codice QR"
+
+#: content/templates/main/claim_stone.html:26
+msgid "Name It"
+msgstr "Dai un nome"
+
+#: content/templates/main/claim_stone.html:31
+#: content/templates/main/shop.html:54
+msgid "Paint & Hide"
+msgstr "Dipingi e nascondi"
+
+#: content/templates/main/claim_stone.html:38
+#| msgid "This username is already taken."
+msgid "This stone is ready to be yours!"
+msgstr "Questa pietra è pronta per essere tua!"
+
+#: content/templates/main/claim_stone.html:39
+msgid ""
+"Give it a unique name. After claiming, you can paint your stone, attach the "
+"QR code, and hide it for someone to find. Every time it gets scanned, you "
+"will see its journey on the map."
+msgstr ""
+
+#: content/templates/main/claim_stone.html:45
+#: content/templates/main/new_add_stone_modal.html:29
+#: content/templates/main/shared_modals.html:19
+#: content/templates/main/stone_edit.html:41
+#: content/templates/main/stone_scan.html:23
+msgid "Stone Name"
+msgstr "Nome del Sasso"
+
+#: content/templates/main/claim_stone.html:51
+msgid "e.g., Rocky, Luna, Star..."
+msgstr "es. Rocky, Luna, Star..."
+
+#: content/templates/main/claim_stone.html:54
+msgid "No spaces allowed"
+msgstr "Spazi non consentiti"
+
+#: content/templates/main/claim_stone.html:56
+msgid "Max 10 characters, no spaces. This will be your stone\\"
+msgstr ""
+
+#: content/templates/main/claim_stone.html:58
+#| msgid "Photo (optional)"
+msgid "Description (optional)"
+msgstr "Descrizione (facoltativa)"
+
+#: content/templates/main/claim_stone.html:64
+#| msgid "Tell us about your stone adventure..."
+msgid "Tell the world about your stone..."
+msgstr "Racconta al mondo della tua pietra..."
+
+#: content/templates/main/claim_stone.html:66
+#| msgid "Photo (optional)"
+msgid "Stone Photo (optional)"
+msgstr "Foto della pietra (facoltativa)"
+
+#: content/templates/main/claim_stone.html:69
+msgid "You can add a photo now or later after painting your stone."
+msgstr ""
+"Puoi aggiungere una foto ora o più tardi, dopo aver dipinto la tua pietra."
+
+#: content/templates/main/claim_stone.html:71
+#| msgid "My Stones"
+msgid "Claim My Stone"
+msgstr "Reclama la mia pietra"
+
+#: content/templates/main/forum.html:8
+msgid "The StoneWalker forum is coming soon. Stay tuned!"
+msgstr "Il forum di StoneWalker arriva presto! Resta sintonizzato!"
+
+#: content/templates/main/index.html:7
+msgid "Welcome to StoneWalker"
+msgstr "Benvenuto in StoneWalker"
+
+#: content/templates/main/index.html:8
+msgid "Track the journey of painted stones around the world"
+msgstr "Segui il viaggio dei sassi dipinti in tutto il mondo"
+
+#: content/templates/main/index.html:9
+msgid ""
+"Join our community of stone travelers and discover amazing stories from "
+"around the globe."
+msgstr ""
+"Unisciti alla nostra comunità di viaggiatori di pietre e scopri storie "
+"incredibili da tutto il mondo."
+
+#: content/templates/main/index.html:11
+msgid "Start Exploring"
+msgstr "Inizia ad Esplorare"
+
+#: content/templates/main/index.html:12
+msgid "Learn More"
+msgstr "Scopri di Più"
+
+#: content/templates/main/my_stones.html:10
+msgid "My CREATIONS"
+msgstr "Le Mie CREAZIONI"
+
+#: content/templates/main/my_stones.html:12
+#: content/templates/main/my_stones.html:34
+msgid "Sort by:"
+msgstr "Ordina per:"
+
+#: content/templates/main/my_stones.html:14
+#: content/templates/main/my_stones.html:36
+msgid "Distance traveled (min)"
+msgstr "Distanza percorsa (minima)"
+
+#: content/templates/main/my_stones.html:15
+#: content/templates/main/my_stones.html:37
+msgid "Distance traveled (max)"
+msgstr "Distanza percorsa (massima)"
+
+#: content/templates/main/my_stones.html:16
+#: content/templates/main/my_stones.html:38
+msgid "Number of moves (min)"
+msgstr "Numero di spostamenti (minimo)"
+
+#: content/templates/main/my_stones.html:17
+#: content/templates/main/my_stones.html:39
+msgid "Number of moves (max)"
+msgstr "Numero di spostamenti (massimo)"
+
+#: content/templates/main/my_stones.html:18
+#: content/templates/main/my_stones.html:40
+msgid "Youngest"
+msgstr "Più Recente"
+
+#: content/templates/main/my_stones.html:19
+#: content/templates/main/my_stones.html:41
+msgid "Oldest"
+msgstr "Più Vecchio"
+
+#: content/templates/main/my_stones.html:25
+#: content/templates/main/my_stones.html:47
+msgid "Previous page"
+msgstr "Pagina precedente"
+
+#: content/templates/main/my_stones.html:27
+#: content/templates/main/my_stones.html:49
+msgid "Next page"
+msgstr "Pagina successiva"
+
+#: content/templates/main/my_stones.html:32
+msgid "MY INTERACTIONS"
+msgstr "Le Mie INTERAZIONI"
+
+#: content/templates/main/my_stones.html:54
+#| msgid "Stone Name"
+msgid "Stone details"
+msgstr "Dettagli pietra"
+
+#: content/templates/main/new_add_stone_modal.html:5
+#: content/templates/main/new_add_stone_modal.html:12
+#: content/templates/main/shared_modals.html:8
+msgid "Add New Stone"
+msgstr "Aggiungi Nuovo Sasso"
+
+#: content/templates/main/new_add_stone_modal.html:41
+#: content/templates/main/shared_modals.html:27
+#: content/templates/main/stone_edit.html:74
+msgid "Stone Type"
+msgstr "Tipo di Sasso"
+
+#: content/templates/main/new_add_stone_modal.html:46
+#: content/templates/main/shared_modals.html:31
+#| msgid "Forbidden"
+msgid "Hidden"
+msgstr "Nascosto"
+
+#: content/templates/main/new_add_stone_modal.html:47
+#: content/templates/main/shared_modals.html:32
+msgid "No known location"
+msgstr "Posizione sconosciuta"
+
+#: content/templates/main/new_add_stone_modal.html:52
+#: content/templates/main/shared_modals.html:36
+msgid "Hunted"
+msgstr "Cacciato"
+
+#: content/templates/main/new_add_stone_modal.html:53
+#: content/templates/main/shared_modals.html:37
+#| msgid "Profile activation"
+msgid "Placed at location"
+msgstr "Posizionato nella posizione"
+
+#: content/templates/main/new_add_stone_modal.html:65
+#: content/templates/main/shared_modals.html:50
+#| msgid "Syndication"
+msgid "Stone Location"
+msgstr "Posizione della pietra"
+
+#: content/templates/main/new_add_stone_modal.html:69
+#: content/templates/main/shared_modals.html:53
+#: content/templates/main/stone_scan.html:33
+msgid "Latitude"
+msgstr "Latitudine"
+
+#: content/templates/main/new_add_stone_modal.html:71
+#: content/templates/main/shared_modals.html:54
+#: content/templates/main/stone_scan.html:36
+msgid "Longitude"
+msgstr "Longitudine"
+
+#: content/templates/main/new_add_stone_modal.html:77
+#: content/templates/main/shared_modals.html:60
+msgid "Picture"
+msgstr "Foto"
+
+#: content/templates/main/new_add_stone_modal.html:85
+#: content/templates/main/shared_modals.html:69
+#: content/templates/main/stone_edit.html:47
+msgid "Description"
+msgstr "Descrizione"
+
+#: content/templates/main/new_add_stone_modal.html:114
+msgid "Your Stone QR Code"
+msgstr "Il codice QR della tua pietra"
+
+#: content/templates/main/new_add_stone_modal.html:115
+msgid "Here is your stone QR code with readable URL"
+msgstr "Ecco il codice QR della tua pietra con URL leggibile"
+
+#: content/templates/main/new_add_stone_modal.html:132
+msgid "Download Stone Label"
+msgstr "Scarica etichetta pietra"
+
+#: content/templates/main/new_add_stone_modal.html:135
+msgid "Compact QR label (2-5cm) perfect for placing on stones!"
+msgstr "Etichetta QR compatta (2-5cm) perfetta per le pietre!"
+
+#: content/templates/main/new_add_stone_modal.html:142
+#: content/templates/main/shared_modals.html:181
+#: content/templates/main/shared_modals.html:191
+msgid "Back"
+msgstr "Indietro"
+
+#: content/templates/main/new_add_stone_modal.html:145
+#| msgid "Create New Stone"
+msgid "Create Stone"
+msgstr "Crea pietra"
+
+#: content/templates/main/shared_modals.html:63
+msgid "Reset"
+msgstr "Ripristina"
+
+#: content/templates/main/shared_modals.html:70
+msgid "Say something about your stone (max 500 chars)"
+msgstr "Racconta qualcosa del tuo sasso (massimo 500 caratteri)"
+
+#: content/templates/main/shared_modals.html:87
+#| msgid "Return to StoneWalker Home"
+msgid "StoneWalker Code"
+msgstr "Codice StoneWalker"
+
+#: content/templates/main/shared_modals.html:88
+msgid "Choose how to get your stone code"
+msgstr "Scegli come ottenere il codice della tua pietra"
+
+#: content/templates/main/shared_modals.html:96
+msgid "I have a StoneWalker code already"
+msgstr "Ho già un codice StoneWalker"
+
+#: content/templates/main/shared_modals.html:97
+msgid "Scan or enter existing code"
+msgstr "Scansiona o inserisci un codice esistente"
+
+#: content/templates/main/shared_modals.html:101
+#| msgid "Return to StoneWalker Home"
+msgid "I need a new StoneWalker code"
+msgstr "Ho bisogno di un nuovo codice StoneWalker"
+
+#: content/templates/main/shared_modals.html:102
+#| msgid "Create New Stone"
+msgid "Generate new code"
+msgstr "Genera nuovo codice"
+
+#: content/templates/main/shared_modals.html:110
+#| msgid "Return to StoneWalker Home"
+msgid "Enter Your StoneWalker Code"
+msgstr "Inserisci il tuo codice StoneWalker"
+
+#: content/templates/main/shared_modals.html:111
+msgid "Scan QR code or enter UUID manually"
+msgstr "Scansiona il codice QR o inserisci l'UUID manualmente"
+
+#: content/templates/main/shared_modals.html:125
+#: content/templates/main/shared_modals.html:228
+msgid "Or enter UUID manually"
+msgstr "Oppure inserisci l'UUID manualmente"
+
+#: content/templates/main/shared_modals.html:132
+#: content/templates/main/shared_modals.html:235
+#| msgid "Confirm this action:"
+msgid "Code Information"
+msgstr "Informazioni codice"
+
+#: content/templates/main/shared_modals.html:133
+#: content/templates/main/shared_modals.html:167
+#: content/templates/main/shared_modals.html:236
+#: content/templates/main/shared_modals.html:284
+msgid "UUID:"
+msgstr "UUID:"
+
+#: content/templates/main/shared_modals.html:134
+#: content/templates/main/shared_modals.html:237
+msgid "Status:"
+msgstr "Stato:"
+
+#: content/templates/main/shared_modals.html:141
+msgid "New StoneWalker Code Generated"
+msgstr "Nuovo codice StoneWalker generato"
+
+#: content/templates/main/shared_modals.html:142
+msgid "Download and print this code for your stone"
+msgstr "Scarica e stampa questo codice per la tua pietra"
+
+#: content/templates/main/shared_modals.html:165
+#: content/templates/main/shared_modals.html:282
+msgid "QR Code Information"
+msgstr "Informazioni codice QR"
+
+#: content/templates/main/shared_modals.html:166
+#: content/templates/main/shared_modals.html:283
+#| msgid "Stone Name"
+msgid "Stone Name:"
+msgstr "Nome della pietra:"
+
+#: content/templates/main/shared_modals.html:168
+#: content/templates/main/shared_modals.html:285
+msgid "Scan URL:"
+msgstr "URL scansione:"
+
+#: content/templates/main/shared_modals.html:174
+#: content/templates/main/shared_modals.html:291
+#: content/templates/main/shop.html:192
+#: content/templates/main/stone_edit.html:103
+msgid "Download QR Code"
+msgstr "Scarica codice QR"
+
+#: content/templates/main/shared_modals.html:182
+#| msgid "Scan Stone"
+msgid "Save Stone"
+msgstr "Salva pietra"
+
+#: content/templates/main/shared_modals.html:192
+msgid "Save"
+msgstr "Salva"
+
+#: content/templates/main/shared_modals.html:202
+#: content/templates/main/shared_modals.html:205
+msgid "Scan Stone"
+msgstr "Scansiona Sasso"
+
+#: content/templates/main/shared_modals.html:209
+#| msgid "Stone Name"
+msgid "Stone Name or UUID"
+msgstr "Nome della pietra o UUID"
+
+#: content/templates/main/shared_modals.html:216
+#| msgid "Scan a Stone"
+msgid "Scan QR Code"
+msgstr "Scansiona codice QR"
+
+#: content/templates/main/shared_modals.html:242
+#: content/templates/main/stone_found.html:18
+msgid "Stone Information"
+msgstr "Informazioni pietra"
+
+#: content/templates/main/shared_modals.html:243
+#: content/templates/main/stone_found.html:19
+msgid "Name:"
+msgstr "Nome:"
+
+#: content/templates/main/shared_modals.html:244
+#: content/templates/main/stone_found.html:20
+msgid "Type:"
+msgstr "Tipo:"
+
+#: content/templates/main/shared_modals.html:245
+#: content/templates/main/stone_found.html:21
+#| msgid "Description"
+msgid "Description:"
+msgstr "Descrizione:"
+
+#: content/templates/main/shared_modals.html:246
+#: content/templates/main/stone_found.html:22
+#| msgid "Create"
+msgid "Created by:"
+msgstr "Creato da:"
+
+#: content/templates/main/shared_modals.html:252
+#| msgid "I found a stone"
+msgid "Found This Stone"
+msgstr "Ho trovato questa pietra"
+
+#: content/templates/main/shared_modals.html:299
+msgid "Welcome"
+msgstr "Benvenuto"
+
+#: content/templates/main/shared_modals.html:302
+#: content/templates/main/stone_found.html:28
+msgid "Welcome to StoneWalker!"
+msgstr "Benvenuto in StoneWalker!"
+
+#: content/templates/main/shared_modals.html:304
+msgid "You are a guest."
+msgstr "Sei un ospite."
+
+#: content/templates/main/shared_modals.html:305
+msgid ""
+"Sign up to start creating, finding, and sharing stones around the world!"
+msgstr ""
+"Registrati per iniziare a creare, trovare e condividere pietre in tutto il "
+"mondo!"
+
+#: content/templates/main/shared_modals.html:308
+#| msgid "Create an account"
+msgid "Create an Account"
+msgstr "Crea un account"
+
+#: content/templates/main/shared_modals.html:309
+msgid "Log In"
+msgstr "Entra"
+
+#: content/templates/main/shop.html:8
+#| msgid "About StoneWalker"
+msgid "StoneWalker Shop"
+msgstr "Negozio StoneWalker"
+
+#: content/templates/main/shop.html:9
+msgid "Everything starts with a QR code"
+msgstr "Tutto inizia con un codice QR"
+
+#: content/templates/main/shop.html:13
+msgid "Local dev sale, single QR codes are free today"
+msgstr "Promozione dev: codici QR singoli gratis oggi"
+
+#: content/templates/main/shop.html:27
+#| msgid "How it works:"
+msgid "How It Works"
+msgstr "Come funziona"
+
+#: content/templates/main/shop.html:37
+msgid "Get a QR Code"
+msgstr "Ottieni un codice QR"
+
+#: content/templates/main/shop.html:38
+msgid ""
+"Grab a free QR code or a pack. Each code is unique and links to your stone."
+msgstr ""
+"Prendi un codice QR gratuito o un pacchetto. Ogni codice è unico e rimanda "
+"alla tua pietra."
+
+#: content/templates/main/shop.html:55
+msgid ""
+"Print the QR code, attach it to your painted stone, and hide it somewhere "
+"fun."
+msgstr ""
+"Stampa il codice QR, attaccalo alla tua pietra dipinta e nascondila in un "
+"posto divertente."
+
+#: content/templates/main/shop.html:72
+msgid "Watch It Travel"
+msgstr "Guarda il viaggio"
+
+#: content/templates/main/shop.html:73
+msgid ""
+"When someone finds and scans your stone, you see its journey on the map."
+msgstr ""
+"Quando qualcuno trova e scansiona la tua pietra, vedi il suo viaggio sulla "
+"mappa."
+
+#: content/templates/main/shop.html:79
+msgid "Choose Your Pack"
+msgstr "Scegli il tuo pacchetto"
+
+#: content/templates/main/shop.html:84
+msgid "Start Here"
+msgstr "Inizia qui"
+
+#: content/templates/main/shop.html:107
+#, python-format
+msgid "%(size)s QR codes included"
+msgstr "%(size)s codici QR inclusi"
+
+#: content/templates/main/shop.html:110
+msgid "No payment needed. Just click and your QR downloads instantly."
+msgstr ""
+"Nessun pagamento necessario. Clicca e il tuo QR si scarica istantaneamente."
+
+#: content/templates/main/shop.html:112
+msgid "You will receive a printable PDF with all QR codes ready to cut out."
+msgstr ""
+"Riceverai un PDF stampabile con tutti i codici QR pronti da ritagliare."
+
+#: content/templates/main/shop.html:122
+#, python-format
+msgid "%(per_unit)s each"
+msgstr "%(per_unit)s ciascuno"
+
+#: content/templates/main/shop.html:128
+msgid "Claimed"
+msgstr "Reclamato"
+
+#: content/templates/main/shop.html:138
+msgid "Get Free QR"
+msgstr "Ottieni QR gratuito"
+
+#: content/templates/main/shop.html:138
+msgid "Buy Now"
+msgstr "Acquista ora"
+
+#: content/templates/main/shop.html:146
+msgid "No products available at this time."
+msgstr "Nessun prodotto disponibile al momento."
+
+#: content/templates/main/shop.html:153
+msgid "What do I get when I buy a QR code?"
+msgstr "Cosa ottengo quando acquisto un codice QR?"
+
+#: content/templates/main/shop.html:154
+msgid ""
+"You get a unique, printable QR code image. Print it out, seal it with clear "
+"tape or varnish, and attach it to any painted stone. When someone finds and "
+"scans it, the stone appears on our world map and you get notified."
+msgstr ""
+
+#: content/templates/main/shop.html:157
+msgid "What is the 10-Pack for?"
+msgstr "A cosa serve il pacchetto da 10?"
+
+#: content/templates/main/shop.html:158
+msgid ""
+"The 10-Pack is perfect for classrooms, scout groups, birthday parties, or "
+"any group activity. You receive a single PDF page with 10 QR codes ready to "
+"cut out and distribute."
+msgstr ""
+
+#: content/templates/main/shop.html:161
+msgid "Can I re-download my QR codes later?"
+msgstr "Posso riscaricare i miei codici QR in seguito?"
+
+#: content/templates/main/shop.html:162
+msgid ""
+"Yes! All your purchases appear in the \"Your Purchases\" bar at the bottom "
+"of this page. You can re-download them anytime."
+msgstr ""
+
+#: content/templates/main/shop.html:177
+#| msgid "Your username"
+msgid "Your Purchases"
+msgstr "I tuoi acquisti"
+
+#: content/templates/main/shop.html:180
+msgid "Click to download your QR codes"
+msgstr "Clicca per scaricare i tuoi codici QR"
+
+#: content/templates/main/shop.html:188
+msgid "QR codes"
+msgstr "Codici QR"
+
+#: content/templates/main/shop.html:202
+msgid "Download all QR codes as one printable PDF"
+msgstr "Scarica tutti i codici QR come un PDF stampabile"
+
+#: content/templates/main/stone_edit.html:4
+#: content/templates/main/stone_edit.html:12
+#| msgid "Edit Profile"
+msgid "Edit Stone"
+msgstr "Modifica pietra"
+
+#: content/templates/main/stone_edit.html:23
+msgid "This stone is in draft mode. You can edit it and publish when ready."
+msgstr ""
+"Questa pietra è in modalità bozza. Puoi modificarla e pubblicarla quando sei"
+" pronto."
+
+#: content/templates/main/stone_edit.html:28
+msgid ""
+"This stone is published and visible on the map. You can no longer edit it, "
+"but you can send it off to finalize it."
+msgstr ""
+
+#: content/templates/main/stone_edit.html:33
+msgid ""
+"This stone has been sent off and is finalized. No further changes can be "
+"made."
+msgstr ""
+"Questa pietra è stata spedita ed è finalizzata. Non sono possibili ulteriori"
+" modifiche."
+
+#: content/templates/main/stone_edit.html:43
+msgid "Stone name cannot be changed after creation."
+msgstr "Il nome della pietra non può essere cambiato dopo la creazione."
+
+#: content/templates/main/stone_edit.html:50
+msgid "Describe your stone..."
+msgstr "Descrivi la tua pietra..."
+
+#: content/templates/main/stone_edit.html:51
+msgid "Maximum 500 characters"
+msgstr "Massimo 500 caratteri"
+
+#: content/templates/main/stone_edit.html:55
+#| msgid "Stone Name"
+msgid "Stone Image"
+msgstr "Immagine della pietra"
+
+#: content/templates/main/stone_edit.html:64
+msgid "Upload a new image to replace the current one"
+msgstr "Carica una nuova immagine per sostituire quella attuale"
+
+#: content/templates/main/stone_edit.html:68
+#| msgid "Marker Color"
+msgid "Stone Color"
+msgstr "Colore della pietra"
+
+#: content/templates/main/stone_edit.html:79
+msgid "Stone type cannot be changed after creation."
+msgstr "Il tipo di pietra non può essere cambiato dopo la creazione."
+
+#: content/templates/main/stone_edit.html:86
+#| msgid "Save profile"
+msgid "Save Draft"
+msgstr "Salva bozza"
+
+#: content/templates/main/stone_edit.html:89
+msgid "Publish Stone"
+msgstr "Pubblica pietra"
+
+#: content/templates/main/stone_edit.html:99
+msgid ""
+"Your stone has a persistent QR code that will always lead to the stone page."
+msgstr ""
+
+#: content/templates/main/stone_edit.html:108
+msgid "QR URL:"
+msgstr "URL QR:"
+
+#: content/templates/main/stone_edit.html:118
+#: content/templates/main/stone_edit.html:125
+#| msgid "Scan a Stone"
+msgid "Send Off Stone"
+msgstr "Spedisci pietra"
+
+#: content/templates/main/stone_edit.html:119
+msgid ""
+"Once you send off your stone, it becomes finalized and ready for its "
+"journey. This action cannot be undone."
+msgstr ""
+
+#: content/templates/main/stone_edit.html:124
+msgid ""
+"Are you sure you want to send off this stone? This action cannot be undone."
+msgstr ""
+"Sei sicuro di voler spedire questa pietra? Questa azione non può essere "
+"annullata."
+
+#: content/templates/main/stone_edit.html:135
+msgid "Back to Map"
+msgstr "Torna alla mappa"
+
+#: content/templates/main/stone_found.html:8
+msgid "Stone Found!"
+msgstr "Pietra trovata!"
+
+#: content/templates/main/stone_found.html:29
+msgid "This is your first stone! Here\\"
+msgstr ""
+
+#: content/templates/main/stone_found.html:31
+msgid "You found a stone that someone else placed"
+msgstr "Hai trovato una pietra che qualcun altro ha nascosto"
+
+#: content/templates/main/stone_found.html:32
+msgid "Now you need to tell us where you found it"
+msgstr "Ora devi dirci dove l'hai trovata"
+
+#: content/templates/main/stone_found.html:33
+msgid "If it\\"
+msgstr ""
+
+#: content/templates/main/stone_found.html:34
+#| msgid "Track the journey of painted stones around the world"
+msgid "This creates a trail of stone movements around the world!"
+msgstr "Questo crea una traccia di movimenti di pietre in tutto il mondo!"
+
+#: content/templates/main/stone_found.html:42
+msgid "Hunted Stone Found!"
+msgstr "Pietra cacciata trovata!"
+
+#: content/templates/main/stone_found.html:43
+msgid "Congratulations! Many others were probably looking for this stone. You\\"
+msgstr ""
+
+#: content/templates/main/stone_found.html:44
+msgid "Next week, you\\"
+msgstr ""
+
+#: content/templates/main/stone_found.html:52
+#: content/templates/main/stone_scan.html:26
+msgid "Comment (optional)"
+msgstr "Commento (facoltativo)"
+
+#: content/templates/main/stone_found.html:53
+#: content/templates/main/stone_scan.html:27
+msgid "Tell us about your stone adventure..."
+msgstr "Raccontaci della tua avventura con il sasso..."
+
+#: content/templates/main/stone_found.html:55
+#: content/templates/main/stone_scan.html:29
+msgid "Photo (optional)"
+msgstr "Foto (facoltativa)"
+
+#: content/templates/main/stone_found.html:59
+msgid "Where did you find this stone?"
+msgstr "Dove hai trovato questa pietra?"
+
+#: content/templates/main/stone_found.html:70
+msgid "Where will you place this stone next week?"
+msgstr "Dove posizionerai questa pietra la prossima settimana?"
+
+#: content/templates/main/stone_found.html:71
+msgid "Choose a new location where others can find it."
+msgstr "Scegli una nuova posizione dove altri possano trovarla."
+
+#: content/templates/main/stone_found.html:80
+#| msgid "Submit Scan"
+msgid "Submit Find"
+msgstr "Invia trovamento"
+
+#: content/templates/main/stone_scan.html:8
+#: content/templates/main/stonewalker_start.html:73
+msgid "Scan a Stone"
+msgstr "Scansiona un Sasso"
+
+#: content/templates/main/stone_scan.html:41
+msgid "Submit Scan"
+msgstr "Invia Scansione"
+
+#: content/templates/main/stonewalker_start.html:66
+#| msgid "One-to-one relationship"
+msgid "Stone actions"
+msgstr "Azioni pietra"
+
+#: content/templates/main/stonewalker_start.html:67
+msgid "Add new stone"
+msgstr "Aggiungi nuovo sasso"
+
+#: content/templates/main/stonewalker_start.html:67
+#| msgid "Create New Stone"
+msgid "Create a new stone"
+msgstr "Crea una nuova pietra"
+
+#: content/templates/main/stonewalker_start.html:69
+msgid "Create New Stone"
+msgstr "Crea Nuovo Sasso"
+
+#: content/templates/main/stonewalker_start.html:71
+msgid "I found a stone"
+msgstr "I found a stone"
+
+#: content/templates/main/stonewalker_start.html:71
+#| msgid "Scan a Stone"
+msgid "Scan a stone QR code"
+msgstr "Scansiona un codice QR di una pietra"
+
+#: main/shop_views.py:53 main/shop_views.py:71 main/shop_views.py:432
+#| msgid "Activation code not found."
+msgid "Stone not found."
+msgstr "Pietra non trovata."
+
+#: main/shop_views.py:57 main/shop_views.py:75
+#| msgid "This account has already been activated."
+msgid "This stone has already been claimed."
+msgstr "Questa pietra è già stata reclamata."
+
+#: main/shop_views.py:101
+#| msgid "Please enter another email."
+msgid "Please enter a name for your stone."
+msgstr "Inserisci un nome per la tua pietra."
+
+#: main/shop_views.py:103
+msgid "Stone name must be 10 characters or less."
+msgstr "Il nome della pietra deve essere di 10 caratteri o meno."
+
+#: main/shop_views.py:105
+#| msgid "Username cannot contain whitespace."
+msgid "Stone name cannot contain spaces."
+msgstr "Il nome della pietra non può contenere spazi."
+
+#: main/shop_views.py:107
+#| msgid "This username is already taken."
+msgid "This stone name is already taken. Please choose another."
+msgstr "Questo nome di pietra è già in uso. Scegline un altro."
+
+#: main/shop_views.py:163
+#, python-format
+msgid ""
+"Congratulations! You claimed \"%(name)s\"! You can now edit and personalize "
+"your stone."
+msgstr ""
+
+#: main/shop_views.py:169
+msgid "An error occurred while claiming the stone. Please try again."
+msgstr "Si è verificato un errore durante il reclamo della pietra. Riprova."
+
+#: main/shop_views.py:211
+msgid "You have already claimed this product"
+msgstr "Hai già reclamato questo prodotto"
+
+#: main/shop_views.py:222
+msgid "Free"
+msgstr "Gratuito"
+
+#: main/shop_views.py:259
+msgid "Product not found."
+msgstr "Prodotto non trovato."
+
+#: main/shop_views.py:263
+#| msgid "This account is not active."
+msgid "This product is not available."
+msgstr "Questo prodotto non è disponibile."
+
+#: main/shop_views.py:277
+msgid "You have already claimed this product."
+msgstr "Hai già reclamato questo prodotto."
+
+#: main/shop_views.py:290
+msgid "Payment system is not configured. Please contact support."
+msgstr "Il sistema di pagamento non è configurato. Contatta il supporto."
+
+#: main/shop_views.py:303
+msgid "Payment system error. Please try again."
+msgstr "Errore del sistema di pagamento. Riprova."
+
+#: main/shop_views.py:335 main/shop_views.py:390
+msgid ""
+"Your free QR code has been generated! Print it and attach it to your stone."
+msgstr ""
+"Il tuo codice QR gratuito è stato generato! Stampalo e attaccalo alla tua "
+"pietra."
+
+#: main/shop_views.py:344
+msgid "Your QR codes are ready for download!"
+msgstr "I tuoi codici QR sono pronti per il download!"
+
+#: main/shop_views.py:347 main/shop_views.py:445
+msgid "Failed to generate QR code."
+msgstr "Impossibile generare il codice QR."
+
+#: main/shop_views.py:362
+msgid "You have already claimed your free QR code."
+msgstr "Hai già reclamato il tuo codice QR gratuito."
+
+#: main/shop_views.py:393
+msgid "Failed to generate QR code. Please try again."
+msgstr "Impossibile generare il codice QR. Riprova."
+
+#: main/shop_views.py:404
+#| msgid "Activation code not found."
+msgid "Pack not found."
+msgstr "Pacchetto non trovato."
+
+#: main/shop_views.py:408
+msgid "PDF not yet generated."
+msgstr "PDF non ancora generato."
+
+#: main/shop_views.py:420
+msgid "PDF file not found."
+msgstr "File PDF non trovato."
+
+#: main/shop_views.py:437
+msgid "You do not have access to this QR code."
+msgstr "Non hai accesso a questo codice QR."
+
+#: main/shop_views.py:457
+msgid "Invalid checkout session."
+msgstr "Sessione di pagamento non valida."
+
+#: main/shop_views.py:463
+#| msgid "Activation code not found."
+msgid "Order not found."
+msgstr "Ordine non trovato."
+
+#: main/shop_views.py:471
+msgid "Payment processing. Please refresh in a moment."
+msgstr "Pagamento in elaborazione. Aggiorna la pagina tra un momento."
+
+#: main/validators.py:28
+msgid ""
+"Comments cannot contain contact information (emails, websites, or phone "
+"numbers)."
+msgstr ""
+"I commenti non possono contenere informazioni di contatto (email, siti web o"
+" numeri di telefono)."
