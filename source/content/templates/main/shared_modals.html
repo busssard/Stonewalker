@@ -316,7 +316,10 @@
 <script src="{% static 'js/qr-code.js' %}"></script>
 
 <script>
-// Shared Modal JavaScript Functionality
+// Shared Modal JS — scan-stone modal, QR code modal, welcome banner,
+// and the OLD (DISABLED) create-stone form logic (type selection, shape
+// preview, image upload, step navigation, QR generation).
+// Inline because it uses Django url tags for login redirect.
 document.addEventListener('DOMContentLoaded', function() {
   // Modal elements
   const scanModal = document.getElementById('scan-stone-modal');
