@@ -1,0 +1,41 @@
+# =============================================================================
+# StoneWalker Auto-Deploy
+# Triggers on push to main (only after tests pass).
+# SSHs into the server and runs the deploy script.
+#
+# Required GitHub secrets:
+#   DEPLOY_HOST     - Server IP address
+#   DEPLOY_USER     - SSH user (stonewalker)
+#   DEPLOY_SSH_KEY  - Private SSH key for authentication
+# =============================================================================
+
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+
+# Only one deploy at a time
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+jobs:
+  # Run tests first — deploy only if they pass
+  test:
+    name: Run Tests
+    uses: ./.github/workflows/tests.yml
+
+  deploy:
+    name: Deploy to Production
+    needs: test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          script: /opt/stonewalker/deploy.sh
