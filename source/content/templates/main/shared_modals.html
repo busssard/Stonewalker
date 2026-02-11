@@ -475,7 +475,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const huntedLatitudeInput = document.getElementById('hunted-latitude');
   const huntedLongitudeInput = document.getElementById('hunted-longitude');
   
-  // Generate UUID function
+  // Generate UUID v4 (also defined in new_add_stone_modal.html IIFE)
   function generateUUID() {
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
       const r = Math.random() * 16 | 0;
