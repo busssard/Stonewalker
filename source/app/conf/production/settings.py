@@ -88,6 +88,8 @@ if not DATABASE_URL:
 if DATABASE_URL.startswith(('postgresql://', 'postgres://')):
     import urllib.parse
     parsed = urllib.parse.urlparse(DATABASE_URL)
+    query_params = urllib.parse.parse_qs(parsed.query)
+    sslmode = query_params.get('sslmode', ['require'])[0]
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
@@ -98,7 +100,7 @@ if DATABASE_URL.startswith(('postgresql://', 'postgres://')):
             'PORT': parsed.port or 5432,
             'CONN_MAX_AGE': 600,
             'OPTIONS': {
-                'sslmode': 'require',
+                'sslmode': sslmode,
             }
         }
     }
