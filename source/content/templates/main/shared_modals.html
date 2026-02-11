@@ -319,17 +319,14 @@
 // Shared Modal JavaScript Functionality
 document.addEventListener('DOMContentLoaded', function() {
   // Modal elements
-  const createModal = document.getElementById('add-stone-modal');
   const scanModal = document.getElementById('scan-stone-modal');
   const qrModal = document.getElementById('qr-code-modal');
-  
+
   // Close buttons
-  const createClose = document.getElementById('add-stone-close');
   const scanClose = document.getElementById('scan-stone-close');
   const qrClose = document.getElementById('qr-code-close');
-  const createCancel = document.getElementById('add-stone-cancel');
   const scanCancel = document.getElementById('scan-stone-cancel');
-  
+
   // Close modal function
   function closeModal(modal) {
     if (modal) {
@@ -337,17 +334,14 @@ document.addEventListener('DOMContentLoaded', function() {
       modal.classList.add('display-none');
     }
   }
-  
+
   // Close button handlers
-  if (createClose) createClose.onclick = () => closeModal(createModal);
   if (scanClose) scanClose.onclick = () => closeModal(scanModal);
   if (qrClose) qrClose.onclick = () => closeModal(qrModal);
-  if (createCancel) createCancel.onclick = () => closeModal(createModal);
   if (scanCancel) scanCancel.onclick = () => closeModal(scanModal);
-  
+
   // Overlay click handlers
   window.onclick = (e) => {
-    if (e.target === createModal) closeModal(createModal);
     if (e.target === scanModal) closeModal(scanModal);
     if (e.target === qrModal) closeModal(qrModal);
   };
@@ -477,7 +471,6 @@ document.addEventListener('DOMContentLoaded', function() {
   const descInput = document.getElementById('stone-desc-input');
   const huntedLatitudeInput = document.getElementById('hunted-latitude');
   const huntedLongitudeInput = document.getElementById('hunted-longitude');
-  const huntedLocationMap = document.getElementById('hunted-location-map');
   
   // Generate UUID function
   function generateUUID() {
@@ -532,7 +525,6 @@ document.addEventListener('DOMContentLoaded', function() {
   
   if (nextBtn) {
     nextBtn.onclick = function() {
-      console.log('=== NEXT BUTTON CLICKED ===');
       // Validate required fields
       if (!nameInput.value.trim()) {
         alert('Please enter a stone name.');
@@ -544,9 +536,7 @@ document.addEventListener('DOMContentLoaded', function() {
         descInput.focus();
         return;
       }
-      
-      console.log('Validation passed, proceeding to step 2');
-      
+
       // Validate hunted stone location
       const stoneType = stoneTypeInput.value;
       if (stoneType === 'hunted') {
@@ -561,99 +551,67 @@ document.addEventListener('DOMContentLoaded', function() {
           return;
         }
       }
-      
+
       // Generate UUID for the stone
       const stoneUUID = generateUUID();
-      
+
       // Generate QR code using server API
       generateQRCodeForStone(nameInput.value.trim(), stoneUUID);
-      
+
       // Go to step 2 (QR Code)
-      console.log('=== TRANSITIONING TO STEP 2 ===');
-      console.log('Step1 element:', !!step1);
-      console.log('Step2 element:', !!step2);
-      
       if (step1) {
-        console.log('Hiding step1 - before:', step1.style.display, step1.className);
         step1.style.display = 'none';
         step1.classList.add('display-none');
-        console.log('Hiding step1 - after:', step1.style.display, step1.className);
       }
       if (step2) {
-        console.log('Showing step2 - before:', step2.style.display, step2.className);
         step2.style.display = 'flex';
         step2.classList.remove('display-none');
-        console.log('Showing step2 - after:', step2.style.display, step2.className);
-        console.log('Step2 visible:', step2.offsetParent !== null);
-        
-        // Debug step2 content
-        const step2Children = step2.children;
-        console.log('Step2 has', step2Children.length, 'children');
-        for (let i = 0; i < step2Children.length; i++) {
-          console.log('Step2 child', i, ':', step2Children[i].tagName, step2Children[i].className, 'visible:', step2Children[i].offsetParent !== null);
-        }
       }
     };
   }
   
   // Function to generate QR code for a stone
   async function generateQRCodeForStone(stoneName, stoneUUID) {
-    console.log('Generating QR code for:', stoneName, stoneUUID);
-    
     try {
       const response = await fetch(`/api/generate-qr/?stone_name=${encodeURIComponent(stoneName)}&stone_uuid=${stoneUUID}`);
-      console.log('QR API response status:', response.status);
-      
       const data = await response.json();
-      console.log('QR API response data:', data);
-      
+
       if (data.success) {
         // Display QR code
         const qrPlaceholder = document.getElementById('qr-code-placeholder');
         if (qrPlaceholder) {
-          console.log('Updating QR placeholder with image');
           qrPlaceholder.innerHTML = `<img src="data:image/png;base64,${data.qr_code}" style="width: 100%; height: 100%; object-fit: contain;">`;
-        } else {
-          console.error('QR placeholder element not found');
         }
-        
+
         // Display cleartext URL underneath QR code
         const qrCleartextUrl = document.getElementById('qr-cleartext-url');
         const qrUrlText = document.getElementById('qr-url-text');
-        console.log('Cleartext elements found:', { qrCleartextUrl, qrUrlText });
-        console.log('QR URL to display:', data.qr_url);
         if (qrCleartextUrl && qrUrlText) {
           qrUrlText.textContent = data.qr_url;
           qrCleartextUrl.style.display = 'block';
-          console.log('Cleartext URL displayed successfully');
-        } else {
-          console.error('Cleartext URL elements not found');
         }
-        
+
         // Update QR code information
         const qrStoneName = document.getElementById('qr-stone-name');
         const qrStoneUuid = document.getElementById('qr-stone-uuid');
         const qrScanUrl = document.getElementById('qr-scan-url');
         const qrCodeInfo = document.getElementById('qr-code-info');
         const downloadQrBtn = document.getElementById('download-qr-btn');
-        
+
         if (qrStoneName) qrStoneName.textContent = stoneName;
         if (qrStoneUuid) qrStoneUuid.textContent = stoneUUID;
         if (qrScanUrl) qrScanUrl.textContent = data.qr_url;
-        
+
         // Show QR code info and download button
         if (qrCodeInfo) qrCodeInfo.classList.remove('display-none');
         if (downloadQrBtn) downloadQrBtn.classList.remove('display-none');
-        
+
         // Store QR data for download
         window.currentQRData = data;
-        console.log('QR code generated successfully');
       } else {
-        console.error('Failed to generate QR code:', data.error);
         alert('Failed to generate QR code. Please try again.');
       }
     } catch (error) {
-      console.error('Error generating QR code:', error);
       alert('Error generating QR code. Please try again.');
     }
   }
@@ -777,14 +735,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize QR scanner for scan modal
     const scanCameraScanner = document.getElementById('scan-camera-scanner');
     if (scanCameraScanner && window.qrCodeManager) {
-      // Override the default QR code detection behavior for scan modal
-      const originalOnQRCodeDetected = window.qrCodeManager.onQRCodeDetected;
-      const originalHandleScannedUUID = window.qrCodeManager.handleScannedUUID;
-      const originalShowScanSuccess = window.qrCodeManager.showScanSuccess;
-      
       // Custom behavior for scan modal
       window.qrCodeManager.onQRCodeDetected = function(decodedText, decodedResult) {
-        console.log('Scan Modal QR Code detected:', decodedText);
         
         // Stop scanning
         this.stopQRScanner();
@@ -881,7 +833,6 @@ document.addEventListener('DOMContentLoaded', function() {
               }
             }
           } catch (error) {
-            console.error('Error fetching stone information:', error);
             if (scanValidationStatus) {
               scanValidationStatus.textContent = 'Valid UUID - Error checking stone';
               scanValidationStatus.style.color = '#FF9800';
@@ -914,17 +865,6 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
   }
-  
-  // OLD MODAL DISABLED
-  window.openSharedCreateStoneModal = function() {
-    console.log('Old modal function called - redirecting to new modal');
-    const newModal = document.getElementById('new-add-stone-modal');
-    if (newModal) {
-      newModal.style.display = 'block';
-    } else {
-      console.error('New modal not found!');
-    }
-  };
   
   window.openSharedScanStoneModal = function() {
     // Check if user is authenticated by looking for authentication indicators
