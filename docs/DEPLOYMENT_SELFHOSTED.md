@@ -8,8 +8,56 @@ All config files referenced below live in `docs/deploy/` and can be dropped in p
 
 - Ubuntu 22.04 LTS (or Debian 12)
 - 2GB+ RAM, 20GB+ disk
-- A domain name pointed at your server's IP (A record)
+- A domain name (you'll point it at your server in a later step)
 - Root or sudo access
+- SSH access to your server (`ssh root@YOUR_SERVER_IP`)
+
+## 0. Point Your Domain at the Server
+
+Before or during setup, you need to point your domain's DNS to your server's IP address. Do this at your domain registrar (wherever you bought your domain — Namecheap, GoDaddy, Cloudflare, etc.):
+
+1. Log into your registrar's dashboard
+2. Find **DNS settings** or **DNS management** for your domain
+3. Find the existing **A record** (it may point to your old host)
+4. Change it to your server's IP:
+
+```
+Type: A
+Name: @                    (this means yourdomain.org itself)
+Value: YOUR_SERVER_IPV4    (e.g. 116.203.xx.xx — find in your hosting panel)
+TTL: 300                   (5 minutes — low for fast propagation)
+```
+
+```
+Type: A
+Name: www
+Value: YOUR_SERVER_IPV4
+TTL: 300
+```
+
+If your server has an IPv6 address, also add AAAA records:
+
+```
+Type: AAAA
+Name: @
+Value: YOUR_SERVER_IPV6    (e.g. 2001:db8::1)
+TTL: 300
+```
+
+```
+Type: AAAA
+Name: www
+Value: YOUR_SERVER_IPV6
+TTL: 300
+```
+
+To find your server's IP: check your hosting panel (Hetzner Cloud, DigitalOcean, etc.), or run `hostname -I` when SSH'd in.
+
+**Tip**: Lower the TTL to 300 a day *before* switching the IP. That way the old cached DNS expires quickly and users get routed to the new server within minutes instead of hours. After everything is stable, raise TTL back to 3600.
+
+DNS propagation typically takes 5 minutes to 1 hour (can take up to 48 hours in rare cases). You can check propagation status at [dnschecker.org](https://dnschecker.org).
+
+**Note**: SSL (step 8) requires DNS to already be pointing at your server. You can do steps 1-7 first while DNS propagates, then do step 8 once DNS is live.
 
 ## 1. System Setup
 
@@ -51,14 +99,51 @@ systemctl restart postgresql
 
 See `docs/deploy/postgresql.conf.snippet` for the full tuning parameters.
 
-## 3. Application Code
+## 3. Get the Code onto the Server
+
+There are two ways to get the repo onto your server:
+
+### Option A: Clone from GitHub (recommended)
 
 ```bash
 sudo -u stonewalker bash
 cd /opt/stonewalker
 
-# Clone repository
-git clone https://github.com/YOUR_ORG/simple-django-login-and-register.git .
+# Clone the repository (uses HTTPS — no SSH key needed)
+git clone https://github.com/busssard/Stonewalker.git .
+```
+
+If the repo is private, you'll need a GitHub Personal Access Token (PAT):
+
+```bash
+# Generate a PAT at: https://github.com/settings/tokens
+# Select scope: repo (full control of private repositories)
+git clone https://YOUR_TOKEN@github.com/busssard/Stonewalker.git .
+```
+
+### Option B: Upload from your local machine
+
+If you prefer not to give the server GitHub access:
+
+```bash
+# On your LOCAL machine — create a tarball
+tar czf /tmp/stonewalker.tar.gz --exclude=venv --exclude=__pycache__ --exclude=.git --exclude='*.pyc' .
+
+# Copy to server
+scp /tmp/stonewalker.tar.gz root@YOUR_SERVER_IP:/tmp/
+
+# On the SERVER — extract as the stonewalker user
+sudo -u stonewalker bash -c 'cd /opt/stonewalker && tar xzf /tmp/stonewalker.tar.gz'
+rm /tmp/stonewalker.tar.gz
+```
+
+**Note**: With Option B you won't have `git pull` for updates or auto-deploy. Option A is strongly recommended.
+
+### Install dependencies
+
+```bash
+sudo -u stonewalker bash
+cd /opt/stonewalker
 
 # Create virtual environment
 python3 -m venv venv
@@ -283,6 +368,121 @@ ufw allow 'Nginx Full'
 ufw enable
 ```
 
+## Auto-Deploy on Git Push
+
+Every push to `main` automatically deploys to the server: GitHub Actions runs the tests, and if they pass, SSHs into the server and runs the deploy script.
+
+### Server-side setup
+
+```bash
+# Install the deploy script
+cp docs/deploy/deploy.sh /opt/stonewalker/deploy.sh
+chmod +x /opt/stonewalker/deploy.sh
+
+# Allow the stonewalker user to reload the service without a password
+echo "stonewalker ALL=(ALL) NOPASSWD: /bin/systemctl reload stonewalker" > /etc/sudoers.d/stonewalker-deploy
+chmod 440 /etc/sudoers.d/stonewalker-deploy
+```
+
+### Generate an SSH key for GitHub Actions
+
+```bash
+# On the SERVER — generate a deploy key (no passphrase)
+ssh-keygen -t ed25519 -f /tmp/deploy_key -N "" -C "github-actions-deploy"
+
+# Add the public key to the stonewalker user's authorized_keys
+mkdir -p /opt/stonewalker/.ssh
+cat /tmp/deploy_key.pub >> /opt/stonewalker/.ssh/authorized_keys
+chmod 700 /opt/stonewalker/.ssh
+chmod 600 /opt/stonewalker/.ssh/authorized_keys
+chown -R stonewalker:stonewalker /opt/stonewalker/.ssh
+
+# Display the PRIVATE key — you'll paste this into GitHub
+cat /tmp/deploy_key
+
+# Clean up
+rm /tmp/deploy_key /tmp/deploy_key.pub
+```
+
+### Add secrets to GitHub
+
+Go to your repo: **Settings > Secrets and variables > Actions > New repository secret**
+
+Add these 3 secrets:
+
+| Secret name | Value |
+|-------------|-------|
+| `DEPLOY_HOST` | Your server's IP address |
+| `DEPLOY_USER` | `stonewalker` |
+| `DEPLOY_SSH_KEY` | The full private key from the step above (including `-----BEGIN/END-----` lines) |
+
+### How it works
+
+```
+git push origin main
+  → GitHub Actions: run tests (tests.yml)
+    → Tests pass?
+      → Yes: SSH into server as stonewalker
+        → Run /opt/stonewalker/deploy.sh
+          → git pull, pip install, migrate, collectstatic, reload gunicorn
+      → No: deploy is skipped, you get a notification
+```
+
+The deploy workflow is at `.github/workflows/deploy.yml`. The deploy script is at `docs/deploy/deploy.sh`.
+
+### Manual deploy
+
+You can always deploy manually by SSHing in:
+
+```bash
+ssh root@YOUR_SERVER_IP
+sudo -u stonewalker /opt/stonewalker/deploy.sh
+```
+
+## Migrating from Render (or another host)
+
+If you're moving from an existing deployment (e.g. Render.com), you need to migrate the database and media files.
+
+### Export the database from your old host
+
+```bash
+# On your LOCAL machine — dump from the old host
+# Replace the URL with your old database connection string
+pg_dump "postgresql://user:password@host:5432/dbname" --format=custom -f stonewalker_old.dump
+
+# Copy the dump to your server
+scp stonewalker_old.dump root@YOUR_SERVER_IP:/tmp/
+```
+
+### Import on the new server
+
+```bash
+# On the SERVER — restore into the local PostgreSQL
+sudo -u postgres pg_restore --clean --if-exists -d stonewalker /tmp/stonewalker_old.dump
+rm /tmp/stonewalker_old.dump
+```
+
+### Copy media files
+
+If your old host has uploaded images (profile pictures, stone photos, QR codes):
+
+```bash
+# Upload media to the server
+scp -r media_files/ root@YOUR_SERVER_IP:/opt/stonewalker/source/content/media/
+chown -R stonewalker:stonewalker /opt/stonewalker/source/content/media/
+```
+
+### Cutover checklist
+
+1. Set up everything on new server (steps 1-9) while old host is still live
+2. Do a final database export from the old host (to capture last-minute data)
+3. Import on new server
+4. Switch DNS A record to new server's IP
+5. Wait for DNS propagation (check at [dnschecker.org](https://dnschecker.org))
+6. Verify the site works (`curl -I https://stonewalker.org`)
+7. Keep the old host running for a few days as fallback
+8. Decommission the old host once confident
+
 ## Config Files Reference
 
 | File                           | Install Location                          |
@@ -292,3 +492,4 @@ ufw enable
 | `docs/deploy/env.template`    | `/opt/stonewalker/.env`                   |
 | `docs/deploy/postgresql.conf.snippet` | Merge into `/etc/postgresql/15/main/postgresql.conf` |
 | `docs/deploy/backup.sh`       | `/opt/stonewalker/backup.sh`              |
+| `docs/deploy/deploy.sh`       | `/opt/stonewalker/deploy.sh`              |
