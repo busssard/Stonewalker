@@ -70,7 +70,7 @@ where = ["source"]
 "*" = ["*.txt", "*.md", "*.po", "*.mo"]
 
 [tool.coverage.run]
-source = ["source"]
+source = ["app", "accounts", "main"]
 omit = [
     "*/tests/*",
     "*/migrations/*",
