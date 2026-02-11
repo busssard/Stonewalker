@@ -8,1030 +8,1676 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-27 18:03+0000\n"
+"POT-Creation-Date: 2026-02-11 07:39+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: ZH-HANS <zh-hans@li.org>\n"
-"Language: zh-hans\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 
-msgid "%(from)s-%(to)s relationship"
-msgstr "关系 %(from)s-%(to)s"
-
-msgid "%(from)s-%(to)s relationships"
-msgstr "关系们 %(from)s-%(to)s"
-
-msgid "%(model)s instance with %(field)s %(value)r does not exist."
-msgstr "%(model)s 实例与 %(field)s %(value)r 不存在。"
-
-msgid "%(model_name)s with this %(field_label)s already exists."
-msgstr "这个 %(model_name)s 的 %(field_label)s 已经存在了！"
-
-msgid "%(model_name)s with this %(field_labels)s already exists."
-msgstr "这个 %(model_name)s 的 %(field_labels)s 已经存在了！"
-
-msgid "%(path)s does not exist"
-msgstr "%(path)s 不存在。"
-
-msgid "%(pk)s is not a valid value."
-msgstr "%(pk)s 不是一个有效值。"
-
-msgid "%(truncated_text)s..."
-msgstr "%(truncated_text)s..."
-
-msgid "%(value)s value must be either True"
-msgstr "or None."
-
-msgid "%(value)s value must be either True or False."
-msgstr "值 \"%(value)s\" 必须是真或假。"
-
-msgid "%s GB"
-msgstr "%s GB"
-
-msgid "%s KB"
-msgstr "%s KB"
-
-msgid "%s MB"
-msgstr "%s MB"
-
-msgid "%s PB"
-msgstr "%s PB"
-
-msgid "%s TB"
-msgstr "%s TB"
-
-msgid "(Hidden field %(name)s) %(error)s"
-msgstr "(隐藏字段 %(name)s) %(error)s"
-
-msgid "A JSON object"
-msgstr "JSON 对象"
-
-msgid "A new activation code has been sent to your email address."
-msgstr "新的激活码已发送到您的电子邮件地址。"
-
-msgid "A new activation link has been sent to your email address."
-msgstr "新的激活链接已发送到您的电子邮件地址。"
-
-msgid "AM"
-msgstr "上午"
-
-msgid "About"
-msgstr "关于我们"
-
-msgid "About StoneWalker"
-msgstr "关于 StoneWalker"
-
-msgid "Activation code not found."
-msgstr "未找到激活码。"
-
-msgid "Add New Stone"
-msgstr "添加新石头"
-
-msgid "Add new stone"
-msgstr "添加新石头"
-
-msgid "Already have an account?"
-msgstr "已经有一个账号了？"
-
-msgid "April"
-msgstr "四月"
-
-msgid "Are you sure you want to log out?"
-msgstr "你确定要退出吗？"
-
-msgid "Aug."
-msgstr "八月"
-
-msgid "August"
-msgstr "八月"
-
-msgid "Back"
-msgstr "返回"
-
-msgid "Be kind and respectful to other community members!"
-msgstr "对其他社区成员要友好和尊重！"
-
-msgid "Big (8 byte) integer"
-msgstr "大整数 (8 字节)"
-
-msgid "Boolean (Either True or False)"
-msgstr "布尔值（真或假）"
-
-msgid "Boolean (Either True, False or None)"
-msgstr "布尔值（真、假或无）"
-
-msgid "CSRF verification failed. Request aborted."
-msgstr "CSRF 验证失败。请求已中止。"
-
-msgid "Cancel"
-msgstr "取消"
-
-msgid "Cancel and return home"
-msgstr "取消并返回首页"
-
-msgid "Change"
-msgstr "修改"
-
-msgid "Change email"
-msgstr "修改电子邮箱"
-
-msgid "Change language"
-msgstr "改变语言"
-
-msgid "Change password"
-msgstr "修改密码"
-
-msgid "Change profile"
-msgstr "更改档案"
-
-msgid "Circle"
-msgstr "圆形"
-
-msgid "Clear"
-msgstr "清除"
-
-msgid "Click the \\\\"
-msgstr "点击 \\\\"
-
-msgid "Comma-separated integers"
-msgstr "逗号分隔的整数"
-
-msgid "Comment (optional)"
-msgstr "评论（可选）"
-
-msgid "Community Guidelines:"
-msgstr "社区准则："
-
-msgid "Confirm new password"
-msgstr "确认新密码"
-
-msgid "Confirm this action:"
-msgstr "确认此操作："
-
-msgid "Connect, get help, or contribute"
-msgstr "连接、获取帮助或贡献"
-
-msgid "Constraint \"%(name)s\" is violated."
-msgstr "约束 \"%(name)s\" 被违反。"
-
-msgid "Constraint \\\\"
-msgstr "约束 \\\\"
-
-msgid "Create"
-msgstr "创建"
-
-msgid "Create New Stone"
-msgstr "创建新石头"
-
-msgid "Create an account"
-msgstr "创建账号"
-
-msgid "Currently"
-msgstr "当前"
-
-msgid "Date (with time)"
-msgstr "日期（含时间）"
-
-msgid "Date (without time)"
-msgstr "日期（不含时间）"
-
-msgid "Date out of range"
-msgstr "日期超出范围"
-
-msgid "Dec."
-msgstr "十二月"
-
-msgid "December"
-msgstr "十二月"
-
-msgid "Decimal number"
-msgstr "十进制数"
-
-msgid "Delete"
-msgstr "删除"
-
-msgid "Description"
-msgstr "描述"
-
-msgid "Did you know:"
-msgstr "你知道吗："
-
-msgid "Directory indexes are not allowed here."
-msgstr "此处不允许目录索引。"
-
-msgid "Distance traveled (max)"
-msgstr "最远旅行距离"
-
-msgid "Distance traveled (min)"
-msgstr "最短旅行距离"
-
-msgid "Django Community"
-msgstr "Django 社区"
-
-msgid "Django Documentation"
-msgstr "Django 文档"
-
-msgid "Django administration"
-msgstr "Django 管理"
-
-msgid "Don't have an account?"
-msgstr "还没有账号？"
-
-msgid "Don't place stones in protected areas or private property!"
-msgstr "不要在保护区或私人财产上放置石头！"
-
-msgid "Don\\\\\\\\"
-msgstr "别"
-
-msgid "Duration"
-msgstr "持续时间"
-
-msgid "Edit Profile"
-msgstr "编辑个人资料"
-
-msgid "Email"
-msgstr "电子邮箱"
-
-msgid "Email address"
-msgstr "电子邮件地址"
-
-msgid "Email change cancelled and reverted."
-msgstr "电子邮件更改已取消并恢复。"
-
-msgid "Email or Username"
-msgstr "电子邮箱或用户名"
-
-msgid "Email successfully changed."
-msgstr "电子邮箱地址修改成功。"
-
-msgid "Empty list and \"%(class_name)s.allow_empty\" is False."
-msgstr "列表为空且 \"%(class_name)s.allow_empty\" 为假。"
-
-msgid "Empty list and \\\\"
-msgstr "空列表和 \\\\"
-
-msgid "English"
-msgstr "英语"
-
-msgid "Ensure this value is %(limit_value)s (it is %(show_value)s)."
-msgstr "确保此值是 %(limit_value)s（当前是 %(show_value)s）。"
-
-msgid "Ensure this value is a multiple of step size %(limit_value)s."
-msgstr "此值必须是 %(limit_value)s 的倍数。"
-
-msgid "Ensure this value is greater than or equal to %(limit_value)s."
-msgstr "此值必须大于或等于 %(limit_value)s。"
-
-msgid "Ensure this value is less than or equal to %(limit_value)s."
-msgstr "此值必须小于或等于 %(limit_value)s。"
-
-msgid "Enter a complete value."
-msgstr "输入一个完整的值！"
-
-msgid "Enter a list of values."
-msgstr "输入一个值列表！"
-
-msgid "Enter a number."
-msgstr "输入一个数字！"
-
-msgid "Enter a valid IPv4 address."
-msgstr "输入一个有效的 IPv4 地址！"
-
-msgid "Enter a valid IPv4 or IPv6 address."
-msgstr "输入一个有效的 IPv4 或 IPv6 地址！"
-
-msgid "Enter a valid IPv6 address."
-msgstr "输入一个有效的 IPv6 地址！"
-
-msgid "Enter a valid JSON."
-msgstr "输入一个有效的 JSON！"
-
-msgid "Enter a valid URL."
-msgstr "输入一个有效的 URL！"
-
-msgid "Enter a valid UUID."
-msgstr "输入一个有效的 UUID！"
-
-msgid "Enter a valid date."
-msgstr "输入一个有效的日期！"
-
-msgid "Enter a valid date/time."
-msgstr "输入一个有效的日期/时间！"
-
-msgid "Enter a valid duration."
-msgstr "输入一个有效的持续时间！"
-
-msgid "Enter a valid email address."
-msgstr "输入一个有效的电子邮件地址！"
-
-msgid "Enter a valid integer."
-msgstr "输入一个有效的整数！"
-
-msgid "Enter a valid time."
-msgstr "输入一个有效的时间！"
-
-msgid "Enter a valid value."
-msgstr "输入一个有效的值！"
-
-msgid "Enter a whole number."
-msgstr "输入一个整数！"
-
-msgid "Enter only digits separated by commas."
-msgstr "只输入逗号分隔的数字！"
-
-msgid "Feb."
-msgstr "二月"
-
-msgid "February"
-msgstr "二月"
-
-msgid "Field of type: %(field_type)s"
-msgstr "字段类型：%(field_type)s"
-
-msgid "File"
-msgstr "文件"
-
-msgid "File path"
-msgstr "文件路径"
-
-msgid "First name"
-msgstr "名字"
-
-msgid "Floating point number"
-msgstr "浮点数"
-
-msgid "Forbidden"
-msgstr "禁止"
-
-msgid "Foreign Key (type determined by related field)"
-msgstr "外键（类型由相关字段决定）"
-
-msgid "Forgot your password?"
-msgstr "忘记密码了吗？"
-
-msgid "Forgot your username?"
-msgstr "忘记了你的用户名？"
-
-msgid "Forum"
-msgstr "论坛"
-
-msgid "French"
-msgstr "法语"
-
-msgid "Fri"
-msgstr "星期五"
-
-msgid "Friday"
-msgstr "星期五"
-
-msgid "German"
-msgstr "德语"
-
-msgid "Get started with Django"
-msgstr "开始使用 Django！"
-
-msgid "Glue the custom QR code on the back of the stone."
-msgstr "将定制的二维码粘在石头的背面。"
-
-msgid "Hidden (no location, must be found by scanning)"
-msgstr "隐藏（无位置，需通过扫描找到）"
-
-msgid "Home"
-msgstr "首页"
-
-msgid "How it works:"
-msgstr "它是如何工作的："
-
-msgid "Hunted (placed at a location, must be found at that spot)"
-msgstr "狩猎（放置在某个位置，必须在那里找到）"
-
-msgid "I found a stone"
-msgstr "我找到了一块石头！"
-
-msgid "IP address"
-msgstr "IP 地址"
-
-msgid "IPv4 address"
-msgstr "IPv4 地址"
-
-msgid "Image"
-msgstr "图片"
-
-msgid "Index of %(directory)s"
-msgstr "目录 %(directory)s 的索引"
-
-msgid "Integer"
-msgstr "整数"
-
-msgid "Invalid date string \"%(datestr)s\" given format \"%(format)s\""
-msgstr "日期字符串 \"%(datestr)s\" 与格式 \"%(format)s\" 不匹配。"
-
-msgid "Invalid date string \\\\"
-msgstr "无效的日期字符串 \\\\"
-
-msgid "Invalid page (%(page_number)s): %(message)s"
-msgstr "无效页面 (%(page_number)s)：%(message)s"
-
-msgid "Italian"
-msgstr "意大利语"
-
-msgid "Jan."
-msgstr "一月"
-
-msgid "January"
-msgstr "一月"
-
-msgid "July"
-msgstr "七月"
-
-msgid "June"
-msgstr "六月"
-
-msgid "Last name"
-msgstr "姓"
-
-msgid "Latitude"
-msgstr "纬度"
-
-msgid "Learn More"
-msgstr "了解更多"
-
-msgid "Log In"
-msgstr "登录"
-
-msgid "Log in"
-msgstr "登录"
-
-msgid "Log in again"
-msgstr "再次登录"
-
-msgid "Log out"
-msgstr "登出"
-
-msgid "Logged out"
-msgstr "登出"
-
-msgid "Longitude"
-msgstr "经度"
-
-msgid "MY INTERACTIONS"
-msgstr "我的互动"
-
-msgid "Many-to-many relationship"
-msgstr "多对多关系"
-
-msgid "March"
-msgstr "三月"
-
-msgid "Marker Color"
-msgstr "标记颜色"
-
-msgid "Marker Shape"
-msgstr "标记形状"
-
-msgid "May"
-msgstr "五月"
-
-msgid "Messages"
-msgstr "消息"
-
-msgid "Mon"
-msgstr "星期一"
-
-msgid "Monday"
-msgstr "星期一"
-
-msgid "More information is available with DEBUG=True."
-msgstr "更多信息在 DEBUG=True 时可用。"
-
-msgid "My CREATIONS"
-msgstr "我的创作"
-
-msgid "My Stones"
-msgstr "我的石头"
-
-msgid "New password"
-msgstr "新密码"
-
-msgid "Next"
-msgstr "下一步"
-
-msgid "Next page"
-msgstr "下一页"
-
-msgid "No"
-msgstr "否"
-
-msgid "No %(verbose_name)s found matching the query"
-msgstr "没有找到匹配的 %(verbose_name)s。"
-
-msgid "No %(verbose_name_plural)s available"
-msgstr "没有可用的 %(verbose_name_plural)s。"
-
-msgid "No day specified"
-msgstr "未指定日期。"
-
-msgid "No file was submitted."
-msgstr "没有提交文件。"
-
-msgid "No file was submitted. Check the encoding type on the form."
-msgstr "没有提交文件。请检查表单的编码类型。"
-
-msgid "No month specified"
-msgstr "未指定月份。"
-
-msgid "No pending email change to cancel."
-msgstr "没有待取消的电子邮件更改。"
-
-msgid "No pending email confirmation to resend."
-msgstr "没有待重新发送的电子邮件确认。"
-
-msgid "No week specified"
-msgstr "未指定周。"
-
-msgid "No year specified"
-msgstr "未指定年份。"
-
-msgid "Nov."
-msgstr "十一月"
-
-msgid "November"
-msgstr "十一月"
-
-msgid "Null characters are not allowed."
-msgstr "不允许空字符。"
-
-msgid "Number of moves (max)"
-msgstr "最大移动次数"
-
-msgid "Number of moves (min)"
-msgstr "最小移动次数"
-
-msgid "Oct."
-msgstr "十月"
-
-msgid "October"
-msgstr "十月"
-
-msgid "Oldest"
-msgstr "最早的"
-
-msgid "One-to-one relationship"
-msgstr "一对一关系"
-
-msgid "Order"
-msgstr "顺序"
-
-msgid "PM"
-msgstr "下午"
-
-msgid "Page is not \\\\"
-msgstr "页面不是 \\\\"
-
+#: accounts/forms.py:21
 msgid "Password"
 msgstr "密码"
 
-msgid "Passwords do not match."
-msgstr "密码不匹配！"
-
-msgid "Photo (optional)"
-msgstr "照片（可选）"
-
-msgid "Pick up a brush and paint a stone."
-msgstr "拿起画笔，给石头涂上颜色！"
-
-msgid "Picture"
-msgstr "图片"
-
-msgid "Please correct the duplicate data for %(field)s, which must be unique."
-msgstr "请更正 %(field)s 的重复数据，它必须是唯一的！"
-
-msgid "Please correct the duplicate data for %(field)s."
-msgstr "请更正 %(field)s 的重复数据！"
-
-msgid "Please correct the duplicate values below."
-msgstr "请更正下面的重复值！"
-
-msgid "Please either submit a file or check the clear checkbox, not both."
-msgstr "请提交文件或勾选清除复选框，不能两者都选！"
-
-msgid "Please enter another email."
-msgstr "请输入一个新的电子邮箱。"
-
-msgid "Please, go to the following page and choose a new password:"
-msgstr "请转到以下页面并选择一个新密码："
-
-msgid "Positive big integer"
-msgstr "大的正整数"
-
-msgid "Positive integer"
-msgstr "正整数"
-
-msgid "Positive small integer"
-msgstr "小的正整数"
-
-msgid "Previous"
-msgstr "上一页"
-
-msgid "Previous page"
-msgstr "上一页"
-
-msgid "Profile activation"
-msgstr "简档激活"
-
-msgid "Profile data has been successfully updated."
-msgstr "个人信息数据已成功更新。"
-
-msgid "Profile picture"
-msgstr "头像"
-
-msgid "Raw binary data"
-msgstr "原始二进制数据"
-
-msgid "Read more about this discovery →"
-msgstr "了解更多关于这个发现的信息 →"
-
+#: accounts/forms.py:27
 msgid "Remember me"
 msgstr "记住我"
 
-msgid "Remind a username"
-msgstr "提醒用户名"
-
-msgid "Required. Enter an existing email address."
-msgstr "需要。输入现有的电子邮件地址。"
-
-msgid "Resend an activation code"
-msgstr "重新发送激活码"
-
-msgid "Restore password"
-msgstr "恢复密码"
-
-msgid "Return to StoneWalker Home"
-msgstr "返回 StoneWalker 首页"
-
-msgid "Russian"
-msgstr "俄语"
-
-msgid "Sat"
-msgstr "星期六"
-
-msgid "Saturday"
-msgstr "星期六"
-
-msgid "Save"
-msgstr "保存"
-
-msgid "Save profile"
-msgstr "保存个人资料"
-
-msgid "Say something about your stone (max 500 chars)"
-msgstr "说说你的石头（最多 500 个字符）"
-
-msgid "Scan Stone"
-msgstr "扫描石头"
-
-msgid "Scan a Stone"
-msgstr "扫描一块石头"
-
-msgid "Select a valid choice. %(value)s is not one of the available choices."
-msgstr "选择一个有效的选项！%(value)s 不在可用选项中。"
-
-msgid "Select a valid choice. That choice is not one of the available choices."
-msgstr "选择一个有效的选项！该选项不在可用选项中。"
-
-msgid "Select the language"
-msgstr "选择语言"
-
-msgid "Select your preferred language"
-msgstr "选择你喜欢的语言！"
-
-msgid "Sept."
-msgstr "九月"
-
-msgid "September"
-msgstr "九月"
-
-msgid "Set it free and watch it travel the world."
-msgstr "放手让它去环游世界！"
-
-msgid "Shop"
-msgstr "商店"
-
-msgid "Sign up"
-msgstr "注册"
-
-msgid "Simplified Chinese"
-msgstr "简体中文"
-
-msgid "Site Maps"
-msgstr "网站地图"
-
-msgid "Slug (up to %(max_length)s)"
-msgstr "短链接（最多 %(max_length)s 个字符）"
-
-msgid "Small integer"
-msgstr "小的整数"
-
-msgid "Sort by:"
-msgstr "排序方式："
-
-msgid "Spanish"
-msgstr "西班牙语"
-
-msgid "Square"
-msgstr "方形"
-
-msgid "Star"
-msgstr "星星"
-
-msgid "Start Exploring"
-msgstr "开始探索！"
-
-msgid "Start Your Journey"
-msgstr "开始你的冒险！"
-
-msgid "Static Files"
-msgstr "静态文件"
-
-msgid "Stone Name"
-msgstr "石头名字"
-
-msgid "Stone Type"
-msgstr "石头类型"
-
-msgid "String (unlimited)"
-msgstr "字符串（无限制）"
-
-msgid "String (up to %(max_length)s)"
-msgstr "字符串（最多 %(max_length)s 个字符）"
-
-msgid "Submit Scan"
-msgstr "提交扫描"
-
-msgid "Sun"
-msgstr "星期日"
-
-msgid "Sunday"
-msgstr "星期日"
-
-msgid "Syndication"
-msgstr "联合供稿"
-
-msgid "Tell us about your stone adventure..."
-msgstr "告诉我们你的石头冒险故事......"
-
-msgid "Text"
-msgstr "文本"
-
-msgid "Thanks for spending some quality time with StoneWalker today!"
-msgstr "感谢你今天与 StoneWalker 度过的美好时光！"
-
-msgid "That page contains no results"
-msgstr "这个页面空空的，像没有饼干的盒子！"
-
-msgid "That page number is less than 1"
-msgstr "页面编号小于 1！"
-
-msgid "That page number is not an integer"
-msgstr "页面编号不是整数！"
-
-msgid "The StoneWalker forum is coming soon. Stay tuned!"
-msgstr "StoneWalker 论坛即将推出，敬请期待！"
-
-msgid "The StoneWalker shop is coming soon. Stay tuned!"
-msgstr "StoneWalker 商店即将推出，敬请期待！"
-
-msgid "The inline value did not match the parent instance."
-msgstr "内联值与父实例不匹配。"
-
-msgid "The install worked successfully! Congratulations!"
-msgstr "安装成功！恭喜！"
-
-msgid "The number of days must be between {min_days} and {max_days}."
-msgstr "天数必须在 {min_days} 和 {max_days} 之间。"
-
-msgid "The submitted file is empty."
-msgstr "提交的文件是空的！"
-
-msgid "This account has already been activated."
-msgstr "该帐户已被激活。"
-
-msgid "This account is not active."
-msgstr "此帐户未激活。"
-
-msgid "This email address is already in use by another account."
-msgstr "这个电子邮件地址已被另一个账户使用。"
-
-msgid "This field cannot be blank."
-msgstr "此字段不能为空。"
-
-msgid "This field cannot be null."
-msgstr "此字段不能为null。"
-
-msgid "This field is required."
-msgstr "此字段是必填的！"
-
-msgid "This is not a valid IPv6 address."
-msgstr "这不是一个有效的 IPv6 地址！"
-
-msgid "This username is already taken."
-msgstr "这个用户名已经被占用。"
-
-msgid "Thu"
-msgstr "星期四"
-
-msgid "Thursday"
-msgstr "星期四"
-
-msgid "Time"
-msgstr "时间"
-
-msgid "To activate your profile, please follow this link:"
-msgstr "若要激活你的账号，请访问以下链接："
-
-msgid "To change your current email address, please follow the link:"
-msgstr "要更改您当前的电子邮件地址，请点击以下链接："
-
-msgid "To complete the change of email address, click on the link sent to it."
-msgstr "要完成电子邮件地址的更改，请点击发送给它的链接。"
-
-msgid "Topics, references, &amp; how-to's"
-msgstr "主题、参考和指南"
-
-msgid "Track the journey of painted stones around the world"
-msgstr "追踪彩绘石头在世界各地的旅程"
-
-msgid "Triangle"
-msgstr "三角形"
-
-msgid "Tue"
-msgstr "星期二"
-
-msgid "Tuesday"
-msgstr "星期二"
-
-msgid "Tutorial: A Polling App"
-msgstr "教程：投票应用"
-
-msgid "URL"
-msgstr "URL"
-
-msgid "Universally unique identifier"
-msgstr "全球唯一标识符"
-
-msgid "Unknown"
-msgstr "未知"
-
-msgid "Use non-toxic, weather-resistant paint, like acrylic."
-msgstr "使用无毒、耐候的颜料，如丙烯酸颜料。"
-
-msgid "Username"
-msgstr "用户名"
-
-msgid "Username cannot be empty."
-msgstr "用户名不能为空。"
-
-msgid "Username cannot contain whitespace."
-msgstr "用户名不能包含空格。"
-
-msgid "Value %(value)r is not a valid choice."
-msgstr "值 %(value)r 不是一个有效的选择。"
-
-msgid "Value must be valid JSON."
-msgstr "值必须是有效的 JSON！"
-
-msgid "Wed"
-msgstr "星期三"
-
-msgid "Wednesday"
-msgstr "星期三"
-
-msgid "Welcome to StoneWalker"
-msgstr "欢迎体验 StoneWalker"
-
-msgid "Welcome to StoneWalker!"
-msgstr "欢迎来到 StoneWalker！"
-
-msgid "Yes"
-msgstr "是"
-
-msgid "You are a guest."
-msgstr "你目前的身份是访客。"
-
-msgid "You are successfully signed up!"
-msgstr "您已成功注册！"
-
-msgid "You can not use this email address."
-msgstr "你不能使用这个电子邮件地址。"
-
-msgid "You can not use this mail."
-msgstr "你不能使用这个邮箱。"
-
-msgid "You entered an invalid email address or username."
-msgstr "您输入了无效的电子邮件地址或用户名。"
-
-msgid "You entered an invalid email address."
-msgstr "你输入了一个无效的邮箱地址。"
-
+#: accounts/forms.py:36
 msgid "You entered an invalid password."
 msgstr "您输入了无效的密码。"
 
+#: accounts/forms.py:42 accounts/forms.py:195 accounts/forms.py:233
+#: accounts/templates/accounts/profile/change_profile.html:50
+msgid "Username"
+msgstr "用户名"
+
+#: accounts/forms.py:55
 msgid "You entered an invalid username."
 msgstr "您输入了无效的用户名。"
 
-msgid "You have successfully activated your account!"
-msgstr "你已成功激活你的账号！"
+#: accounts/forms.py:58 accounts/forms.py:76 accounts/forms.py:102
+msgid "This account is not active."
+msgstr "此帐户未激活。"
 
-msgid "You have successfully changed your email!"
-msgstr "你成功修改了你的电子邮箱地址！"
+#: accounts/forms.py:66 accounts/forms.py:122 accounts/forms.py:161
+#: accounts/forms.py:209 accounts/forms.py:234
+#: accounts/templates/accounts/profile/change_profile.html:58
+msgid "Email"
+msgstr "电子邮箱"
 
-msgid "You should receive them shortly."
-msgstr "你应该很快就能收到邮件。"
+#: accounts/forms.py:73 accounts/forms.py:168
+msgid "You entered an invalid email address."
+msgstr "你输入了一个无效的邮箱地址。"
 
-msgid "Youngest"
-msgstr "最新"
+#: accounts/forms.py:92 accounts/forms.py:135
+msgid "Email or Username"
+msgstr "电子邮箱或用户名"
 
-msgid "Your password has been set. You may go ahead and log in now."
-msgstr "你的密码已经设置好。现在可以登录了。"
+#: accounts/forms.py:99 accounts/forms.py:142
+msgid "You entered an invalid email address or username."
+msgstr "您输入了无效的电子邮件地址或用户名。"
 
-msgid "Your password was changed."
-msgstr "你的密码已被更改。"
+#: accounts/forms.py:122
+msgid "Required. Enter an existing email address."
+msgstr "需要。输入现有的电子邮件地址。"
 
-msgid "Your username"
-msgstr "您的用户名"
+#: accounts/forms.py:129
+msgid "You can not use this email address."
+msgstr "你不能使用这个电子邮件地址。"
 
-msgid "Your username has been successfully sent to your email."
-msgstr "你的用户名已成功发送到你的邮箱。"
+#: accounts/forms.py:145 accounts/forms.py:171
+msgid "This account has already been activated."
+msgstr "该帐户已被激活。"
 
-msgid "Your username is"
-msgstr "你的用户名是"
+#: accounts/forms.py:149 accounts/forms.py:175
+msgid "Activation code not found."
+msgstr "未找到激活码。"
 
+#: accounts/forms.py:153 accounts/forms.py:179
+msgid ""
+"Activation code has already been sent. You can request a new code in 24 "
+"hours."
+msgstr "激活码已发送。你可以在24小时后重新请求。"
+
+#: accounts/forms.py:200 accounts/forms.py:257
+#: accounts/templates/accounts/profile/change_profile.html:234
+#: accounts/templates/accounts/profile/change_profile.html:259
+msgid "Username cannot be empty."
+msgstr "用户名不能为空。"
+
+#: accounts/forms.py:202 accounts/forms.py:259
+msgid "Username cannot contain whitespace."
+msgstr "用户名不能包含空格。"
+
+#: accounts/forms.py:204 accounts/forms.py:261
+#: accounts/templates/accounts/profile/change_profile.html:255
+msgid "This username is already taken."
+msgstr "这个用户名已经被占用。"
+
+#: accounts/forms.py:219
+msgid "Please enter another email."
+msgstr "请输入一个新的电子邮箱。"
+
+#: accounts/forms.py:223
+msgid "You can not use this mail."
+msgstr "你不能使用这个邮箱。"
+
+#: accounts/forms.py:235
+#: accounts/templates/accounts/profile/change_profile.html:27
+#: content/templates/layouts/default/page.html:193
+msgid "Profile picture"
+msgstr "头像"
+
+#: accounts/forms.py:236
+#: accounts/templates/accounts/profile/change_profile.html:65
+msgid "New password"
+msgstr "新密码"
+
+#: accounts/forms.py:237
+#: accounts/templates/accounts/profile/change_profile.html:69
+msgid "Confirm new password"
+msgstr "确认新密码"
+
+#: accounts/forms.py:251
+msgid "Image file is too large. Maximum size is 5 MB."
+msgstr "图片文件太大。最大尺寸为5 MB。"
+
+#: accounts/forms.py:277
+msgid ""
+"You have made too many email change attempts. Please wait 15 minutes and try"
+" again."
+msgstr "你修改邮箱的尝试次数过多。请等待15分钟后重试。"
+
+#: accounts/forms.py:283 accounts/views.py:363
+msgid "This email address is already in use by another account."
+msgstr "这个电子邮件地址已被另一个账户使用。"
+
+#: accounts/forms.py:292
+msgid "Passwords do not match."
+msgstr "密码不匹配！"
+
+#: accounts/templates/accounts/emails/activate_profile.html:15
+#: accounts/templates/accounts/emails/activate_profile.txt:3
+msgid "To activate your profile, please follow this link:"
+msgstr "若要激活你的账号，请访问以下链接："
+
+#: accounts/templates/accounts/emails/change_email.html:15
+#: accounts/templates/accounts/emails/change_email.txt:3
+msgid "To change your current email address, please follow the link:"
+msgstr "要更改您当前的电子邮件地址，请点击以下链接："
+
+#: accounts/templates/accounts/emails/forgotten_username.html:15
+#: accounts/templates/accounts/emails/forgotten_username.txt:3
 msgid "Your username is:"
 msgstr "你的用户名是："
 
-msgid "\\\\"
-msgstr "\\\\"
+#: accounts/templates/accounts/emails/restore_password_email.html:15
+#: accounts/templates/accounts/emails/restore_password_email.txt:3
+msgid ""
+"You received this email because you requested a password reset for your user"
+" account."
+msgstr ""
 
-msgid "a.m."
-msgstr "上午"
+#: accounts/templates/accounts/emails/restore_password_email.html:19
+#: accounts/templates/accounts/emails/restore_password_email.txt:5
+msgid "Please, go to the following page and choose a new password:"
+msgstr "请转到以下页面并选择一个新密码："
 
-msgid "and"
-msgstr "和"
-
-msgid "apr"
-msgstr "四月"
-
-msgid "aug"
-msgstr "八月"
-
-msgid "close"
+#: accounts/templates/accounts/log_in.html:7
+#: accounts/templates/accounts/sign_up.html:10
+#: content/templates/layouts/default/page.html:218
+#: content/templates/main/my_stones.html:56
+#: content/templates/main/shared_modals.html:204
+#: content/templates/main/shared_modals.html:261
+#: content/templates/main/shared_modals.html:301
+msgid "Close"
 msgstr "关闭"
 
-msgid "dec"
-msgstr "十二月"
+#: accounts/templates/accounts/log_in.html:10
+#: accounts/templates/accounts/log_in.html:16
+#: accounts/templates/accounts/remind_username.html:23
+#: accounts/templates/accounts/resend_activation_code.html:23
+#: accounts/templates/accounts/restore_password.html:23
+#: accounts/templates/accounts/sign_up.html:25
+#: content/templates/layouts/default/nav_links.html:15
+#: content/templates/layouts/default/nav_links.html:20
+#: content/templates/layouts/default/page.html:198
+#: content/templates/main/shop.html:132
+msgid "Log in"
+msgstr "登录"
 
-msgid "feb"
-msgstr "二月"
+#: accounts/templates/accounts/log_in.html:11
+msgid "Welcome back! Log in to continue your journey."
+msgstr "欢迎回来！登录以继续你的旅程。"
 
-msgid "jan"
-msgstr "一月"
+#: accounts/templates/accounts/log_in.html:19
+msgid "Don't have an account?"
+msgstr "还没有账号？"
 
-msgid "jul"
-msgstr "七月"
+#: accounts/templates/accounts/log_in.html:19
+#: content/templates/layouts/default/nav_links.html:16
+#: content/templates/layouts/default/nav_links.html:21
+msgid "Sign up"
+msgstr "注册"
 
-msgid "jun"
-msgstr "六月"
+#: accounts/templates/accounts/log_in.html:23
+msgid "Forgot your password?"
+msgstr "忘记密码了吗？"
 
-msgid "mar"
-msgstr "三月"
+#: accounts/templates/accounts/log_in.html:24
+msgid "Forgot your username?"
+msgstr "忘记了你的用户名？"
 
-msgid "may"
-msgstr "五月"
+#: accounts/templates/accounts/log_out.html:11
+msgid "Logged out"
+msgstr "登出"
 
-msgid "midnight"
-msgstr "午夜"
+#: accounts/templates/accounts/log_out.html:12
+msgid "Thanks for spending some quality time with StoneWalker today!"
+msgstr "感谢你今天与 StoneWalker 度过的美好时光！"
 
-msgid "noon"
-msgstr "中午"
+#: accounts/templates/accounts/log_out.html:15
+msgid "Log in again"
+msgstr "再次登录"
 
-msgid "nov"
-msgstr "十一月"
+#: accounts/templates/accounts/log_out.html:17
+msgid "Return to StoneWalker Home"
+msgstr "返回 StoneWalker 首页"
 
-msgid "oct"
-msgstr "十月"
+#: accounts/templates/accounts/log_out_confirm.html:11
+#: accounts/templates/accounts/log_out_confirm.html:16
+#: content/templates/layouts/default/nav_links.html:13
+#: content/templates/layouts/default/page.html:188
+msgid "Log out"
+msgstr "登出"
 
-msgid "or"
-msgstr "或"
+#: accounts/templates/accounts/log_out_confirm.html:12
+msgid "Are you sure you want to log out?"
+msgstr "你确定要退出吗？"
 
-msgid "p.m."
-msgstr "下午"
+#: accounts/templates/accounts/log_out_confirm.html:19
+msgid "Cancel and return home"
+msgstr "取消并返回首页"
 
-msgid "sep"
-msgstr "九月"
+#: accounts/templates/accounts/profile/change_profile.html:19
+msgid "Upload profile picture"
+msgstr "上传头像"
 
-msgid "yes,no,maybe"
-msgstr "是，否，也许"
+#: accounts/templates/accounts/profile/change_profile.html:23
+msgid "Upload Pic"
+msgstr "上传图片"
 
+#: accounts/templates/accounts/profile/change_profile.html:33
+msgid "Clear picture"
+msgstr "清除图片"
+
+#: accounts/templates/accounts/profile/change_profile.html:33
+msgid "Delete profile picture"
+msgstr "删除头像"
+
+#: accounts/templates/accounts/profile/change_profile.html:36
+msgid "Delete Pic"
+msgstr "删除图片"
+
+#: accounts/templates/accounts/profile/change_profile.html:42
+msgid "Cancel preview"
+msgstr "取消预览"
+
+#: accounts/templates/accounts/profile/change_profile.html:42
+msgid "Cancel image preview"
+msgstr "取消图片预览"
+
+#: accounts/templates/accounts/profile/change_profile.html:66
+#: accounts/templates/accounts/profile/change_profile.html:70
+msgid "Leave blank to keep current"
+msgstr "留空以保持当前设置"
+
+#: accounts/templates/accounts/profile/change_profile.html:73
+msgid "Save profile"
+msgstr "保存个人资料"
+
+#: accounts/templates/accounts/profile/change_profile.html:74
+#: content/templates/main/claim_stone.html:75
+#: content/templates/main/new_add_stone_modal.html:103
+#: content/templates/main/shared_modals.html:79
+#: content/templates/main/shared_modals.html:251
+msgid "Cancel"
+msgstr "取消"
+
+#: accounts/templates/accounts/profile/change_profile.html:79
+msgid "Your email address is not confirmed."
+msgstr "你的电子邮件地址尚未确认。"
+
+#: accounts/templates/accounts/profile/change_profile.html:80
+msgid ""
+"Please check your inbox and click the confirmation link. If you do not "
+"confirm soon, your email will be reset."
+msgstr ""
+
+#: accounts/templates/accounts/profile/change_profile.html:83
+msgid "Resend activation code"
+msgstr "重新发送激活码"
+
+#: accounts/templates/accounts/profile/change_profile.html:87
+msgid "Cancel email change"
+msgstr "取消修改邮箱"
+
+#: accounts/templates/accounts/profile/change_profile.html:163
+msgid "Please select an image file."
+msgstr "请选择一个图片文件。"
+
+#: accounts/templates/accounts/profile/change_profile.html:170
+msgid "Image is too large (max 5MB). Please choose a smaller image."
+msgstr "图片太大（最大5MB）。请选择较小的图片。"
+
+#: accounts/templates/accounts/profile/change_profile.html:181
+msgid "Image resized to fit 800x800px."
+msgstr "图片已调整为800x800像素。"
+
+#: accounts/templates/accounts/profile/change_profile.html:209
+msgid "Could not read the image. Please try a different file."
+msgstr "无法读取图片。请尝试其他文件。"
+
+#: accounts/templates/accounts/profile/change_profile.html:240
+msgid "You can change your username"
+msgstr "你可以更改用户名"
+
+#: accounts/templates/accounts/profile/change_profile.html:250
+msgid "No spaces allowed."
+msgstr "不允许空格。"
+
+#: accounts/templates/accounts/profile/change_profile.html:263
+msgid "Not available."
+msgstr "不可用。"
+
+#: accounts/templates/accounts/profile/change_profile.html:270
+msgid "This username is available!"
+msgstr "此用户名可用！"
+
+#: accounts/templates/accounts/remind_username.html:8
+msgid "Remind a username"
+msgstr "提醒用户名"
+
+#: accounts/templates/accounts/remind_username.html:15
+#: accounts/templates/accounts/resend_activation_code.html:15
+#: accounts/templates/accounts/restore_password.html:15
+#: content/templates/main/new_add_stone_modal.html:106
+#: content/templates/main/shared_modals.html:80
+msgid "Next"
+msgstr "下一步"
+
+#: accounts/templates/accounts/resend_activation_code.html:8
+msgid "Resend an activation code"
+msgstr "重新发送激活码"
+
+#: accounts/templates/accounts/restore_password.html:8
+#: accounts/templates/accounts/restore_password_confirm.html:8
+#: accounts/templates/accounts/restore_password_done.html:7
+#: accounts/utils.py:46
+msgid "Restore password"
+msgstr "恢复密码"
+
+#: accounts/templates/accounts/restore_password_confirm.html:13
+msgid ""
+"Please enter your new password twice so we can verify you typed it in "
+"correctly."
+msgstr ""
+
+#: accounts/templates/accounts/restore_password_confirm.html:21
+#: content/templates/main/change_language.html:32
+msgid "Change"
+msgstr "修改"
+
+#: accounts/templates/accounts/restore_password_confirm.html:28
+msgid ""
+"The password reset link was invalid, possibly because it has already been "
+"used. Please request a new password reset."
+msgstr ""
+
+#: accounts/templates/accounts/restore_password_done.html:10
+msgid ""
+"We've emailed you instructions for setting your password, if an account "
+"exists with the email you entered."
+msgstr ""
+
+#: accounts/templates/accounts/restore_password_done.html:11
+msgid "You should receive them shortly."
+msgstr "你应该很快就能收到邮件。"
+
+#: accounts/templates/accounts/restore_password_done.html:15
+msgid ""
+"If you don't receive an email, please make sure you've entered the address "
+"you signed up with, and check your spam folder."
+msgstr ""
+
+#: accounts/templates/accounts/sign_up.html:14
+msgid "Create an account"
+msgstr "创建账号"
+
+#: accounts/templates/accounts/sign_up.html:15
+msgid ""
+"Join the journey! Track, share, and discover painted stones around the "
+"world."
+msgstr "加入旅程！追踪、分享和发现世界各地的彩绘石头。"
+
+#: accounts/templates/accounts/sign_up.html:21
+msgid "Create"
+msgstr "创建"
+
+#: accounts/templates/accounts/sign_up.html:25
+msgid "Already have an account?"
+msgstr "已经有一个账号了？"
+
+#: accounts/utils.py:28
+msgid "Profile activation"
+msgstr "简档激活"
+
+#: accounts/utils.py:37
+msgid "Change email"
+msgstr "修改电子邮箱"
+
+#: accounts/utils.py:56
+msgid "Your username"
+msgstr "您的用户名"
+
+#: accounts/views.py:143
+msgid ""
+"You are signed up. To activate the account, follow the link sent to the "
+"mail."
+msgstr "你已注册。请通过邮件中的链接激活账户。"
+
+#: accounts/views.py:152 accounts/views.py:227 accounts/views.py:399
+#: accounts/views.py:507
+msgid "Failed to send activation email. Please try again or contact support."
+msgstr "发送激活邮件失败。请重试或联系客服。"
+
+#: accounts/views.py:160
+msgid "You are successfully signed up!"
+msgstr "您已成功注册！"
+
+#: accounts/views.py:186
+msgid "You have successfully activated your account!"
+msgstr "你已成功激活你的账号！"
+
+#: accounts/views.py:223
+msgid "A new activation code has been sent to your email address."
+msgstr "新的激活码已发送到您的电子邮件地址。"
+
+#: accounts/views.py:263
+msgid "Your username has been successfully sent to your email."
+msgstr "你的用户名已成功发送到你的邮箱。"
+
+#: accounts/views.py:275
+msgid "Your password has been set. You may go ahead and log in now."
+msgstr "你的密码已经设置好。现在可以登录了。"
+
+#: accounts/views.py:368
+msgid ""
+"You have reached the maximum number of email change attempts. Please try "
+"again later."
+msgstr "你已达到修改邮箱的最大尝试次数。请稍后重试。"
+
+#: accounts/views.py:393
+msgid "To complete the change of email address, click on the link sent to it."
+msgstr "要完成电子邮件地址的更改，请点击发送给它的链接。"
+
+#: accounts/views.py:405
+msgid "Email successfully changed."
+msgstr "电子邮箱地址修改成功。"
+
+#: accounts/views.py:445
+msgid "Your password was changed."
+msgstr "你的密码已被更改。"
+
+#: accounts/views.py:447
+msgid "Profile data has been successfully updated."
+msgstr "个人信息数据已成功更新。"
+
+#: accounts/views.py:473
+msgid "You have successfully changed your email!"
+msgstr "你成功修改了你的电子邮箱地址！"
+
+#: accounts/views.py:485
+msgid "No pending email confirmation to resend."
+msgstr "没有待重新发送的电子邮件确认。"
+
+#: accounts/views.py:503
+msgid "A new activation link has been sent to your email address."
+msgstr "新的激活链接已发送到您的电子邮件地址。"
+
+#: accounts/views.py:526
+msgid "Email change cancelled and reverted."
+msgstr "电子邮件更改已取消并恢复。"
+
+#: accounts/views.py:528
+msgid "No pending email change to cancel."
+msgstr "没有待取消的电子邮件更改。"
+
+#: app/conf/development/settings.py:154 app/conf/production/settings.py:139
+msgid "English"
+msgstr "英语"
+
+#: app/conf/development/settings.py:155 app/conf/production/settings.py:140
+msgid "Russian"
+msgstr "俄语"
+
+#: app/conf/development/settings.py:156 app/conf/production/settings.py:141
+msgid "Simplified Chinese"
+msgstr "简体中文"
+
+#: app/conf/development/settings.py:157 app/conf/production/settings.py:142
+msgid "French"
+msgstr "法语"
+
+#: app/conf/development/settings.py:158 app/conf/production/settings.py:143
+msgid "Spanish"
+msgstr "西班牙语"
+
+#: app/conf/development/settings.py:159 app/conf/production/settings.py:144
+msgid "German"
+msgstr "德语"
+
+#: app/conf/development/settings.py:160 app/conf/production/settings.py:145
+msgid "Italian"
+msgstr "意大利语"
+
+#: content/templates/layouts/default/nav_links.html:5
+msgid "About"
+msgstr "关于我们"
+
+#: content/templates/layouts/default/nav_links.html:6
+msgid "Shop"
+msgstr "商店"
+
+#: content/templates/layouts/default/nav_links.html:7
+#: content/templates/main/forum.html:7
+msgid "Forum"
+msgstr "论坛"
+
+#: content/templates/layouts/default/nav_links.html:8
+#: content/templates/main/change_language.html:12
+msgid "Change language"
+msgstr "改变语言"
+
+#: content/templates/layouts/default/nav_links.html:11
+#: content/templates/layouts/default/page.html:186
+#: content/templates/main/checkout_success.html:99
+#: content/templates/main/stone_edit.html:138
+msgid "My Stones"
+msgstr "我的石头"
+
+#: content/templates/layouts/default/nav_links.html:12
+#: content/templates/layouts/default/page.html:187
+#: content/templates/layouts/default/page.html:216
+msgid "Edit Profile"
+msgstr "编辑个人资料"
+
+#: content/templates/layouts/default/page.html:15
+msgid ""
+"Paint a stone, attach a QR code, hide it in the world, and watch it travel. "
+"StoneWalker tracks your painted stones on a global map."
+msgstr ""
+
+#: content/templates/layouts/default/page.html:20
+#: content/templates/layouts/default/page.html:28
+msgid ""
+"Paint a stone, attach a QR code, hide it in the world, and watch it travel "
+"on a global map."
+msgstr ""
+
+#: content/templates/layouts/default/page.html:192
+msgid "Profile menu"
+msgstr "个人菜单"
+
+#: content/templates/layouts/default/page.html:202
+msgid "Toggle navigation menu"
+msgstr "切换导航菜单"
+
+#: content/templates/main/about.html:7
+msgid "About StoneWalker"
+msgstr "关于 StoneWalker"
+
+#: content/templates/main/about.html:14
+msgid ""
+"StoneWalker is a unique platform that combines the joy of geocaching with "
+"the beauty of collaborative art. Our mission is to create a global community"
+" of stone travelers who paint, hide, and track beautiful stones as they "
+"journey around the world."
+msgstr ""
+
+#: content/templates/main/about.html:20
+msgid "Did you know:"
+msgstr "你知道吗："
+
+#: content/templates/main/about.html:20
+msgid ""
+"One of the oldest known cave paintings, found in Indonesia, is over 45,000 "
+"years old. This shows that humans have always been drawn to creating art in "
+"unexpected places."
+msgstr ""
+
+#: content/templates/main/about.html:24
+msgid "Read more about this discovery →"
+msgstr "了解更多关于这个发现的信息 →"
+
+#: content/templates/main/about.html:32
+msgid "How it works:"
+msgstr "它是如何工作的："
+
+#: content/templates/main/about.html:35
+msgid "Pick up a brush and paint a stone."
+msgstr "拿起画笔，给石头涂上颜色！"
+
+#: content/templates/main/about.html:39
+msgid "Click the \"Create a Stone\" button and follow the instructions."
+msgstr "点击\"创建石头\"按钮并按照说明操作。"
+
+#: content/templates/main/about.html:43
+msgid "Glue the custom QR code on the back of the stone."
+msgstr "将定制的二维码粘在石头的背面。"
+
+#: content/templates/main/about.html:47
+msgid "Set it free and watch it travel the world."
+msgstr "放手让它去环游世界！"
+
+#: content/templates/main/about.html:54
+msgid "Community Guidelines:"
+msgstr "社区准则："
+
+#: content/templates/main/about.html:55
+msgid "Use non-toxic, weather-resistant paint, like acrylic."
+msgstr "使用无毒、耐候的颜料，如丙烯酸颜料。"
+
+#: content/templates/main/about.html:56 content/templates/main/about.html:58
+msgid "Don\\"
+msgstr ""
+
+#: content/templates/main/about.html:57
+msgid "Be kind and respectful to other community members!"
+msgstr "对其他社区成员要友好和尊重！"
+
+#: content/templates/main/about.html:60
+msgid ""
+"You never know where it might go, or who it might inspire along the way!"
+msgstr "你永远不知道它会去哪里，或者在途中会激励谁！"
+
+#: content/templates/main/about.html:65
+msgid "Our Mission"
+msgstr ""
+
+#: content/templates/main/about.html:66
+msgid ""
+"StoneWalker is open source and community-driven. We believe that creative "
+"expression should be free and accessible to everyone."
+msgstr ""
+
+#: content/templates/main/about.html:67
+msgid ""
+"No ads, no data selling, no paywalls on the core experience. Every stone "
+"page and every journey map is free to view, forever."
+msgstr ""
+
+#: content/templates/main/about.html:68
+msgid ""
+"We sustain the project through QR code packs and optional premium features, "
+"not through exploiting your attention."
+msgstr ""
+
+#: content/templates/main/about.html:73
+msgid "Join the Movement"
+msgstr ""
+
+#: content/templates/main/about.html:74
+msgid ""
+"Thousands of painted stones are waiting to be created, hidden, and "
+"discovered. Whether you are an artist, a hiker, a teacher, or just someone "
+"who loves a good adventure, there is a place for you here."
+msgstr ""
+
+#: content/templates/main/about.html:78
+msgid "Get Your First QR Code"
+msgstr ""
+
+#: content/templates/main/about.html:79
+msgid "Start Your Journey"
+msgstr "开始你的冒险！"
+
+#: content/templates/main/change_language.html:20
+msgid "Select your preferred language"
+msgstr "选择你喜欢的语言！"
+
+#: content/templates/main/checkout_success.html:15
+msgid "You are all set!"
+msgstr "一切就绪！"
+
+#: content/templates/main/checkout_success.html:18
+msgid "Your QR codes are ready."
+msgstr "你的QR码已准备好。"
+
+#: content/templates/main/checkout_success.html:19
+msgid "Download, print, and attach them to your painted stones."
+msgstr "下载、打印并贴在你画好的石头上。"
+
+#: content/templates/main/checkout_success.html:24
+msgid "Your Pack"
+msgstr "你的套餐"
+
+#: content/templates/main/checkout_success.html:28
+msgid "Pack Type"
+msgstr "套餐类型"
+
+#: content/templates/main/checkout_success.html:32
+msgid "Status"
+msgstr "状态"
+
+#: content/templates/main/checkout_success.html:36
+msgid "QR Codes"
+msgstr "QR码"
+
+#: content/templates/main/checkout_success.html:50
+#: content/templates/main/shop.html:232
+msgid "Download PDF"
+msgstr "下载PDF"
+
+#: content/templates/main/checkout_success.html:52
+msgid "Print this PDF and cut out each QR code for your stones."
+msgstr "打印此PDF并剪下每个QR码贴在你的石头上。"
+
+#: content/templates/main/checkout_success.html:56
+msgid ""
+"Your payment is being processed. Please wait a moment and refresh this page."
+msgstr "你的支付正在处理中。请稍等并刷新此页面。"
+
+#: content/templates/main/checkout_success.html:57
+msgid "Refresh"
+msgstr "刷新"
+
+#: content/templates/main/checkout_success.html:63
+msgid "What to do next"
+msgstr "下一步"
+
+#: content/templates/main/checkout_success.html:68
+msgid "Print"
+msgstr "打印"
+
+#: content/templates/main/checkout_success.html:69
+msgid "Download and print your QR code(s) on regular paper."
+msgstr "下载并在普通纸上打印你的QR码。"
+
+#: content/templates/main/checkout_success.html:75
+msgid "Paint & Attach"
+msgstr "绘画并附上"
+
+#: content/templates/main/checkout_success.html:76
+msgid "Paint a stone, then attach the QR code with clear tape or varnish."
+msgstr "画一块石头，然后用透明胶带或清漆贴上QR码。"
+
+#: content/templates/main/checkout_success.html:82
+msgid "Hide"
+msgstr "隐藏"
+
+#: content/templates/main/checkout_success.html:83
+msgid "Leave your stone somewhere fun for someone to discover."
+msgstr "把你的石头放在一个有趣的地方等待被发现。"
+
+#: content/templates/main/checkout_success.html:89
+msgid "Track"
+msgstr "追踪"
+
+#: content/templates/main/checkout_success.html:90
+msgid "When someone scans the QR code, the stone appears on the world map."
+msgstr "当有人扫描QR码时，石头就会出现在世界地图上。"
+
+#: content/templates/main/checkout_success.html:97
+msgid "Back to Shop"
+msgstr "返回商店"
+
+#: content/templates/main/checkout_success.html:101
+msgid "Home"
+msgstr "首页"
+
+#: content/templates/main/claim_stone.html:8
+msgid "Name Your Stone"
+msgstr "给你的石头命名"
+
+#: content/templates/main/claim_stone.html:21
+#: content/templates/main/shared_modals.html:259
+#: content/templates/main/shared_modals.html:262
+#: content/templates/main/stone_edit.html:98
+msgid "QR Code"
+msgstr "QR码"
+
+#: content/templates/main/claim_stone.html:26
+msgid "Name It"
+msgstr "命名"
+
+#: content/templates/main/claim_stone.html:31
+#: content/templates/main/shop.html:54
+msgid "Paint & Hide"
+msgstr "绘画并隐藏"
+
+#: content/templates/main/claim_stone.html:38
+msgid "This stone is ready to be yours!"
+msgstr "这块石头等着你来认领！"
+
+#: content/templates/main/claim_stone.html:39
+msgid ""
+"Give it a unique name. After claiming, you can paint your stone, attach the "
+"QR code, and hide it for someone to find. Every time it gets scanned, you "
+"will see its journey on the map."
+msgstr ""
+
+#: content/templates/main/claim_stone.html:45
+#: content/templates/main/new_add_stone_modal.html:29
+#: content/templates/main/shared_modals.html:19
+#: content/templates/main/stone_edit.html:41
+#: content/templates/main/stone_scan.html:23
+msgid "Stone Name"
+msgstr "石头名字"
+
+#: content/templates/main/claim_stone.html:51
+msgid "e.g., Rocky, Luna, Star..."
+msgstr "例如 Rocky, Luna, Star..."
+
+#: content/templates/main/claim_stone.html:54
+msgid "No spaces allowed"
+msgstr "不允许空格"
+
+#: content/templates/main/claim_stone.html:56
+msgid "Max 10 characters, no spaces. This will be your stone\\"
+msgstr ""
+
+#: content/templates/main/claim_stone.html:58
+msgid "Description (optional)"
+msgstr "描述（可选）"
+
+#: content/templates/main/claim_stone.html:64
+msgid "Tell the world about your stone..."
+msgstr "向世界介绍你的石头..."
+
+#: content/templates/main/claim_stone.html:66
+msgid "Stone Photo (optional)"
+msgstr "石头照片（可选）"
+
+#: content/templates/main/claim_stone.html:69
+msgid "You can add a photo now or later after painting your stone."
+msgstr "你可以现在添加照片，也可以在画好石头后添加。"
+
+#: content/templates/main/claim_stone.html:71
+msgid "Claim My Stone"
+msgstr "认领我的石头"
+
+#: content/templates/main/forum.html:8
+msgid "The StoneWalker forum is coming soon. Stay tuned!"
+msgstr "StoneWalker 论坛即将推出，敬请期待！"
+
+#: content/templates/main/index.html:7
+msgid "Welcome to StoneWalker"
+msgstr "欢迎体验 StoneWalker"
+
+#: content/templates/main/index.html:8
+msgid "Track the journey of painted stones around the world"
+msgstr "追踪彩绘石头在世界各地的旅程"
+
+#: content/templates/main/index.html:9
+msgid ""
+"Join our community of stone travelers and discover amazing stories from "
+"around the globe."
+msgstr "加入我们的石头旅行者社区，发现来自世界各地的精彩故事。"
+
+#: content/templates/main/index.html:11
+msgid "Start Exploring"
+msgstr "开始探索！"
+
+#: content/templates/main/index.html:12
+msgid "Learn More"
+msgstr "了解更多"
+
+#: content/templates/main/my_stones.html:10
+msgid "My CREATIONS"
+msgstr "我的创作"
+
+#: content/templates/main/my_stones.html:12
+#: content/templates/main/my_stones.html:34
+msgid "Sort by:"
+msgstr "排序方式："
+
+#: content/templates/main/my_stones.html:14
+#: content/templates/main/my_stones.html:36
+msgid "Distance traveled (min)"
+msgstr "最短旅行距离"
+
+#: content/templates/main/my_stones.html:15
+#: content/templates/main/my_stones.html:37
+msgid "Distance traveled (max)"
+msgstr "最远旅行距离"
+
+#: content/templates/main/my_stones.html:16
+#: content/templates/main/my_stones.html:38
+msgid "Number of moves (min)"
+msgstr "最小移动次数"
+
+#: content/templates/main/my_stones.html:17
+#: content/templates/main/my_stones.html:39
+msgid "Number of moves (max)"
+msgstr "最大移动次数"
+
+#: content/templates/main/my_stones.html:18
+#: content/templates/main/my_stones.html:40
+msgid "Youngest"
+msgstr "最新"
+
+#: content/templates/main/my_stones.html:19
+#: content/templates/main/my_stones.html:41
+msgid "Oldest"
+msgstr "最早的"
+
+#: content/templates/main/my_stones.html:25
+#: content/templates/main/my_stones.html:47
+msgid "Previous page"
+msgstr "上一页"
+
+#: content/templates/main/my_stones.html:27
+#: content/templates/main/my_stones.html:49
+msgid "Next page"
+msgstr "下一页"
+
+#: content/templates/main/my_stones.html:32
+msgid "MY INTERACTIONS"
+msgstr "我的互动"
+
+#: content/templates/main/my_stones.html:54
+msgid "Stone details"
+msgstr "石头详情"
+
+#: content/templates/main/new_add_stone_modal.html:5
+#: content/templates/main/new_add_stone_modal.html:12
+#: content/templates/main/shared_modals.html:8
+msgid "Add New Stone"
+msgstr "添加新石头"
+
+#: content/templates/main/new_add_stone_modal.html:41
+#: content/templates/main/shared_modals.html:27
+#: content/templates/main/stone_edit.html:74
+msgid "Stone Type"
+msgstr "石头类型"
+
+#: content/templates/main/new_add_stone_modal.html:46
+#: content/templates/main/shared_modals.html:31
+msgid "Hidden"
+msgstr "隐藏"
+
+#: content/templates/main/new_add_stone_modal.html:47
+#: content/templates/main/shared_modals.html:32
+msgid "No known location"
+msgstr "未知位置"
+
+#: content/templates/main/new_add_stone_modal.html:52
+#: content/templates/main/shared_modals.html:36
+msgid "Hunted"
+msgstr "被追踪"
+
+#: content/templates/main/new_add_stone_modal.html:53
+#: content/templates/main/shared_modals.html:37
+msgid "Placed at location"
+msgstr "放置在位置"
+
+#: content/templates/main/new_add_stone_modal.html:65
+#: content/templates/main/shared_modals.html:50
+msgid "Stone Location"
+msgstr "石头位置"
+
+#: content/templates/main/new_add_stone_modal.html:69
+#: content/templates/main/shared_modals.html:53
+#: content/templates/main/stone_scan.html:33
+msgid "Latitude"
+msgstr "纬度"
+
+#: content/templates/main/new_add_stone_modal.html:71
+#: content/templates/main/shared_modals.html:54
+#: content/templates/main/stone_scan.html:36
+msgid "Longitude"
+msgstr "经度"
+
+#: content/templates/main/new_add_stone_modal.html:77
+#: content/templates/main/shared_modals.html:60
+msgid "Picture"
+msgstr "图片"
+
+#: content/templates/main/new_add_stone_modal.html:85
+#: content/templates/main/shared_modals.html:69
+#: content/templates/main/stone_edit.html:47
+msgid "Description"
+msgstr "描述"
+
+#: content/templates/main/new_add_stone_modal.html:114
+msgid "Your Stone QR Code"
+msgstr "你的石头QR码"
+
+#: content/templates/main/new_add_stone_modal.html:115
+msgid "Here is your stone QR code with readable URL"
+msgstr "这是你的石头QR码（含可读链接）"
+
+#: content/templates/main/new_add_stone_modal.html:132
+msgid "Download Stone Label"
+msgstr "下载石头标签"
+
+#: content/templates/main/new_add_stone_modal.html:135
+msgid "Compact QR label (2-5cm) perfect for placing on stones!"
+msgstr "小巧的QR标签（2-5厘米）非常适合贴在石头上！"
+
+#: content/templates/main/new_add_stone_modal.html:142
+#: content/templates/main/shared_modals.html:181
+#: content/templates/main/shared_modals.html:191
+msgid "Back"
+msgstr "返回"
+
+#: content/templates/main/new_add_stone_modal.html:145
+msgid "Create Stone"
+msgstr "创建石头"
+
+#: content/templates/main/shared_modals.html:63
+msgid "Reset"
+msgstr "重置"
+
+#: content/templates/main/shared_modals.html:70
+msgid "Say something about your stone (max 500 chars)"
+msgstr "说说你的石头（最多 500 个字符）"
+
+#: content/templates/main/shared_modals.html:87
+msgid "StoneWalker Code"
+msgstr "StoneWalker码"
+
+#: content/templates/main/shared_modals.html:88
+msgid "Choose how to get your stone code"
+msgstr "选择获取石头码的方式"
+
+#: content/templates/main/shared_modals.html:96
+msgid "I have a StoneWalker code already"
+msgstr "我已经有一个StoneWalker码了"
+
+#: content/templates/main/shared_modals.html:97
+msgid "Scan or enter existing code"
+msgstr "扫描或输入现有码"
+
+#: content/templates/main/shared_modals.html:101
+msgid "I need a new StoneWalker code"
+msgstr "我需要一个新的StoneWalker码"
+
+#: content/templates/main/shared_modals.html:102
+msgid "Generate new code"
+msgstr "生成新码"
+
+#: content/templates/main/shared_modals.html:110
+msgid "Enter Your StoneWalker Code"
+msgstr "输入你的StoneWalker码"
+
+#: content/templates/main/shared_modals.html:111
+msgid "Scan QR code or enter UUID manually"
+msgstr "扫描QR码或手动输入UUID"
+
+#: content/templates/main/shared_modals.html:125
+#: content/templates/main/shared_modals.html:228
+msgid "Or enter UUID manually"
+msgstr "或手动输入UUID"
+
+#: content/templates/main/shared_modals.html:132
+#: content/templates/main/shared_modals.html:235
+msgid "Code Information"
+msgstr "码信息"
+
+#: content/templates/main/shared_modals.html:133
+#: content/templates/main/shared_modals.html:167
+#: content/templates/main/shared_modals.html:236
+#: content/templates/main/shared_modals.html:284
+msgid "UUID:"
+msgstr "UUID："
+
+#: content/templates/main/shared_modals.html:134
+#: content/templates/main/shared_modals.html:237
+msgid "Status:"
+msgstr "状态："
+
+#: content/templates/main/shared_modals.html:141
+msgid "New StoneWalker Code Generated"
+msgstr "已生成新的StoneWalker码"
+
+#: content/templates/main/shared_modals.html:142
+msgid "Download and print this code for your stone"
+msgstr "下载并打印此码用于你的石头"
+
+#: content/templates/main/shared_modals.html:165
+#: content/templates/main/shared_modals.html:282
+msgid "QR Code Information"
+msgstr "QR码信息"
+
+#: content/templates/main/shared_modals.html:166
+#: content/templates/main/shared_modals.html:283
+msgid "Stone Name:"
+msgstr "石头名称："
+
+#: content/templates/main/shared_modals.html:168
+#: content/templates/main/shared_modals.html:285
+msgid "Scan URL:"
+msgstr "扫描链接："
+
+#: content/templates/main/shared_modals.html:174
+#: content/templates/main/shared_modals.html:291
+#: content/templates/main/shop.html:216
+#: content/templates/main/stone_edit.html:103
+msgid "Download QR Code"
+msgstr "下载QR码"
+
+#: content/templates/main/shared_modals.html:182
+msgid "Save Stone"
+msgstr "保存石头"
+
+#: content/templates/main/shared_modals.html:192
+msgid "Save"
+msgstr "保存"
+
+#: content/templates/main/shared_modals.html:202
+#: content/templates/main/shared_modals.html:205
+msgid "Scan Stone"
+msgstr "扫描石头"
+
+#: content/templates/main/shared_modals.html:209
+msgid "Stone Name or UUID"
+msgstr "石头名称或UUID"
+
+#: content/templates/main/shared_modals.html:216
+msgid "Scan QR Code"
+msgstr "扫描QR码"
+
+#: content/templates/main/shared_modals.html:242
+#: content/templates/main/stone_found.html:18
+msgid "Stone Information"
+msgstr "石头信息"
+
+#: content/templates/main/shared_modals.html:243
+#: content/templates/main/stone_found.html:19
+msgid "Name:"
+msgstr "名称："
+
+#: content/templates/main/shared_modals.html:244
+#: content/templates/main/stone_found.html:20
+msgid "Type:"
+msgstr "类型："
+
+#: content/templates/main/shared_modals.html:245
+#: content/templates/main/stone_found.html:21
+msgid "Description:"
+msgstr "描述："
+
+#: content/templates/main/shared_modals.html:246
+#: content/templates/main/stone_found.html:22
+msgid "Created by:"
+msgstr "创建者："
+
+#: content/templates/main/shared_modals.html:252
+msgid "Found This Stone"
+msgstr "找到了这块石头"
+
+#: content/templates/main/shared_modals.html:299
+msgid "Welcome"
+msgstr "欢迎"
+
+#: content/templates/main/shared_modals.html:302
+#: content/templates/main/stone_found.html:28
+msgid "Welcome to StoneWalker!"
+msgstr "欢迎来到 StoneWalker！"
+
+#: content/templates/main/shared_modals.html:304
+msgid "You are a guest."
+msgstr "你目前的身份是访客。"
+
+#: content/templates/main/shared_modals.html:305
+msgid ""
+"Sign up to start creating, finding, and sharing stones around the world!"
+msgstr "注册开始在世界各地创建、发现和分享石头！"
+
+#: content/templates/main/shared_modals.html:308
+msgid "Create an Account"
+msgstr "创建账户"
+
+#: content/templates/main/shared_modals.html:309
+msgid "Log In"
+msgstr "登录"
+
+#: content/templates/main/shop.html:8
+msgid "StoneWalker Shop"
+msgstr "StoneWalker商店"
+
+#: content/templates/main/shop.html:9
+msgid "Everything starts with a QR code"
+msgstr "一切从QR码开始"
+
+#: content/templates/main/shop.html:13
+msgid "Local dev sale, single QR codes are free today"
+msgstr "开发促销：单个QR码今日免费"
+
+#: content/templates/main/shop.html:27
+msgid "How It Works"
+msgstr "如何运作"
+
+#: content/templates/main/shop.html:37
+msgid "Get a QR Code"
+msgstr "获取QR码"
+
+#: content/templates/main/shop.html:38
+msgid ""
+"Grab a free QR code or a pack. Each code is unique and links to your stone."
+msgstr "获取免费QR码或套餐。每个码都是独一无二的，链接到你的石头。"
+
+#: content/templates/main/shop.html:55
+msgid ""
+"Print the QR code, attach it to your painted stone, and hide it somewhere "
+"fun."
+msgstr "打印QR码，贴在你画好的石头上，然后藏在一个有趣的地方。"
+
+#: content/templates/main/shop.html:72
+msgid "Watch It Travel"
+msgstr "观看旅程"
+
+#: content/templates/main/shop.html:73
+msgid ""
+"When someone finds and scans your stone, you see its journey on the map."
+msgstr "当有人找到并扫描你的石头时，你可以在地图上看到它的旅程。"
+
+#: content/templates/main/shop.html:79
+msgid "Choose Your Pack"
+msgstr "选择你的套餐"
+
+#: content/templates/main/shop.html:84
+msgid "Start Here"
+msgstr "从这里开始"
+
+#: content/templates/main/shop.html:107
+#, python-format
+msgid "%(size)s QR codes included"
+msgstr "包含%(size)s个QR码"
+
+#: content/templates/main/shop.html:110
+msgid "No payment needed. Just click and your QR downloads instantly."
+msgstr "无需付款。点击即可立即下载QR码。"
+
+#: content/templates/main/shop.html:112
+msgid "You will receive a printable PDF with all QR codes ready to cut out."
+msgstr "你将收到一个可打印的PDF，包含所有QR码，可以剪下来使用。"
+
+#: content/templates/main/shop.html:122
+#, python-format
+msgid "%(per_unit)s each"
+msgstr "每个%(per_unit)s"
+
+#: content/templates/main/shop.html:128
+msgid "Claimed"
+msgstr "已领取"
+
+#: content/templates/main/shop.html:138
+msgid "Get Free QR"
+msgstr "获取免费QR码"
+
+#: content/templates/main/shop.html:138
+msgid "Buy Now"
+msgstr "立即购买"
+
+#: content/templates/main/shop.html:146
+msgid "No products available at this time."
+msgstr "目前没有可用的产品。"
+
+#: content/templates/main/shop.html:153
+msgid "What do I get when I buy a QR code?"
+msgstr "购买QR码后会得到什么？"
+
+#: content/templates/main/shop.html:154
+msgid ""
+"You get a unique, printable QR code image. Print it out, seal it with clear "
+"tape or varnish, and attach it to any painted stone. When someone finds and "
+"scans it, the stone appears on our world map and you get notified."
+msgstr ""
+
+#: content/templates/main/shop.html:157
+msgid "What is the 3-Pack for?"
+msgstr ""
+
+#: content/templates/main/shop.html:158
+msgid ""
+"The Starter 3-Pack is great for painting with friends, creating a themed "
+"stone trail, or giving stones as gifts. Each QR code is unique and links to "
+"its own stone page."
+msgstr ""
+
+#: content/templates/main/shop.html:161
+msgid "What is the 10-Pack for?"
+msgstr "10个装的套餐有什么用？"
+
+#: content/templates/main/shop.html:162
+msgid ""
+"The 10-Pack is perfect for classrooms, scout groups, birthday parties, or "
+"any group activity. You receive a single PDF page with 10 QR codes ready to "
+"cut out and distribute."
+msgstr ""
+
+#: content/templates/main/shop.html:165
+msgid "What is the Classroom 30-Pack for?"
+msgstr ""
+
+#: content/templates/main/shop.html:166
+msgid ""
+"The 30-Pack is designed for teachers, scout leaders, and event organizers. "
+"You get 30 QR codes on printable PDF sheets, ready to cut out and distribute"
+" to a whole class or group."
+msgstr ""
+
+#: content/templates/main/shop.html:169
+msgid "How do I attach the QR code to my stone?"
+msgstr ""
+
+#: content/templates/main/shop.html:170
+msgid ""
+"Print the QR code, cut it out, and glue it to the back of your painted "
+"stone. For outdoor durability, seal it with clear packing tape, spray "
+"varnish, or a coat of Mod Podge. This protects it from rain and sun."
+msgstr ""
+
+#: content/templates/main/shop.html:173
+msgid "What happens when someone scans my stone?"
+msgstr ""
+
+#: content/templates/main/shop.html:174
+msgid "They see your stone\\"
+msgstr ""
+
+#: content/templates/main/shop.html:177
+msgid "Can I buy QR codes as a gift?"
+msgstr ""
+
+#: content/templates/main/shop.html:178
+msgid ""
+"Yes! QR codes are not tied to your account until someone claims them. You "
+"can print them out and give them to anyone to use with their own painted "
+"stones."
+msgstr ""
+
+#: content/templates/main/shop.html:181
+msgid "What if my stone gets lost?"
+msgstr ""
+
+#: content/templates/main/shop.html:182
+msgid "That is part of the adventure! Your stone\\"
+msgstr ""
+
+#: content/templates/main/shop.html:185
+msgid "Can I re-download my QR codes later?"
+msgstr "我以后还能重新下载QR码吗？"
+
+#: content/templates/main/shop.html:186
+msgid ""
+"Yes! All your purchases appear in the \"Your Purchases\" bar at the bottom "
+"of this page. You can re-download them anytime."
+msgstr ""
+
+#: content/templates/main/shop.html:201
+msgid "Your Purchases"
+msgstr "你的购买"
+
+#: content/templates/main/shop.html:204
+msgid "Click to download your QR codes"
+msgstr "点击下载你的QR码"
+
+#: content/templates/main/shop.html:212
+msgid "QR codes"
+msgstr "QR码"
+
+#: content/templates/main/shop.html:226
+msgid "Download all QR codes as one printable PDF"
+msgstr "将所有QR码下载为可打印的PDF"
+
+#: content/templates/main/stone_edit.html:4
+#: content/templates/main/stone_edit.html:12
+msgid "Edit Stone"
+msgstr "编辑石头"
+
+#: content/templates/main/stone_edit.html:23
+msgid "This stone is in draft mode. You can edit it and publish when ready."
+msgstr "这块石头处于草稿模式。你可以编辑并在准备好时发布。"
+
+#: content/templates/main/stone_edit.html:28
+msgid ""
+"This stone is published and visible on the map. You can no longer edit it, "
+"but you can send it off to finalize it."
+msgstr ""
+
+#: content/templates/main/stone_edit.html:33
+msgid ""
+"This stone has been sent off and is finalized. No further changes can be "
+"made."
+msgstr "这块石头已放飞并完成。无法再做任何更改。"
+
+#: content/templates/main/stone_edit.html:43
+msgid "Stone name cannot be changed after creation."
+msgstr "创建后无法更改石头名称。"
+
+#: content/templates/main/stone_edit.html:50
+msgid "Describe your stone..."
+msgstr "描述你的石头..."
+
+#: content/templates/main/stone_edit.html:51
+msgid "Maximum 500 characters"
+msgstr "最多500个字符"
+
+#: content/templates/main/stone_edit.html:55
+msgid "Stone Image"
+msgstr "石头图片"
+
+#: content/templates/main/stone_edit.html:64
+msgid "Upload a new image to replace the current one"
+msgstr "上传新图片以替换当前图片"
+
+#: content/templates/main/stone_edit.html:68
+msgid "Stone Color"
+msgstr "石头颜色"
+
+#: content/templates/main/stone_edit.html:79
+msgid "Stone type cannot be changed after creation."
+msgstr "创建后无法更改石头类型。"
+
+#: content/templates/main/stone_edit.html:86
+msgid "Save Draft"
+msgstr "保存草稿"
+
+#: content/templates/main/stone_edit.html:89
+msgid "Publish Stone"
+msgstr "发布石头"
+
+#: content/templates/main/stone_edit.html:99
+msgid ""
+"Your stone has a persistent QR code that will always lead to the stone page."
+msgstr ""
+
+#: content/templates/main/stone_edit.html:108
+msgid "QR URL:"
+msgstr "QR链接："
+
+#: content/templates/main/stone_edit.html:118
+#: content/templates/main/stone_edit.html:125
+msgid "Send Off Stone"
+msgstr "放飞石头"
+
+#: content/templates/main/stone_edit.html:119
+msgid ""
+"Once you send off your stone, it becomes finalized and ready for its "
+"journey. This action cannot be undone."
+msgstr ""
+
+#: content/templates/main/stone_edit.html:124
+msgid ""
+"Are you sure you want to send off this stone? This action cannot be undone."
+msgstr "你确定要放飞这块石头吗？此操作无法撤消。"
+
+#: content/templates/main/stone_edit.html:135
+msgid "Back to Map"
+msgstr "返回地图"
+
+#: content/templates/main/stone_found.html:8
+msgid "Stone Found!"
+msgstr "找到石头了！"
+
+#: content/templates/main/stone_found.html:29
+msgid "This is your first stone! Here\\"
+msgstr ""
+
+#: content/templates/main/stone_found.html:31
+msgid "You found a stone that someone else placed"
+msgstr "你找到了别人放置的石头"
+
+#: content/templates/main/stone_found.html:32
+msgid "Now you need to tell us where you found it"
+msgstr "现在告诉我们你在哪里找到的"
+
+#: content/templates/main/stone_found.html:33
+msgid "If it\\"
+msgstr ""
+
+#: content/templates/main/stone_found.html:34
+msgid "This creates a trail of stone movements around the world!"
+msgstr "这将在世界各地创建石头的移动轨迹！"
+
+#: content/templates/main/stone_found.html:42
+msgid "Hunted Stone Found!"
+msgstr "找到被追踪的石头了！"
+
+#: content/templates/main/stone_found.html:43
+msgid "Congratulations! Many others were probably looking for this stone. You\\"
+msgstr ""
+
+#: content/templates/main/stone_found.html:44
+msgid "Next week, you\\"
+msgstr ""
+
+#: content/templates/main/stone_found.html:52
+#: content/templates/main/stone_scan.html:26
+msgid "Comment (optional)"
+msgstr "评论（可选）"
+
+#: content/templates/main/stone_found.html:53
+#: content/templates/main/stone_scan.html:27
+msgid "Tell us about your stone adventure..."
+msgstr "告诉我们你的石头冒险故事......"
+
+#: content/templates/main/stone_found.html:55
+#: content/templates/main/stone_scan.html:29
+msgid "Photo (optional)"
+msgstr "照片（可选）"
+
+#: content/templates/main/stone_found.html:59
+msgid "Where did you find this stone?"
+msgstr "你在哪里找到这块石头的？"
+
+#: content/templates/main/stone_found.html:70
+msgid "Where will you place this stone next week?"
+msgstr "你下周将把这块石头放在哪里？"
+
+#: content/templates/main/stone_found.html:71
+msgid "Choose a new location where others can find it."
+msgstr "选择一个新位置让其他人可以找到。"
+
+#: content/templates/main/stone_found.html:80
+msgid "Submit Find"
+msgstr "提交发现"
+
+#: content/templates/main/stone_scan.html:8
+#: content/templates/main/stonewalker_start.html:73
+msgid "Scan a Stone"
+msgstr "扫描一块石头"
+
+#: content/templates/main/stone_scan.html:41
+msgid "Submit Scan"
+msgstr "提交扫描"
+
+#: content/templates/main/stonewalker_start.html:66
+msgid "Stone actions"
+msgstr "石头操作"
+
+#: content/templates/main/stonewalker_start.html:67
+msgid "Add new stone"
+msgstr "添加新石头"
+
+#: content/templates/main/stonewalker_start.html:67
+msgid "Create a new stone"
+msgstr "创建新石头"
+
+#: content/templates/main/stonewalker_start.html:69
+msgid "Create New Stone"
+msgstr "创建新石头"
+
+#: content/templates/main/stonewalker_start.html:71
+msgid "I found a stone"
+msgstr "我找到了一块石头！"
+
+#: content/templates/main/stonewalker_start.html:71
+msgid "Scan a stone QR code"
+msgstr "扫描石头QR码"
+
+#: main/shop_views.py:53 main/shop_views.py:71 main/shop_views.py:432
+msgid "Stone not found."
+msgstr "未找到石头。"
+
+#: main/shop_views.py:57 main/shop_views.py:75
+msgid "This stone has already been claimed."
+msgstr "这块石头已经被认领了。"
+
+#: main/shop_views.py:101
+msgid "Please enter a name for your stone."
+msgstr "请为你的石头输入一个名字。"
+
+#: main/shop_views.py:103
+msgid "Stone name must be 10 characters or less."
+msgstr "石头名称不能超过10个字符。"
+
+#: main/shop_views.py:105
+msgid "Stone name cannot contain spaces."
+msgstr "石头名称不能包含空格。"
+
+#: main/shop_views.py:107
+msgid "This stone name is already taken. Please choose another."
+msgstr "此石头名称已被使用。请选择其他名称。"
+
+#: main/shop_views.py:163
+#, python-format
+msgid ""
+"Congratulations! You claimed \"%(name)s\"! You can now edit and personalize "
+"your stone."
+msgstr ""
+
+#: main/shop_views.py:169
+msgid "An error occurred while claiming the stone. Please try again."
+msgstr "领取石头时出错。请重试。"
+
+#: main/shop_views.py:211
+msgid "You have already claimed this product"
+msgstr "你已经领取过此产品"
+
+#: main/shop_views.py:222
+msgid "Free"
+msgstr "免费"
+
+#: main/shop_views.py:259
+msgid "Product not found."
+msgstr "未找到产品。"
+
+#: main/shop_views.py:263
+msgid "This product is not available."
+msgstr "此产品不可用。"
+
+#: main/shop_views.py:277
+msgid "You have already claimed this product."
+msgstr "你已经领取过此产品。"
+
+#: main/shop_views.py:290
+msgid "Payment system is not configured. Please contact support."
+msgstr "支付系统未配置。请联系客服。"
+
+#: main/shop_views.py:303
+msgid "Payment system error. Please try again."
+msgstr "支付系统错误。请重试。"
+
+#: main/shop_views.py:335 main/shop_views.py:390
+msgid ""
+"Your free QR code has been generated! Print it and attach it to your stone."
+msgstr "你的免费QR码已生成！打印并贴在你的石头上。"
+
+#: main/shop_views.py:344
+msgid "Your QR codes are ready for download!"
+msgstr "你的QR码已准备好下载！"
+
+#: main/shop_views.py:347 main/shop_views.py:445
+msgid "Failed to generate QR code."
+msgstr "生成QR码失败。"
+
+#: main/shop_views.py:362
+msgid "You have already claimed your free QR code."
+msgstr "你已经领取过免费QR码了。"
+
+#: main/shop_views.py:393
+msgid "Failed to generate QR code. Please try again."
+msgstr "生成QR码失败。请重试。"
+
+#: main/shop_views.py:404
+msgid "Pack not found."
+msgstr "未找到套餐。"
+
+#: main/shop_views.py:408
+msgid "PDF not yet generated."
+msgstr "PDF尚未生成。"
+
+#: main/shop_views.py:420
+msgid "PDF file not found."
+msgstr "未找到PDF文件。"
+
+#: main/shop_views.py:437
+msgid "You do not have access to this QR code."
+msgstr "你无权访问此QR码。"
+
+#: main/shop_views.py:457
+msgid "Invalid checkout session."
+msgstr "无效的结账会话。"
+
+#: main/shop_views.py:463
+msgid "Order not found."
+msgstr "未找到订单。"
+
+#: main/shop_views.py:471
+msgid "Payment processing. Please refresh in a moment."
+msgstr "正在处理支付。请稍后刷新页面。"
+
+#: main/validators.py:28
+msgid ""
+"Comments cannot contain contact information (emails, websites, or phone "
+"numbers)."
+msgstr "评论不能包含联系信息（电子邮件、网站或电话号码）。"
