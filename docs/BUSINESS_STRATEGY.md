@@ -398,46 +398,31 @@ With $15/month in fixed costs, break-even is nearly immediate once any revenue c
 
 ### Immediate Shop Improvements (Can Do Today)
 
-1. **Add 3-Pack product to shop_config.json**
+1. **~~Add 3-Pack product to shop_config.json~~** DONE (commit `c1ddbc8`)
 
-   The infrastructure already supports it -- just add a new entry:
-   ```json
-   {
-     "id": "paid_3pack",
-     "category": "starter",
-     "name": "Starter 3-Pack",
-     "description": "Three QR codes to share with friends or hide a trail of stones",
-     "price_cents": 499,
-     "is_free": false,
-     "pack_size": 3,
-     "enabled": true,
-     "limit_per_user": null
-   }
-   ```
+   Deployed as `paid_3pack` in the "group" category at $4.99. Description: "Three QR codes - share with friends or hide a trail of stones!"
 
-2. **Add 30-Pack product for educators**
+2. **~~Add 30-Pack product for educators~~** DONE (commit `c1ddbc8`)
 
-   ```json
-   {
-     "id": "paid_30pack",
-     "category": "classroom",
-     "name": "Classroom 30-Pack",
-     "description": "Thirty QR codes for school classes, scout troops, or community events",
-     "price_cents": 1999,
-     "is_free": false,
-     "pack_size": 30,
-     "enabled": true,
-     "limit_per_user": null
-   }
-   ```
+   Deployed as `paid_30pack` in the "classroom" category at $19.99. Description: "Thirty QR codes for school classes, scout troops, birthday parties, or community stone drop events!"
 
-3. **Improve shop page copy**
+   Also reorganized categories into starter / group / classroom+event, and renamed the 10-pack to "Explorer 10-Pack" with improved description.
 
-   The current "How It Works" section is good but could emphasize the emotional hook: "See your stone travel the world." Add a testimonial placeholder and a "Featured Stone Journeys" section showing real stones that have traveled far.
+3. **Improve shop page copy** (TODO - template changes)
 
-4. **Add shop FAQ entries**
+   Recommended changes for `source/content/templates/main/shop.html`:
+   - "How It Works" step 3 description: change to emphasize the emotional hook -- "When someone finds and scans your stone, you see its journey unfold on the world map. Watch it travel across cities, countries, and continents."
+   - Add a tagline under the shop title: "Paint a stone. Give it a story. Watch it travel the world."
+   - Add a "Featured Stone Journeys" placeholder section below "How It Works" showing stones that have traveled the farthest (once real data exists)
 
-   Add questions: "Can I buy QR codes as a gift?", "Do the QR codes work outdoors?", "What if my stone gets lost?" -- these address real buyer hesitations.
+4. **Add shop FAQ entries** (TODO - template changes)
+
+   Recommended new FAQ entries for the shop template:
+   - "What is the 3-Pack for?" -- "The Starter 3-Pack is great for painting with friends, creating a themed stone trail, or giving stones as gifts. Each QR code is unique."
+   - "What is the Classroom 30-Pack for?" -- "The 30-Pack is designed for teachers, scout leaders, and event organizers. You get 30 QR codes on printable PDF sheets, ready to cut out and distribute to a whole class or group."
+   - "Can I buy QR codes as a gift?" -- "Yes! QR codes are not tied to your account until someone claims them. You can print them out and give them to anyone."
+   - "Do the QR codes work outdoors?" -- "The QR code links are permanent and work forever. For the physical printout, we recommend sealing it with clear packing tape or spray varnish to protect it from weather."
+   - "What if my stone gets lost?" -- "That is part of the adventure! Your stone's page stays active forever. Even if months pass, someone might find and scan it. Some of the best stone stories come from long waits."
 
 ### Content to Create This Week
 
@@ -461,7 +446,7 @@ With $15/month in fixed costs, break-even is nearly immediate once any revenue c
 
 **Product**:
 - [x] Shop with free single QR and 10-pack (already built)
-- [ ] Add 3-pack and 30-pack to shop
+- [x] Add 3-pack ($4.99) and 30-pack ($19.99) to shop
 - [ ] Implement subscription billing (Stripe recurring)
 - [ ] Build analytics dashboard for Pro users (stones traveled, distances, scan counts)
 - [ ] Launch Discourse forum for community
