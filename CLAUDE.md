@@ -523,3 +523,49 @@ In Discourse Admin → Settings → Login:
 - Email (Mailjet free tier): $0/month
 - Domain: ~$12/year
 - Break-even: ~$15/month (nearly immediate with any revenue)
+
+## Launch Team Session (February 2026)
+
+### Team Structure That Worked
+- **3 Opus agents + 1 lead**: visionary (product/strategy), dev-alpha (frontend), dev-beta (backend)
+- **Strict file ownership**: visionary owns docs/ + shop_config.json, dev-alpha owns templates/CSS/JS, dev-beta owns Python/locale/docs
+- **Zero merge conflicts** across 21 commits from 4 contributors
+- **Two rounds per agent**: Round 1 (main deliverable) → Round 2 (follow-up polish)
+- **Visionary produced actionable strategy** that directly fed into code tasks (shop config expansion was zero-code)
+
+### What Was Delivered (21 commits)
+1. Business strategy & product roadmap (docs/BUSINESS_STRATEGY.md)
+2. Shop expanded: 3-pack ($4.99) and 30-pack ($19.99) added via config-only change
+3. My-Stones layout: full viewport height, responsive scaling
+4. Profile menu: password autofill prevention, ARIA labels, image positioning
+5. Hunted stone minimap: 4:3 Leaflet map with click-to-place, slim coordinates
+6. Map marker CSS: removed Leaflet default backgrounds
+7. Accessibility: ARIA labels, dialog roles, keyboard nav, aria-hidden on decorative elements
+8. JS refactor: -103 lines dead code, documentation comments, deduplication, mobile scroll lock
+9. Shop FAQ: 6 new entries covering all product tiers
+10. About page: mission statement, "Join the Movement" CTAs
+11. Open Graph + Twitter Card meta tags for social sharing
+12. Self-hosted deployment guide + nginx/gunicorn/PostgreSQL/backup configs
+13. SQL safety audit: clean (zero raw SQL in entire codebase)
+14. README sitemap: updated with all current routes
+15. Translations: 190+ strings, 94% coverage across 7 languages
+
+### Self-Hosted Deployment (Ready)
+- **Guide**: `docs/DEPLOYMENT_SELFHOSTED.md`
+- **Config files**: `docs/deploy/nginx.conf`, `gunicorn.service`, `postgresql.conf.snippet`, `env.template`, `backup.sh`
+- **Target**: Ubuntu 22.04+ VPS, 2-4GB RAM, PostgreSQL 15+
+- **Stack**: nginx → gunicorn (Unix socket) → Django, Let's Encrypt SSL, pg_dump cron backups
+
+### Shop Product Tiers (Current)
+| Product | Price | Pack Size | Category |
+|---------|-------|-----------|----------|
+| Free Single QR | Free | 1 | starter |
+| Starter 3-Pack | $4.99 | 3 | group |
+| Explorer 10-Pack | $9.99 | 10 | group |
+| Classroom 30-Pack | $19.99 | 30 | classroom |
+
+### Translation Coverage
+- European languages (de/fr/es/it): ~94% translated
+- Russian: ~94%
+- Chinese (zh-hans): ~88%
+- All .mo files compiled and working
