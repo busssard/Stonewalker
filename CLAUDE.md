@@ -267,6 +267,13 @@ This is a production-ready application with comprehensive testing, so maintain t
 - **Always create multiple commits** - separate features/changes logically rather than one large commit
 - Group related changes together (e.g., one commit for Stripe integration, another for PDF generation)
 - Write clear, descriptive commit messages
+- **Never commit real server IPs, passwords, or secrets** - use placeholders and reference environment variables or GitHub secrets
+
+### Writing Documentation & Instructions
+- **Self-contained copy-paste blocks** - when writing setup guides, deployment docs, or how-to instructions, inline everything the reader needs right where they need it. Don't say "see file X for the values" and make them cross-reference — put the actual values, commands, and config directly in the step.
+- **Append-friendly over edit-in-place** - when modifying config files (e.g. postgresql.conf), prefer appending a block to the end rather than asking the reader to find and edit specific lines scattered through a 700-line file. Most config formats use "last value wins".
+- **Assume the reader follows top-to-bottom** - each step should be runnable in sequence without jumping ahead or back. If step 5 depends on something from step 2, repeat the relevant info rather than saying "as configured in step 2".
+- **No jargon without context** - if a step says "apply tuning parameters", show exactly what to run. If it says "edit the config", show the exact commands and content.
 
 ### Claude Code Session Notes
 - Regularly update this CLAUDE.md file with new learnings and preferences

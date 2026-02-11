@@ -86,18 +86,31 @@ CREATE DATABASE stonewalker OWNER stonewalker;
 GRANT ALL PRIVILEGES ON DATABASE stonewalker TO stonewalker;
 SQL
 
-# Apply tuning (copy from docs/deploy/postgresql.conf.snippet)
-# Edit /etc/postgresql/15/main/postgresql.conf with the values from the snippet
-# Key settings for 2GB VPS:
-#   shared_buffers = 512MB
-#   effective_cache_size = 1536MB
-#   work_mem = 8MB
-#   random_page_cost = 1.1 (SSD)
+# Optional: tune PostgreSQL for better performance
+# This appends optimized settings to the end of the config file.
+# PostgreSQL reads the file top-to-bottom, so later values override earlier ones.
+# This means you don't need to find and edit existing lines — just append.
+
+cat >> /etc/postgresql/*/main/postgresql.conf << 'TUNING'
+
+# --- StoneWalker tuning (appended) ---
+shared_buffers = 512MB
+effective_cache_size = 1536MB
+work_mem = 8MB
+maintenance_work_mem = 128MB
+wal_buffers = 16MB
+checkpoint_completion_target = 0.9
+max_wal_size = 1GB
+random_page_cost = 1.1
+effective_io_concurrency = 200
+max_connections = 50
+log_min_duration_statement = 500
+TUNING
 
 systemctl restart postgresql
 ```
 
-See `docs/deploy/postgresql.conf.snippet` for the full tuning parameters.
+The values above are for a 2GB VPS. If you have 4GB, double `shared_buffers` to `1GB` and `effective_cache_size` to `3GB`. See `docs/deploy/postgresql.conf.snippet` for a fully commented version.
 
 ## 3. Get the Code onto the Server
 
