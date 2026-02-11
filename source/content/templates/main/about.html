@@ -56,14 +56,27 @@
         <li>{% trans 'Don\'t place stones in protected areas or private property!' %}</li>
         <li>{% trans 'Be kind and respectful to other community members!' %}</li>
         <li>{% trans 'Don\'t limit your creativity, go wild!' %}</li>
-      
+
       <p> <strong> {% trans 'You never know where it might go, or who it might inspire along the way!' %} </strong></p>
     </ul> </div>
-    
 
-    
+    <div class="avant-fact-box mb-2">
+      <ul class="avant-about-list">
+        <strong><u>{% trans 'Our Mission' %}</u></strong>
+        <li>{% trans 'StoneWalker is open source and community-driven. We believe that creative expression should be free and accessible to everyone.' %}</li>
+        <li>{% trans 'No ads, no data selling, no paywalls on the core experience. Every stone page and every journey map is free to view, forever.' %}</li>
+        <li>{% trans 'We sustain the project through QR code packs and optional premium features, not through exploiting your attention.' %}</li>
+      </ul>
+    </div>
+
+    <div class="position-relative z-1 fs-1-2 line-height-1-7 text-dark-gray mb-2 text-center">
+      <strong>{% trans 'Join the Movement' %}</strong>
+      <p>{% trans 'Thousands of painted stones are waiting to be created, hidden, and discovered. Whether you are an artist, a hiker, a teacher, or just someone who loves a good adventure, there is a place for you here.' %}</p>
+    </div>
+
     <div class="flex-center">
-      <a href="{% url 'stonewalker_start' %}" class="avant-btn">{% trans 'Start Your Journey' %}</a>
+      <a href="{% url 'shop' %}" class="avant-btn">{% trans 'Get Your First QR Code' %}</a>
+      <a href="{% url 'stonewalker_start' %}" class="avant-btn ml-20">{% trans 'Start Your Journey' %}</a>
     </div>
   </div>
 </div>
