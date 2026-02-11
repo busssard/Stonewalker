@@ -161,8 +161,7 @@ function renderStonesList(listId, data, page, perPage) {
     item.onclick = function() {
       import('/static/js/stone-modal.js').then(mod => {
         mod.openStoneModal(stone.PK_stone, stone.color, data);
-      }).catch(err => {
-        console.error('Failed to load stone modal:', err);
+      }).catch(() => {
         // Fallback: create a simple modal
         showSimpleModal(stone.PK_stone, stone.color, data);
       });
@@ -218,7 +217,7 @@ function setupPagination(section) {
     return Math.max(2, Math.floor(available / itemHeight));
   }
   function update() {
-    sortKey = document.getElementById(`${section}-sort`).value;
+    const sortKey = document.getElementById(`${section}-sort`).value;
     const sorted = sortStones(data, sortKey);
     perPage = calcPerPage();
     renderStonesList(section + '-list', sorted, page, perPage);
@@ -262,10 +261,7 @@ function showSimpleModal(pk, color, data) {
   const modalBody = document.getElementById('stone-gallery-body');
   const closeBtn = document.getElementById('stone-gallery-close');
   
-  if (!modal) {
-    console.error('Modal container not found');
-    return;
-  }
+  if (!modal) return;
   
   closeBtn.onclick = () => { modal.style.display = 'none'; };
   window.onclick = (e) => { if (e.target === modal) modal.style.display = 'none'; };

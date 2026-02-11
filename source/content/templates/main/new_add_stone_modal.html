@@ -154,8 +154,6 @@
 <script>
 // New Add Stone Modal JavaScript
 (function() {
-  console.log('Loading new add stone modal...');
-
   const modal = document.getElementById('new-add-stone-modal');
   const step1 = document.getElementById('new-step-1');
   const step2 = document.getElementById('new-step-2');
@@ -201,7 +199,6 @@
   }
 
   function showStep(stepNum) {
-    console.log('Showing step:', stepNum);
     if (stepNum === 1) {
       step1.style.display = 'block';
       step2.style.display = 'none';
@@ -212,14 +209,12 @@
   }
 
   function openModal() {
-    console.log('Opening new modal');
     modal.style.display = 'block';
     showStep(1);
     resetForm();
   }
 
   function closeModal() {
-    console.log('Closing new modal');
     modal.style.display = 'none';
     resetForm();
   }
@@ -333,8 +328,6 @@
 
   // Generate QR code
   function generateQR() {
-    console.log('Generating QR for:', nameInput.value, currentUUID);
-
     qrLoading.style.display = 'block';
     qrImage.style.display = 'none';
     qrError.style.display = 'none';
@@ -344,7 +337,6 @@
     fetch(`/api/generate-qr/?stone_name=${encodeURIComponent(stoneName)}&stone_uuid=${currentUUID}`)
       .then(response => response.json())
       .then(data => {
-        console.log('QR response:', data);
         if (data.success) {
           qrLoading.style.display = 'none';
           qrImage.style.display = 'block';
@@ -360,8 +352,7 @@
           qrError.style.display = 'block';
         }
       })
-      .catch(error => {
-        console.error('QR error:', error);
+      .catch(() => {
         qrLoading.style.display = 'none';
         qrError.style.display = 'block';
       });
@@ -388,8 +379,6 @@
 
   if (nextBtn) {
     nextBtn.addEventListener('click', () => {
-      console.log('Next button clicked');
-
       // Validate
       if (!nameInput.value.trim()) {
         alert('Please enter a stone name');
@@ -427,7 +416,6 @@
 
   if (createBtn) {
     createBtn.addEventListener('click', () => {
-      console.log('Creating stone...');
       // Submit form first, then close modal
       // (closeModal resets the form, so submitting after would send empty data)
       form.submit();
@@ -445,23 +433,16 @@
   if (downloadBtn) {
     downloadBtn.addEventListener('click', () => {
       if (window.currentQRData && currentUUID) {
-        console.log('Downloading enhanced QR code...');
-        // Create enhanced QR code download URL
         const stoneName = encodeURIComponent(nameInput.value.trim());
         const stoneUuid = encodeURIComponent(currentUUID);
         const downloadUrl = `/api/download-enhanced-qr/?stone_name=${stoneName}&stone_uuid=${stoneUuid}`;
 
-        // Create download link
         const link = document.createElement('a');
         link.href = downloadUrl;
         link.download = `${nameInput.value.trim()}_stonewalker_qr.png`;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
-
-        console.log('Download initiated');
-      } else {
-        console.error('No QR data available for download');
       }
     });
   }
@@ -489,7 +470,5 @@
   if (typeof setupImageUpload === 'function') {
     setupImageUpload({ inputId: 'new-stone-image', msgId: 'new-stone-image-msg' });
   }
-
-  console.log('New add stone modal initialized');
 })();
 </script>
