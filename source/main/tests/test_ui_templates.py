@@ -74,13 +74,12 @@ class MyStonesPageTests(BaseStoneWalkerTestCase):
 class StoneCreationModalTests(BaseStoneWalkerTestCase):
     """Test stone creation modal functionality"""
     
-    def test_create_modal_authentication_check(self):
-        """Test that create modal checks authentication"""
-        self.client.logout()
+    def test_create_stone_fab_links_to_shop_flow(self):
+        """Test that the Create New Stone FAB navigates to the shop flow"""
         response = self.client.get('/stonewalker/')
         self.assertEqual(response.status_code, 200)
-        # Should contain modals but with auth checks
-        self.assertContains(response, 'openSharedCreateStoneModal')
+        # FAB button should link to the create-stone smart router (shop flow)
+        self.assertContains(response, 'create-stone')
     
     def test_modal_includes_stone_types(self):
         """Test that modal includes both stone types"""
