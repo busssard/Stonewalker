@@ -152,7 +152,10 @@
 </div>
 
 <script>
-// New Add Stone Modal JavaScript
+// New Add Stone Modal — 2-step flow: fill form -> preview QR -> submit.
+// Self-contained IIFE. Inline because the form action uses a Django url tag.
+// Generates UUID client-side, stores in hidden field so the QR preview
+// and the saved Stone share the same UUID.
 (function() {
   const modal = document.getElementById('new-add-stone-modal');
   const step1 = document.getElementById('new-step-1');

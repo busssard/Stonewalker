@@ -10,6 +10,8 @@
 <!-- Welcome Modal for Guests -->
 {% if show_welcome_modal %}
 <script>
+// Guest welcome modal — shows once per hour using localStorage.
+// Conditionally rendered by Django template if-tag.
 (function() {
   var lastVisitKey = 'stonewalker_guest_last_visit';
   var now = Date.now();
@@ -76,6 +78,8 @@
 
 
 <script>
+// FAB button hover effects and click handlers for the main map page.
+// Inline because it uses a Django url tag for navigation.
 document.addEventListener('DOMContentLoaded', function() {
   // Highlight add-stone-fab in a random color on hover
   const addStoneFab = document.getElementById('add-stone-fab');
@@ -138,6 +142,9 @@ document.addEventListener('DOMContentLoaded', function() {
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" crossorigin=""/>
 <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" crossorigin=""></script>
 <script type="module">
+  // Main world-map initialization: renders Leaflet markers for all stones,
+  // draws journey polylines, and handles ?focus=PK_stone deep-linking.
+  // Inline because it uses Django static tags for fallback images.
   const stones = JSON.parse(document.getElementById('stones-data').textContent || '[]');
   document.addEventListener('DOMContentLoaded', function() {
     var map = L.map('map').setView([20, 0], 3);
