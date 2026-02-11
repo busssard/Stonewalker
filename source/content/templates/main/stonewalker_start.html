@@ -81,41 +81,40 @@
 // FAB button hover effects and click handlers for the main map page.
 // Inline because it uses a Django url tag for navigation.
 document.addEventListener('DOMContentLoaded', function() {
+  // Shared hover color palette for FAB buttons
+  const randomColors = [
+    '#ff9800', '#ffb300', '#4CAF50', '#3fa7ff', '#e91e63', '#9c27b0', '#00bcd4', '#8bc34a', '#ffc107', '#ff5722'
+  ];
+  function pickRandomColor() {
+    return randomColors[Math.floor(Math.random() * randomColors.length)];
+  }
+
   // Highlight add-stone-fab in a random color on hover
   const addStoneFab = document.getElementById('add-stone-fab');
   if (addStoneFab) {
     const originalBg = addStoneFab.style.background;
-    const randomColors = [
-      '#ff9800', '#ffb300', '#4CAF50', '#3fa7ff', '#e91e63', '#9c27b0', '#00bcd4', '#8bc34a', '#ffc107', '#ff5722'
-    ];
     addStoneFab.addEventListener('mouseenter', function() {
-      const color = randomColors[Math.floor(Math.random() * randomColors.length)];
-      addStoneFab.style.background = color;
+      addStoneFab.style.background = pickRandomColor();
     });
     addStoneFab.addEventListener('mouseleave', function() {
       addStoneFab.style.background = originalBg;
     });
-    
-    // Navigate to shop flow (smart router: unclaimed QR → claim, else → shop)
+
+    // Navigate to shop flow (smart router: unclaimed QR -> claim, else -> shop)
     addStoneFab.addEventListener('click', function() {
       window.location.href = '{% url "create_stone" %}';
     });
   }
-  
+
   // Scan button hover: change border, text, and icon color
   const scanBtn = document.getElementById('scan-stone-fab');
   const scanText = document.getElementById('scan-stone-text');
   const scanIcon = document.getElementById('scan-stone-icon');
   if (scanBtn && scanText && scanIcon) {
     const scanDefaultColor = '#ff9800';
-    let scanOriginalBorder = scanBtn.style.borderColor;
-    let scanOriginalText = scanText.style.color;
-    let scanOriginalFilter = scanIcon.style.filter;
-    const randomColors = [
-      '#ff9800', '#ffb300', '#4CAF50', '#3fa7ff', '#e91e63', '#9c27b0', '#00bcd4', '#8bc34a', '#ffc107', '#ff5722'
-    ];
+    const scanOriginalFilter = scanIcon.style.filter;
     scanBtn.addEventListener('mouseenter', function() {
-      const color = randomColors[Math.floor(Math.random() * randomColors.length)];
+      const color = pickRandomColor();
       scanBtn.style.borderColor = color;
       scanText.style.color = color;
       scanIcon.style.filter = `drop-shadow(0 0 0 ${color}) brightness(0) saturate(100%) sepia(1) hue-rotate(0deg)`;
