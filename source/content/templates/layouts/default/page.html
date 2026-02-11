@@ -11,6 +11,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}StoneWalker{% endblock %}</title>
 
+    <!-- Meta description -->
+    <meta name="description" content="{% block meta_description %}{% trans 'Paint a stone, attach a QR code, hide it in the world, and watch it travel. StoneWalker tracks your painted stones on a global map.' %}{% endblock %}">
+
+    <!-- Open Graph / Social Sharing -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="{% block og_title %}StoneWalker{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}{% trans 'Paint a stone, attach a QR code, hide it in the world, and watch it travel on a global map.' %}{% endblock %}">
+    <meta property="og:image" content="{% block og_image %}{% static 'walker_no_text.png' %}{% endblock %}">
+    <meta property="og:site_name" content="StoneWalker">
+    <meta property="og:locale" content="{{ LANGUAGE_CODE }}">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="StoneWalker">
+    <meta name="twitter:description" content="{% trans 'Paint a stone, attach a QR code, hide it in the world, and watch it travel on a global map.' %}">
+    <meta name="twitter:image" content="{% static 'walker_no_text.png' %}">
+
     <!-- OpenSans Font -->
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
