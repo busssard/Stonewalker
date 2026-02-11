@@ -1,5 +1,5 @@
 {
-  "version": "1.0",
+  "version": "1.1",
   "currency": "USD",
   "categories": [
     {
@@ -9,10 +9,16 @@
       "order": 1
     },
     {
-      "id": "classroom",
-      "name": "Classroom Packs",
-      "description": "Great for schools and groups",
+      "id": "group",
+      "name": "Group Packs",
+      "description": "Great for friends, families, and small groups",
       "order": 2
+    },
+    {
+      "id": "classroom",
+      "name": "Classroom & Event Packs",
+      "description": "For schools, scout troops, and community events",
+      "order": 3
     }
   ],
   "products": [
@@ -29,15 +35,39 @@
       "limit_per_user": 1
     },
     {
+      "id": "paid_3pack",
+      "category": "group",
+      "name": "Starter 3-Pack",
+      "description": "Three QR codes - share with friends or hide a trail of stones!",
+      "price_cents": 499,
+      "is_free": false,
+      "pack_size": 3,
+      "enabled": true,
+      "picture": "/static/images/shop/3pack.png",
+      "limit_per_user": null
+    },
+    {
       "id": "paid_10pack",
-      "category": "classroom",
-      "name": "10-Pack QR Codes",
-      "description": "Ten QR codes on a printable PDF sheet - perfect for classrooms and groups!",
+      "category": "group",
+      "name": "Explorer 10-Pack",
+      "description": "Ten QR codes on a printable PDF sheet - the most popular choice for active stone painters!",
       "price_cents": 999,
       "is_free": false,
       "pack_size": 10,
       "enabled": true,
       "picture": "/static/images/shop/10pack.png",
+      "limit_per_user": null
+    },
+    {
+      "id": "paid_30pack",
+      "category": "classroom",
+      "name": "Classroom 30-Pack",
+      "description": "Thirty QR codes for school classes, scout troops, birthday parties, or community stone drop events!",
+      "price_cents": 1999,
+      "is_free": false,
+      "pack_size": 30,
+      "enabled": true,
+      "picture": "/static/images/shop/30pack.png",
       "limit_per_user": null
     }
   ]
