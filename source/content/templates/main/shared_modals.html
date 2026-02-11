@@ -330,11 +330,25 @@ document.addEventListener('DOMContentLoaded', function() {
   const qrClose = document.getElementById('qr-code-close');
   const scanCancel = document.getElementById('scan-stone-cancel');
 
+  // Body scroll lock for mobile — prevents background scrolling when modal open
+  function lockBodyScroll() {
+    document.body.style.overflow = 'hidden';
+  }
+  function unlockBodyScroll() {
+    document.body.style.overflow = '';
+  }
+
+  // Ensure modal inner containers are scrollable on small viewports
+  document.querySelectorAll('.shared-modal-flex-col').forEach(function(el) {
+    el.style.overflowY = 'auto';
+  });
+
   // Close modal function
   function closeModal(modal) {
     if (modal) {
       modal.style.display = 'none';
       modal.classList.add('display-none');
+      unlockBodyScroll();
     }
   }
 
@@ -885,7 +899,8 @@ document.addEventListener('DOMContentLoaded', function() {
     if (scanModal) {
       scanModal.classList.remove('display-none');
       scanModal.style.display = 'flex';
-      
+      lockBodyScroll();
+
       // Initialize QR scanner after modal opens
       setTimeout(initializeScanModal, 100);
     }

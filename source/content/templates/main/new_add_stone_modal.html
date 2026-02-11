@@ -213,12 +213,14 @@
 
   function openModal() {
     modal.style.display = 'block';
+    document.body.style.overflow = 'hidden';
     showStep(1);
     resetForm();
   }
 
   function closeModal() {
     modal.style.display = 'none';
+    document.body.style.overflow = '';
     resetForm();
   }
 
