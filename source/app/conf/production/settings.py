@@ -151,7 +151,7 @@ LANGUAGES = [
 LANGUAGE_COOKIE_NAME = 'django_language'
 LANGUAGE_COOKIE_AGE = None  # Session cookie
 LANGUAGE_COOKIE_DOMAIN = None
-LANGUAGE_COOKIE_SECURE = False
+LANGUAGE_COOKIE_SECURE = True
 LANGUAGE_COOKIE_HTTPONLY = False
 LANGUAGE_COOKIE_SAMESITE = 'Lax'
 
@@ -180,6 +180,16 @@ if DISABLE_USERNAME:
     SIGN_UP_FIELDS = ['first_name', 'last_name', 'email', 'password1', 'password2']
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# SSL / HTTPS hardening (nginx handles SSL termination, but Django
+# must mark cookies as secure and emit HSTS headers)
+SECURE_SSL_REDIRECT = True          # Redirect HTTP → HTTPS at Django level
+SECURE_HSTS_SECONDS = 31536000      # 1 year — tell browsers to only use HTTPS
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
+SESSION_COOKIE_SECURE = True        # Only send session cookie over HTTPS
+CSRF_COOKIE_SECURE = True           # Only send CSRF cookie over HTTPS
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')  # Trust nginx's header
 
 # Log Django request errors to console (visible in Render logs)
 LOGGING = {
