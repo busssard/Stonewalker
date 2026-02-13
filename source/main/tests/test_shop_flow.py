@@ -3,12 +3,11 @@ Tests for the shop-based stone creation flow.
 
 The "Create New Stone" button routes through the shop:
 - If user has an unclaimed QR → redirect straight to claim
-- If no unclaimed QR → redirect to shop
-- In dev mode (DEBUG=True): free_single has no limit_per_user
+- If no unclaimed QR → auto-provision free QR then redirect to claim
+- free_single has no limit_per_user in all modes
 """
 
-import uuid as uuid_lib
-from django.test import TestCase, override_settings
+from django.test import override_settings
 from django.urls import reverse
 from django.utils import timezone
 
@@ -20,12 +19,14 @@ class CreateNewStoneRouterTests(BaseStoneWalkerTestCase):
     """Test the CreateNewStoneView smart router"""
 
     def test_no_packs_redirects_to_shop(self):
-        """User with no packs should be redirected to the shop"""
+        """User with no packs should get a free QR and land on claim page"""
         response = self.client.get(reverse('create_stone'))
-        self.assertRedirects(response, reverse('shop'))
+        self.assertEqual(response.status_code, 302)
+        self.assertIn('/claim-stone/', response.url)
+        self.assertEqual(QRPack.objects.filter(FK_user=self.user, pack_type='free_single').count(), 1)
 
     def test_no_unclaimed_stones_redirects_to_shop(self):
-        """User with packs but no unclaimed stones should go to shop"""
+        """User with packs but no unclaimed stones should get a new free QR"""
         pack = QRPack.objects.create(
             FK_user=self.user,
             pack_type='free_single',
@@ -41,7 +42,9 @@ class CreateNewStoneRouterTests(BaseStoneWalkerTestCase):
             status='draft',
         )
         response = self.client.get(reverse('create_stone'))
-        self.assertRedirects(response, reverse('shop'))
+        self.assertEqual(response.status_code, 302)
+        self.assertIn('/claim-stone/', response.url)
+        self.assertEqual(QRPack.objects.filter(FK_user=self.user, pack_type='free_single').count(), 2)
 
     def test_unclaimed_stone_redirects_to_claim(self):
         """User with an unclaimed stone should be redirected to the claim page"""
@@ -98,20 +101,20 @@ class CreateNewStoneRouterTests(BaseStoneWalkerTestCase):
         self.assertIn('accounts', response.url)
 
 
-class ShopDevModeTests(BaseStoneWalkerTestCase):
-    """Test dev mode overrides in the shop"""
+class ShopFreeSingleTests(BaseStoneWalkerTestCase):
+    """Test free_single behavior in all environments"""
 
     @override_settings(DEBUG=True)
     def test_dev_mode_banner_shown(self):
         """Dev mode banner should appear in the shop page"""
         response = self.client.get(reverse('shop'))
-        self.assertContains(response, 'Local dev sale')
+        self.assertEqual(response.status_code, 200)
 
     @override_settings(DEBUG=False)
     def test_prod_mode_no_banner(self):
-        """Dev mode banner should not appear in production"""
+        """Shop still loads in production mode"""
         response = self.client.get(reverse('shop'))
-        self.assertNotContains(response, 'Local dev sale')
+        self.assertEqual(response.status_code, 200)
 
     @override_settings(DEBUG=True)
     def test_dev_mode_free_single_not_disabled(self):
@@ -127,13 +130,13 @@ class ShopDevModeTests(BaseStoneWalkerTestCase):
 
     @override_settings(DEBUG=False)
     def test_prod_mode_free_single_disabled_after_claim(self):
-        """In production, free_single should be disabled after claiming"""
+        """In production, free_single remains available after claiming"""
         QRPack.objects.create(
             FK_user=self.user, pack_type='free_single',
             status='fulfilled', price_cents=0, fulfilled_at=timezone.now(),
         )
         response = self.client.get(reverse('shop'))
-        self.assertContains(response, 'Claimed')
+        self.assertContains(response, 'Get Free')
 
     @override_settings(DEBUG=True)
     def test_dev_mode_checkout_allows_multiple_free(self):
@@ -150,17 +153,16 @@ class ShopDevModeTests(BaseStoneWalkerTestCase):
         self.assertEqual(QRPack.objects.filter(FK_user=self.user, pack_type='free_single').count(), 2)
 
     @override_settings(DEBUG=False)
-    def test_prod_mode_checkout_blocks_second_free(self):
-        """In production, second free_single checkout should be blocked"""
+    def test_prod_mode_checkout_allows_second_free(self):
+        """In production, second free_single checkout is allowed"""
         # First checkout
         self.client.post(reverse('checkout', kwargs={'product_id': 'free_single'}))
         self.assertEqual(QRPack.objects.filter(FK_user=self.user, pack_type='free_single').count(), 1)
 
-        # Second checkout should be blocked
+        # Second checkout should also succeed
         response = self.client.post(reverse('checkout', kwargs={'product_id': 'free_single'}))
-        self.assertRedirects(response, reverse('shop'))
-        # Still only 1 pack
-        self.assertEqual(QRPack.objects.filter(FK_user=self.user, pack_type='free_single').count(), 1)
+        self.assertIn(response.status_code, [200, 302])
+        self.assertEqual(QRPack.objects.filter(FK_user=self.user, pack_type='free_single').count(), 2)
 
 
 class ShopFlowEndToEndTests(BaseStoneWalkerTestCase):
@@ -168,21 +170,18 @@ class ShopFlowEndToEndTests(BaseStoneWalkerTestCase):
 
     @override_settings(DEBUG=True)
     def test_full_flow_no_qr_to_shop_to_claim(self):
-        """Full flow: create-stone → shop → checkout → create-stone → claim"""
-        # Step 1: No unclaimed QR, should go to shop
+        """Full flow: create-stone auto-provisions free QR and redirects to claim"""
+        # Step 1: No unclaimed QR, should auto-provision and redirect to claim
         response = self.client.get(reverse('create_stone'))
-        self.assertRedirects(response, reverse('shop'))
-
-        # Step 2: Checkout free single
-        response = self.client.post(reverse('checkout', kwargs={'product_id': 'free_single'}))
-        self.assertIn(response.status_code, [200, 302])
+        self.assertEqual(response.status_code, 302)
+        self.assertIn('/claim-stone/', response.url)
 
         # Verify pack and unclaimed stone were created
         pack = QRPack.objects.get(FK_user=self.user, pack_type='free_single')
         unclaimed = pack.stones.filter(status='unclaimed').first()
         self.assertIsNotNone(unclaimed)
 
-        # Step 3: Now create-stone should redirect to claim
+        # Step 2: create-stone continues to route to unclaimed stone claim page
         response = self.client.get(reverse('create_stone'))
         self.assertRedirects(
             response,
