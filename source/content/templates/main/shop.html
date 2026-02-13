@@ -2,190 +2,104 @@
 {% load static %}
 {% load i18n %}
 
+{% block extra_css %}
+<style>
+.shop-shell { max-width: 1100px; margin: 2rem auto; padding: 0 1rem; }
+.shop-heading { display: flex; justify-content: space-between; align-items: end; gap: 1rem; border-bottom: 1px solid rgba(0,0,0,.2); padding-bottom: .8rem; margin-bottom: 1.5rem; }
+.shop-layout { display: grid; grid-template-columns: 230px 1fr; gap: 1.2rem; }
+.shop-filters { border: 1px solid #dedede; border-radius: 12px; background: #fff; padding: 1rem; height: fit-content; }
+.shop-filter-group { margin-bottom: 1rem; }
+.shop-filter-chip { display: inline-block; font-size: .78rem; padding: .25rem .55rem; border: 1px solid #bbb; border-radius: 999px; margin: .2rem .2rem 0 0; color: #444; text-decoration: none; }
+.shop-filter-chip.active { background: #111; color: #fff; border-color: #111; }
+.shop-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 1rem; }
+.shop-item { border: 1px solid #e5e5e5; border-radius: 12px; padding: .7rem; background: #fff; }
+.shop-item.is-unavailable { opacity: .58; }
+.shop-image { aspect-ratio: 4/5; border-radius: 10px; margin-bottom: .6rem; position: relative; overflow: hidden; }
+.swatch-neutral { background: #ececec; }
+.swatch-night { background: #1f2937; }
+.swatch-stone { background: #a8a29e; }
+.swatch-sand { background: #ffedd5; }
+.shop-soldout { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: .67rem; text-transform: uppercase; letter-spacing: .1em; }
+.shop-buy-form { margin-top: .55rem; }
+@media (max-width: 840px) { .shop-layout { grid-template-columns: 1fr; } }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="avant-section avant-bg-left flex-center min-h-60vh">
-  <div class="avant-card max-w-800 m-2-auto">
-    <div class="avant-card-title mb-0-5 fs-2-1 text-center">{% trans 'StoneWalker Shop' %}</div>
-    <p class="text-center text-muted mb-2">{% trans 'Everything starts with a QR code' %}</p>
-
-    {% if dev_mode %}
-    <div class="dev-mode-banner text-center mb-2 p-1 border-radius-8 shop-dev-banner">
-      {% trans 'Local dev sale, single QR codes are free today' %}
+<div class="shop-shell">
+  <div class="shop-heading">
+    <div>
+      <h2 class="mb-0 text-uppercase fs-1-3">{% trans 'All Goods' %}</h2>
+      <p class="mb-0 text-muted">{% trans 'Curated essentials for presence.' %}</p>
     </div>
-    {% endif %}
+    <span class="text-muted fs-0-9">{{ product_count|stringformat:"02d" }} / {{ total_product_count|stringformat:"02d" }} {% trans 'items' %}</span>
+  </div>
 
-    {% if messages %}
-      {% for message in messages %}
-        <div class="text-center mb-1 p-1 border-radius-8 {% if message.tags == 'error' %}bg-error-light text-error{% elif message.tags == 'success' %}bg-success-light text-success{% else %}bg-info-light text-info{% endif %}">
-          {{ message }}
-        </div>
-      {% endfor %}
-    {% endif %}
-
-    <!-- How It Works - 3-step visual flow -->
-    <div class="how-it-works mb-2">
-      <h3 class="how-it-works-title text-center mb-1-2">{% trans 'How It Works' %}</h3>
-      <div class="how-it-works-steps">
-        <div class="how-step">
-          <div class="how-step-number">1</div>
-          <div class="how-step-icon">
-            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-              <rect x="3" y="3" width="18" height="18" rx="2"/>
-              <path d="M7 7h3v3H7zM14 7h3v3h-3zM7 14h3v3H7zM14 14h3v3h-3z"/>
-            </svg>
-          </div>
-          <h4 class="how-step-label">{% trans 'Get a QR Code' %}</h4>
-          <p class="how-step-desc">{% trans 'Grab a free QR code or a pack. Each code is unique and links to your stone.' %}</p>
-        </div>
-        <div class="how-step-arrow">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#bbb" stroke-width="2">
-            <path d="M5 12h14M13 5l7 7-7 7"/>
-          </svg>
-        </div>
-        <div class="how-step">
-          <div class="how-step-number">2</div>
-          <div class="how-step-icon">
-            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-              <circle cx="12" cy="14" r="7"/>
-              <path d="M12 7V3M8 5l4-2 4 2"/>
-              <path d="M9.5 13.5c0 0 1 1.5 2.5 1.5s2.5-1.5 2.5-1.5"/>
-            </svg>
-          </div>
-          <h4 class="how-step-label">{% trans 'Paint & Hide' %}</h4>
-          <p class="how-step-desc">{% trans 'Print the QR code, attach it to your painted stone, and hide it somewhere fun.' %}</p>
-        </div>
-        <div class="how-step-arrow">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#bbb" stroke-width="2">
-            <path d="M5 12h14M13 5l7 7-7 7"/>
-          </svg>
-        </div>
-        <div class="how-step">
-          <div class="how-step-number">3</div>
-          <div class="how-step-icon">
-            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-              <circle cx="12" cy="12" r="9"/>
-              <path d="M2 12h2M20 12h2M12 2v2M12 20v2"/>
-              <path d="M8 12c0-2 1.8-4 4-4s4 2 4 4"/>
-              <circle cx="12" cy="12" r="1.5" fill="currentColor"/>
-            </svg>
-          </div>
-          <h4 class="how-step-label">{% trans 'Watch It Travel' %}</h4>
-          <p class="how-step-desc">{% trans 'When someone finds and scans your stone, you see its journey on the map.' %}</p>
-        </div>
+  {% if messages %}
+    {% for message in messages %}
+      <div class="mb-1 p-1 border-radius-8 {% if message.tags == 'error' %}bg-error-light text-error{% elif message.tags == 'success' %}bg-success-light text-success{% else %}bg-info-light text-info{% endif %}">
+        {{ message }}
       </div>
-    </div>
+    {% endfor %}
+  {% endif %}
 
-    <!-- Product Cards -->
-    <h3 class="text-center mb-1 fs-1-3">{% trans 'Choose Your Pack' %}</h3>
-    <div class="shop-products">
-      {% for product in products %}
-      <div class="shop-product-card {% if product.is_free %}shop-product-featured{% endif %}">
-        {% if product.is_free %}
-        <div class="shop-product-badge">{% trans 'Start Here' %}</div>
-        {% endif %}
-        <div class="shop-product-content">
-          <div class="shop-product-icon">
-            {% if product.pack_size == 1 %}
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="3" y="3" width="18" height="18" rx="2"/>
-              <path d="M7 7h3v3H7zM14 7h3v3h-3zM7 14h3v3H7zM14 14h3v3h-3z"/>
-            </svg>
-            {% else %}
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="2" y="2" width="8" height="8" rx="1"/>
-              <rect x="14" y="2" width="8" height="8" rx="1"/>
-              <rect x="2" y="14" width="8" height="8" rx="1"/>
-              <rect x="14" y="14" width="8" height="8" rx="1"/>
-            </svg>
-            {% endif %}
-          </div>
-
-          <div class="shop-product-info">
-            <h3 class="shop-product-name">{{ product.name }}</h3>
-            <p class="shop-product-description">{{ product.description }}</p>
-            {% if product.pack_size > 1 %}
-            <p class="shop-product-pack-info">{% blocktrans with size=product.pack_size %}{{ size }} QR codes included{% endblocktrans %}</p>
-            {% endif %}
-            {% if product.is_free %}
-            <p class="shop-product-hint">{% trans 'No payment needed. Just click and your QR downloads instantly.' %}</p>
-            {% elif product.pack_size > 1 %}
-            <p class="shop-product-hint">{% trans 'You will receive a printable PDF with all QR codes ready to cut out.' %}</p>
-            {% endif %}
-          </div>
-
-          <div class="shop-product-action">
-            <span class="shop-product-price {% if product.is_free %}text-success{% else %}text-primary{% endif %}">
-              {{ product.price_display }}
-            </span>
-            {% if product.pack_size > 1 and not product.is_free %}
-            <span class="shop-product-per-unit">
-              {% blocktrans with per_unit=product.price_per_unit %}{{ per_unit }} each{% endblocktrans %}
-            </span>
-            {% endif %}
-
-            {% if product.disabled %}
-              <button class="avant-btn avant-btn-disabled" disabled title="{{ product.disabled_reason }}">
-                {% trans 'Claimed' %}
-              </button>
-            {% elif not user.is_authenticated %}
-              <a href="{% url 'accounts:log_in' %}?next={{ request.path }}" class="avant-btn">
-                {% trans 'Log in' %}
-              </a>
-            {% else %}
-              <form method="post" action="{% url 'checkout' product.id %}">
-                {% csrf_token %}
-                <button type="submit" class="avant-btn {% if product.is_free %}avant-btn-success{% endif %}">
-                  {% if product.is_free %}{% trans 'Get Free QR' %}{% else %}{% trans 'Buy Now' %}{% endif %}
-                </button>
-              </form>
-            {% endif %}
-          </div>
-        </div>
+  <div class="shop-layout">
+    <aside class="shop-filters">
+      <div class="shop-filter-group">
+        <div class="fw-bold mb-0-5">{% trans 'Category' %}</div>
+        <a class="shop-filter-chip {% if not selected_category %}active{% endif %}" href="?{% if selected_type %}type={{ selected_type|urlencode }}{% endif %}">{% trans 'All' %}</a>
+        {% for category in filter_categories %}
+          <a class="shop-filter-chip {% if selected_category == category %}active{% endif %}" href="?category={{ category|urlencode }}{% if selected_type %}&type={{ selected_type|urlencode }}{% endif %}">{{ category }}</a>
+        {% endfor %}
       </div>
-      {% empty %}
-      <p class="text-muted text-center">{% trans 'No products available at this time.' %}</p>
-      {% endfor %}
-    </div>
+      <div class="shop-filter-group">
+        <div class="fw-bold mb-0-5">{% trans 'Type' %}</div>
+        <a class="shop-filter-chip {% if not selected_type %}active{% endif %}" href="?{% if selected_category %}category={{ selected_category|urlencode }}{% endif %}">{% trans 'All' %}</a>
+        {% for item_type in filter_types %}
+          <a class="shop-filter-chip {% if selected_type == item_type %}active{% endif %}" href="?{% if selected_category %}category={{ selected_category|urlencode }}&{% endif %}type={{ item_type|urlencode }}">{{ item_type }}</a>
+        {% endfor %}
+      </div>
+      <a href="{% url 'shop' %}" class="shop-filter-chip">{% trans 'Clear filters' %}</a>
+    </aside>
 
-    <!-- FAQ / Additional Info -->
-    <div class="shop-faq mt-2">
-      <details class="shop-faq-item">
-        <summary>{% trans 'What do I get when I buy a QR code?' %}</summary>
-        <p>{% trans 'You get a unique, printable QR code image. Print it out, seal it with clear tape or varnish, and attach it to any painted stone. When someone finds and scans it, the stone appears on our world map and you get notified.' %}</p>
-      </details>
-      <details class="shop-faq-item">
-        <summary>{% trans 'What is the 3-Pack for?' %}</summary>
-        <p>{% trans 'The Starter 3-Pack is great for painting with friends, creating a themed stone trail, or giving stones as gifts. Each QR code is unique and links to its own stone page.' %}</p>
-      </details>
-      <details class="shop-faq-item">
-        <summary>{% trans 'What is the 10-Pack for?' %}</summary>
-        <p>{% trans 'The 10-Pack is perfect for classrooms, scout groups, birthday parties, or any group activity. You receive a single PDF page with 10 QR codes ready to cut out and distribute.' %}</p>
-      </details>
-      <details class="shop-faq-item">
-        <summary>{% trans 'What is the Classroom 30-Pack for?' %}</summary>
-        <p>{% trans 'The 30-Pack is designed for teachers, scout leaders, and event organizers. You get 30 QR codes on printable PDF sheets, ready to cut out and distribute to a whole class or group.' %}</p>
-      </details>
-      <details class="shop-faq-item">
-        <summary>{% trans 'How do I attach the QR code to my stone?' %}</summary>
-        <p>{% trans 'Print the QR code, cut it out, and glue it to the back of your painted stone. For outdoor durability, seal it with clear packing tape, spray varnish, or a coat of Mod Podge. This protects it from rain and sun.' %}</p>
-      </details>
-      <details class="shop-faq-item">
-        <summary>{% trans 'What happens when someone scans my stone?' %}</summary>
-        <p>{% trans 'They see your stone\'s page with its photo, name, and journey history. They can log the find and add their location, which updates the stone\'s travel map. You get notified that your stone was found.' %}</p>
-      </details>
-      <details class="shop-faq-item">
-        <summary>{% trans 'Can I buy QR codes as a gift?' %}</summary>
-        <p>{% trans 'Yes! QR codes are not tied to your account until someone claims them. You can print them out and give them to anyone to use with their own painted stones.' %}</p>
-      </details>
-      <details class="shop-faq-item">
-        <summary>{% trans 'What if my stone gets lost?' %}</summary>
-        <p>{% trans 'That is part of the adventure! Your stone\'s page stays active forever. Even if months pass, someone might find and scan it. Some of the best stone stories come from long waits.' %}</p>
-      </details>
-      <details class="shop-faq-item">
-        <summary>{% trans 'Can I re-download my QR codes later?' %}</summary>
-        <p>{% trans 'Yes! All your purchases appear in the "Your Purchases" bar at the bottom of this page. You can re-download them anytime.' %}</p>
-      </details>
-    </div>
+    <section>
+      {% if products %}
+      <div class="shop-grid">
+        {% for product in products %}
+          <article class="shop-item {% if not product.available %}is-unavailable{% endif %}">
+            <div class="shop-image {{ product.imageColor|default:'swatch-neutral' }}">
+              {% if not product.available %}
+                <div class="shop-soldout"><span class="bg-white p-0-4">{% trans 'Sold Out' %}</span></div>
+              {% endif %}
+            </div>
+            <div class="d-flex justify-content-between align-items-start">
+              <h3 class="mb-0 fs-1 text-uppercase">{{ product.title|default:product.name }}</h3>
+              <span class="fs-0-9">{{ product.price_display }}</span>
+            </div>
+            <p class="mb-0 fs-0-85 text-muted text-uppercase">{{ product.type|default:'Digital' }}</p>
+            <p class="mb-0 mt-0-5 fs-0-85">{{ product.description }}</p>
+
+            <div class="shop-buy-form">
+              {% if product.disabled %}
+                <button class="avant-btn avant-btn-disabled" disabled title="{{ product.disabled_reason }}">{% trans 'Claimed' %}</button>
+              {% elif not user.is_authenticated %}
+                <a href="{% url 'accounts:log_in' %}?next={{ request.path }}" class="avant-btn">{% trans 'Log in' %}</a>
+              {% elif product.available %}
+                <form method="post" action="{% url 'checkout' product.id %}">
+                  {% csrf_token %}
+                  <button type="submit" class="avant-btn {% if product.is_free %}avant-btn-success{% endif %}">{% if product.is_free %}{% trans 'Get Free QR' %}{% else %}{% trans 'Buy Now' %}{% endif %}</button>
+                </form>
+              {% else %}
+                <button class="avant-btn avant-btn-disabled" disabled>{% trans 'Unavailable' %}</button>
+              {% endif %}
+            </div>
+          </article>
+        {% endfor %}
+      </div>
+      {% else %}
+      <p class="text-center border border-dashed p-2 text-muted">{% trans 'No goods match those filters. Adjust your focus.' %}</p>
+      {% endif %}
+    </section>
   </div>
 </div>
 
@@ -255,5 +169,4 @@ function togglePurchases() {
 }
 </script>
 {% endif %}
-
 {% endblock %}
