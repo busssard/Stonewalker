@@ -16,22 +16,31 @@ const BREAKPOINTS = {
   mobile: 480,
   mobileXs: 360
 };
+// Expose globally for debug widget in page.html
+window.BREAKPOINTS = BREAKPOINTS;
 // Set as CSS custom properties for reference/debugging
 Object.entries(BREAKPOINTS).forEach(([key, value]) => {
   document.documentElement.style.setProperty(`--breakpoint-${key.toLowerCase()}`, value + 'px');
 });
 
 function isMobile() {
-  return window.innerWidth <= BREAKPOINTS.desktop;
+  return window.innerWidth <= BREAKPOINTS.tablet;
 }
 
-// Burger menu open/close logic with overlay and accessibility (checkbox-driven, no double toggle)
+// Burger menu: only used on mobile (<=800px). On desktop/tablet, nav is always visible via CSS.
 window.addEventListener('DOMContentLoaded', function() {
   var menuToggle = document.getElementById('menu-toggle');
   var burgerNav = document.getElementById('burger-nav');
   var burgerOverlay = document.getElementById('burger-overlay');
   var burgerLabel = document.getElementById('burger-label');
+
+  function closeBurger() {
+    if (menuToggle) menuToggle.checked = false;
+    updateAria();
+  }
+
   function updateAria() {
+    if (!menuToggle || !burgerLabel) return;
     var expanded = menuToggle.checked;
     burgerLabel.setAttribute('aria-expanded', expanded ? 'true' : 'false');
     if (burgerNav) burgerNav.setAttribute('aria-hidden', expanded ? 'false' : 'true');
@@ -40,30 +49,40 @@ window.addEventListener('DOMContentLoaded', function() {
       if (firstLink) firstLink.focus();
     }
   }
-  if (menuToggle && burgerNav && burgerOverlay) {
+
+  if (menuToggle && burgerNav && burgerOverlay && burgerLabel) {
     burgerLabel.setAttribute('aria-controls', 'burger-nav');
     burgerLabel.setAttribute('aria-expanded', 'false');
     burgerLabel.setAttribute('role', 'button');
     burgerNav.setAttribute('aria-hidden', 'true');
-    burgerOverlay.addEventListener('click', function() {
-      menuToggle.checked = false;
-      updateAria();
-    });
+
+    // Overlay click closes burger
+    burgerOverlay.addEventListener('click', closeBurger);
+
+    // Escape key closes burger
     document.addEventListener('keydown', function(e) {
       if (e.key === 'Escape' && menuToggle.checked) {
-        menuToggle.checked = false;
-        updateAria();
+        closeBurger();
       }
     });
+
+    // Clicking a link inside burger closes it
     burgerNav.querySelectorAll('a').forEach(function(link) {
-      link.addEventListener('click', function() {
-        menuToggle.checked = false;
-        updateAria();
-      });
+      link.addEventListener('click', closeBurger);
     });
+
+    // Checkbox change updates aria
     menuToggle.addEventListener('change', updateAria);
+
+    // If window resizes above mobile breakpoint, close burger
+    window.addEventListener('resize', function() {
+      if (!isMobile() && menuToggle.checked) {
+        closeBurger();
+      }
+    });
   }
 });
+
 // Profile modal logic
 function openProfileModal() {
   const overlay = document.getElementById('profile-modal-overlay');
@@ -72,10 +91,8 @@ function openProfileModal() {
   body.innerHTML = '<div class="profile-modal-loading">Loading...</div>';
   fetch('/accounts/change/profile/?modal=1').then(r => r.text()).then(html => {
     body.innerHTML = html;
-    // Re-attach close/cancel logic if needed
     const closeBtn = document.getElementById('profile-modal-close');
     closeBtn.onclick = closeProfileModal;
-    // Prevent form submission from navigating away
     const form = body.querySelector('form');
     if (form) {
       form.onsubmit = function(e) {
@@ -106,8 +123,7 @@ document.addEventListener('DOMContentLoaded', function() {
       openProfileModal();
     });
   });
-  // Also attach to profile picture in nav if present
-  const navPic = document.querySelector('nav img[alt="Profile"]');
+  var navPic = document.querySelector('nav img[alt="Profile"]');
   if (navPic && navPic.parentElement.tagName === 'A') {
     navPic.parentElement.addEventListener('click', function(e) {
       e.preventDefault();
@@ -115,128 +131,3 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 });
-window.addEventListener('DOMContentLoaded', function() {
-  var menuToggle = document.getElementById('menu-toggle');
-  var mainNav = document.getElementById('main-nav');
-  var burgerLabel = document.getElementById('burger-label');
-  var profileMenuBtn = document.getElementById('profile-menu-btn');
-  var profileMainNav = document.getElementById('profile-main-nav');
-  var burgerOverlay = document.getElementById('burger-overlay');
-    var profileMenuContainer = document.getElementById('profile-menu-container');
-    var burgerMenuContainer = document.getElementById('burger-menu-container');
-    var debugFrame1 = document.getElementById('debug-frame1');
-    var debugFrame2 = document.getElementById('debug-frame2');
-
-
-  function closeMenus() {
-    if (menuToggle) menuToggle.checked = false;
-    if (mainNav) mainNav.classList.remove('header-main-nav--slide-in');
-    if (profileMainNav) profileMainNav.classList.remove('header-profile-main-nav--slide-in');
-    if (burgerOverlay) burgerOverlay.style.display = 'none';
-  }
-
-  function openBurgerMenu() {
-    closeMenus();
-    if (mainNav) mainNav.classList.add('header-main-nav--slide-in');
-    if (burgerOverlay) burgerOverlay.style.display = 'block';
-    if (menuToggle) menuToggle.checked = true;
-  }
-  function openProfileMenu() {
-    closeMenus();
-    if (profileMainNav) profileMainNav.classList.add('header-profile-main-nav--slide-in');
-    if (burgerOverlay) burgerOverlay.style.display = 'block';
-  }
-
-  // Desktop: use container hover/focus to open menus
-  if (burgerMenuContainer && mainNav) {
-    burgerMenuContainer.addEventListener('click', function() {
-      if (!isMobile()) openBurgerMenu();
-    });
-  }
-  if (profileMenuContainer && profileMainNav) {
-    profileMenuContainer.addEventListener('click', function() {
-      if (!isMobile()) openProfileMenu();
-    });
-  }
-
-  // Mobile: click to open menus (unchanged)
-  if (profileMenuBtn && profileMainNav) {
-    profileMenuBtn.addEventListener('click', function(e) {
-      if (isMobile()) {
-        e.preventDefault();
-        if (profileMainNav.classList.contains('header-profile-main-nav--slide-in')) {
-          closeMenus();
-        } else {
-          closeMenus();
-          openProfileMenu();
-        }
-      }
-    });
-  }
-  if (menuToggle && mainNav) {
-    menuToggle.addEventListener('change', function() {
-      if (isMobile()) {
-        if (menuToggle.checked) {
-          closeMenus();
-          openBurgerMenu();
-        } else {
-          closeMenus();
-        }
-      }
-    });
-    window.addEventListener('resize', function() {
-      if (isMobile()) closeMenus();
-    });
-  }
-
-  // Overlay always closes both menus
-  if (burgerOverlay) {
-    burgerOverlay.addEventListener('click', function() {
-      closeMenus();
-    });
-  }
-
-  // Escape key closes both menus
-  document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') {
-      closeMenus();
-    }
-  });
-
-  // Clicking outside menus closes them (mobile)
-  document.addEventListener('click', function(e) {
-    if (isMobile()) {
-      if (profileMainNav && !profileMainNav.contains(e.target) && e.target !== profileMenuBtn && !profileMenuBtn.contains(e.target)) {
-        profileMainNav.classList.remove('header-profile-main-nav--slide-in');
-        if (burgerOverlay) burgerOverlay.style.display = 'none';
-      }
-      if (mainNav && !mainNav.contains(e.target) && e.target !== menuToggle && e.target !== burgerLabel) {
-        if (menuToggle) menuToggle.checked = false;
-        mainNav.classList.remove('header-main-nav--slide-in');
-        if (burgerOverlay) burgerOverlay.style.display = 'none';
-      }
-      if (
-        (!mainNav || !mainNav.classList.contains('header-main-nav--slide-in')) &&
-        (!profileMainNav || !profileMainNav.classList.contains('header-profile-main-nav--slide-in'))
-      ) {
-        if (burgerOverlay) burgerOverlay.style.display = 'none';
-      }
-    }
-  });
-
-  // Menu links close menus
-  if (mainNav) {
-    mainNav.querySelectorAll('a').forEach(function(link) {
-      link.addEventListener('click', function() {
-        closeMenus();
-      });
-    });
-  }
-  if (profileMainNav) {
-    profileMainNav.querySelectorAll('a').forEach(function(link) {
-      link.addEventListener('click', function() {
-        closeMenus();
-      });
-    });
-  }
-}); 

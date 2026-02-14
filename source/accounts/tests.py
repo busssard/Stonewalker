@@ -119,26 +119,28 @@ class NavigationUITests(TestCase):
     def test_nav_links_unauthenticated(self):
         response = self.client.get(reverse('index'))
         self.assertContains(response, 'About')
-        self.assertContains(response, 'Shop')
+        # Shop is conditionally shown based on user count threshold (shop_visible context)
         self.assertContains(response, 'Forum')
         self.assertContains(response, 'Change language')
-        # Log in and Sign up are only shown in burger menu or when not authenticated in main nav
+        # Log in and Sign up are shown in both inline nav and burger menu
         self.assertContains(response, 'Log in')
         self.assertContains(response, 'Sign up')
         # Header logo and walker icon
         self.assertContains(response, 'class="header-logo-img"')
         self.assertContains(response, 'class="avant-header header-logo-text"')
-        # Burger icon
-        self.assertContains(response, 'class="avant-btn header-burger-label"') 
+        # Burger icon (hidden on desktop via CSS, but present in HTML)
+        self.assertContains(response, 'class="avant-btn header-burger-label"')
+        # Inline nav is always present in HTML (CSS controls visibility per breakpoint)
+        self.assertContains(response, 'class="header-main-nav"')
 
     def test_nav_links_authenticated(self):
         self.client.post(reverse('accounts:log_in'), {'email': 'nav@example.com', 'password': 'TestPassword123'})
         response = self.client.get(reverse('index'))
         self.assertContains(response, 'About')
-        self.assertContains(response, 'Shop')
+        # Shop is conditionally shown based on user count threshold (shop_visible context)
         self.assertContains(response, 'Forum')
         self.assertContains(response, 'Change language')
-        # My Stones, Edit Profile, and Log out are only shown in burger menu for authenticated users
+        # My Stones, Edit Profile, and Log out are shown in both inline and burger nav
         self.assertContains(response, 'My Stones')
         self.assertContains(response, 'Edit Profile')
         self.assertContains(response, 'Log out')
@@ -147,8 +149,10 @@ class NavigationUITests(TestCase):
         self.assertContains(response, 'class="avant-header header-logo-text"')
         # Profile image
         self.assertContains(response, 'class="header-profile-img"')
-        # Burger icon
-        self.assertContains(response, 'class="avant-btn header-burger-label"') 
+        # Burger icon (hidden on desktop via CSS, but present in HTML)
+        self.assertContains(response, 'class="avant-btn header-burger-label"')
+        # Inline nav present
+        self.assertContains(response, 'class="header-main-nav"')
 
 class UsernameLowercaseTests(TestCase):
     def test_signup_lowercases_username(self):
