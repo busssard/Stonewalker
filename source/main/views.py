@@ -43,6 +43,13 @@ class ChangeLanguageView(TemplateView):
         from urllib.parse import urlparse
         parsed = urlparse(referer)
         redirect_to = parsed.path or '/'
+
+        # Strip the language prefix from the redirect path so Django's set_language
+        # can redirect to the correct URL with the new language prefix
+        import re
+        # Match language codes like /en/, /fr/, /es/, etc. at the start of the path
+        redirect_to = re.sub(r'^/(en|ru|zh-hans|fr|es|de|it)/', '/', redirect_to)
+
         context['redirect_to'] = redirect_to
         return context
 
@@ -99,6 +106,7 @@ class StoneWalkerStartPageView(TemplateView):
                     'image': stone.image.url if stone.image else '',
                     'color': stone.color,
                     'shape': stone.shape,
+                    'stone_type': stone.stone_type,
                     'latest_latitude': latest_move.latitude,
                     'latest_longitude': latest_move.longitude,
                     'latest_image': latest_move.image.url if latest_move.image else '',
@@ -356,6 +364,26 @@ class StoneQRCodeView(View):
                 return response
             else:
                 messages.error(request, 'Failed to generate QR code.')
+                return redirect('stonewalker_start')
+        except Stone.DoesNotExist:
+            messages.error(request, 'Stone not found or you do not have permission to access it.')
+            return redirect('stonewalker_start')
+
+
+class StoneCertificateView(View):
+    """Download a creation certificate for a stone"""
+    @method_decorator(login_required)
+    def get(self, request, pk):
+        try:
+            stone = Stone.objects.get(PK_stone=pk, FK_user=request.user)
+            from .certificate_service import CertificateService
+            pdf_bytes = CertificateService.generate_certificate(stone)
+            if pdf_bytes:
+                response = HttpResponse(pdf_bytes, content_type='application/pdf')
+                response['Content-Disposition'] = f'attachment; filename="{stone.PK_stone}_certificate.pdf"'
+                return response
+            else:
+                messages.error(request, 'Failed to generate certificate.')
                 return redirect('stonewalker_start')
         except Stone.DoesNotExist:
             messages.error(request, 'Stone not found or you do not have permission to access it.')
