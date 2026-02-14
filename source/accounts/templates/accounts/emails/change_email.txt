@@ -1,5 +1,16 @@
 {% load i18n %}
 
+========================================
+STONEWALKER
+========================================
+
+{% trans 'Confirm Email Change' %}
+
 {% trans 'To change your current email address, please follow the link:' %}
 
 {{ uri }}
+
+----------------------------------------
+StoneWalker
+{% trans 'Track painted stones around the world' %}
+========================================

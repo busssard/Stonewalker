@@ -1,5 +1,18 @@
 {% load i18n %}
 
+========================================
+STONEWALKER
+========================================
+
+{% trans 'Your Username' %}
+
 {% trans 'Your username is:' %}
 
 {{ username }}
+
+{% trans 'If you did not request this information, you can safely ignore this email.' %}
+
+----------------------------------------
+StoneWalker
+{% trans 'Track painted stones around the world' %}
+========================================
