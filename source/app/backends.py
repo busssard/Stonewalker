@@ -7,6 +7,7 @@ import urllib.request
 import urllib.error
 from django.core.mail.backends.base import BaseEmailBackend
 from django.conf import settings
+from django.utils.encoding import force_str
 
 logger = logging.getLogger(__name__)
 
@@ -44,18 +45,20 @@ class MailerooEmailBackend(BaseEmailBackend):
         num_sent = 0
         for message in email_messages:
             try:
-                from_email = message.from_email
-                to_emails = message.to
-                subject = message.subject
+                # force_str resolves Django's lazy translation proxies
+                # so json.dumps doesn't choke on them
+                from_email = force_str(message.from_email)
+                to_emails = [force_str(addr) for addr in message.to]
+                subject = force_str(message.subject)
 
                 # Get text and HTML content
-                text_content = getattr(message, 'body', None)
+                text_content = force_str(message.body) if message.body else None
                 html_content = None
 
                 if hasattr(message, 'alternatives') and message.alternatives:
                     for content, mimetype in message.alternatives:
                         if mimetype == 'text/html':
-                            html_content = content
+                            html_content = force_str(content)
                             break
 
                 # If only text and no HTML, use text for HTML as well
@@ -66,7 +69,7 @@ class MailerooEmailBackend(BaseEmailBackend):
                 payload = {
                     'from': {
                         'address': from_email,
-                        'display_name': getattr(settings, 'DEFAULT_FROM_EMAIL_NAME', 'StoneWalker'),
+                        'display_name': force_str(getattr(settings, 'DEFAULT_FROM_EMAIL_NAME', 'StoneWalker')),
                     },
                     'to': [
                         {'address': addr}
