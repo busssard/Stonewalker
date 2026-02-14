@@ -846,70 +846,21 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
 .header-spacer {
   flex: 1;
 }
+/* Desktop/Tablet: nav always visible inline. Mobile (<=800px): hidden, use burger. */
 .header-main-nav, .header-profile-main-nav {
   display: flex;
-  opacity: 0;
+  opacity: 1;
   flex-direction: row;
   align-items: center;
-  gap: 1.5rem;
+  gap: 1rem;
   margin-left: auto;
-  transform: translateX(40px);
-  transition: opacity 0.3s cubic-bezier(.4,2,.6,1), transform 0.3s cubic-bezier(.4,2,.6,1);
+  transform: none;
+  background: transparent;
 }
-.header-main-nav--slide-in, .header-profile-main-nav--slide-in {
-  opacity: 1;
-  pointer-events: auto;
-  display: flex !important;
-  transform: translateX(0);
-}
-@media (max-width: 1250px) { /* desktop */
+/* Mobile: hide inline nav, will use burger menu instead */
+@media (max-width: 800px) {
   .header-main-nav, .header-profile-main-nav {
-    position: fixed;
-    top: 0;
-    right: 0;
-    left: 0;
-    width: 100vw;
-    min-width: 0;
-    max-width: none;
-    border-radius: 0;
-    height: auto;
-    background: rgba(255, 255, 255, 0.98);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    box-shadow: 0 8px 32px rgba(0,0,0,0.18);
-    padding: 1.5rem 1rem;
-    z-index: 9999;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 1rem;
-    transform: translateY(-40px);
-    transition: opacity 0.3s cubic-bezier(.4,2,.6,1), transform 0.3s cubic-bezier(.4,2,.6,1);
-  }
-  .header-main-nav--slide-in, .header-profile-main-nav--slide-in {
-    transform: translateY(0);
-  }
-}
-/* Show main nav when burger is toggled (mobile) */
-@media (max-width: 1250px) { /* desktop */
-  .header-menu-toggle:checked ~ .header-main-nav {
-    display: flex !important;
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-/* Show main nav on header hover (desktop only) */
-@media (min-width: 1251px) { /* desktop +1*/
-  .header:hover .header-main-nav,
-  .header:hover .header-profile-main-nav {
-    display: flex !important;
-    opacity: 1;
-    transform: translateX(0);
-  }
-
-  /* Ensure nav buttons are visible on desktop */
-  .header-main-nav,
-  .header-profile-main-nav {
-    background: transparent;
+    display: none !important;
   }
 }
 .header-profile-link {
@@ -939,14 +890,20 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
   transform: scale(1.08);
   box-shadow: 0 6px 24px rgba(255, 107, 107, 0.35);
 }
+/* Burger label: hidden on desktop/tablet, shown on mobile */
 .header-burger-label {
-  display: flex !important;
+  display: none !important;
   align-items: center;
   cursor: pointer;
   padding: 0.5rem 1rem;
   margin: 0 0 0 1.5rem;
   z-index: 102;
   height: 100%;
+}
+@media (max-width: 800px) {
+  .header-burger-label {
+    display: flex !important;
+  }
 }
 .header-burger-label svg {
   min-height: 32px;
@@ -992,31 +949,13 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
   align-items: flex-start;
   gap: 1.2rem;
 }
-@media (max-width: 1250px) { /* desktop */
-  .header-main-nav {
-    display: none;
-  }
-  .header-burger-label {
-    display: flex !important;
-  }
-  .header-burger-nav {
-    transform: translateX(100%);
-  }
+/* Mobile burger menu toggle behavior */
+@media (max-width: 800px) {
   .header-menu-toggle:checked ~ .header-burger-overlay {
     display: block;
   }
   .header-menu-toggle:checked ~ .header-burger-nav {
     transform: translateX(0);
-  }
-}
-@media (min-width: 1001px) { /* desktop+1 */
-  .header-main-nav,
-  .header-profile-main-nav {
-    display: none;
-  }
-  .header-main-nav--slide-in,
-  .header-profile-main-nav--slide-in {
-    display: flex !important;
   }
 }
 .header-nav-btn {
@@ -1058,10 +997,25 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
   background: var(--gradient-primary);
   color: #fff !important;
 }
-.header-main-nav, .header-nav-btn, .header-burger-label {
+.header-main-nav, .header-nav-btn {
   display: flex;
   align-items: center;
   height: 64px;
+}
+/* Tablet: smaller nav buttons to fit inline */
+@media (max-width: 1000px) and (min-width: 801px) {
+  .header-nav-btn {
+    height: 36px;
+    padding: 0 0.8rem;
+    font-size: 0.85rem;
+    gap: 0.4rem;
+  }
+  .header-main-nav, .header-profile-main-nav {
+    gap: 0.4rem;
+  }
+  .header-main-nav, .header-nav-btn {
+    height: 36px;
+  }
 }
 
 /* Profile Modal Styles */
@@ -1604,55 +1558,9 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
     min-height: 120px;
     margin-bottom: 0;
   }
-  /* FIXED: Ensure only one nav overlay is used */
+  /* Tablet: nav stays inline, just reduce gap */
   .header-main-nav, .header-profile-main-nav {
-    position: fixed;
-    top: 0;
-    right: 0;
-    left: 0;
-    width: 100vw;
-    min-width: 0;
-    max-width: none;
-    border-radius: 0;
-    height: auto;
-    background: rgba(255, 255, 255, 0.98);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    box-shadow: 0 8px 32px rgba(0,0,0,0.18);
-    padding: 1.5rem 1rem;
-    z-index: 9999;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 1rem;
-    transform: translateY(-100%);
-    transition: transform 0.3s cubic-bezier(.4,0,.2,1);
-  }
-  .header-main-nav--slide-in, .header-profile-main-nav--slide-in {
-    transform: translateY(0);
-  }
-  /* FIXED: Hide main nav by default, show only when burger is checked */
-  .header-main-nav {
-    display: none;
-  }
-  .header-burger-label {
-    display: flex !important;
-  }
-  /* FIXED: Remove duplicate burger-nav definitions - use main-nav instead */
-  .header-burger-nav {
-    display: none !important;
-  }
-  .header-menu-toggle:checked ~ .header-burger-overlay {
-    display: block;
-  }
-  .header-menu-toggle:checked ~ .header-main-nav {
-    display: flex !important;
-    transform: translateY(0);
-  }
-  /* FIXED: Remove duplicate overlay definitions */
-  .header-burger-overlay {
-    top: 0;
-    background: rgba(0, 0, 0, 0.4) !important;
-    z-index: 9998 !important;
+    gap: 0.5rem;
   }
   .header-profile-img {
     border: none;
@@ -1661,7 +1569,7 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
     margin: 0;
   }
 }
-@media (min-width: 1001px) { /* tablet+1 */
+@media (min-width: 801px) { /* above mobile */
   .header-logo, .header-logo-link {
     min-width: 220px;
   }
@@ -1851,53 +1759,9 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
 
 /* --- End Responsive Layout Improvements --- */
 
-/* --- Burger/Profile Menu Unified Styles --- */
-.header-burger-nav, .header-profile-dropdown {
-  position: absolute;
-  top: 100%;
-  right: 0;
-  min-width: 220px;
-  max-width: 320px;
-  background: var(--color-bg-card, #fff);
-  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
-  border-radius: 0 0 16px 16px;
-  z-index: 200;
-  flex-direction: column;
-  padding: 1.2rem 1.2rem 1.2rem 1.2rem;
-  opacity: 0;
-  transform: translateX(40px);
-  transition: opacity 0.3s cubic-bezier(.4,2,.6,1), transform 0.3s cubic-bezier(.4,2,.6,1);
-  display: none;
-  height: auto;
-}
-.header-burger-nav--slide-in, .header-profile-dropdown--slide-in {
-  display: flex !important;
-  opacity: 1;
-  transform: translateX(0);
-}
-@media (max-width: 1250px) { /* desktop */
-  .header-burger-nav, .header-profile-dropdown {
-    position: fixed;
-    top: 0;
-    right: 0;
-    left: 0;
-    width: 100vw;
-    min-width: 0;
-    border-radius: 0;
-    height: auto;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.18);
-    padding: 1.2rem 0.5rem 1.2rem 0.5rem;
-    z-index: 9999;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 1.2rem;
-    transform: translateY(-40px);
-    transition: opacity 0.3s cubic-bezier(.4,2,.6,1), transform 0.3s cubic-bezier(.4,2,.6,1);
-  }
-  .header-burger-nav--slide-in, .header-profile-dropdown--slide-in {
-    transform: translateY(0);
-  }
-}
+/* --- Burger/Profile Menu Unified Styles (mobile only) --- */
+/* Desktop/tablet: burger nav is hidden entirely via the #burger-menu-container display:none */
+/* These styles only matter on mobile when burger is visible */
 .header-burger-nav-list, .header-profile-dropdown {
   flex-direction: column;
   align-items: flex-start;
@@ -1942,49 +1806,19 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
 .header-burger-nav a:hover::before, .header-profile-dropdown a:hover::before {
   transform: scaleY(1);
 }
-@media (max-width: 1250px) { /* desktop */
-  .header-burger-nav, .header-profile-dropdown {
+/* Burger nav full-screen on mobile only */
+@media (max-width: 800px) {
+  .header-burger-nav {
     position: fixed;
-    top: 0;
+    top: var(--header-height);
     right: 0;
-    left: 0;
-    width: 100vw;
-    min-width: 0;
-    border-radius: 0;
-    top: 0;
-    right: 0;
-    height: 100vh;
-    padding: 2.5rem 1.2rem 1.2rem 1.2rem;
-  }
-}
-/* Hide burger menu if profile dropdown is open and vice versa (handled in JS) */
-@media (max-width: 1250px) { /* desktop */
-  .header-burger-nav, .header-profile-dropdown {
-    width: 100vw;
-    min-width: 0;
-    border-radius: 0;
-    top: 0;
-    right: 0;
-    height: 100vh;
-    padding: 2.5rem 1.2rem 1.2rem 1.2rem;
+    width: 280px;
+    height: calc(100vh - var(--header-height));
+    padding: 2rem 1.5rem;
   }
 }
 
-/* Remove dropdown display on hover/focus for profile menu */
-@media (min-width: 1001px) { /* desktop+1 */
-  /* .header-profile-dropdown {
-    display: none !important;
-  }
-  .header-profile-link:hover + .header-profile-dropdown,
-  .header-profile-link:focus + .header-profile-dropdown,
-  .header-profile-dropdown:hover,
-  .header-profile-dropdown:focus {
-    display: none !important;
-  } */
-}
-
-#profile-menu-container,
-#burger-menu-container {
+#profile-menu-container {
   display: inline-flex;
   align-items: center;
   position: relative;
@@ -1992,25 +1826,31 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
   flex-shrink: 0;
   z-index: 10;
 }
+/* Burger menu container: hidden on desktop/tablet, shown on mobile */
+#burger-menu-container {
+  display: none;
+  align-items: center;
+  position: relative;
+  width: auto;
+  flex-shrink: 0;
+  z-index: 10;
+}
+@media (max-width: 800px) {
+  #burger-menu-container {
+    display: inline-flex;
+  }
+  /* On mobile, hide profile-menu-container -- profile links are in burger */
+  #profile-menu-container {
+    display: none !important;
+  }
+  /* On mobile, hide the standalone Login-Signup container -- links in burger */
+  #Login-Signup-container {
+    display: none !important;
+  }
+}
 
 /* --- Profile Picture Mobile Fix --- */
-@media (max-width: 1250px) { /* desktop */
-  .header-profile-img {
-    border: none;
-    box-shadow: none;
-    background: transparent;
-    margin: 0;
-  }
-}
-@media (max-width: 600px) { /* mobile-md */
-  .header-profile-img {
-    border: none;
-    box-shadow: none;
-    background: transparent;
-    margin: 0;
-  }
-}
-@media (max-width: 480px) { /* mobile */
+@media (max-width: 800px) {
   .header-profile-img {
     border: none;
     box-shadow: none;
@@ -2021,14 +1861,8 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
 
 /* --- Burger Menu Overlay Translucency & Z-Index Fix --- */
 .header-burger-overlay {
-  background: rgba(30, 30, 30, 0.35) !important; /* more visible, matches header */
+  background: rgba(30, 30, 30, 0.35) !important;
   z-index: 9998 !important;
-}
-@media (max-width: 1250px) { /* desktop */
-  .header-burger-overlay {
-    background: rgba(0, 0, 0, 0.4) !important;
-    z-index: 9998 !important;
-  }
 }
 
 /* --- Burger Menu Clickability Fix --- */
@@ -2109,29 +1943,15 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
 
 /* --- End Unified Responsive Map Frame --- */
 
-/* === MENU OVERLAY EXCLUSIVITY FIX === */
-@media (max-width: 1250px) {
-  /* Hide profile nav when burger menu is open - stronger hiding */
+/* === MENU OVERLAY EXCLUSIVITY FIX (mobile only) === */
+@media (max-width: 800px) {
+  /* Hide profile nav when burger menu is open */
   .header-menu-toggle:checked ~ #profile-nav-container,
   .header-menu-toggle:checked ~ .header-profile-main-nav {
     display: none !important;
     visibility: hidden !important;
     pointer-events: none !important;
     opacity: 0 !important;
-  }
-  
-  /* Disable profile menu buttons when main menu is open */
-  .header-menu-toggle:checked ~ .header-profile-main-nav a,
-  .header-menu-toggle:checked ~ #profile-nav-container a {
-    pointer-events: none !important;
-    opacity: 0.3 !important;
-  }
-  
-  /* Disable main menu buttons when profile menu is open (if profile menu toggle exists) */
-  .header-profile-menu-btn:focus ~ .header-main-nav a,
-  .header-profile-menu-btn:active ~ .header-main-nav a {
-    pointer-events: none !important;
-    opacity: 0.3 !important;
   }
 }
 
@@ -2191,6 +2011,10 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
 
 .justify-end {
   justify-content: flex-end !important;
+}
+
+.gap-0-3 {
+  gap: 0.3rem !important;
 }
 
 .gap-0-5 {
@@ -3618,8 +3442,8 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
   align-items: center;
 }
 
-/* Profile/main nav touch targets when in mobile dropdown */
-@media (max-width: 1250px) {
+/* Profile/main nav touch targets when in mobile burger */
+@media (max-width: 800px) {
   .header-main-nav .header-nav-btn,
   .header-profile-main-nav .header-nav-btn {
     min-height: 44px;
@@ -5130,3 +4954,8 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
 .pw-match-status { font-size: 0.92em; margin-top: 0.2rem; }
 .pw-match-ok { color: #388e3c; }
 .pw-match-fail { color: #d32f2f; }
+
+/* Map filter utilities */
+.mr-0-3 { margin-right: 0.3rem !important; }
+.p-0-7 { padding: 0.7rem !important; }
+.border-bottom-2 { border-bottom: 2px solid var(--avant-border, #e0e0e0) !important; }

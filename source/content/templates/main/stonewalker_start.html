@@ -55,6 +55,24 @@
 <div class="h-map-wrapper">
   <div class="main-map-flex-root h-map-container flex-column">
     <div class="avant-card avant-card-map flex-1-auto flex-column">
+      <!-- Filter controls -->
+      <div class="map-filter-controls p-0-7 border-bottom-2 avant-bg-right">
+        <div class="flex-center gap-0-5 flex-wrap">
+          <span class="fw-600 mr-0-3">{% trans 'Filter:' %}</span>
+          <label class="flex-center gap-0-3 cursor-pointer">
+            <input type="checkbox" id="filter-all" checked class="cursor-pointer">
+            <span>{% trans 'All' %}</span>
+          </label>
+          <label class="flex-center gap-0-3 cursor-pointer">
+            <input type="checkbox" id="filter-hidden" checked class="cursor-pointer">
+            <span>{% trans 'Hidden' %}</span>
+          </label>
+          <label class="flex-center gap-0-3 cursor-pointer">
+            <input type="checkbox" id="filter-hunted" checked class="cursor-pointer">
+            <span>{% trans 'Hunted' %}</span>
+          </label>
+        </div>
+      </div>
       <div id="map-container" class="avant-bg-right avant-shadow flex-1-auto">
         <div id="map" class="flex-1-auto"></div>
       </div>
@@ -181,6 +199,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     // Group stones by PK_stone
     const markerMap = {};
+    const polylineMap = {};
     const stonesData = stones.map(stone => ({
       PK_stone: stone.PK_stone,
       description: stone.description,
@@ -189,6 +208,7 @@ document.addEventListener('DOMContentLoaded', function() {
       username: stone.user || '',
       user_picture: stone.user_picture || "{% static 'user_picture.png' %}",
       distance_km: stone.distance_km || 0,
+      stone_type: stone.stone_type || 'hidden',
       moves: (stone.moves || []).map(m => ({
         comment: m.comment,
         image: m.image || '',
@@ -202,18 +222,21 @@ document.addEventListener('DOMContentLoaded', function() {
       const latlngs = [];
       let color = stone.color || '#4CAF50';
       let shape = stone.shape || 'circle';
+      const stoneType = stone.stone_type || 'hidden';
       (stone.moves || []).forEach(function(move) {
         latlngs.push([move.latitude, move.longitude]);
       });
       if (latlngs.length > 0) {
         // Draw journey line
-        L.polyline(latlngs, { color: color, weight: 3, opacity: 0.5 }).addTo(map);
+        const polyline = L.polyline(latlngs, { color: color, weight: 3, opacity: 0.5 }).addTo(map);
+        polylineMap[stone.PK_stone] = { layer: polyline, type: stoneType };
+
         // Place marker at latest location
         const latest = latlngs[latlngs.length - 1];
         const marker = L.marker(latest, {
           icon: createStoneIcon(stone.image || "{% static 'stone.png' %}", shape, color)
         }).addTo(map);
-        markerMap[stone.PK_stone] = marker;
+        markerMap[stone.PK_stone] = { layer: marker, type: stoneType };
         marker.on('click', function() {
           import('/static/js/stone-modal.js').then(mod => {
             mod.openStoneModal(stone.PK_stone, color, stonesData);
@@ -225,10 +248,67 @@ document.addEventListener('DOMContentLoaded', function() {
     const urlParams = new URLSearchParams(window.location.search);
     const focusStone = urlParams.get('focus');
     if (focusStone && markerMap[focusStone]) {
-      const marker = markerMap[focusStone];
+      const marker = markerMap[focusStone].layer;
       map.setView(marker.getLatLng(), 10, { animate: true });
       setTimeout(() => marker.fire('click'), 400);
     }
+
+    // Filter functionality
+    const filterAll = document.getElementById('filter-all');
+    const filterHidden = document.getElementById('filter-hidden');
+    const filterHunted = document.getElementById('filter-hunted');
+
+    function applyFilters() {
+      const showHidden = filterHidden.checked;
+      const showHunted = filterHunted.checked;
+
+      // Update markerMap visibility
+      Object.keys(markerMap).forEach(pk => {
+        const item = markerMap[pk];
+        const shouldShow = (item.type === 'hidden' && showHidden) || (item.type === 'hunted' && showHunted);
+        if (shouldShow) {
+          map.addLayer(item.layer);
+        } else {
+          map.removeLayer(item.layer);
+        }
+      });
+
+      // Update polylineMap visibility
+      Object.keys(polylineMap).forEach(pk => {
+        const item = polylineMap[pk];
+        const shouldShow = (item.type === 'hidden' && showHidden) || (item.type === 'hunted' && showHunted);
+        if (shouldShow) {
+          map.addLayer(item.layer);
+        } else {
+          map.removeLayer(item.layer);
+        }
+      });
+    }
+
+    // "All" checkbox logic
+    filterAll.addEventListener('change', function() {
+      if (this.checked) {
+        filterHidden.checked = true;
+        filterHunted.checked = true;
+      } else {
+        filterHidden.checked = false;
+        filterHunted.checked = false;
+      }
+      applyFilters();
+    });
+
+    // Individual filter checkboxes
+    filterHidden.addEventListener('change', function() {
+      // Update "All" checkbox state
+      filterAll.checked = filterHidden.checked && filterHunted.checked;
+      applyFilters();
+    });
+
+    filterHunted.addEventListener('change', function() {
+      // Update "All" checkbox state
+      filterAll.checked = filterHidden.checked && filterHunted.checked;
+      applyFilters();
+    });
   });
 </script>
 <!-- Old modal JS removed: stone creation now goes through the shop flow -->
