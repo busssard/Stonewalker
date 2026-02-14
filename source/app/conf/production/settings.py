@@ -63,14 +63,12 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'app.wsgi.application'
 
-# Mailjet Email Configuration
-EMAIL_BACKEND = 'app.backends.MailjetEmailBackend'
+# Maileroo Email Configuration
+EMAIL_BACKEND = 'app.backends.MailerooEmailBackend'
 DEFAULT_FROM_EMAIL = 'noreply@stonewalker.org'
 
-# Mailjet API credentials are read from environment variables:
-# MJ_APIKEY_PUBLIC - Your Mailjet API Key (public)
-# MJ_APIKEY_PRIVATE - Your Mailjet Secret Key (private)
-# These are used by the MailjetEmailBackend
+# Maileroo API key is read from the MAILEROO_API_KEY environment variable.
+# Create a sending key at: Maileroo Dashboard > Domains > Sending Keys
 
 
 # Database: PostgreSQL required for production

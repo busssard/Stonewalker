@@ -180,7 +180,6 @@ source venv/bin/activate
 # Install dependencies
 pip install --upgrade pip
 pip install -r requirements.txt
-pip install gunicorn psycopg2-binary
 ```
 
 ---
@@ -207,10 +206,9 @@ ALLOWED_HOSTS=stonewalker.org,www.stonewalker.org
 # Use sslmode=require for remote/hosted databases (e.g. Render, Supabase).
 DATABASE_URL=postgresql://stonewalker:CHANGE_ME_DB_PASSWORD@localhost:5432/stonewalker?sslmode=disable
 
-# === EMAIL — Mailjet (set up in Step 11) ===
+# === EMAIL — Maileroo (set up in Step 11) ===
 # Leave blank to disable email (users can't verify accounts or reset passwords)
-MJ_APIKEY_PUBLIC=
-MJ_APIKEY_PRIVATE=
+MAILEROO_API_KEY=
 
 # === PAYMENTS — Stripe (set up in Step 12) ===
 # Leave blank to disable the shop
@@ -604,51 +602,57 @@ tar -xzf /opt/stonewalker/backups/media_20260210.tar.gz -C /opt/stonewalker/sour
 
 ---
 
-## 11. Email Setup (Mailjet)
+## 11. Email Setup (Maileroo)
 
-StoneWalker uses Mailjet to send emails (account verification, password reset). Without this, users can still register but can't verify their email or reset passwords.
+StoneWalker uses Maileroo to send emails (account verification, password reset). Without this, users can still register but can't verify their email or reset passwords.
 
-### Create a Mailjet account
+Maileroo's free tier gives you 3,000 emails/month — no credit card required.
 
-1. Go to [mailjet.com](https://www.mailjet.com/) and sign up (free tier: 200 emails/day)
-2. After signing in, go to **Account Settings > API Keys** (or visit [app.mailjet.com/account/apikeys](https://app.mailjet.com/account/apikeys))
-3. You'll see two keys:
-   - **API Key** (public) — looks like `abc123def456...`
-   - **Secret Key** (private) — looks like `xyz789ghi012...`
+### Create a Maileroo account
 
-### Verify your sending domain
+1. Go to [maileroo.com](https://maileroo.com/) and sign up
+2. After signing in, click **Email API** in the dashboard
 
-Mailjet won't deliver emails until you prove you own the sending domain:
+### Add and verify your domain
 
-1. Go to **Account Settings > Sender domains & addresses**
-2. Add your domain (e.g. `stonewalker.org`)
-3. Mailjet will give you DNS records to add (SPF, DKIM). Add them at your registrar:
+Maileroo won't deliver emails until you prove you own the sending domain:
 
-**SPF record** (lets Mailjet send on behalf of your domain):
+1. Go to **Domains** in the left sidebar
+2. Click **Add Domain** and enter your domain (e.g. `stonewalker.org`)
+3. Maileroo will give you DNS records to add. Go to your domain registrar and add them:
+
+**SPF record** (lets Maileroo send on behalf of your domain):
 ```
 Type: TXT
 Name: @
-Value: v=spf1 include:spf.mailjet.com ~all
+Value: v=spf1 include:maileroo.com ~all
 TTL: 3600
 ```
 
-**DKIM record** (Mailjet provides the exact value — it's unique to your account):
+**DKIM record** (Maileroo provides the exact name and value — it's unique to your account):
 ```
 Type: TXT
-Name: mailjet._domainkey       (Mailjet tells you the exact name)
-Value: k=rsa; p=MIGfMA0GCS...  (Mailjet tells you the exact value)
+Name: (Maileroo tells you the exact name, e.g. maileroo._domainkey)
+Value: (Maileroo tells you the exact value)
 TTL: 3600
 ```
 
-4. Click "Verify" in Mailjet once DNS propagates
+4. Back in the Maileroo dashboard, click **Verify** once DNS propagates (usually 5-30 minutes)
 
-### Add the keys to your .env
+### Create a sending key (API key)
+
+1. In the Maileroo dashboard, go to **Domains** in the left sidebar
+2. Select your verified domain
+3. Click **Sending Keys** in the left sidebar
+4. Click **Create Sending Key**
+5. Copy the key — you'll need it for the `.env` file
+
+### Add the key to your .env
 
 Edit `/opt/stonewalker/.env` and fill in:
 
 ```
-MJ_APIKEY_PUBLIC=your_api_key_here
-MJ_APIKEY_PRIVATE=your_secret_key_here
+MAILEROO_API_KEY=your_sending_key_here
 ```
 
 Then restart the application:
@@ -781,11 +785,11 @@ DISCOURSE_HOSTNAME: 'forum.stonewalker.org'
 # Your email (for Let's Encrypt and admin account)
 DISCOURSE_DEVELOPER_EMAILS: 'your@email.com'
 
-# SMTP settings (use your Mailjet credentials)
-DISCOURSE_SMTP_ADDRESS: in-v3.mailjet.com
+# SMTP settings (use your Maileroo sending key)
+DISCOURSE_SMTP_ADDRESS: smtp.maileroo.com
 DISCOURSE_SMTP_PORT: 587
-DISCOURSE_SMTP_USER_NAME: your_mailjet_api_key
-DISCOURSE_SMTP_PASSWORD: your_mailjet_secret_key
+DISCOURSE_SMTP_USER_NAME: your_maileroo_sending_key
+DISCOURSE_SMTP_PASSWORD: your_maileroo_sending_key
 DISCOURSE_SMTP_ENABLE_START_TLS: true
 DISCOURSE_SMTP_DOMAIN: stonewalker.org
 ```

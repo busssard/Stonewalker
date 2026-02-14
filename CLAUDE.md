@@ -108,7 +108,7 @@ make clean       # Clean generated files
 
 ### Settings Configuration
 - **Development**: `source/app/conf/development/settings.py` (console email backend, relaxed SSL)
-- **Production**: `source/app/conf/production/settings.py` (requires PostgreSQL, Mailjet email, SSL)
+- **Production**: `source/app/conf/production/settings.py` (requires PostgreSQL, Maileroo email, SSL)
 - **Environment detection**: `IS_PRODUCTION` environment variable controls which settings are used
 
 ### Database Requirements
@@ -224,7 +224,7 @@ make clean       # Clean generated files
 3. **Translation compilation** - Must run `compilemessages` before production deploy
 4. **Environment variables** - `DATABASE_URL` and `SECRET_KEY` required for production
 5. **QR code permissions** - Media directory must be writable
-6. **Email backend** - Development uses console (prints to terminal), production uses Mailjet
+6. **Email backend** - Development uses console (prints to terminal), production uses Maileroo
 7. **Static files** - Run `collectstatic` before production deployment
 8. **GitHub PAT scope** - Needs `workflow` scope to push `.github/workflows/` changes
 9. **pytest.ini section header** - Must be `[pytest]` not `[tool:pytest]` (that's the setup.cfg format)
@@ -527,7 +527,7 @@ In Discourse Admin → Settings → Login:
 
 ### Cost Structure
 - Render.com hosting: ~$14/month (web + PostgreSQL)
-- Email (Mailjet free tier): $0/month
+- Email (Maileroo free tier): $0/month
 - Domain: ~$12/year
 - Break-even: ~$15/month (nearly immediate with any revenue)
 
