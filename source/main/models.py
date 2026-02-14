@@ -111,6 +111,14 @@ class Stone(models.Model):
     def __str__(self):
         return f"{self.PK_stone} ({self.status})"
 
+    def get_stone_number(self):
+        """Get this stone's sequential number based on creation order.
+        Returns the 1-based position among all stones ordered by created_at."""
+        if not self.created_at:
+            return None
+        count = Stone.objects.filter(created_at__lt=self.created_at).count()
+        return count + 1
+
     def is_unclaimed(self):
         """Check if stone is unclaimed and available to be claimed"""
         return self.status == 'unclaimed'

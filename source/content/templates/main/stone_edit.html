@@ -97,17 +97,30 @@
                         <hr>
                         <h5>{% trans "QR Code" %}</h5>
                         <p class="text-muted">{% trans "Your stone has a persistent QR code that will always lead to the stone page." %}</p>
-                        
+
                         <div class="qr-actions">
                             <a href="{% url 'stone_qr' stone.PK_stone %}" class="btn btn-primary">
                                 <i class="fas fa-download"></i> {% trans "Download QR Code" %}
                             </a>
-                            
+
                             <div class="mt-2">
                                 <small class="text-muted">
                                     <strong>{% trans "QR URL:" %}</strong> {{ stone.get_qr_url }}
                                 </small>
                             </div>
+                        </div>
+                    </div>
+
+                    <!-- Certificate Section -->
+                    <div class="certificate-section mt-4">
+                        <hr>
+                        <h5>{% trans "Stone Certificate" %}</h5>
+                        <p class="text-muted">{% trans "Download a printable certificate of creation for your stone." %}</p>
+
+                        <div class="certificate-actions">
+                            <a href="{% url 'stone_certificate' stone.PK_stone %}" class="btn btn-outline-success">
+                                <i class="fas fa-certificate"></i> {% trans "Download Certificate" %}
+                            </a>
                         </div>
                     </div>
 

@@ -9,7 +9,7 @@ from main.views import IndexPageView, ChangeLanguageView
 from main.views import StoneWalkerStartPageView
 from main.views import MyStonesView
 from main.views import add_stone, StoneScanView, check_stone_name
-from main.views import StoneQRCodeView, StoneLinkView, check_stone_uuid, StoneEditView, StoneSendOffView, generate_qr_code_api, download_enhanced_qr_code
+from main.views import StoneQRCodeView, StoneLinkView, check_stone_uuid, StoneEditView, StoneSendOffView, StoneCertificateView, generate_qr_code_api, download_enhanced_qr_code
 
 # Shop views
 from main.shop_views import (
@@ -61,6 +61,7 @@ urlpatterns += i18n_patterns(
     # New stone management URLs
     path('stone/<str:pk>/edit/', StoneEditView.as_view(), name='stone_edit'),
     path('stone/<str:pk>/qr/', StoneQRCodeView.as_view(), name='stone_qr'),
+    path('stone/<str:pk>/certificate/', StoneCertificateView.as_view(), name='stone_certificate'),
     path('stone/<str:pk>/send-off/', StoneSendOffView.as_view(), name='stone_send_off'),
     
     # Stone-link functionality
