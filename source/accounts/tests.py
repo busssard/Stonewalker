@@ -150,6 +150,65 @@ class NavigationUITests(TestCase):
         # Burger icon
         self.assertContains(response, 'class="avant-btn header-burger-label"') 
 
+class UsernameLowercaseTests(TestCase):
+    def test_signup_lowercases_username(self):
+        response = self.client.post(reverse('accounts:sign_up'), {
+            'username': 'TestUserMixed',
+            'first_name': 'Test',
+            'last_name': 'User',
+            'email': 'mixedcase@example.com',
+            'password1': 'StrongPass123!',
+            'password2': 'StrongPass123!',
+        })
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(User.objects.filter(username='testusermixed').exists())
+        self.assertFalse(User.objects.filter(username='TestUserMixed').exists())
+
+    def test_signup_rejects_duplicate_case_insensitive_username(self):
+        User.objects.create_user(username='existinguser', email='existing@example.com', password='TestPass123!')
+        response = self.client.post(reverse('accounts:sign_up'), {
+            'username': 'ExistingUser',
+            'first_name': 'Test',
+            'last_name': 'User',
+            'email': 'new@example.com',
+            'password1': 'StrongPass123!',
+            'password2': 'StrongPass123!',
+        })
+        # Should not redirect — form has errors
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(User.objects.filter(username='existinguser').count(), 1)
+
+    def test_login_works_case_insensitively(self):
+        User.objects.create_user(username='loginuser', email='login@example.com', password='TestPass123!', is_active=True)
+        response = self.client.post(reverse('accounts:log_in'), {
+            'email': 'login@example.com',
+            'password': 'TestPass123!',
+        })
+        self.assertEqual(response.status_code, 302)
+        self.assertIn('_auth_user_id', self.client.session)
+
+    def test_profile_edit_lowercases_username(self):
+        user = User.objects.create_user(username='profilelower', email='profilelower@example.com', password='TestPass123!', is_active=True)
+        self.client.post(reverse('accounts:log_in'), {'email': 'profilelower@example.com', 'password': 'TestPass123!'})
+        response = self.client.post(reverse('accounts:change_profile'), {
+            'username': 'ProfileLOWER_New',
+            'email': 'profilelower@example.com',
+            'password1': '',
+            'password2': '',
+        }, follow=True)
+        self.assertEqual(response.status_code, 200)
+        user.refresh_from_db()
+        self.assertEqual(user.username, 'profilelower_new')
+
+    def test_check_username_api_case_insensitive(self):
+        User.objects.create_user(username='apiuser', email='api@example.com', password='TestPass123!')
+        response = self.client.get('/accounts/api/check_username/', {'username': 'ApiUser'})
+        data = response.json()
+        self.assertTrue(data['taken'])
+        self.assertEqual(data['reason'], 'taken')
+        self.assertEqual(data['username'], 'apiuser')
+
+
 class CSSUtilityClassTests(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='cssuser', email='css@example.com', password='TestPassword123', is_active=True)

@@ -17,7 +17,85 @@
 
     <form method="post" class="auth-form mt-1-2">
       {% csrf_token %}
-      {{ form.as_p }}
+
+      {% if form.non_field_errors %}
+        <div class="text-error fs-0-95 mb-1">
+          {% for error in form.non_field_errors %}{{ error }}<br>{% endfor %}
+        </div>
+      {% endif %}
+
+      {% if form.username %}
+      <div class="mb-1">
+        <label for="id_username" class="font-serif fs-1-05 text-dark">{% trans 'Username' %}</label>
+        <div class="flex-center gap-0-7 mt-0-3">
+          <input type="text" name="username" id="id_username" maxlength="150" required class="form-control fs-1-08 border-radius-7 border-1-5 p-0-7 border-gray" value="{{ form.username.value|default:'' }}" autocomplete="username">
+          <span id="username-checkmark" class="js-checkmark js-checkmark-neutral"></span>
+        </div>
+        <div id="username-check-result" aria-live="polite" class="js-result-text js-result-neutral"
+             data-available-text="{% trans 'This username is available!' %}"
+             data-taken-text="{% trans 'This username is already taken.' %}"
+             data-empty-text="{% trans 'Username cannot be empty.' %}"
+             data-whitespace-text="{% trans 'No spaces allowed.' %}"
+             data-current-text=""></div>
+        {% for error in form.username.errors %}
+          <div class="text-error fs-0-95">{{ error }}</div>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      {% if form.first_name %}
+      <div class="mb-1">
+        <label for="id_first_name" class="font-serif fs-1-05 text-dark">{% trans 'First name' %}</label>
+        <input type="text" name="first_name" id="id_first_name" maxlength="150" class="form-control fs-1-08 border-radius-7 border-1-5 p-0-7 border-gray" value="{{ form.first_name.value|default:'' }}" autocomplete="given-name">
+        {% for error in form.first_name.errors %}
+          <div class="text-error fs-0-95">{{ error }}</div>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      {% if form.last_name %}
+      <div class="mb-1">
+        <label for="id_last_name" class="font-serif fs-1-05 text-dark">{% trans 'Last name' %}</label>
+        <input type="text" name="last_name" id="id_last_name" maxlength="150" class="form-control fs-1-08 border-radius-7 border-1-5 p-0-7 border-gray" value="{{ form.last_name.value|default:'' }}" autocomplete="family-name">
+        {% for error in form.last_name.errors %}
+          <div class="text-error fs-0-95">{{ error }}</div>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      <div class="mb-1">
+        <label for="id_email" class="font-serif fs-1-05 text-dark">{% trans 'Email' %}</label>
+        <input type="email" name="email" id="id_email" maxlength="254" required class="form-control fs-1-08 border-radius-7 border-1-5 p-0-7 border-gray" value="{{ form.email.value|default:'' }}" autocomplete="email">
+        {% if form.email.help_text %}<div class="fs-0-88 text-muted">{{ form.email.help_text }}</div>{% endif %}
+        {% for error in form.email.errors %}
+          <div class="text-error fs-0-95">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <div class="mb-1">
+        <label for="id_password1" class="font-serif fs-1-05 text-dark">{% trans 'Password' %}</label>
+        <input type="password" name="password1" id="id_password1" required class="form-control fs-1-08 border-radius-7 border-1-5 p-0-7 border-gray" autocomplete="new-password">
+        <div id="pw-criteria"
+             data-length-text="{% trans 'At least 8 characters' %}"
+             data-numeric-text="{% trans "Can't be entirely numeric" %}"
+             data-common-text="{% trans 'Not a commonly used password' %}"
+             data-similar-text="{% trans "Can't be too similar to your personal info" %}"></div>
+        {% for error in form.password1.errors %}
+          <div class="text-error fs-0-95">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <div class="mb-1">
+        <label for="id_password2" class="font-serif fs-1-05 text-dark">{% trans 'Confirm password' %}</label>
+        <input type="password" name="password2" id="id_password2" required class="form-control fs-1-08 border-radius-7 border-1-5 p-0-7 border-gray" autocomplete="new-password">
+        <div id="pw-match-status" class="pw-match-status"
+             data-match-text="{% trans 'Passwords match' %}"
+             data-nomatch-text="{% trans 'Passwords do not match' %}"></div>
+        {% for error in form.password2.errors %}
+          <div class="text-error fs-0-95">{{ error }}</div>
+        {% endfor %}
+      </div>
+
       <button class="avant-btn w-full mt-1-2 bg-accent text-white fs-1-13 letter-spacing-0-03">{% trans 'Create' %}</button>
     </form>
 
@@ -54,5 +132,27 @@
       }
     });
   });
+</script>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/common-passwords.js' %}"></script>
+<script src="{% static 'js/form-validation.js' %}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    StoneWalkerFormValidation.initUsernameLowercase('id_username');
+    StoneWalkerFormValidation.initUsernameAvailability('id_username', 'username-check-result', {
+        checkmarkId: 'username-checkmark',
+        currentUsername: ''
+    });
+    StoneWalkerFormValidation.initPasswordCriteria('id_password1', {
+        containerId: 'pw-criteria',
+        usernameId: 'id_username',
+        firstNameId: 'id_first_name',
+        lastNameId: 'id_last_name',
+        emailId: 'id_email'
+    });
+    StoneWalkerFormValidation.initPasswordMatch('id_password1', 'id_password2', 'pw-match-status');
+});
 </script>
 {% endblock %}

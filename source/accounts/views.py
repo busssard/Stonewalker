@@ -290,7 +290,7 @@ class LogOutView(LoginRequiredMixin, BaseLogoutView):
 
 
 def check_username(request):
-    username = request.GET.get('username', '').strip()
+    username = request.GET.get('username', '').strip().lower()
     taken = False
     reason = None
     if not username:

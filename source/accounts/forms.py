@@ -48,7 +48,7 @@ class SignInViaUsernameForm(SignIn):
         return ['username', 'password']
 
     def clean_username(self):
-        username = self.cleaned_data['username']
+        username = self.cleaned_data['username'].lower()
 
         user = User.objects.filter(username=username).first()
         if not user:
@@ -94,7 +94,7 @@ class EmailOrUsernameForm(UserCacheMixin, forms.Form):
     def clean_email_or_username(self):
         email_or_username = self.cleaned_data['email_or_username']
 
-        user = User.objects.filter(Q(username=email_or_username) | Q(email__iexact=email_or_username)).first()
+        user = User.objects.filter(Q(username=email_or_username.lower()) | Q(email__iexact=email_or_username)).first()
         if not user:
             raise ValidationError(_('You entered an invalid email address or username.'))
 
@@ -121,6 +121,12 @@ class SignUpForm(UserCreationForm):
 
     email = forms.EmailField(label=_('Email'), help_text=_('Required. Enter an existing email address.'))
 
+    def clean_username(self):
+        username = self.cleaned_data['username'].lower()
+        if User.objects.filter(username=username).exists():
+            raise ValidationError(_('This username is already taken.'))
+        return username
+
     def clean_email(self):
         email = self.cleaned_data['email']
 
@@ -137,7 +143,7 @@ class ResendActivationCodeForm(UserCacheMixin, forms.Form):
     def clean_email_or_username(self):
         email_or_username = self.cleaned_data['email_or_username']
 
-        user = User.objects.filter(Q(username=email_or_username) | Q(email__iexact=email_or_username)).first()
+        user = User.objects.filter(Q(username=email_or_username.lower()) | Q(email__iexact=email_or_username)).first()
         if not user:
             raise ValidationError(_('You entered an invalid email address or username.'))
 
@@ -195,7 +201,7 @@ class ChangeProfileForm(forms.Form):
     username = forms.CharField(label=_('Username'), max_length=150, required=True)
 
     def clean_username(self):
-        username = self.cleaned_data['username']
+        username = self.cleaned_data['username'].lower()
         if not username:
             raise ValidationError(_('Username cannot be empty.'))
         if re.search(r'\s', username):
@@ -252,7 +258,7 @@ class CombinedProfileForm(forms.Form):
         return image
 
     def clean_username(self):
-        username = self.cleaned_data['username']
+        username = self.cleaned_data['username'].lower()
         if not username:
             raise ValidationError(_('Username cannot be empty.'))
         if re.search(r'\s', username):
