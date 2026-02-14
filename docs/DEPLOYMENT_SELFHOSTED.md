@@ -756,14 +756,45 @@ systemctl restart stonewalker
 
 ## 13. Forum Setup (Discourse)
 
-StoneWalker has built-in Discourse SSO — when users click "Forum" they're automatically logged in with their StoneWalker account. This step sets up a Discourse instance on the same server.
+StoneWalker has built-in Discourse SSO — when users click "Forum" they're automatically logged in with their StoneWalker account. This step sets up a Discourse instance on the same server behind nginx.
 
 **Resource requirement**: Discourse needs at least 2GB RAM. If your VPS has only 2GB total, either upgrade to 4GB or run Discourse on a separate $6/month VPS.
 
-### Install Discourse using the official launcher
+### Prerequisites: Install Docker
+
+Discourse runs in Docker. If Docker isn't installed yet:
 
 ```bash
-# As root on your server
+# Update system
+sudo apt update && sudo apt upgrade -y
+
+# Install Docker from the official repository
+sudo apt install -y ca-certificates curl gnupg lsb-release
+sudo mkdir -p /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+  $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+sudo apt update
+sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+# Enable and start Docker
+sudo systemctl enable docker
+sudo systemctl start docker
+
+# Verify it works
+docker run hello-world
+```
+
+### Add DNS record for the forum subdomain
+
+Before continuing, add a DNS A record for `forum.stonewalker.org` pointing to the same server IP as your main domain. SSL (certbot) needs this to be live before it can issue a certificate.
+
+### Install the Discourse launcher
+
+```bash
 mkdir -p /var/discourse
 git clone https://github.com/discourse/discourse_docker.git /var/discourse
 cd /var/discourse
@@ -776,27 +807,72 @@ cp samples/standalone.yml containers/app.yml
 nano containers/app.yml
 ```
 
-In `app.yml`, change these values:
+**Critical: The `app.yml` file is very sensitive to YAML formatting.** Here are the values you need to change. Make sure each section appears only once (no duplicate `expose:` or `env:` blocks — YAML uses last-wins, which causes silent misconfiguration).
+
+#### Expose port (NOT 80/443 — nginx uses those)
+
+Find the `expose:` section and set it to **only** this:
 
 ```yaml
-# Your forum domain (add a DNS A record for this pointing to the same server IP)
-DISCOURSE_HOSTNAME: 'forum.stonewalker.org'
-
-# Your email (for Let's Encrypt and admin account)
-DISCOURSE_DEVELOPER_EMAILS: 'your@email.com'
-
-# SMTP settings (use your Maileroo sending key)
-DISCOURSE_SMTP_ADDRESS: smtp.maileroo.com
-DISCOURSE_SMTP_PORT: 587
-DISCOURSE_SMTP_USER_NAME: your_maileroo_sending_key
-DISCOURSE_SMTP_PASSWORD: your_maileroo_sending_key
-DISCOURSE_SMTP_ENABLE_START_TLS: true
-DISCOURSE_SMTP_DOMAIN: stonewalker.org
+expose:
+  - "4080:80"
 ```
 
-**Important**: Also add a DNS A record for `forum.stonewalker.org` pointing to the same server IP.
+**Delete** any lines with `"80:80"` or `"443:443"` — those conflict with nginx on the host.
 
-### Launch Discourse
+#### Environment variables
+
+Find the `env:` section (there should be only ONE) and set these values:
+
+```yaml
+env:
+  LC_ALL: en_US.UTF-8
+  LANG: en_US.UTF-8
+  LANGUAGE: en_US.UTF-8
+
+  DISCOURSE_HOSTNAME: 'forum.stonewalker.org'
+  DISCOURSE_DEVELOPER_EMAILS: 'your@email.com'
+
+  ## SMTP settings — use Maileroo SMTP credentials (NOT the API sending key)
+  ## Find these in your Maileroo dashboard under SMTP settings
+  DISCOURSE_SMTP_ADDRESS: smtp.maileroo.com
+  DISCOURSE_SMTP_PORT: 587
+  DISCOURSE_SMTP_USER_NAME: your_maileroo_smtp_username
+  DISCOURSE_SMTP_PASSWORD: "your_maileroo_smtp_password"
+  DISCOURSE_SMTP_ENABLE_START_TLS: true
+  DISCOURSE_SMTP_DOMAIN: stonewalker.org
+```
+
+**Important SMTP notes:**
+- Use your Maileroo **SMTP username and password**, not the API sending key. These are different credentials — find them in your Maileroo dashboard under SMTP settings.
+- Use `DISCOURSE_SMTP_ENABLE_START_TLS: true` (port 587 uses STARTTLS). Do **not** use `DISCOURSE_SMTP_FORCE_TLS` — that's for port 465 implicit TLS.
+- Wrap the password in quotes if it contains special characters.
+
+#### Fix the "From" email address
+
+By default, Discourse sends emails from `noreply@forum.stonewalker.org` (based on `DISCOURSE_HOSTNAME`). But your mail provider (Maileroo) is configured for `stonewalker.org`, not the `forum.` subdomain. Emails from `@forum.stonewalker.org` will silently fail.
+
+In the `run:` section at the bottom of `app.yml`, uncomment and set the notification email:
+
+```yaml
+run:
+  - exec: echo "Beginning of custom commands"
+  - exec: rails r "SiteSetting.notification_email='noreply@stonewalker.org'"
+  - exec: echo "End of custom commands"
+```
+
+This only needs to run once. After the first successful boot, you can re-comment the line.
+
+You can also change this later from inside the container:
+
+```bash
+cd /var/discourse
+./launcher enter app
+rails r "SiteSetting.notification_email = 'noreply@stonewalker.org'"
+exit
+```
+
+### Bootstrap and start Discourse
 
 ```bash
 cd /var/discourse
@@ -804,12 +880,34 @@ cd /var/discourse
 ./launcher start app
 ```
 
-Discourse runs on port 80/443 internally. Since nginx is already using those ports, you need to either:
+Verify it's running:
 
-**Option A**: Put Discourse behind nginx too (recommended). Add to your nginx config:
+```bash
+# Should show the container with port 4080 mapped
+docker ps
+
+# Should return 200 (may take 30-60 seconds after start)
+curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:4080
+```
+
+If `curl` returns `000`, wait 60 seconds and try again — Discourse takes time to boot internally. If it still fails, check the logs:
+
+```bash
+./launcher logs app | tail -50
+```
+
+### Set up nginx for the forum subdomain
+
+Add this server block to your nginx config. This goes in the same file as your main StoneWalker config:
+
+```bash
+nano /etc/nginx/sites-available/stonewalker
+```
+
+Add at the end of the file:
 
 ```nginx
-# Add this as a separate server block in /etc/nginx/sites-available/stonewalker
+# --- Forum (Discourse) HTTP → HTTPS redirect ---
 server {
     listen 80;
     listen [::]:80;
@@ -817,6 +915,7 @@ server {
     return 301 https://$host$request_uri;
 }
 
+# --- Forum (Discourse) HTTPS ---
 server {
     listen 443 ssl http2;
     listen [::]:443 ssl http2;
@@ -824,59 +923,96 @@ server {
 
     ssl_certificate /etc/letsencrypt/live/forum.stonewalker.org/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/forum.stonewalker.org/privkey.pem;
+    include /etc/letsencrypt/options-ssl-nginx.conf;
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
 
     location / {
         proxy_set_header Host $http_host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_pass http://127.0.0.1:4080;  # Discourse internal port
+        proxy_redirect off;
+        proxy_pass http://127.0.0.1:4080;
+
+        proxy_connect_timeout 30s;
+        proxy_read_timeout 60s;
+        proxy_send_timeout 60s;
     }
 }
 ```
 
-In `app.yml`, change the exposed port so Discourse doesn't conflict with nginx:
-
-```yaml
-expose:
-  - "4080:80"
-```
-
-Then rebuild: `./launcher rebuild app`
-
-Get an SSL cert for the forum subdomain:
+Get an SSL cert for the forum subdomain, then reload nginx:
 
 ```bash
 certbot --nginx -d forum.stonewalker.org
+nginx -t && systemctl reload nginx
 ```
 
-**Option B**: Run Discourse on a separate VPS (simpler, avoids port conflicts).
+Visit `https://forum.stonewalker.org` — you should see the Discourse setup wizard.
 
-### Enable SSO in Discourse
+### Create the admin account
 
-Once Discourse is running, open it in your browser and create your admin account. Then:
+Register your admin account through the web wizard at `forum.stonewalker.org`. Discourse will send a confirmation email.
 
-1. Go to **Admin > Settings > Login** (or visit `forum.stonewalker.org/admin/site_settings/category/login`)
+**If the confirmation email doesn't arrive** (check spam too), activate the admin manually from the command line:
+
+```bash
+cd /var/discourse
+./launcher enter app
+rake admin:create
+```
+
+This prompts you for email, password, and whether to grant admin privileges. Use one of the emails from `DISCOURSE_DEVELOPER_EMAILS`.
+
+After activation, log in at `forum.stonewalker.org`.
+
+### Fix email settings (if needed)
+
+If emails aren't sending, it's easier to fix from the Discourse admin UI than from `app.yml`:
+
+1. Log into Discourse as admin
+2. Go to **Admin > Settings > Email**
+3. Set:
+
+| Setting | Value |
+|---|---|
+| `notification_email` | `noreply@stonewalker.org` |
+| `smtp_address` | `smtp.maileroo.com` |
+| `smtp_port` | `587` |
+| `smtp_user_name` | Your Maileroo SMTP username |
+| `smtp_password` | Your Maileroo SMTP password |
+| `smtp_enable_start_tls` | true |
+| `smtp_domain` | `stonewalker.org` |
+
+4. Test with **Admin > Email > Send Test Email**
+
+### Enable SSO (Discourse Connect)
+
+This lets StoneWalker users automatically log into the forum with their existing account.
+
+1. In Discourse, go to **Admin > Settings > Login** (or visit `forum.stonewalker.org/admin/site_settings/category/login`)
 2. Set these:
 
 | Setting | Value |
 |---|---|
 | `enable_discourse_connect` | true |
 | `discourse_connect_url` | `https://stonewalker.org/accounts/discourse-sso/` |
-| `discourse_connect_secret` | A random secret string (you'll use this same string in StoneWalker's .env) |
+| `discourse_connect_secret` | A random secret string (generate one with `openssl rand -hex 32`) |
 | `discourse_connect_overrides_email` | true |
 | `discourse_connect_overrides_username` | true |
 
-### Add the SSO secret to StoneWalker's .env
+3. Add the **exact same secret** to StoneWalker's `.env` on the server:
 
-Use the **exact same secret** you entered in Discourse:
+```bash
+nano /opt/stonewalker/.env
+```
 
 ```
 DISCOURSE_URL=https://forum.stonewalker.org
-DISCOURSE_SSO_SECRET=your_shared_secret_here
+DISCOURSE_SSO_SECRET=your_same_secret_from_discourse
 ```
 
-Restart StoneWalker:
+4. Restart StoneWalker:
 
 ```bash
 systemctl restart stonewalker
@@ -884,9 +1020,53 @@ systemctl restart stonewalker
 
 ### Test SSO
 
-1. Log into StoneWalker
-2. Navigate to `forum.stonewalker.org`
-3. You should be automatically logged in with your StoneWalker username
+1. Log into StoneWalker at `stonewalker.org`
+2. Click "Forum" in the navigation (or visit `forum.stonewalker.org`)
+3. You should be automatically logged in with your StoneWalker username and email
+
+### Discourse management cheat sheet
+
+```bash
+cd /var/discourse
+
+# Start / stop / restart the container
+./launcher start app
+./launcher stop app
+./launcher restart app
+
+# View logs
+./launcher logs app | tail -50
+
+# Enter the container (for rails console, settings changes)
+./launcher enter app
+
+# Rebuild after changing app.yml (takes 5-10 minutes)
+./launcher rebuild app
+
+# Check if container is running
+docker ps
+
+# Test if Discourse is responding
+curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:4080
+```
+
+### Troubleshooting
+
+**502 Bad Gateway**: Discourse container isn't running or hasn't finished booting.
+- Check: `docker ps` — if no container listed, run `./launcher start app`
+- After starting, wait 60 seconds for internal services to initialize
+- Check logs: `./launcher logs app | tail -50`
+
+**Port conflict**: If `docker ps` shows the container but `PORTS` column is empty, the port mapping is wrong.
+- Check `app.yml` has only `"4080:80"` in the expose section (no `"80:80"` or `"443:443"`)
+- Rebuild: `./launcher rebuild app`
+
+**Emails not sending**: Most common cause is wrong "From" address.
+- Discourse defaults to `noreply@forum.stonewalker.org` but Maileroo expects `@stonewalker.org`
+- Fix: `./launcher enter app` then `rails r "SiteSetting.notification_email = 'noreply@stonewalker.org'"` then `exit`
+- Also verify you're using Maileroo **SMTP credentials** (not API key) and `ENABLE_START_TLS` (not `FORCE_TLS`) for port 587
+
+**DNS resolution errors in logs** (`hostname: Temporary failure in name resolution`): Usually harmless — the container can't resolve its own hostname. Doesn't affect web serving or email.
 
 ---
 
@@ -1006,16 +1186,17 @@ echo "===== END ====="
 rm /tmp/deploy_key /tmp/deploy_key.pub
 ```
 
+
 ### Add secrets to GitHub
 
 Go to your repo: **Settings > Secrets and variables > Actions > New repository secret**
 
 Add these 3 secrets:
 
-| Secret name | Value |
-|---|---|
-| `DEPLOY_HOST` | Your server's IP address |
-| `DEPLOY_USER` | `stonewalker` |
+| Secret name      | Value                                                                       |
+| ---------------- | --------------------------------------------------------------------------- |
+| `DEPLOY_HOST`    | Your server's IP address                                                    |
+| `DEPLOY_USER`    | `stonewalker`                                                               |
 | `DEPLOY_SSH_KEY` | The full private key from above (including the `-----BEGIN/END-----` lines) |
 
 ### How it works
@@ -1097,6 +1278,31 @@ python manage.py collectstatic --noinput
 
 # Restart application (zero-downtime with graceful reload)
 sudo systemctl reload stonewalker
+```
+
+---
+
+## Resetting the Database
+
+If you need to wipe all data (stones, users, moves, QR packs, profiles) and start fresh — for example after initial testing or before a public launch:
+
+```bash
+sudo -u stonewalker bash
+cd /opt/stonewalker
+source venv/bin/activate
+export $(grep -v '^#' .env | grep -v '^$' | xargs)
+cd source
+
+# Delete all data from all tables (keeps the schema intact)
+python manage.py flush
+```
+
+Type `yes` when prompted. This removes **everything** — all user accounts, stones, scan history, shop purchases.
+
+Then recreate your admin account:
+
+```bash
+python manage.py createsuperuser
 ```
 
 ---
