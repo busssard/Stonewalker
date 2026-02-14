@@ -2,7 +2,9 @@
 {% comment %} DRY, centralized navigation links for both main and burger nav. All logic is here. {% endcomment %}
 <nav id="main-nav" class="header-main-nav{% if burger %} header-burger-nav-list{% endif %}" aria-label="Main Navigation">
   <a class="nav-link avant-btn header-nav-btn" href="{% url 'about' %}">{% trans 'About' %}</a>
+  {% if shop_visible %}
   <a class="nav-link avant-btn header-nav-btn" href="{% url 'shop' %}">{% trans 'Shop' %}</a>
+  {% endif %}
   <a class="nav-link avant-btn header-nav-btn" href="{% url 'forum' %}">{% trans 'Forum' %}</a>
   <a class="nav-link avant-btn header-nav-btn" href="{% url 'change_language' %}">{% trans 'Change language' %}</a>
   {% if burger %}

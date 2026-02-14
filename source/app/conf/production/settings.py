@@ -56,6 +56,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'app.context_processors.shop_visibility',
             ],
         },
     },
@@ -219,3 +220,6 @@ SHOP_CONFIG_PATH = os.path.join(BASE_DIR, 'main', 'shop_config.json')
 DISCOURSE_URL = os.environ.get('DISCOURSE_URL', 'https://forum.stonewalker.org')
 DISCOURSE_SSO_SECRET = os.environ.get('DISCOURSE_SSO_SECRET', '')
 DISCOURSE_SSO_ENABLED = bool(os.environ.get('DISCOURSE_SSO_SECRET'))
+
+# Shop Configuration - visibility threshold
+SHOP_VISIBLE_USER_THRESHOLD = 1000

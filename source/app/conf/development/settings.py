@@ -74,6 +74,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'app.context_processors.shop_visibility',
             ],
         },
     },
@@ -199,3 +200,6 @@ SHOP_CONFIG_PATH = os.path.join(BASE_DIR, 'main', 'shop_config.json')
 DISCOURSE_URL = os.environ.get('DISCOURSE_URL', 'http://localhost:4200')
 DISCOURSE_SSO_SECRET = os.environ.get('DISCOURSE_SSO_SECRET', 'dev_secret_change_me')
 DISCOURSE_SSO_ENABLED = True
+
+# Shop Configuration - visibility threshold
+SHOP_VISIBLE_USER_THRESHOLD = 1000
