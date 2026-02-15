@@ -78,6 +78,19 @@ translations.xlsx
 
 # Discourse local development data
 forum/discourse_data/
+forum/discourse_docker/
 
 # Agent scratchpad files
 .claude/scratchpad_*
+.claude/agent_test.txt
+.claude/complete.md
+
+# Obsidian editor config
+.obsidian/
+docs/.obsidian/
+
+# Local tools
+db
+setup.cfg
+.pre-commit-config.yaml
+1000-most-common-passwords.csv

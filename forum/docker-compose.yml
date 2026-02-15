@@ -1,0 +1,62 @@
+# Official Discourse Development Stack for StoneWalker SSO Testing
+# Uses official Discourse Docker images
+#
+# Usage:
+#   Start:  docker compose -f forum/docker-compose.yml up -d
+#   Logs:   docker compose -f forum/docker-compose.yml logs -f discourse
+#   Stop:   docker compose -f forum/docker-compose.yml down
+#   Reset:  docker compose -f forum/docker-compose.yml down -v
+
+services:
+  postgresql:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: discourse
+      POSTGRES_PASSWORD: discourse_dev
+      POSTGRES_DB: discourse
+    volumes:
+      - discourse_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U discourse -d discourse"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    volumes:
+      - discourse_redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  discourse:
+    image: discourse/discourse_dev:release
+    ports:
+      - "4200:3000"
+    environment:
+      DISCOURSE_DEVELOPER_EMAILS: "admin@example.com"
+      DISCOURSE_HOSTNAME: "localhost"
+      DISCOURSE_DB_HOST: postgresql
+      DISCOURSE_DB_PORT: "5432"
+      DISCOURSE_DB_NAME: discourse
+      DISCOURSE_DB_USERNAME: discourse
+      DISCOURSE_DB_PASSWORD: discourse_dev
+      DISCOURSE_REDIS_HOST: redis
+      RAILS_ENV: development
+    volumes:
+      - discourse_data:/var/www/discourse
+    depends_on:
+      postgresql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    stdin_open: true
+    tty: true
+
+volumes:
+  discourse_pg_data:
+  discourse_redis_data:
+  discourse_data:
