@@ -20,41 +20,103 @@
   var DEFAULT_MAX_SIZE = 5 * 1024 * 1024; // 5MB
 
   /**
-   * Resize an image file to max dimensions using canvas.
+   * Format bytes into a human-readable string.
+   */
+  function formatSize(bytes) {
+    if (bytes < 1024) return bytes + 'B';
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + 'KB';
+    return (bytes / (1024 * 1024)).toFixed(1) + 'MB';
+  }
+
+  /**
+   * Determine compression quality based on original file size.
+   */
+  function getQuality(fileSize) {
+    if (fileSize > 2 * 1024 * 1024) return 0.6;
+    if (fileSize > 1 * 1024 * 1024) return 0.7;
+    return 0.85;
+  }
+
+  /**
+   * Check if the browser supports WebP encoding via canvas.
+   */
+  function supportsWebP() {
+    try {
+      var c = document.createElement('canvas');
+      c.width = 1;
+      c.height = 1;
+      return c.toDataURL('image/webp').indexOf('data:image/webp') === 0;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  var useWebP = supportsWebP();
+
+  /**
+   * Resize and compress an image file using canvas.
+   * Tries WebP first where supported, falls back to JPEG.
    * Returns a Promise that resolves with a File object.
    */
   function resizeImage(file, maxDim) {
+    var originalSize = file.size;
     return new Promise(function(resolve) {
       var img = new Image();
       img.onload = function() {
         var w = img.naturalWidth;
         var h = img.naturalHeight;
-        if (w <= maxDim && h <= maxDim) {
-          resolve(file);
+        var quality = getQuality(originalSize);
+        var needsResize = w > maxDim || h > maxDim;
+        var needsCompress = originalSize > 1 * 1024 * 1024;
+
+        if (!needsResize && !needsCompress) {
+          resolve({ file: file, originalSize: originalSize, compressed: false });
           return;
         }
-        if (w > h) {
-          h = Math.round(h * maxDim / w);
-          w = maxDim;
-        } else {
-          w = Math.round(w * maxDim / h);
-          h = maxDim;
+
+        if (needsResize) {
+          if (w > h) {
+            h = Math.round(h * maxDim / w);
+            w = maxDim;
+          } else {
+            w = Math.round(w * maxDim / h);
+            h = maxDim;
+          }
         }
+
         var canvas = document.createElement('canvas');
         canvas.width = w;
         canvas.height = h;
         var ctx = canvas.getContext('2d');
         ctx.drawImage(img, 0, 0, w, h);
+
+        var mimeType = useWebP ? 'image/webp' : 'image/jpeg';
+        var ext = useWebP ? '.webp' : '.jpg';
+        var fileName = file.name.replace(/\.[^.]+$/, '') + ext;
+
         canvas.toBlob(function(blob) {
-          var resizedFile = new File([blob], file.name, {
-            type: 'image/jpeg',
+          if (!blob) {
+            // Fallback to JPEG if WebP blob failed
+            mimeType = 'image/jpeg';
+            fileName = file.name.replace(/\.[^.]+$/, '') + '.jpg';
+            canvas.toBlob(function(jpegBlob) {
+              var resizedFile = new File([jpegBlob || file], fileName, {
+                type: mimeType,
+                lastModified: Date.now()
+              });
+              resolve({ file: resizedFile, originalSize: originalSize, compressed: true });
+            }, 'image/jpeg', quality);
+            return;
+          }
+          var resizedFile = new File([blob], fileName, {
+            type: mimeType,
             lastModified: Date.now()
           });
-          resolve(resizedFile);
-        }, 'image/jpeg', 0.85);
+          resolve({ file: resizedFile, originalSize: originalSize, compressed: true });
+        }, mimeType, quality);
       };
       img.onerror = function() {
-        resolve(file);
+        resolve({ file: file, originalSize: originalSize, compressed: false });
       };
       img.src = URL.createObjectURL(file);
     });
@@ -105,43 +167,30 @@
         return;
       }
 
-      // Check dimensions and resize if needed
-      var img = new Image();
-      img.onload = function() {
-        var w = img.naturalWidth;
-        var h = img.naturalHeight;
+      // Resize and compress
+      resizeImage(file, maxDim).then(function(result) {
+        var resizedFile = result.file;
 
-        if (w > maxDim || h > maxDim) {
-          showMsg(msgEl, 'Image resized to fit ' + maxDim + 'x' + maxDim + 'px.', false);
-          resizeImage(file, maxDim).then(function(resizedFile) {
-            // Replace file input with resized version
-            var dt = new DataTransfer();
-            dt.items.add(resizedFile);
-            input.files = dt.files;
+        // Replace file input with processed version
+        var dt = new DataTransfer();
+        dt.items.add(resizedFile);
+        input.files = dt.files;
 
-            var reader = new FileReader();
-            reader.onload = function(ev) {
-              if (preview) preview.src = ev.target.result;
-              onValid(resizedFile, ev.target.result);
-            };
-            reader.readAsDataURL(resizedFile);
-          });
-        } else {
-          showMsg(msgEl, '', false);
-          var reader = new FileReader();
-          reader.onload = function(ev) {
-            if (preview) preview.src = ev.target.result;
-            onValid(file, ev.target.result);
-          };
-          reader.readAsDataURL(file);
+        // Build feedback message
+        var msg = '';
+        if (result.compressed) {
+          msg = 'Image compressed from ' + formatSize(result.originalSize) + ' to ' + formatSize(resizedFile.size);
+          if (useWebP) msg += ' (WebP)';
         }
-      };
-      img.onerror = function() {
-        showMsg(msgEl, 'Could not read the image. Please try a different file.', true);
-        input.value = '';
-        onReset();
-      };
-      img.src = URL.createObjectURL(file);
+        showMsg(msgEl, msg, false);
+
+        var reader = new FileReader();
+        reader.onload = function(ev) {
+          if (preview) preview.src = ev.target.result;
+          onValid(resizedFile, ev.target.result);
+        };
+        reader.readAsDataURL(resizedFile);
+      });
     });
   }
 
