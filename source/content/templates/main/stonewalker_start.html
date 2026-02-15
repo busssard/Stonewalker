@@ -237,10 +237,30 @@ document.addEventListener('DOMContentLoaded', function() {
           icon: createStoneIcon(stone.image || "{% static 'stone.png' %}", shape, color)
         }).addTo(map);
         markerMap[stone.PK_stone] = { layer: marker, type: stoneType };
-        marker.on('click', function() {
-          import('/static/js/stone-modal.js').then(mod => {
-            mod.openStoneModal(stone.PK_stone, color, stonesData);
-          });
+        // Leaflet popup with stone preview card
+        var popupContent = '<div class="sw-popup">'
+          + '<div class="sw-popup-header">'
+          + '<img class="sw-popup-thumb" src="' + (stone.image || "{% static 'stone.png' %}") + '" alt="" />'
+          + '<div class="sw-popup-info">'
+          + '<strong class="sw-popup-name">' + stone.PK_stone + '</strong>'
+          + '<span class="sw-popup-meta">' + (stone.user || 'Unknown') + '</span>'
+          + '</div></div>'
+          + '<div class="sw-popup-stats">'
+          + '<span>' + (stone.distance_km || 0).toFixed(1) + ' km traveled</span>'
+          + '</div>'
+          + '<button class="sw-popup-btn" data-stone="' + stone.PK_stone + '">View Journey</button>'
+          + '</div>';
+        marker.bindPopup(popupContent, { className: 'sw-popup-container', maxWidth: 240, minWidth: 200 });
+        marker.on('popupopen', function(e) {
+          var btn = e.popup.getElement().querySelector('.sw-popup-btn');
+          if (btn) {
+            btn.addEventListener('click', function() {
+              map.closePopup();
+              import('/static/js/stone-modal.js').then(mod => {
+                mod.openStoneModal(stone.PK_stone, color, stonesData);
+              });
+            });
+          }
         });
       }
     });

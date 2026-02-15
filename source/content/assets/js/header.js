@@ -83,6 +83,50 @@ window.addEventListener('DOMContentLoaded', function() {
   }
 });
 
+// Dark mode toggle
+(function() {
+  function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+  }
+
+  function getPreferredTheme() {
+    var saved = localStorage.getItem('theme');
+    if (saved) return saved;
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      return 'dark';
+    }
+    return 'light';
+  }
+
+  // Apply theme immediately on script load (before DOMContentLoaded)
+  applyTheme(getPreferredTheme());
+
+  function toggleDarkMode() {
+    var current = document.documentElement.getAttribute('data-theme');
+    var next = current === 'dark' ? 'light' : 'dark';
+    applyTheme(next);
+    localStorage.setItem('theme', next);
+  }
+
+  window.addEventListener('DOMContentLoaded', function() {
+    var btn = document.getElementById('dark-mode-toggle');
+    if (btn) {
+      btn.addEventListener('click', toggleDarkMode);
+    }
+  });
+
+  // Listen for OS theme changes
+  if (window.matchMedia) {
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
+      if (!localStorage.getItem('theme')) {
+        applyTheme(e.matches ? 'dark' : 'light');
+      }
+    });
+  }
+
+  window.toggleDarkMode = toggleDarkMode;
+})();
+
 // Profile modal logic
 function openProfileModal() {
   const overlay = document.getElementById('profile-modal-overlay');
