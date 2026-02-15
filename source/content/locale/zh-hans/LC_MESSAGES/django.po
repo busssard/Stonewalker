@@ -160,7 +160,7 @@ msgstr "你的用户名是："
 msgid ""
 "You received this email because you requested a password reset for your user"
 " account."
-msgstr ""
+msgstr "您收到这封邮件是因为您请求重置用户账户密码。"
 
 #: accounts/templates/accounts/emails/restore_password_email.html:19
 #: accounts/templates/accounts/emails/restore_password_email.txt:5
@@ -296,7 +296,7 @@ msgstr "你的电子邮件地址尚未确认。"
 msgid ""
 "Please check your inbox and click the confirmation link. If you do not "
 "confirm soon, your email will be reset."
-msgstr ""
+msgstr "请检查您的收件箱并点击确认链接。如果您不及时确认,您的邮箱将被重置。"
 
 #: accounts/templates/accounts/profile/change_profile.html:83
 msgid "Resend activation code"
@@ -365,7 +365,7 @@ msgstr "恢复密码"
 msgid ""
 "Please enter your new password twice so we can verify you typed it in "
 "correctly."
-msgstr ""
+msgstr "请输入两次新密码,以便我们验证您输入正确。"
 
 #: accounts/templates/accounts/restore_password_confirm.html:21
 #: content/templates/main/change_language.html:32
@@ -376,13 +376,13 @@ msgstr "修改"
 msgid ""
 "The password reset link was invalid, possibly because it has already been "
 "used. Please request a new password reset."
-msgstr ""
+msgstr "密码重置链接无效,可能是因为已经被使用过。请重新请求密码重置。"
 
 #: accounts/templates/accounts/restore_password_done.html:10
 msgid ""
 "We've emailed you instructions for setting your password, if an account "
 "exists with the email you entered."
-msgstr ""
+msgstr "如果您输入的邮箱存在账户,我们已向您发送了设置密码的说明。"
 
 #: accounts/templates/accounts/restore_password_done.html:11
 msgid "You should receive them shortly."
@@ -392,7 +392,7 @@ msgstr "你应该很快就能收到邮件。"
 msgid ""
 "If you don't receive an email, please make sure you've entered the address "
 "you signed up with, and check your spam folder."
-msgstr ""
+msgstr "如果您没有收到邮件,请确保您输入的是注册时使用的地址,并检查您的垃圾邮件文件夹。"
 
 #: accounts/templates/accounts/sign_up.html:14
 msgid "Create an account"
@@ -560,14 +560,14 @@ msgstr "编辑个人资料"
 msgid ""
 "Paint a stone, attach a QR code, hide it in the world, and watch it travel. "
 "StoneWalker tracks your painted stones on a global map."
-msgstr ""
+msgstr "给石头涂色,贴上二维码,藏在世界各地,看着它旅行。StoneWalker在全球地图上追踪你的彩绘石头。"
 
 #: content/templates/layouts/default/page.html:20
 #: content/templates/layouts/default/page.html:28
 msgid ""
 "Paint a stone, attach a QR code, hide it in the world, and watch it travel "
 "on a global map."
-msgstr ""
+msgstr "给石头涂色,贴上二维码,藏在世界各地,在全球地图上看着它旅行。"
 
 #: content/templates/layouts/default/page.html:192
 msgid "Profile menu"
@@ -588,6 +588,8 @@ msgid ""
 " of stone travelers who paint, hide, and track beautiful stones as they "
 "journey around the world."
 msgstr ""
+"StoneWalker是一个独特的平台,将寻宝游戏的乐趣与协作艺术的美感相结合。我们的使命是创建一个全球社区,"
+"让石头旅行者们在世界各地绘制、隐藏和追踪美丽的石头。"
 
 #: content/templates/main/about.html:20
 msgid "Did you know:"
@@ -599,6 +601,8 @@ msgid ""
 "years old. This shows that humans have always been drawn to creating art in "
 "unexpected places."
 msgstr ""
+"在印度尼西亚发现的最古老的已知洞穴绘画之一已有超过45,000年的历史。这表明人类一直被吸引到在意"
+"想不到的地方创造艺术。"
 
 #: content/templates/main/about.html:24
 msgid "Read more about this discovery →"
@@ -634,7 +638,7 @@ msgstr "使用无毒、耐候的颜料，如丙烯酸颜料。"
 
 #: content/templates/main/about.html:56 content/templates/main/about.html:58
 msgid "Don\\"
-msgstr ""
+msgstr "不要"
 
 #: content/templates/main/about.html:57
 msgid "Be kind and respectful to other community members!"
@@ -647,29 +651,29 @@ msgstr "你永远不知道它会去哪里，或者在途中会激励谁！"
 
 #: content/templates/main/about.html:65
 msgid "Our Mission"
-msgstr ""
+msgstr "我们的使命"
 
 #: content/templates/main/about.html:66
 msgid ""
 "StoneWalker is open source and community-driven. We believe that creative "
 "expression should be free and accessible to everyone."
-msgstr ""
+msgstr "StoneWalker是开源且由社区驱动的。我们相信创意表达应该是免费的,并且对所有人开放。"
 
 #: content/templates/main/about.html:67
 msgid ""
 "No ads, no data selling, no paywalls on the core experience. Every stone "
 "page and every journey map is free to view, forever."
-msgstr ""
+msgstr "没有广告,不出售数据,核心体验没有付费墙。每个石头页面和每张旅程地图都永久免费查看。"
 
 #: content/templates/main/about.html:68
 msgid ""
 "We sustain the project through QR code packs and optional premium features, "
 "not through exploiting your attention."
-msgstr ""
+msgstr "我们通过QR码套餐和可选的高级功能来维持项目,而不是通过榨取你的注意力。"
 
 #: content/templates/main/about.html:73
 msgid "Join the Movement"
-msgstr ""
+msgstr "加入行动"
 
 #: content/templates/main/about.html:74
 msgid ""
@@ -677,10 +681,12 @@ msgid ""
 "discovered. Whether you are an artist, a hiker, a teacher, or just someone "
 "who loves a good adventure, there is a place for you here."
 msgstr ""
+"成千上万的彩绘石头等待着被创造、隐藏和发现。无论你是艺术家、徒步旅行者、教师,还是只是喜欢"
+"冒险的人,这里都有你的位置。"
 
 #: content/templates/main/about.html:78
 msgid "Get Your First QR Code"
-msgstr ""
+msgstr "获取你的第一个QR码"
 
 #: content/templates/main/about.html:79
 msgid "Start Your Journey"
@@ -810,6 +816,8 @@ msgid ""
 "QR code, and hide it for someone to find. Every time it gets scanned, you "
 "will see its journey on the map."
 msgstr ""
+"给它一个独特的名字。认领后,你可以给石头涂色,贴上QR码,然后藏起来让别人找到。每次被扫描时,"
+"你都会在地图上看到它的旅程。"
 
 #: content/templates/main/claim_stone.html:45
 #: content/templates/main/new_add_stone_modal.html:29
@@ -829,7 +837,7 @@ msgstr "不允许空格"
 
 #: content/templates/main/claim_stone.html:56
 msgid "Max 10 characters, no spaces. This will be your stone\\"
-msgstr ""
+msgstr "最多10个字符,不能有空格。这将是你的石头ID"
 
 #: content/templates/main/claim_stone.html:58
 msgid "Description (optional)"
@@ -1280,10 +1288,12 @@ msgid ""
 "tape or varnish, and attach it to any painted stone. When someone finds and "
 "scans it, the stone appears on our world map and you get notified."
 msgstr ""
+"你会获得一个独特的可打印QR码图像。打印出来,用透明胶带或清漆密封,然后贴在任何彩绘石头上。当有"
+"人找到并扫描它时,石头就会出现在我们的世界地图上,你会收到通知。"
 
 #: content/templates/main/shop.html:157
 msgid "What is the 3-Pack for?"
-msgstr ""
+msgstr "3个装的套餐有什么用？"
 
 #: content/templates/main/shop.html:158
 msgid ""
@@ -1291,6 +1301,8 @@ msgid ""
 "stone trail, or giving stones as gifts. Each QR code is unique and links to "
 "its own stone page."
 msgstr ""
+"入门3件套非常适合与朋友一起绘画,创建主题石头小径,或赠送石头作为礼物。每个QR码都是独一无二的,"
+"并链接到自己的石头页面。"
 
 #: content/templates/main/shop.html:161
 msgid "What is the 10-Pack for?"
@@ -1302,10 +1314,12 @@ msgid ""
 "any group activity. You receive a single PDF page with 10 QR codes ready to "
 "cut out and distribute."
 msgstr ""
+"10件套非常适合课堂、童子军小组、生日派对或任何团体活动。你会收到一个PDF页面,上面有10个QR码,"
+"可以剪下来分发。"
 
 #: content/templates/main/shop.html:165
 msgid "What is the Classroom 30-Pack for?"
-msgstr ""
+msgstr "课堂30件套有什么用？"
 
 #: content/templates/main/shop.html:166
 msgid ""
@@ -1313,10 +1327,12 @@ msgid ""
 "You get 30 QR codes on printable PDF sheets, ready to cut out and distribute"
 " to a whole class or group."
 msgstr ""
+"30件套是为教师、童子军领导和活动组织者设计的。你会得到30个QR码,在可打印的PDF页上,可以剪下来"
+"分发给整个班级或小组。"
 
 #: content/templates/main/shop.html:169
 msgid "How do I attach the QR code to my stone?"
-msgstr ""
+msgstr "如何将QR码贴在石头上？"
 
 #: content/templates/main/shop.html:170
 msgid ""
@@ -1324,18 +1340,20 @@ msgid ""
 "stone. For outdoor durability, seal it with clear packing tape, spray "
 "varnish, or a coat of Mod Podge. This protects it from rain and sun."
 msgstr ""
+"打印QR码,剪下来,粘在你画好的石头背面。为了在户外的耐用性,用透明包装胶带、喷漆或一层Mod Podge"
+"密封。这可以保护它免受雨水和阳光的侵害。"
 
 #: content/templates/main/shop.html:173
 msgid "What happens when someone scans my stone?"
-msgstr ""
+msgstr "当有人扫描我的石头时会发生什么？"
 
 #: content/templates/main/shop.html:174
 msgid "They see your stone\\"
-msgstr ""
+msgstr "他们会看到你的石头页面,可以留下评论或照片"
 
 #: content/templates/main/shop.html:177
 msgid "Can I buy QR codes as a gift?"
-msgstr ""
+msgstr "我可以购买QR码作为礼物吗？"
 
 #: content/templates/main/shop.html:178
 msgid ""
@@ -1343,14 +1361,16 @@ msgid ""
 "can print them out and give them to anyone to use with their own painted "
 "stones."
 msgstr ""
+"是的!QR码在有人认领之前不会绑定到你的账户。你可以打印出来,送给任何人与他们自己的彩绘石头一起"
+"使用。"
 
 #: content/templates/main/shop.html:181
 msgid "What if my stone gets lost?"
-msgstr ""
+msgstr "如果我的石头丢了怎么办？"
 
 #: content/templates/main/shop.html:182
 msgid "That is part of the adventure! Your stone\\"
-msgstr ""
+msgstr "这是冒险的一部分!你的石头可能在任何地方"
 
 #: content/templates/main/shop.html:185
 msgid "Can I re-download my QR codes later?"
@@ -1360,7 +1380,7 @@ msgstr "我以后还能重新下载QR码吗？"
 msgid ""
 "Yes! All your purchases appear in the \"Your Purchases\" bar at the bottom "
 "of this page. You can re-download them anytime."
-msgstr ""
+msgstr "是的!你的所有购买都会出现在本页底部的\"你的购买\"栏中。你可以随时重新下载。"
 
 #: content/templates/main/shop.html:201
 msgid "Your Purchases"
@@ -1391,7 +1411,7 @@ msgstr "这块石头处于草稿模式。你可以编辑并在准备好时发布
 msgid ""
 "This stone is published and visible on the map. You can no longer edit it, "
 "but you can send it off to finalize it."
-msgstr ""
+msgstr "这块石头已发布并在地图上可见。你不能再编辑它了,但可以放飞它以完成。"
 
 #: content/templates/main/stone_edit.html:33
 msgid ""
@@ -1438,7 +1458,7 @@ msgstr "发布石头"
 #: content/templates/main/stone_edit.html:99
 msgid ""
 "Your stone has a persistent QR code that will always lead to the stone page."
-msgstr ""
+msgstr "你的石头有一个永久性的QR码,它将永远指向石头页面。"
 
 #: content/templates/main/stone_edit.html:108
 msgid "QR URL:"
@@ -1453,7 +1473,7 @@ msgstr "放飞石头"
 msgid ""
 "Once you send off your stone, it becomes finalized and ready for its "
 "journey. This action cannot be undone."
-msgstr ""
+msgstr "一旦你放飞你的石头,它就会被完成并准备好旅行。此操作无法撤消。"
 
 #: content/templates/main/stone_edit.html:124
 msgid ""
@@ -1470,7 +1490,7 @@ msgstr "找到石头了！"
 
 #: content/templates/main/stone_found.html:29
 msgid "This is your first stone! Here\\"
-msgstr ""
+msgstr "这是你的第一块石头!以下是运作方式"
 
 #: content/templates/main/stone_found.html:31
 msgid "You found a stone that someone else placed"
@@ -1482,7 +1502,7 @@ msgstr "现在告诉我们你在哪里找到的"
 
 #: content/templates/main/stone_found.html:33
 msgid "If it\\"
-msgstr ""
+msgstr "如果是被追踪的石头,你需要再次隐藏它"
 
 #: content/templates/main/stone_found.html:34
 msgid "This creates a trail of stone movements around the world!"
@@ -1494,11 +1514,11 @@ msgstr "找到被追踪的石头了！"
 
 #: content/templates/main/stone_found.html:43
 msgid "Congratulations! Many others were probably looking for this stone. You\\"
-msgstr ""
+msgstr "恭喜!很多其他人可能也在寻找这块石头。你赢了"
 
 #: content/templates/main/stone_found.html:44
 msgid "Next week, you\\"
-msgstr ""
+msgstr "下周你需要再次隐藏它"
 
 #: content/templates/main/stone_found.html:52
 #: content/templates/main/stone_scan.html:26
@@ -1593,7 +1613,7 @@ msgstr "此石头名称已被使用。请选择其他名称。"
 msgid ""
 "Congratulations! You claimed \"%(name)s\"! You can now edit and personalize "
 "your stone."
-msgstr ""
+msgstr "恭喜!你已成功认领\"%(name)s\"!现在你可以编辑和个性化你的石头了。"
 
 #: main/shop_views.py:169
 msgid "An error occurred while claiming the stone. Please try again."

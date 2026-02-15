@@ -150,10 +150,8 @@ msgstr "Le due password non sono uguali! Controlla bene!"
 
 #: accounts/templates/accounts/emails/activate_profile.html:28
 #: accounts/templates/accounts/emails/activate_profile.txt:7
-#, fuzzy
-#| msgid "Edit Profile"
 msgid "Activate Your Profile"
-msgstr "Modifica Profilo"
+msgstr "Attiva il Tuo Profilo"
 
 #: accounts/templates/accounts/emails/activate_profile.html:31
 #: accounts/templates/accounts/emails/activate_profile.txt:9
@@ -161,10 +159,8 @@ msgid "To activate your profile, please follow this link:"
 msgstr "Per svegliare il tuo profilo, clicca su questo link magico:"
 
 #: accounts/templates/accounts/emails/activate_profile.html:37
-#, fuzzy
-#| msgid "Edit Profile"
 msgid "Activate Profile"
-msgstr "Modifica Profilo"
+msgstr "Attiva Profilo"
 
 #: accounts/templates/accounts/emails/activate_profile.html:43
 #: accounts/templates/accounts/emails/change_email.html:43
@@ -173,6 +169,8 @@ msgid ""
 "If the button above does not work, copy and paste this link into your "
 "browser:"
 msgstr ""
+"Se il pulsante qui sopra non funziona, copia e incolla questo link nel tuo "
+"browser:"
 
 #: accounts/templates/accounts/emails/activate_profile.html:55
 #: accounts/templates/accounts/emails/activate_profile.txt:15
@@ -182,18 +180,14 @@ msgstr ""
 #: accounts/templates/accounts/emails/forgotten_username.txt:17
 #: accounts/templates/accounts/emails/restore_password_email.html:63
 #: accounts/templates/accounts/emails/restore_password_email.txt:19
-#, fuzzy
-#| msgid "Track the journey of painted stones around the world"
 msgid "Track painted stones around the world"
-msgstr "Segui il viaggio dei sassi dipinti in tutto il mondo"
+msgstr "Traccia i sassi dipinti in giro per il mondo"
 
 #: accounts/templates/accounts/emails/change_email.html:28
 #: accounts/templates/accounts/emails/change_email.html:37
 #: accounts/templates/accounts/emails/change_email.txt:7
-#, fuzzy
-#| msgid "Cancel email change"
 msgid "Confirm Email Change"
-msgstr "Annulla cambio email"
+msgstr "Conferma Cambio Email"
 
 #: accounts/templates/accounts/emails/change_email.html:31
 #: accounts/templates/accounts/emails/change_email.txt:9
@@ -202,8 +196,6 @@ msgstr "Per cambiare la tua email, segui questo link speciale:"
 
 #: accounts/templates/accounts/emails/forgotten_username.html:28
 #: accounts/templates/accounts/emails/forgotten_username.txt:7
-#, fuzzy
-#| msgid "Your username"
 msgid "Your Username"
 msgstr "Il Tuo Nome Utente"
 
@@ -217,13 +209,13 @@ msgstr "Il tuo nome utente è:"
 msgid ""
 "If you did not request this information, you can safely ignore this email."
 msgstr ""
+"Se non hai richiesto queste informazioni, puoi tranquillamente ignorare "
+"questa email."
 
 #: accounts/templates/accounts/emails/restore_password_email.html:28
 #: accounts/templates/accounts/emails/restore_password_email.txt:7
-#, fuzzy
-#| msgid "Password"
 msgid "Password Reset"
-msgstr "Password Segreta"
+msgstr "Reimposta Password"
 
 #: accounts/templates/accounts/emails/restore_password_email.html:31
 #: accounts/templates/accounts/emails/restore_password_email.txt:9
@@ -231,6 +223,8 @@ msgid ""
 "You received this email because you requested a password reset for your user "
 "account."
 msgstr ""
+"Hai ricevuto questa email perché hai richiesto di reimpostare la password "
+"per il tuo account."
 
 #: accounts/templates/accounts/emails/restore_password_email.html:35
 #: accounts/templates/accounts/emails/restore_password_email.txt:11
@@ -238,16 +232,16 @@ msgid "Please, go to the following page and choose a new password:"
 msgstr "Vai a questa pagina e scegli una nuova password super sicura:"
 
 #: accounts/templates/accounts/emails/restore_password_email.html:41
-#, fuzzy
-#| msgid "Restore password"
 msgid "Reset Password"
-msgstr "Recupera la Password"
+msgstr "Reimposta Password"
 
 #: accounts/templates/accounts/emails/restore_password_email.html:54
 #: accounts/templates/accounts/emails/restore_password_email.txt:15
 msgid ""
 "If you did not request this password reset, you can safely ignore this email."
 msgstr ""
+"Se non hai richiesto di reimpostare la password, puoi tranquillamente "
+"ignorare questa email."
 
 #: accounts/templates/accounts/log_in.html:7
 #: accounts/templates/accounts/sign_up.html:10
@@ -360,39 +354,33 @@ msgstr "Lascia vuoto per mantenere l'attuale"
 
 #: accounts/templates/accounts/profile/change_profile.html:68
 #: accounts/templates/accounts/sign_up.html:79
-#, fuzzy
-#| msgid "Maximum 500 characters"
 msgid "At least 8 characters"
-msgstr "Massimo 500 caratteri"
+msgstr "Almeno 8 caratteri"
 
 #: accounts/templates/accounts/profile/change_profile.html:69
 #: accounts/templates/accounts/sign_up.html:80
 msgid "Can't be entirely numeric"
-msgstr ""
+msgstr "Non può essere solo numeri"
 
 #: accounts/templates/accounts/profile/change_profile.html:70
 #: accounts/templates/accounts/sign_up.html:81
 msgid "Not a commonly used password"
-msgstr ""
+msgstr "Non deve essere una password comune"
 
 #: accounts/templates/accounts/profile/change_profile.html:71
 #: accounts/templates/accounts/sign_up.html:82
 msgid "Can't be too similar to your personal info"
-msgstr ""
+msgstr "Non deve essere troppo simile ai tuoi dati personali"
 
 #: accounts/templates/accounts/profile/change_profile.html:77
 #: accounts/templates/accounts/sign_up.html:92
-#, fuzzy
-#| msgid "Passwords do not match."
 msgid "Passwords match"
-msgstr "Le due password non sono uguali! Controlla bene!"
+msgstr "Le password corrispondono"
 
 #: accounts/templates/accounts/profile/change_profile.html:78
 #: accounts/templates/accounts/sign_up.html:93
-#, fuzzy
-#| msgid "Passwords do not match."
 msgid "Passwords do not match"
-msgstr "Le due password non sono uguali! Controlla bene!"
+msgstr "Le password non corrispondono"
 
 #: accounts/templates/accounts/profile/change_profile.html:81
 msgid "Save profile"
@@ -415,6 +403,8 @@ msgid ""
 "Please check your inbox and click the confirmation link. If you do not "
 "confirm soon, your email will be reset."
 msgstr ""
+"Controlla la tua casella di posta e clicca sul link di conferma. Se non "
+"confermi presto, la tua email verrà reimpostata."
 
 #: accounts/templates/accounts/profile/change_profile.html:91
 msgid "Resend activation code"
@@ -486,6 +476,8 @@ msgid ""
 "Please enter your new password twice so we can verify you typed it in "
 "correctly."
 msgstr ""
+"Inserisci la tua nuova password due volte così possiamo verificare che sia "
+"corretta."
 
 #: accounts/templates/accounts/restore_password_confirm.html:21
 #: content/templates/main/change_language.html:32
@@ -497,12 +489,16 @@ msgid ""
 "The password reset link was invalid, possibly because it has already been "
 "used. Please request a new password reset."
 msgstr ""
+"Il link per reimpostare la password non è valido, forse perché è già stato "
+"usato. Richiedi un nuovo link per reimpostare la password."
 
 #: accounts/templates/accounts/restore_password_done.html:10
 msgid ""
 "We've emailed you instructions for setting your password, if an account "
 "exists with the email you entered."
 msgstr ""
+"Ti abbiamo inviato per email le istruzioni per reimpostare la password, se "
+"esiste un account con l'email che hai inserito."
 
 #: accounts/templates/accounts/restore_password_done.html:11
 msgid "You should receive them shortly."
@@ -513,6 +509,8 @@ msgid ""
 "If you don't receive an email, please make sure you've entered the address "
 "you signed up with, and check your spam folder."
 msgstr ""
+"Se non ricevi l'email, assicurati di aver inserito l'indirizzo con cui ti "
+"sei registrato e controlla la cartella spam."
 
 #: accounts/templates/accounts/sign_up.html:14
 msgid "Create an account"
@@ -527,17 +525,15 @@ msgstr ""
 
 #: accounts/templates/accounts/sign_up.html:48
 msgid "First name"
-msgstr ""
+msgstr "Nome"
 
 #: accounts/templates/accounts/sign_up.html:58
 msgid "Last name"
-msgstr ""
+msgstr "Cognome"
 
 #: accounts/templates/accounts/sign_up.html:89
-#, fuzzy
-#| msgid "Confirm new password"
 msgid "Confirm password"
-msgstr "Ripeti la Nuova Password"
+msgstr "Conferma password"
 
 #: accounts/templates/accounts/sign_up.html:99
 msgid "Create"
@@ -700,6 +696,8 @@ msgid ""
 "Paint a stone, attach a QR code, hide it in the world, and watch it travel. "
 "StoneWalker tracks your painted stones on a global map."
 msgstr ""
+"Dipingi un sasso, attacca un codice QR, nascondilo nel mondo e guardalo "
+"viaggiare. StoneWalker traccia i tuoi sassi dipinti su una mappa globale."
 
 #: content/templates/layouts/default/page.html:20
 #: content/templates/layouts/default/page.html:28
@@ -707,6 +705,8 @@ msgid ""
 "Paint a stone, attach a QR code, hide it in the world, and watch it travel "
 "on a global map."
 msgstr ""
+"Dipingi un sasso, attacca un codice QR, nascondilo nel mondo e guardalo "
+"viaggiare su una mappa globale."
 
 #: content/templates/layouts/default/page.html:192
 msgid "Profile menu"
@@ -727,6 +727,10 @@ msgid ""
 "of stone travelers who paint, hide, and track beautiful stones as they "
 "journey around the world."
 msgstr ""
+"StoneWalker è una piattaforma unica che combina la gioia del geocaching con "
+"la bellezza dell'arte collaborativa. La nostra missione è creare una "
+"comunità globale di viaggiatori di sassi che dipingono, nascondono e "
+"tracciano bellissimi sassi mentre viaggiano per il mondo."
 
 #: content/templates/main/about.html:20
 msgid "Did you know:"
@@ -738,6 +742,9 @@ msgid ""
 "years old. This shows that humans have always been drawn to creating art in "
 "unexpected places."
 msgstr ""
+"Una delle pitture rupestri più antiche conosciute, trovata in Indonesia, ha "
+"più di 45.000 anni. Questo dimostra che gli esseri umani sono sempre stati "
+"attratti dalla creazione di arte in luoghi inaspettati."
 
 #: content/templates/main/about.html:24
 msgid "Read more about this discovery →"
@@ -772,8 +779,6 @@ msgid "Use non-toxic, weather-resistant paint, like acrylic."
 msgstr "Usa colori non tossici e resistenti al tempo, come quelli acrilici."
 
 #: content/templates/main/about.html:56 content/templates/main/about.html:58
-#, fuzzy
-#| msgid "Don\\\\\\\\"
 msgid "Don\\"
 msgstr "Non"
 
@@ -788,29 +793,36 @@ msgstr "Non si sa mai dove andrà o chi potrebbe ispirare lungo il cammino!"
 
 #: content/templates/main/about.html:65
 msgid "Our Mission"
-msgstr ""
+msgstr "La Nostra Missione"
 
 #: content/templates/main/about.html:66
 msgid ""
 "StoneWalker is open source and community-driven. We believe that creative "
 "expression should be free and accessible to everyone."
 msgstr ""
+"StoneWalker è open source e guidato dalla comunità. Crediamo che "
+"l'espressione creativa debba essere libera e accessibile a tutti."
 
 #: content/templates/main/about.html:67
 msgid ""
 "No ads, no data selling, no paywalls on the core experience. Every stone "
 "page and every journey map is free to view, forever."
 msgstr ""
+"Niente pubblicità, niente vendita di dati, niente paywall sull'esperienza "
+"principale. Ogni pagina di sassi e ogni mappa del viaggio è gratuita per "
+"sempre."
 
 #: content/templates/main/about.html:68
 msgid ""
 "We sustain the project through QR code packs and optional premium features, "
 "not through exploiting your attention."
 msgstr ""
+"Sosteniamo il progetto attraverso pacchetti di codici QR e funzionalità "
+"premium opzionali, non sfruttando la tua attenzione."
 
 #: content/templates/main/about.html:73
 msgid "Join the Movement"
-msgstr ""
+msgstr "Unisciti al Movimento"
 
 #: content/templates/main/about.html:74
 msgid ""
@@ -818,12 +830,13 @@ msgid ""
 "discovered. Whether you are an artist, a hiker, a teacher, or just someone "
 "who loves a good adventure, there is a place for you here."
 msgstr ""
+"Migliaia di sassi dipinti aspettano di essere creati, nascosti e scoperti. "
+"Che tu sia un artista, un escursionista, un insegnante o semplicemente "
+"qualcuno che ama una bella avventura, c'è un posto per te qui."
 
 #: content/templates/main/about.html:78
-#, fuzzy
-#| msgid "Your Stone QR Code"
 msgid "Get Your First QR Code"
-msgstr "Il codice QR della tua pietra"
+msgstr "Ottieni il Tuo Primo Codice QR"
 
 #: content/templates/main/about.html:79
 msgid "Start Your Journey"
@@ -959,6 +972,9 @@ msgid ""
 "QR code, and hide it for someone to find. Every time it gets scanned, you "
 "will see its journey on the map."
 msgstr ""
+"Dagli un nome unico. Dopo averlo reclamato, puoi dipingere il tuo sasso, "
+"attaccare il codice QR e nasconderlo perché qualcuno lo trovi. Ogni volta "
+"che viene scansionato, vedrai il suo viaggio sulla mappa."
 
 #: content/templates/main/claim_stone.html:45
 #: content/templates/main/new_add_stone_modal.html:29
@@ -978,7 +994,7 @@ msgstr "Spazi non consentiti"
 
 #: content/templates/main/claim_stone.html:56
 msgid "Max 10 characters, no spaces. This will be your stone\\"
-msgstr ""
+msgstr "Massimo 10 caratteri, senza spazi. Questo sarà l'ID del tuo sasso"
 
 #: content/templates/main/claim_stone.html:58
 msgid "Description (optional)"
@@ -1442,12 +1458,14 @@ msgid ""
 "tape or varnish, and attach it to any painted stone. When someone finds and "
 "scans it, the stone appears on our world map and you get notified."
 msgstr ""
+"Ricevi un'immagine QR unica e stampabile. Stampala, sigillala con nastro "
+"trasparente o vernice e attaccala a qualsiasi pietra dipinta. Quando "
+"qualcuno la trova e la scansiona, la pietra appare sulla nostra mappa "
+"mondiale e ricevi una notifica."
 
 #: content/templates/main/shop.html:157
-#, fuzzy
-#| msgid "What is the 10-Pack for?"
 msgid "What is the 3-Pack for?"
-msgstr "A cosa serve il pacchetto da 10?"
+msgstr "A cosa serve il pacchetto da 3?"
 
 #: content/templates/main/shop.html:158
 msgid ""
@@ -1455,6 +1473,9 @@ msgid ""
 "stone trail, or giving stones as gifts. Each QR code is unique and links to "
 "its own stone page."
 msgstr ""
+"Il pacchetto da 3 è perfetto per dipingere con gli amici, creare un "
+"percorso di sassi a tema o regalare sassi. Ogni codice QR è unico e rimanda "
+"alla propria pagina della pietra."
 
 #: content/templates/main/shop.html:161
 msgid "What is the 10-Pack for?"
@@ -1466,12 +1487,13 @@ msgid ""
 "any group activity. You receive a single PDF page with 10 QR codes ready to "
 "cut out and distribute."
 msgstr ""
+"Il pacchetto da 10 è perfetto per classi scolastiche, gruppi scout, feste "
+"di compleanno o qualsiasi attività di gruppo. Ricevi una singola pagina PDF "
+"con 10 codici QR pronti da ritagliare e distribuire."
 
 #: content/templates/main/shop.html:165
-#, fuzzy
-#| msgid "What is the 10-Pack for?"
 msgid "What is the Classroom 30-Pack for?"
-msgstr "A cosa serve il pacchetto da 10?"
+msgstr "A cosa serve il pacchetto Classe da 30?"
 
 #: content/templates/main/shop.html:166
 msgid ""
@@ -1479,10 +1501,13 @@ msgid ""
 "You get 30 QR codes on printable PDF sheets, ready to cut out and distribute "
 "to a whole class or group."
 msgstr ""
+"Il pacchetto da 30 è pensato per insegnanti, capi scout e organizzatori di "
+"eventi. Ricevi 30 codici QR su fogli PDF stampabili, pronti da ritagliare e "
+"distribuire a un'intera classe o gruppo."
 
 #: content/templates/main/shop.html:169
 msgid "How do I attach the QR code to my stone?"
-msgstr ""
+msgstr "Come attacco il codice QR al mio sasso?"
 
 #: content/templates/main/shop.html:170
 msgid ""
@@ -1490,22 +1515,22 @@ msgid ""
 "stone. For outdoor durability, seal it with clear packing tape, spray "
 "varnish, or a coat of Mod Podge. This protects it from rain and sun."
 msgstr ""
+"Stampa il codice QR, ritaglialo e incollalo sul retro del tuo sasso "
+"dipinto. Per resistere all'aperto, sigillalo con nastro trasparente, "
+"vernice spray o uno strato di Mod Podge. Questo lo protegge dalla pioggia e "
+"dal sole."
 
 #: content/templates/main/shop.html:173
 msgid "What happens when someone scans my stone?"
-msgstr ""
+msgstr "Cosa succede quando qualcuno scansiona il mio sasso?"
 
 #: content/templates/main/shop.html:174
-#, fuzzy
-#| msgid "Describe your stone..."
 msgid "They see your stone\\"
-msgstr "Descrivi la tua pietra..."
+msgstr "Vedono la pagina del tuo sasso e possono lasciare un commento o foto"
 
 #: content/templates/main/shop.html:177
-#, fuzzy
-#| msgid "Can I re-download my QR codes later?"
 msgid "Can I buy QR codes as a gift?"
-msgstr "Posso riscaricare i miei codici QR in seguito?"
+msgstr "Posso comprare codici QR come regalo?"
 
 #: content/templates/main/shop.html:178
 msgid ""
@@ -1513,14 +1538,17 @@ msgid ""
 "can print them out and give them to anyone to use with their own painted "
 "stones."
 msgstr ""
+"Sì! I codici QR non sono legati al tuo account finché qualcuno non li "
+"reclama. Puoi stamparli e darli a chiunque per usarli con i propri sassi "
+"dipinti."
 
 #: content/templates/main/shop.html:181
 msgid "What if my stone gets lost?"
-msgstr ""
+msgstr "E se il mio sasso si perde?"
 
 #: content/templates/main/shop.html:182
 msgid "That is part of the adventure! Your stone\\"
-msgstr ""
+msgstr "Fa parte dell'avventura! Il tuo sasso potrebbe essere ovunque"
 
 #: content/templates/main/shop.html:185
 msgid "Can I re-download my QR codes later?"
@@ -1531,6 +1559,8 @@ msgid ""
 "Yes! All your purchases appear in the \"Your Purchases\" bar at the bottom "
 "of this page. You can re-download them anytime."
 msgstr ""
+"Sì! Tutti i tuoi acquisti appaiono nella barra \"I tuoi acquisti\" in fondo "
+"a questa pagina. Puoi riscariscarli in qualsiasi momento."
 
 #: content/templates/main/shop.html:201
 msgid "Your Purchases"
@@ -1564,6 +1594,8 @@ msgid ""
 "This stone is published and visible on the map. You can no longer edit it, "
 "but you can send it off to finalize it."
 msgstr ""
+"Questa pietra è pubblicata e visibile sulla mappa. Non puoi più modificarla, "
+"ma puoi spedirla per finalizzarla."
 
 #: content/templates/main/stone_edit.html:33
 msgid ""
@@ -1613,28 +1645,24 @@ msgstr "Pubblica pietra"
 msgid ""
 "Your stone has a persistent QR code that will always lead to the stone page."
 msgstr ""
+"Il tuo sasso ha un codice QR permanente che porterà sempre alla pagina del "
+"sasso."
 
 #: content/templates/main/stone_edit.html:108
 msgid "QR URL:"
 msgstr "URL QR:"
 
 #: content/templates/main/stone_edit.html:117
-#, fuzzy
-#| msgid "Stone details"
 msgid "Stone Certificate"
-msgstr "Dettagli pietra"
+msgstr "Certificato della Pietra"
 
 #: content/templates/main/stone_edit.html:118
-#, fuzzy
-#| msgid "Download and print this code for your stone"
 msgid "Download a printable certificate of creation for your stone."
-msgstr "Scarica e stampa questo codice per la tua pietra"
+msgstr "Scarica un certificato di creazione stampabile per la tua pietra."
 
 #: content/templates/main/stone_edit.html:122
-#, fuzzy
-#| msgid "Download QR Code"
 msgid "Download Certificate"
-msgstr "Scarica codice QR"
+msgstr "Scarica Certificato"
 
 #: content/templates/main/stone_edit.html:131
 #: content/templates/main/stone_edit.html:138
@@ -1646,6 +1674,8 @@ msgid ""
 "Once you send off your stone, it becomes finalized and ready for its "
 "journey. This action cannot be undone."
 msgstr ""
+"Una volta spedita la tua pietra, diventa definitiva e pronta per il suo "
+"viaggio. Questa azione non può essere annullata."
 
 #: content/templates/main/stone_edit.html:137
 msgid ""
@@ -1664,7 +1694,7 @@ msgstr "Pietra trovata!"
 
 #: content/templates/main/stone_found.html:29
 msgid "This is your first stone! Here\\"
-msgstr ""
+msgstr "Questo è il tuo primo sasso! Ecco come funziona"
 
 #: content/templates/main/stone_found.html:31
 msgid "You found a stone that someone else placed"
@@ -1676,7 +1706,7 @@ msgstr "Ora devi dirci dove l'hai trovata"
 
 #: content/templates/main/stone_found.html:33
 msgid "If it\\"
-msgstr ""
+msgstr "Se è un sasso cacciato, dovrai nasconderlo di nuovo"
 
 #: content/templates/main/stone_found.html:34
 msgid "This creates a trail of stone movements around the world!"
@@ -1690,10 +1720,12 @@ msgstr "Pietra cacciata trovata!"
 msgid ""
 "Congratulations! Many others were probably looking for this stone. You\\"
 msgstr ""
+"Congratulazioni! Molti altri probabilmente stavano cercando questa pietra. "
+"Hai vinto"
 
 #: content/templates/main/stone_found.html:44
 msgid "Next week, you\\"
-msgstr ""
+msgstr "La prossima settimana dovrai nasconderla di nuovo"
 
 #: content/templates/main/stone_found.html:52
 #: content/templates/main/stone_scan.html:26
@@ -1761,35 +1793,33 @@ msgstr "Scansiona un codice QR di una pietra"
 
 #: main/certificate_service.py:89
 msgid "Certificate of Creation"
-msgstr ""
+msgstr "Certificato di Creazione"
 
 #: main/certificate_service.py:136
 msgid "This certifies that"
-msgstr ""
+msgstr "Questo certifica che"
 
 #: main/certificate_service.py:139
 msgid "Unknown"
-msgstr ""
+msgstr "Sconosciuto"
 
 #: main/certificate_service.py:146
 msgid "is the creator of"
-msgstr ""
+msgstr "è il creatore di"
 
 #: main/certificate_service.py:180
 #, python-format
 msgid "Journey started on %(date)s"
-msgstr ""
+msgstr "Viaggio iniziato il %(date)s"
 
 #: main/certificate_service.py:187
 #, python-format
 msgid "Type: %(type)s"
-msgstr ""
+msgstr "Tipo: %(type)s"
 
 #: main/certificate_service.py:259
-#, fuzzy
-#| msgid "Track the journey of painted stones around the world"
 msgid "Track your painted stone's journey around the world"
-msgstr "Segui il viaggio dei sassi dipinti in tutto il mondo"
+msgstr "Traccia il viaggio del tuo sasso dipinto in giro per il mondo"
 
 #: main/shop_views.py:53 main/shop_views.py:71 main/shop_views.py:432
 msgid "Stone not found."
@@ -1821,6 +1851,8 @@ msgid ""
 "Congratulations! You claimed \"%(name)s\"! You can now edit and personalize "
 "your stone."
 msgstr ""
+"Congratulazioni! Hai reclamato \"%(name)s\"! Ora puoi modificare e "
+"personalizzare il tuo sasso."
 
 #: main/shop_views.py:169
 msgid "An error occurred while claiming the stone. Please try again."
