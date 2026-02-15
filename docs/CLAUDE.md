@@ -384,6 +384,67 @@ The goal is to avoid running 5 Opus agents when 3 of them are writing docs. Matc
 - Workaround: don't query the DB after an expected DB error, or use `TransactionTestCase` instead
 - The view's generic `except Exception` catches these errors and redirects, but the test's atomic block is already broken
 
+### Test Database & Migrations (Stale Cache Problem)
+
+**What is the test database?**
+pytest-django creates a separate PostgreSQL database for tests (usually named `test_stone_dev` — it prefixes your real DB name with `test_`). This database is created fresh the first time you run tests, and then **reused** on subsequent runs for speed. pytest-django tracks which migrations have been applied and only runs new ones.
+
+**The problem: stale test database after model changes**
+When someone (or an agent) adds new model fields or creates new models, Django generates migration files (e.g. `0009_profile_social_fields.py`). These migrations change the database schema. But the **cached test database** still has the OLD schema. If another developer (or agent) runs tests before the migration is applied to the test DB, tests will fail with errors like:
+
+```
+django.db.utils.OperationalError: no such column: accounts_profile.facebook_url
+```
+
+or
+
+```
+django.db.utils.ProgrammingError: column "terms_accepted_at" of relation "accounts_termsacceptance" does not exist
+```
+
+**This is especially common in multi-agent sprints** where one agent creates migrations while another agent tries to run tests.
+
+**How to fix it — step by step:**
+
+1. **Check if there are unapplied migrations:**
+   ```bash
+   ./venv/bin/python source/manage.py showmigrations | grep '\[ \]'
+   ```
+   Any line showing `[ ]` (empty brackets) means that migration hasn't been applied yet.
+
+2. **Apply migrations to the development database:**
+   ```bash
+   ./venv/bin/python source/manage.py migrate
+   ```
+
+3. **Force-recreate the test database** by passing `--create-db` to pytest:
+   ```bash
+   ./venv/bin/python run_tests.py --create-db
+   ```
+   This tells pytest-django to DROP the old test database and create a brand new one with all migrations applied from scratch. It takes a few seconds longer but guarantees a clean state.
+
+4. **After that, normal test runs work again** (no `--create-db` needed until the next schema change):
+   ```bash
+   ./venv/bin/python run_tests.py
+   ```
+
+**When do you need `--create-db`?**
+- After pulling code that includes new migration files
+- After running `makemigrations` yourself
+- After another agent creates migrations while you're working
+- When you see `OperationalError` or `ProgrammingError` about missing columns/tables in tests
+- When tests fail with "relation does not exist" errors
+
+**When do you NOT need `--create-db`?**
+- Normal test runs where no schema changes happened
+- After editing Python code, templates, CSS, or JS (no schema impact)
+- After editing existing data in migrations (data migrations don't change schema)
+
+**Prevention in multi-agent sprints:**
+- Agents that create models/migrations should run `makemigrations` AND `migrate` immediately
+- Agents that run tests after another agent changed models should use `--create-db` on their first test run
+- The team lead should coordinate: "backend-dev just added migrations, everyone use `--create-db` on your next test run"
+
 ### Stone Creation Modal (Frontend/Backend Contract)
 - The stone creation form lives in `source/content/templates/main/new_add_stone_modal.html`
 - It's a two-step modal: Step 1 (fill form) → Step 2 (preview QR) → submit
