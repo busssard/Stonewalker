@@ -12,11 +12,14 @@ from ..models import Stone, StoneMove, StoneScanAttempt
 
 class BaseStoneWalkerTestCase(TestCase):
     """Base test case with common setup for StoneWalker tests"""
-    
+
     def setUp(self):
         self.client = Client()
         self.user = self.create_user('testuser', 'testpass')
         self.client.login(username='testuser', password='testpass')
+        # Accept terms for stone-related operations
+        from accounts.models import TermsAcceptance
+        TermsAcceptance.objects.get_or_create(user=self.user)
     
     def create_user(self, username='testuser', password='testpass', email='test@example.com'):
         """Helper method to create a test user"""
