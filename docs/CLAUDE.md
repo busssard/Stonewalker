@@ -332,6 +332,19 @@ The goal is to avoid running 5 Opus agents when 3 of them are writing docs. Matc
 - All specialists working simultaneously saves significant time (5 agents can produce in ~10 min what would take 50 min sequentially)
 - Pre-reading during idle time accelerates cross-review rounds
 
+### Bash Command Practice: Use Scratchpad Files
+- **MANDATORY for agent teams**: When agents need to run multi-line bash commands, build scripts, or test sequences, they MUST write them to a `.claude/scratchpad_<agent-name>.sh` file first, then execute the file
+- This prevents command truncation, makes commands reviewable, and provides a log of what each agent ran
+- Example workflow:
+  ```bash
+  # Write the commands to a scratchpad file
+  Write .claude/scratchpad_quick-fixes.sh with the commands
+  # Then execute it
+  bash .claude/scratchpad_quick-fixes.sh
+  ```
+- Scratchpad files are gitignored and disposable - delete after the sprint
+- **Team lead must include this rule in every agent spawn prompt**
+
 ### Common Pitfalls
 - **Agent context limits cause stalling** - keep documents focused; consider summary sections for cross-team consumption
 - **Idle notifications create noise** - ignore them unless blocking on an agent's output

@@ -78,3 +78,6 @@ translations.xlsx
 
 # Discourse local development data
 forum/discourse_data/
+
+# Agent scratchpad files
+.claude/scratchpad_*
