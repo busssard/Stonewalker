@@ -22,14 +22,36 @@ class Activation(models.Model):
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     profile_picture = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
+    # Social media profile connections
+    facebook_url = models.URLField(blank=True, default='')
+    instagram_handle = models.CharField(max_length=50, blank=True, default='')
+    twitter_handle = models.CharField(max_length=50, blank=True, default='')
+    mastodon_handle = models.CharField(max_length=100, blank=True, default='')
+    tiktok_handle = models.CharField(max_length=50, blank=True, default='')
 
     def has_picture(self):
         return self.profile_picture and hasattr(self.profile_picture, "url")
-    
+
     def get_picture_url(self):
         if self.profile_picture and hasattr(self.profile_picture, "url"):
             return self.profile_picture.url
         return settings.STATIC_URL + 'user_picture.png'
+
+    def has_social_links(self):
+        return any([
+            self.facebook_url, self.instagram_handle, self.twitter_handle,
+            self.mastodon_handle, self.tiktok_handle,
+        ])
+
+    def get_share_handle(self):
+        """Return the best social handle for share text mentions."""
+        if self.twitter_handle:
+            handle = self.twitter_handle.lstrip('@')
+            return f'@{handle}'
+        if self.instagram_handle:
+            handle = self.instagram_handle.lstrip('@')
+            return f'@{handle}'
+        return self.user.username
 
     def __str__(self):
         return f"Profile of {self.user.username}"
@@ -60,3 +82,22 @@ class EmailChangeAttempt(models.Model):
 
     def __str__(self):
         return f"{self.user.username} tried {self.email} at {self.attempted_at}"
+
+
+class TermsAcceptance(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='terms_acceptance')
+    accepted_at = models.DateTimeField(auto_now_add=True)
+    version = models.CharField(max_length=10, default='1.0')
+
+    def __str__(self):
+        return f"{self.user.username} accepted terms v{self.version} at {self.accepted_at}"
+
+
+class NotificationPreference(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='notification_prefs')
+    stone_scanned = models.BooleanField(default=True)
+    stone_moved = models.BooleanField(default=True)
+    weekly_digest = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"Notification prefs for {self.user.username}"

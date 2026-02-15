@@ -1,0 +1,132 @@
+{% extends 'layouts/default/page.html' %}
+{% load i18n %}
+{% load static %}
+
+{% block title %}{{ stone.PK_stone }} on StoneWalker{% endblock %}
+
+{% block og_title %}{{ stone_title }}{% endblock %}
+{% block og_description %}{{ share_text }}{% endblock %}
+{% block og_image %}{% if stone_image_url %}{{ stone_image_url }}{% else %}{% static 'walker_no_text.png' %}{% endif %}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+{% endblock %}
+
+{% block content %}
+<div class="max-w-480 m-2-5-auto p-2-5 bg-white border-radius-18 shadow-medium">
+
+  <!-- Stone header -->
+  <div class="text-center mb-2">
+    {% if stone.image %}
+    <div class="mb-1-5">
+      <img src="{{ stone.image.url }}" alt="{{ stone.PK_stone }}" style="max-width: 100%; max-height: 300px; border-radius: 12px; object-fit: cover;">
+    </div>
+    {% endif %}
+    <h1 class="avant-header mb-0-5">{{ stone.PK_stone }}</h1>
+    <p class="fs-1-05 text-muted">{% trans 'on StoneWalker' %}</p>
+  </div>
+
+  <!-- Journey stats -->
+  <div class="flex gap-1-2 justify-center mb-2" style="flex-wrap: wrap;">
+    <div class="text-center p-1 bg-light border-radius-8" style="min-width: 120px;">
+      <div class="fs-1-8 font-serif" style="color: #4CAF50;">{{ distance }}</div>
+      <div class="fs-0-9 text-muted">{% trans 'km traveled' %}</div>
+    </div>
+    <div class="text-center p-1 bg-light border-radius-8" style="min-width: 120px;">
+      <div class="fs-1-8 font-serif" style="color: #4CAF50;">{{ num_moves }}</div>
+      <div class="fs-0-9 text-muted">{% trans 'scans' %}</div>
+    </div>
+  </div>
+
+  {% if stone.description %}
+  <p class="fs-1 mb-1-5 line-height-1-6">{{ stone.description }}</p>
+  {% endif %}
+
+  <!-- Mini journey map -->
+  {% if moves %}
+  <div class="mb-2">
+    <h2 class="fs-1-15 font-serif mb-0-7">{% trans 'Journey Map' %}</h2>
+    <div id="share-map" style="height: 250px; border-radius: 12px; overflow: hidden;"></div>
+  </div>
+  {% endif %}
+
+  <!-- Owner info -->
+  {% if owner %}
+  <div class="flex items-center gap-1 mb-1-5 p-1 bg-light border-radius-8">
+    <img src="{{ profile.get_picture_url }}" alt="{{ owner.username }}" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;">
+    <div>
+      <div class="fs-1-05 font-serif">{{ owner.username }}</div>
+      <div class="fs-0-85 text-muted">{% trans 'Stone creator' %}</div>
+    </div>
+  </div>
+
+  {% if profile and profile.has_social_links %}
+  <div class="flex gap-0-7 mb-1-5" style="flex-wrap: wrap;">
+    {% if profile.twitter_handle %}
+    <a href="https://twitter.com/{{ profile.twitter_handle }}" target="_blank" rel="noopener" class="fs-0-95 text-accent">X/Twitter</a>
+    {% endif %}
+    {% if profile.instagram_handle %}
+    <a href="https://instagram.com/{{ profile.instagram_handle }}" target="_blank" rel="noopener" class="fs-0-95 text-accent">Instagram</a>
+    {% endif %}
+    {% if profile.facebook_url %}
+    <a href="{{ profile.facebook_url }}" target="_blank" rel="noopener" class="fs-0-95 text-accent">Facebook</a>
+    {% endif %}
+    {% if profile.mastodon_handle %}
+    <span class="fs-0-95 text-muted">{{ profile.mastodon_handle }}</span>
+    {% endif %}
+    {% if profile.tiktok_handle %}
+    <a href="https://tiktok.com/@{{ profile.tiktok_handle }}" target="_blank" rel="noopener" class="fs-0-95 text-accent">TikTok</a>
+    {% endif %}
+  </div>
+  {% endif %}
+  {% endif %}
+
+  <!-- Share buttons -->
+  <div class="text-center mt-2 mb-1">
+    <h2 class="fs-1-15 font-serif mb-1">{% trans 'Share this journey' %}</h2>
+    <div class="flex gap-0-7 justify-center" style="flex-wrap: wrap;">
+      <a href="{{ twitter_url }}" target="_blank" rel="noopener" class="avant-btn bg-dark text-white fs-0-95 p-0-7 border-radius-7">X / Twitter</a>
+      <a href="{{ facebook_url }}" target="_blank" rel="noopener" class="avant-btn fs-0-95 p-0-7 border-radius-7" style="background-color: #1877F2; color: #fff;">Facebook</a>
+      <a href="{{ whatsapp_url }}" target="_blank" rel="noopener" class="avant-btn fs-0-95 p-0-7 border-radius-7" style="background-color: #25D366; color: #fff;">WhatsApp</a>
+    </div>
+  </div>
+
+  <div class="text-center mt-1-5">
+    <a href="{% url 'index' %}" class="fs-0-95 text-accent underline">{% trans 'Explore more stones on StoneWalker' %}</a>
+  </div>
+</div>
+
+{% if moves %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+(function() {
+  var movesData = {{ moves_json|safe }};
+  if (!movesData.length) return;
+
+  var map = L.map('share-map', { scrollWheelZoom: false });
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap'
+  }).addTo(map);
+
+  var latlngs = [];
+  for (var i = 0; i < movesData.length; i++) {
+    var m = movesData[i];
+    if (m.latitude && m.longitude) {
+      var ll = [m.latitude, m.longitude];
+      latlngs.push(ll);
+      var label = m.user + (m.timestamp_display ? ' (' + m.timestamp_display + ')' : '');
+      L.circleMarker(ll, {radius: 6, color: '#4CAF50', fillOpacity: 0.8}).addTo(map).bindPopup(label);
+    }
+  }
+
+  if (latlngs.length > 1) {
+    L.polyline(latlngs, {color: '#4CAF50', weight: 2, opacity: 0.7}).addTo(map);
+  }
+
+  if (latlngs.length > 0) {
+    map.fitBounds(latlngs, {padding: [30, 30]});
+  }
+})();
+</script>
+{% endif %}
+{% endblock %}

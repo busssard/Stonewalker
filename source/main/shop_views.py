@@ -75,6 +75,11 @@ class ClaimStoneView(LoginRequiredMixin, View):
             messages.error(request, _('This stone has already been claimed.'))
             return redirect('stone_link', stone_uuid=stone_uuid)
 
+        # Check terms acceptance
+        if not hasattr(request.user, 'terms_acceptance'):
+            messages.error(request, _('You must accept the Terms of Use before creating a stone.'))
+            return redirect('terms')
+
         # Get form data
         stone_name = request.POST.get('stone_name', '').strip()
         description = request.POST.get('description', '').strip()

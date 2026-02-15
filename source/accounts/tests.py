@@ -13,6 +13,7 @@ class AccountsAuthTests(TestCase):
             'email': 'testuser@example.com',
             'password1': 'TestPassword123',
             'password2': 'TestPassword123',
+            'accept_terms': 'on',
         })
         self.assertEqual(response.status_code, 302)  # Should redirect after signup
         self.assertTrue(User.objects.filter(username='testuser').exists())
@@ -163,6 +164,7 @@ class UsernameLowercaseTests(TestCase):
             'email': 'mixedcase@example.com',
             'password1': 'StrongPass123!',
             'password2': 'StrongPass123!',
+            'accept_terms': 'on',
         })
         self.assertEqual(response.status_code, 302)
         self.assertTrue(User.objects.filter(username='testusermixed').exists())
@@ -177,6 +179,7 @@ class UsernameLowercaseTests(TestCase):
             'email': 'new@example.com',
             'password1': 'StrongPass123!',
             'password2': 'StrongPass123!',
+            'accept_terms': 'on',
         })
         # Should not redirect — form has errors
         self.assertEqual(response.status_code, 200)

@@ -1,0 +1,12 @@
+{% load i18n %}{% trans 'Your stone was scanned!' %}
+
+{% blocktrans with stone_name=stone.PK_stone mover_name=mover.username %}Someone found your stone "{{ stone_name }}"! User {{ mover_name }} just scanned it.{% endblocktrans %}
+
+{% if move.comment %}{% trans 'Their comment:' %} "{{ move.comment }}"{% endif %}
+
+{% blocktrans with distance=stone.distance_km %}Your stone has now traveled {{ distance }} km!{% endblocktrans %}
+
+{% trans 'You can manage your notification preferences in your profile settings.' %}
+
+---
+StoneWalker - {% trans 'Track painted stones around the world' %}

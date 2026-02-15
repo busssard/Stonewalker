@@ -1,0 +1,63 @@
+{% load i18n %}
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>{{ subject }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+</head>
+
+<body style="margin: 0; padding: 0; background-color: #f5f5f5; font-family: Arial, sans-serif;">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f5f5f5;">
+        <tr>
+            <td align="center" style="padding: 20px 0;">
+                <!-- Main container -->
+                <table border="0" cellpadding="0" cellspacing="0" width="600" style="max-width: 600px; background-color: #ffffff; border-radius: 8px; overflow: hidden;">
+                    <!-- Header -->
+                    <tr>
+                        <td align="center" style="background-color: #4CAF50; padding: 30px 20px;">
+                            <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: bold; letter-spacing: 1px;">StoneWalker</h1>
+                        </td>
+                    </tr>
+
+                    <!-- Body -->
+                    <tr>
+                        <td style="padding: 40px 30px;">
+                            <h2 style="margin: 0 0 20px 0; color: #222222; font-size: 24px;">{% trans 'Your stone was scanned!' %}</h2>
+
+                            <p style="margin: 0 0 20px 0; color: #555555; font-size: 16px; line-height: 1.6;">
+                                {% blocktrans with stone_name=stone.PK_stone mover_name=mover.username %}Someone found your stone "{{ stone_name }}"! User {{ mover_name }} just scanned it.{% endblocktrans %}
+                            </p>
+
+                            {% if move.comment %}
+                            <p style="margin: 0 0 20px 0; color: #555555; font-size: 16px; line-height: 1.6;">
+                                <strong>{% trans 'Their comment:' %}</strong> "{{ move.comment }}"
+                            </p>
+                            {% endif %}
+
+                            <p style="margin: 0 0 20px 0; color: #555555; font-size: 16px; line-height: 1.6;">
+                                {% blocktrans with distance=stone.distance_km %}Your stone has now traveled {{ distance }} km!{% endblocktrans %}
+                            </p>
+
+                            <p style="margin: 20px 0 0 0; color: #888888; font-size: 14px; line-height: 1.6;">
+                                {% trans 'You can manage your notification preferences in your profile settings.' %}
+                            </p>
+                        </td>
+                    </tr>
+
+                    <!-- Footer -->
+                    <tr>
+                        <td align="center" style="background-color: #f5f5f5; padding: 30px 20px; border-top: 1px solid #e0e0e0;">
+                            <p style="margin: 0 0 10px 0; color: #222222; font-size: 14px; font-weight: bold;">StoneWalker</p>
+                            <p style="margin: 0; color: #888888; font-size: 12px;">{% trans 'Track painted stones around the world' %}</p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+
+</html>

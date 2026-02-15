@@ -1,0 +1,51 @@
+{% extends 'layouts/default/page.html' %}
+{% load i18n %}
+{% load static %}
+
+{% block title %}{% trans 'Terms of Use' %} - StoneWalker{% endblock %}
+
+{% block content %}
+<div class="max-w-480 m-2-5-auto p-2-5 bg-white border-radius-18 shadow-medium">
+  <h1 class="avant-header text-center mb-1-5">{% trans 'Terms of Use' %}</h1>
+  <p class="fs-0-95 text-muted text-center mb-2">{% trans 'Last updated: February 2026' %}</p>
+
+  <h2 class="fs-1-15 font-serif mb-0-5">1. {% trans 'Stone Ownership' %}</h2>
+  <p class="fs-1 mb-1-5 line-height-1-6">
+    {% trans 'By creating a stone on StoneWalker, you confirm that you are the original creator of the painted stone. You must not attach QR codes to stones you did not paint yourself. Each QR code should be placed on a stone that you personally created and decorated.' %}
+  </p>
+
+  <h2 class="fs-1-15 font-serif mb-0-5">2. {% trans 'Content and Photos' %}</h2>
+  <p class="fs-1 mb-1-5 line-height-1-6">
+    {% trans 'Photos uploaded to StoneWalker (stone images, scan photos) may be used by StoneWalker for promotional purposes and to improve our services, including AI-based features such as image recognition and recommendation systems. By uploading images, you grant StoneWalker a non-exclusive license to use these images.' %}
+  </p>
+
+  <h2 class="fs-1-15 font-serif mb-0-5">3. {% trans 'Age Requirement' %}</h2>
+  <p class="fs-1 mb-1-5 line-height-1-6">
+    {% trans 'You must be at least 13 years old to create an account and use StoneWalker. If you are under 18, you should have permission from a parent or guardian.' %}
+  </p>
+
+  <h2 class="fs-1-15 font-serif mb-0-5">4. {% trans 'Content Guidelines' %}</h2>
+  <p class="fs-1 mb-1-5 line-height-1-6">
+    {% trans 'Stones and their descriptions must not contain offensive, hateful, violent, or inappropriate content. StoneWalker reserves the right to remove any content that violates these guidelines. Please keep the community friendly, welcoming, and suitable for all ages.' %}
+  </p>
+
+  <h2 class="fs-1-15 font-serif mb-0-5">5. {% trans 'Stone Placement' %}</h2>
+  <p class="fs-1 mb-1-5 line-height-1-6">
+    {% trans 'When hiding stones, please be respectful of public and private property. Do not place stones in dangerous, restricted, or environmentally sensitive areas. You are responsible for ensuring your stone placements are safe and legal.' %}
+  </p>
+
+  <h2 class="fs-1-15 font-serif mb-0-5">6. {% trans 'Privacy and Data' %}</h2>
+  <p class="fs-1 mb-1-5 line-height-1-6">
+    {% trans 'StoneWalker collects location data when you scan or hide stones. This data is used to track stone journeys and is displayed publicly on the map. Your email address is used for account management and optional notifications only.' %}
+  </p>
+
+  <h2 class="fs-1-15 font-serif mb-0-5">7. {% trans 'Account Termination' %}</h2>
+  <p class="fs-1 mb-1-5 line-height-1-6">
+    {% trans 'StoneWalker reserves the right to suspend or terminate accounts that violate these terms. You may delete your account at any time by contacting support.' %}
+  </p>
+
+  <div class="text-center mt-2">
+    <a href="{% url 'index' %}" class="avant-btn bg-accent text-white fs-1-05 letter-spacing-0-03">{% trans 'Back to StoneWalker' %}</a>
+  </div>
+</div>
+{% endblock %}

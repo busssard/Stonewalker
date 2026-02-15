@@ -33,7 +33,7 @@ from .forms import (
     RestorePasswordForm, RestorePasswordViaEmailOrUsernameForm, RemindUsernameForm,
     ResendActivationCodeForm, ResendActivationCodeViaEmailForm, CombinedProfileForm,
 )
-from .models import Activation, EmailAddressState
+from .models import Activation, EmailAddressState, TermsAcceptance, NotificationPreference
 from .models import EmailChangeAttempt
 from django.utils import timezone
 from datetime import timedelta
@@ -116,6 +116,9 @@ class SignUpView(GuestOnlyView, FormView):
         user.save()
         # Add email state (unconfirmed)
         EmailAddressState.objects.create(user=user, email=user.email, is_confirmed=False)
+        # Record terms acceptance
+        if form.cleaned_data.get('accept_terms'):
+            TermsAcceptance.objects.create(user=user)
 
         # Change the username to the "user_ID" form
         if settings.DISABLE_USERNAME:
@@ -405,6 +408,18 @@ class ChangeProfileView(LoginRequiredMixin, FormView):
                 messages.success(self.request, _('Email successfully changed.'))
         else:
             user.save()
+        # Social media fields
+        profile.facebook_url = form.cleaned_data.get('facebook_url', '')
+        profile.instagram_handle = form.cleaned_data.get('instagram_handle', '')
+        profile.twitter_handle = form.cleaned_data.get('twitter_handle', '')
+        profile.mastodon_handle = form.cleaned_data.get('mastodon_handle', '')
+        profile.tiktok_handle = form.cleaned_data.get('tiktok_handle', '')
+        # Notification preferences
+        prefs, _created = NotificationPreference.objects.get_or_create(user=user)
+        prefs.stone_scanned = form.cleaned_data.get('notify_stone_scanned', True)
+        prefs.stone_moved = form.cleaned_data.get('notify_stone_moved', True)
+        prefs.weekly_digest = form.cleaned_data.get('notify_weekly_digest', False)
+        prefs.save()
         # Profile picture
         if self.request.POST.get('profile_picture-clear') == 'on':
             profile.profile_picture = None
@@ -593,3 +608,7 @@ class DiscourseSSOView(View):
 
         # Redirect back to Discourse
         return redirect(f'{discourse_url}/session/sso_login?{response_payload}')
+
+
+class TermsView(TemplateView):
+    template_name = 'accounts/terms.html'

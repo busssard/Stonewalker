@@ -120,6 +120,11 @@ class SignUpForm(UserCreationForm):
         fields = settings.SIGN_UP_FIELDS
 
     email = forms.EmailField(label=_('Email'), help_text=_('Required. Enter an existing email address.'))
+    accept_terms = forms.BooleanField(
+        label=_('I accept the Terms of Use'),
+        required=True,
+        error_messages={'required': _('You must accept the Terms of Use to create an account.')},
+    )
 
     def clean_username(self):
         username = self.cleaned_data['username'].lower()
@@ -241,6 +246,16 @@ class CombinedProfileForm(forms.Form):
     profile_picture = forms.ImageField(label=_('Profile picture'), required=False)
     password1 = forms.CharField(label=_('New password'), widget=forms.PasswordInput(attrs={'autocomplete': 'new-password'}), required=False)
     password2 = forms.CharField(label=_('Confirm new password'), widget=forms.PasswordInput(attrs={'autocomplete': 'new-password'}), required=False)
+    # Social media fields
+    facebook_url = forms.URLField(label=_('Facebook URL'), required=False)
+    instagram_handle = forms.CharField(label=_('Instagram'), max_length=50, required=False)
+    twitter_handle = forms.CharField(label=_('Twitter / X'), max_length=50, required=False)
+    mastodon_handle = forms.CharField(label=_('Mastodon'), max_length=100, required=False)
+    tiktok_handle = forms.CharField(label=_('TikTok'), max_length=50, required=False)
+    # Notification preferences
+    notify_stone_scanned = forms.BooleanField(label=_('Notify when my stone is scanned'), required=False)
+    notify_stone_moved = forms.BooleanField(label=_('Notify when my stone moves'), required=False)
+    notify_weekly_digest = forms.BooleanField(label=_('Weekly digest email'), required=False)
 
     def __init__(self, user, *args, **kwargs):
         self.user = user
@@ -248,6 +263,20 @@ class CombinedProfileForm(forms.Form):
         self.fields['username'].initial = user.username
         self.fields['email'].initial = user.email
         # Profile picture initial handled in view
+        # Social media initials
+        profile = getattr(user, 'profile', None)
+        if profile:
+            self.fields['facebook_url'].initial = profile.facebook_url
+            self.fields['instagram_handle'].initial = profile.instagram_handle
+            self.fields['twitter_handle'].initial = profile.twitter_handle
+            self.fields['mastodon_handle'].initial = profile.mastodon_handle
+            self.fields['tiktok_handle'].initial = profile.tiktok_handle
+        # Notification preference initials
+        from accounts.models import NotificationPreference
+        prefs, _ = NotificationPreference.objects.get_or_create(user=user)
+        self.fields['notify_stone_scanned'].initial = prefs.stone_scanned
+        self.fields['notify_stone_moved'].initial = prefs.stone_moved
+        self.fields['notify_weekly_digest'].initial = prefs.weekly_digest
 
     def clean_profile_picture(self):
         image = self.cleaned_data.get('profile_picture')

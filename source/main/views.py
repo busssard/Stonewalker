@@ -1,7 +1,7 @@
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, DetailView
 from .models import Stone, StoneMove, calculate_stone_distance, StoneScanAttempt
 import json
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect, render, get_object_or_404
 from django.http import HttpResponse
 from django.contrib.auth.models import User
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -25,6 +25,7 @@ from django.utils.translation import get_language, get_language_from_request
 from django.conf import settings
 from django.urls import reverse
 import uuid as uuid_lib
+import urllib.parse
 
 
 class IndexPageView(TemplateView):
@@ -170,6 +171,10 @@ def add_stone(request):
     Stone creation now goes through: create-stone → shop → checkout → claim.
     This endpoint is kept for backwards compatibility with old bookmarks/links.
     """
+    # Check terms acceptance before allowing stone creation
+    if not hasattr(request.user, 'terms_acceptance'):
+        messages.error(request, 'You must accept the Terms of Use before creating a stone.')
+        return redirect('terms')
     messages.info(request, 'Stone creation now goes through the shop. Please use the button below to create a stone.')
     return redirect('create_stone')
 
@@ -712,4 +717,66 @@ def download_enhanced_qr_code(request):
         return JsonResponse({'error': f'Error generating enhanced QR code: {str(e)}'}, status=500)
 
 
+class StoneShareView(View):
+    """Public share page for a stone's journey."""
 
+    def get(self, request, pk):
+        stone = get_object_or_404(
+            Stone.objects.select_related('FK_user', 'FK_user__profile'),
+            PK_stone=pk,
+        )
+        moves = list(stone.moves.order_by('timestamp').all())
+        num_moves = len(moves)
+        distance = round(stone.distance_km, 1)
+        owner = stone.FK_user
+        profile = owner.profile if owner else None
+
+        # Build share URLs
+        share_url = request.build_absolute_uri(request.path)
+        stone_title = f'{stone.PK_stone} on StoneWalker'
+        share_handle = profile.get_share_handle() if profile else ''
+        share_text = f'Check out the journey of {stone.PK_stone}'
+        if share_handle:
+            share_text += f' by {share_handle}'
+        share_text += f' - {distance} km traveled!'
+        encoded_text = urllib.parse.quote(share_text)
+        encoded_url = urllib.parse.quote(share_url)
+
+        twitter_url = f'https://twitter.com/intent/tweet?text={encoded_text}&url={encoded_url}'
+        facebook_url = f'https://www.facebook.com/sharer/sharer.php?u={encoded_url}'
+        whatsapp_url = f'https://wa.me/?text={encoded_text}%20{encoded_url}'
+
+        # Build moves data for the map
+        moves_data = []
+        for m in moves:
+            moves_data.append({
+                'latitude': m.latitude,
+                'longitude': m.longitude,
+                'timestamp': m.timestamp.isoformat() if m.timestamp else '',
+                'timestamp_display': m.timestamp.strftime('%b %d, %Y') if m.timestamp else '',
+                'user': m.FK_user.username if m.FK_user else '',
+                'comment': m.comment,
+            })
+
+        # Stone image URL for OG tag
+        stone_image_url = ''
+        if stone.image:
+            stone_image_url = request.build_absolute_uri(stone.image.url)
+
+        context = {
+            'stone': stone,
+            'moves': moves,
+            'moves_json': json.dumps(moves_data),
+            'num_moves': num_moves,
+            'distance': distance,
+            'owner': owner,
+            'profile': profile,
+            'share_url': share_url,
+            'stone_title': stone_title,
+            'share_text': share_text,
+            'stone_image_url': stone_image_url,
+            'twitter_url': twitter_url,
+            'facebook_url': facebook_url,
+            'whatsapp_url': whatsapp_url,
+        }
+        return render(request, 'main/stone_share.html', context)

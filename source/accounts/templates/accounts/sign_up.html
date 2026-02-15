@@ -96,6 +96,16 @@
         {% endfor %}
       </div>
 
+      <div class="mb-1">
+        <label class="flex items-center gap-0-5 cursor-pointer fs-1">
+          <input type="checkbox" name="accept_terms" id="id_accept_terms" required class="w-18 h-18">
+          <span>{% trans 'I accept the' %} <a href="{% url 'terms' %}" target="_blank" class="text-accent underline">{% trans 'Terms of Use' %}</a></span>
+        </label>
+        {% for error in form.accept_terms.errors %}
+          <div class="text-error fs-0-95">{{ error }}</div>
+        {% endfor %}
+      </div>
+
       <button class="avant-btn w-full mt-1-2 bg-accent text-white fs-1-13 letter-spacing-0-03">{% trans 'Create' %}</button>
     </form>
 
