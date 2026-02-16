@@ -345,6 +345,9 @@ class StoneEditView(LoginRequiredMixin, TemplateView):
             if image:
                 stone.image = image
             stone.color = request.POST.get('color', stone.color)
+            stone_type = request.POST.get('stone_type', stone.stone_type)
+            if stone_type in ('hidden', 'hunted'):
+                stone.stone_type = stone_type
             
             action = request.POST.get('action')
             if action == 'save':

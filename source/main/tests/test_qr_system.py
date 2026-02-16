@@ -93,7 +93,7 @@ class QRCodeDisplayTests(BaseStoneWalkerTestCase):
         
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'QR Code')
-        self.assertContains(response, 'Download QR Code')
+        self.assertContains(response, 'Downloads')
     
     def test_qr_url_persistence(self):
         """Test that QR URLs are persistent"""

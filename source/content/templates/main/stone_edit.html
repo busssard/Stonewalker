@@ -62,35 +62,37 @@
 
       <div class="mt-0-5">
         <span class="avant-label">{% trans "Stone Type" %}</span>
+        {% if stone.can_be_edited %}
+        <div class="stone-type-toggle mt-0-3">
+          <button type="button" class="stone-type-toggle-btn{% if stone.stone_type == 'hidden' %} active{% endif %}" data-value="hidden">{% trans "Hidden" %}</button>
+          <button type="button" class="stone-type-toggle-btn{% if stone.stone_type == 'hunted' %} active{% endif %}" data-value="hunted">{% trans "Hunted" %}</button>
+          <input type="hidden" name="stone_type" id="stone-type-input" value="{{ stone.stone_type }}">
+        </div>
+        {% else %}
         <div class="mt-0-3">
           <span class="stone-status-pill stone-type-{{ stone.stone_type }}">{{ stone.get_stone_type_display }}</span>
-          <small class="text-muted ml-0-5">{% trans "Stone type cannot be changed after creation." %}</small>
         </div>
+        {% endif %}
       </div>
 
       {% if stone.can_be_edited %}
-      <div class="stone-edit-actions mt-1-5">
+      <div class="stone-edit-actions mt-2">
         <button type="submit" name="action" value="save" class="avant-btn bg-muted">{% trans "Save Draft" %}</button>
         <button type="submit" name="action" value="publish" class="avant-btn bg-accent text-white">{% trans "Publish Stone" %}</button>
       </div>
       {% endif %}
     </form>
 
-    <!-- QR Code Section -->
+    <!-- Downloads Section -->
     <div class="stone-edit-section mt-2">
-      <h4 class="avant-label fs-1-1 mb-0-5">{% trans "QR Code" %}</h4>
-      <p class="text-muted fs-0-9 mb-1">{% trans "Your stone has a persistent QR code that will always lead to the stone page." %}</p>
-      <a href="{% url 'stone_qr' stone.PK_stone %}" class="avant-btn bg-accent text-white">{% trans "Download QR Code" %}</a>
+      <h4 class="avant-label fs-1-1 mb-0-5">{% trans "Downloads" %}</h4>
+      <div class="stone-downloads">
+        <a href="{% url 'stone_qr' stone.PK_stone %}" class="avant-btn bg-accent text-white">{% trans "QR Code" %}</a>
+        <a href="{% url 'stone_certificate' stone.PK_stone %}" class="avant-btn bg-muted">{% trans "Certificate" %}</a>
+      </div>
       <div class="mt-0-7">
         <small class="text-muted"><strong>{% trans "QR URL:" %}</strong> {{ stone.get_qr_url }}</small>
       </div>
-    </div>
-
-    <!-- Certificate Section -->
-    <div class="stone-edit-section mt-2">
-      <h4 class="avant-label fs-1-1 mb-0-5">{% trans "Stone Certificate" %}</h4>
-      <p class="text-muted fs-0-9 mb-1">{% trans "Download a printable certificate of creation for your stone." %}</p>
-      <a href="{% url 'stone_certificate' stone.PK_stone %}" class="avant-btn bg-muted">{% trans "Download Certificate" %}</a>
     </div>
 
     <!-- Send Off Section -->
@@ -108,10 +110,8 @@
     </div>
     {% endif %}
 
-    <!-- Navigation -->
-    <div class="stone-edit-nav mt-2">
-      <a href="{% url 'stonewalker_start' %}" class="avant-btn bg-muted">{% trans "Back to Map" %}</a>
-      <a href="{% url 'my_stones' %}" class="avant-btn bg-muted">{% trans "My Stones" %}</a>
+    <div class="text-center mt-2">
+      <a href="{% url 'my_stones' %}" class="text-muted fs-0-9">{% trans "Cancel" %}</a>
     </div>
   </div>
 </div>
@@ -119,5 +119,18 @@
 if (typeof setupImageUpload === 'function') {
   setupImageUpload({ inputId: 'image', msgId: 'image-validation-msg' });
 }
+// Stone type toggle
+(function() {
+  var btns = document.querySelectorAll('.stone-type-toggle-btn');
+  var input = document.getElementById('stone-type-input');
+  if (!btns.length || !input) return;
+  btns.forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      btns.forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      input.value = btn.getAttribute('data-value');
+    });
+  });
+})();
 </script>
 {% endblock %}
