@@ -151,6 +151,15 @@ class MyStonesView(LoginRequiredMixin, TemplateView):
         for stone in my_stones:
             stone.distance_km = round(stone.distance_km, 1)
         context['my_stones'] = my_stones
+
+        # Unclaimed QR codes from user's packs
+        unclaimed_stones = Stone.objects.filter(
+            FK_pack__FK_user=user,
+            status='unclaimed',
+        ).select_related('FK_pack')
+        context['unclaimed_stones'] = unclaimed_stones
+        context['has_unclaimed'] = unclaimed_stones.exists()
+
         # Stones where user has moved but is not the creator
         moved_stone_ids = StoneMove.objects.filter(FK_user=user).exclude(FK_stone__FK_user=user).values_list('FK_stone', flat=True).distinct()
         my_interactions = Stone.objects.filter(PK_stone__in=moved_stone_ids).select_related(

@@ -25,18 +25,52 @@ logger = logging.getLogger(__name__)
 class CreateNewStoneView(LoginRequiredMixin, View):
     """Smart router: checks for unclaimed QR codes and directs user accordingly.
 
-    - If user has an unclaimed stone from a purchased pack → redirect to claim it
-    - Otherwise → redirect to the shop to acquire a QR code
+    Before 1000 users (early phase):
+    - If user has unclaimed QR → redirect to my-stones with message
+    - If no unclaimed QR → create a free QR, redirect to my-stones
+
+    After 1000 users:
+    - If user has unclaimed QR → redirect to my-stones with message
+    - If no unclaimed QR → redirect to shop
     """
 
     def get(self, request):
-        # Find unclaimed stones belonging to the user's packs
-        user_packs = QRPack.objects.filter(FK_user=request.user, status='fulfilled')
-        for pack in user_packs:
-            unclaimed_stone = pack.stones.filter(status='unclaimed').first()
-            if unclaimed_stone:
-                return redirect('claim_stone', stone_uuid=str(unclaimed_stone.uuid))
+        from django.contrib.auth.models import User as UserModel
+        # Check for unclaimed QRs from user's packs
+        unclaimed = Stone.objects.filter(
+            FK_pack__FK_user=request.user,
+            status='unclaimed',
+        ).first()
 
+        if unclaimed:
+            messages.info(request, _('You have unclaimed QR codes. Claim them before creating a new stone.'))
+            return redirect('my_stones')
+
+        # No unclaimed QRs — check if before or after threshold
+        threshold = getattr(settings, 'SHOP_VISIBLE_USER_THRESHOLD', 1000)
+        user_count = UserModel.objects.count()
+
+        if user_count < threshold:
+            # Early phase: create a free QR directly
+            pack = QRPack.objects.create(
+                FK_user=request.user,
+                pack_type='free_single',
+                status='fulfilled',
+                price_cents=0,
+                fulfilled_at=timezone.now(),
+            )
+            temp_name = f'UNCLAIMED-{uuid_lib.uuid4().hex[:8].upper()}'
+            stone = Stone.objects.create(
+                PK_stone=temp_name,
+                FK_pack=pack,
+                FK_user=None,
+                status='unclaimed',
+            )
+            QRCodeService.generate_qr_for_stone(stone, request)
+            messages.success(request, _('A new QR code has been created! Claim it to name your stone.'))
+            return redirect('my_stones')
+
+        # After threshold: go to shop
         return redirect('shop')
 
 
@@ -57,9 +91,12 @@ class ClaimStoneView(LoginRequiredMixin, View):
             messages.error(request, _('This stone has already been claimed.'))
             return redirect('stone_link', stone_uuid=stone_uuid)
 
+        needs_terms = not hasattr(request.user, 'terms_acceptance')
+
         return render(request, self.template_name, {
             'stone': stone,
             'stone_uuid': stone_uuid,
+            'needs_terms': needs_terms,
         })
 
     def post(self, request, stone_uuid):
@@ -76,9 +113,20 @@ class ClaimStoneView(LoginRequiredMixin, View):
             return redirect('stone_link', stone_uuid=stone_uuid)
 
         # Check terms acceptance
-        if not hasattr(request.user, 'terms_acceptance'):
-            messages.error(request, _('You must accept the Terms of Use before creating a stone.'))
-            return redirect('terms')
+        needs_terms = not hasattr(request.user, 'terms_acceptance')
+        if needs_terms:
+            if not request.POST.get('accept_terms'):
+                messages.error(request, _('You must accept the Terms of Use before creating a stone.'))
+                return render(request, self.template_name, {
+                    'stone': stone,
+                    'stone_uuid': stone_uuid,
+                    'stone_name': request.POST.get('stone_name', '').strip(),
+                    'description': request.POST.get('description', '').strip(),
+                    'needs_terms': True,
+                })
+            # Create terms acceptance record
+            from accounts.models import TermsAcceptance
+            TermsAcceptance.objects.get_or_create(user=request.user)
 
         # Get form data
         stone_name = request.POST.get('stone_name', '').strip()

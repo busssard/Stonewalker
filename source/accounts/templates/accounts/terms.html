@@ -44,8 +44,22 @@
     {% trans 'StoneWalker reserves the right to suspend or terminate accounts that violate these terms. You may delete your account at any time by contacting support.' %}
   </p>
 
+  {% if needs_acceptance %}
+  <div class="text-center mt-2">
+    <form method="post">
+      {% csrf_token %}
+      {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+      <label class="flex items-center gap-0-5 cursor-pointer fs-1 justify-center mb-1">
+        <input type="checkbox" name="accept" id="accept-terms-check" required class="w-18 h-18">
+        <span>{% trans 'I accept the Terms of Use' %}</span>
+      </label>
+      <button type="submit" class="avant-btn bg-accent text-white fs-1-05 letter-spacing-0-03">{% trans 'Accept and Continue' %}</button>
+    </form>
+  </div>
+  {% else %}
   <div class="text-center mt-2">
     <a href="{% url 'index' %}" class="avant-btn bg-accent text-white fs-1-05 letter-spacing-0-03">{% trans 'Back to StoneWalker' %}</a>
   </div>
+  {% endif %}
 </div>
 {% endblock %}

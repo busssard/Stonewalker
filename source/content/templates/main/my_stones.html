@@ -4,6 +4,21 @@
 {% load l10n %}
 
 {% block content %}
+{% if unclaimed_stones %}
+<div class="unclaimed-qr-banner">
+  <div class="unclaimed-qr-inner">
+    <h3 class="unclaimed-qr-title">{% trans 'Unclaimed QR Codes' %}</h3>
+    <p class="unclaimed-qr-desc">{% trans 'You have QR codes waiting to be claimed. Give your stone a name to get started!' %}</p>
+    <div class="unclaimed-qr-list">
+      {% for stone in unclaimed_stones %}
+      <a href="{% url 'claim_stone' stone_uuid=stone.uuid %}" class="unclaimed-qr-item avant-btn">
+        {% trans 'Claim Stone' %} #{{ forloop.counter }}
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endif %}
 <div class="my-stones-split">
   <div class="my-stones-left">
     <div class="stone-header flex-center gap-1-5 justify-between">
@@ -50,6 +65,11 @@
     </div>
   </div>
 </div>
+{% if not has_unclaimed %}
+<div class="new-qr-button-bar">
+  <a href="{% url 'create_stone' %}" class="avant-btn new-qr-btn">{% trans 'Create New Stone' %}</a>
+</div>
+{% endif %}
 <!-- Gallery modal placeholder -->
 <div id="stone-gallery-modal" class="display-none position-fixed top-0 left-0 w-100vw h-100vh bg-modal-overlay flex-center z-3000" role="dialog" aria-modal="true" aria-label="{% trans 'Stone details' %}">
   <div id="stone-gallery-content" class="bg-white border-radius-18 max-w-600 w-90vw m-auto p-2 position-relative shadow-heavy">

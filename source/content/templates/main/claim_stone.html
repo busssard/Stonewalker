@@ -68,6 +68,13 @@
       <div id="image-validation-msg" class="js-hidden"></div>
       <small class="text-muted">{% trans 'You can add a photo now or later after painting your stone.' %}</small>
 
+      {% if needs_terms %}
+      <label class="flex items-center gap-0-5 cursor-pointer fs-0-95 mt-1">
+        <input type="checkbox" name="accept_terms" value="1" required class="w-18 h-18">
+        <span>{% trans 'I accept the' %} <a href="#" onclick="document.getElementById('terms-modal').style.display='flex';return false;" class="text-accent">{% trans 'Terms of Use' %}</a></span>
+      </label>
+      {% endif %}
+
       <button type="submit" class="avant-btn mt-1-2">{% trans 'Claim My Stone' %}</button>
     </form>
 
@@ -76,6 +83,37 @@
     </div>
   </div>
 </div>
+
+{% if needs_terms %}
+<!-- Terms of Use Modal -->
+<div id="terms-modal" class="terms-modal-overlay" onclick="if(event.target===this)this.style.display='none'">
+  <div class="terms-modal-content">
+    <button class="terms-modal-close" onclick="document.getElementById('terms-modal').style.display='none'">&times;</button>
+    <h2 class="terms-modal-title">{% trans 'Terms of Use' %}</h2>
+    <p class="terms-modal-updated">{% trans 'Last updated: February 2026' %}</p>
+    <div class="terms-modal-body">
+      <h3>1. {% trans 'Stone Ownership' %}</h3>
+      <p>{% trans 'By creating a stone on StoneWalker, you confirm that you are the original creator of the painted stone. You must not attach QR codes to stones you did not paint yourself. Each QR code should be placed on a stone that you personally created and decorated.' %}</p>
+      <h3>2. {% trans 'Content and Photos' %}</h3>
+      <p>{% trans 'Photos uploaded to StoneWalker (stone images, scan photos) may be used by StoneWalker for promotional purposes and to improve our services, including AI-based features such as image recognition and recommendation systems. By uploading images, you grant StoneWalker a non-exclusive license to use these images.' %}</p>
+      <h3>3. {% trans 'Age Requirement' %}</h3>
+      <p>{% trans 'You must be at least 13 years old to create an account and use StoneWalker. If you are under 18, you should have permission from a parent or guardian.' %}</p>
+      <h3>4. {% trans 'Content Guidelines' %}</h3>
+      <p>{% trans 'Stones and their descriptions must not contain offensive, hateful, violent, or inappropriate content. StoneWalker reserves the right to remove any content that violates these guidelines. Please keep the community friendly, welcoming, and suitable for all ages.' %}</p>
+      <h3>5. {% trans 'Stone Placement' %}</h3>
+      <p>{% trans 'When hiding stones, please be respectful of public and private property. Do not place stones in dangerous, restricted, or environmentally sensitive areas. You are responsible for ensuring your stone placements are safe and legal.' %}</p>
+      <h3>6. {% trans 'Privacy and Data' %}</h3>
+      <p>{% trans 'StoneWalker collects location data when you scan or hide stones. This data is used to track stone journeys and is displayed publicly on the map. Your email address is used for account management and optional notifications only.' %}</p>
+      <h3>7. {% trans 'Account Termination' %}</h3>
+      <p>{% trans 'StoneWalker reserves the right to suspend or terminate accounts that violate these terms. You may delete your account at any time by contacting support.' %}</p>
+    </div>
+    <div class="text-center mt-1-5">
+      <button class="avant-btn bg-accent text-white" onclick="document.getElementById('terms-modal').style.display='none'">{% trans 'Close' %}</button>
+    </div>
+  </div>
+</div>
+{% endif %}
+
 <script>
 if (typeof setupImageUpload === 'function') {
   setupImageUpload({ inputId: 'id_image', msgId: 'image-validation-msg' });

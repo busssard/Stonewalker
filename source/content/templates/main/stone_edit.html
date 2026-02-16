@@ -4,157 +4,116 @@
 {% block title %}{% trans "Edit Stone" %} - {{ stone.PK_stone }}{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header">
-                    <h3>{% trans "Edit Stone" %}: {{ stone.PK_stone }}</h3>
-                    <div class="stone-status-badge">
-                        <span class="badge badge-{% if stone.status == 'draft' %}secondary{% elif stone.status == 'published' %}success{% else %}primary{% endif %}">
-                            {{ stone.get_status_display }}
-                        </span>
-                    </div>
-                </div>
-                <div class="card-body">
-                    {% if stone.status == 'draft' %}
-                        <div class="alert alert-info">
-                            <i class="fas fa-info-circle"></i>
-                            {% trans "This stone is in draft mode. You can edit it and publish when ready." %}
-                        </div>
-                    {% elif stone.status == 'published' %}
-                        <div class="alert alert-warning">
-                            <i class="fas fa-exclamation-triangle"></i>
-                            {% trans "This stone is published and visible on the map. You can no longer edit it, but you can send it off to finalize it." %}
-                        </div>
-                    {% elif stone.status == 'sent_off' %}
-                        <div class="alert alert-success">
-                            <i class="fas fa-check-circle"></i>
-                            {% trans "This stone has been sent off and is finalized. No further changes can be made." %}
-                        </div>
-                    {% endif %}
-
-                    <form method="post" enctype="multipart/form-data">
-                        {% csrf_token %}
-                        
-                        <div class="form-group">
-                            <label for="stone-name">{% trans "Stone Name" %}</label>
-                            <input type="text" class="form-control" id="stone-name" value="{{ stone.PK_stone }}" readonly>
-                            <small class="form-text text-muted">{% trans "Stone name cannot be changed after creation." %}</small>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="description">{% trans "Description" %}</label>
-                            <textarea class="form-control" id="description" name="description" rows="4" 
-                                      {% if not stone.can_be_edited %}readonly{% endif %} 
-                                      placeholder="{% trans 'Describe your stone...' %}">{{ stone.description }}</textarea>
-                            <small class="form-text text-muted">{% trans "Maximum 500 characters" %}</small>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="image">{% trans "Stone Image" %}</label>
-                            {% if stone.image %}
-                                <div class="current-image mb-2">
-                                    <img src="{{ stone.image.url }}" alt="{{ stone.PK_stone }}" class="img-thumbnail stone-edit-thumbnail">
-                                </div>
-                            {% endif %}
-                            <input type="file" class="form-control-file" id="image" name="image" accept="image/*"
-                                   {% if not stone.can_be_edited %}disabled{% endif %}>
-                            <div id="image-validation-msg" class="js-hidden"></div>
-                            <small class="form-text text-muted">{% trans "Upload a new image to replace the current one" %}</small>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="color">{% trans "Stone Color" %}</label>
-                            <input type="color" class="form-control" id="color" name="color" value="{{ stone.color }}"
-                                   {% if not stone.can_be_edited %}readonly{% endif %}>
-                        </div>
-
-                        <div class="form-group">
-                            <label>{% trans "Stone Type" %}</label>
-                            <div>
-                                <span class="badge badge-{% if stone.stone_type == 'hidden' %}primary{% else %}warning{% endif %}">
-                                    {{ stone.get_stone_type_display }}
-                                </span>
-                                <small class="form-text text-muted">{% trans "Stone type cannot be changed after creation." %}</small>
-                            </div>
-                        </div>
-
-                        <div class="stone-actions mt-4">
-                            {% if stone.can_be_edited %}
-                                <button type="submit" name="action" value="save" class="btn btn-secondary">
-                                    <i class="fas fa-save"></i> {% trans "Save Draft" %}
-                                </button>
-                                <button type="submit" name="action" value="publish" class="btn btn-success">
-                                    <i class="fas fa-globe"></i> {% trans "Publish Stone" %}
-                                </button>
-                            {% endif %}
-                        </div>
-                    </form>
-
-                    <!-- QR Code Section -->
-                    <div class="qr-code-section mt-4">
-                        <hr>
-                        <h5>{% trans "QR Code" %}</h5>
-                        <p class="text-muted">{% trans "Your stone has a persistent QR code that will always lead to the stone page." %}</p>
-
-                        <div class="qr-actions">
-                            <a href="{% url 'stone_qr' stone.PK_stone %}" class="btn btn-primary">
-                                <i class="fas fa-download"></i> {% trans "Download QR Code" %}
-                            </a>
-
-                            <div class="mt-2">
-                                <small class="text-muted">
-                                    <strong>{% trans "QR URL:" %}</strong> {{ stone.get_qr_url }}
-                                </small>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Certificate Section -->
-                    <div class="certificate-section mt-4">
-                        <hr>
-                        <h5>{% trans "Stone Certificate" %}</h5>
-                        <p class="text-muted">{% trans "Download a printable certificate of creation for your stone." %}</p>
-
-                        <div class="certificate-actions">
-                            <a href="{% url 'stone_certificate' stone.PK_stone %}" class="btn btn-outline-success">
-                                <i class="fas fa-certificate"></i> {% trans "Download Certificate" %}
-                            </a>
-                        </div>
-                    </div>
-
-                    <!-- Stone Status Actions -->
-                    {% if stone.status == 'published' and stone.can_be_sent_off %}
-                        <div class="send-off-section mt-4">
-                            <hr>
-                            <h5>{% trans "Send Off Stone" %}</h5>
-                            <p class="text-muted">{% trans "Once you send off your stone, it becomes finalized and ready for its journey. This action cannot be undone." %}</p>
-                            
-                            <form method="post" action="{% url 'stone_send_off' stone.PK_stone %}">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-warning" 
-                                        onclick="return confirm('{% trans "Are you sure you want to send off this stone? This action cannot be undone." %}')">
-                                    <i class="fas fa-paper-plane"></i> {% trans "Send Off Stone" %}
-                                </button>
-                            </form>
-                        </div>
-                    {% endif %}
-
-                    <!-- Navigation -->
-                    <div class="navigation mt-4">
-                        <hr>
-                        <a href="{% url 'stonewalker_start' %}" class="btn btn-outline-primary">
-                            <i class="fas fa-arrow-left"></i> {% trans "Back to Map" %}
-                        </a>
-                        <a href="{% url 'my_stones' %}" class="btn btn-outline-secondary">
-                            <i class="fas fa-list"></i> {% trans "My Stones" %}
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
+<div class="avant-section avant-bg-right flex-center min-h-70vh overflow-auto">
+  <div class="avant-card max-w-600 m-2-5-auto">
+    <div class="avant-header text-center mb-0-5">{% trans "Edit Stone" %}: {{ stone.PK_stone }}</div>
+    <div class="text-center mb-1-5">
+      <span class="stone-status-pill stone-status-{{ stone.status }}">{{ stone.get_status_display }}</span>
     </div>
+
+    {% if messages %}
+      {% for message in messages %}
+        <div class="text-center mb-1 {% if message.tags == 'error' %}text-error{% else %}text-success{% endif %}">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+
+    {% if stone.status == 'draft' %}
+      <div class="bg-blue p-2 border-radius-8 mb-2">
+        <p class="claim-info-text">{% trans "This stone is in draft mode. You can edit it and publish when ready." %}</p>
+      </div>
+    {% elif stone.status == 'published' %}
+      <div class="bg-yellow p-2 border-radius-8 mb-2">
+        <p class="claim-info-text">{% trans "This stone is published and visible on the map. You can no longer edit it, but you can send it off to finalize it." %}</p>
+      </div>
+    {% elif stone.status == 'sent_off' %}
+      <div class="bg-green p-2 border-radius-8 mb-2">
+        <p class="claim-info-text">{% trans "This stone has been sent off and is finalized. No further changes can be made." %}</p>
+      </div>
+    {% endif %}
+
+    <form class="flex-column gap-0-7" method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+
+      <label class="avant-label" for="stone-name">{% trans "Stone Name" %}</label>
+      <input type="text" class="avant-input" id="stone-name" value="{{ stone.PK_stone }}" readonly>
+      <small class="text-muted">{% trans "Stone name cannot be changed after creation." %}</small>
+
+      <label class="avant-label mt-1" for="description">{% trans "Description" %}</label>
+      <textarea class="avant-input" id="description" name="description" rows="4"
+                {% if not stone.can_be_edited %}readonly{% endif %}
+                maxlength="500"
+                placeholder="{% trans 'Describe your stone...' %}">{{ stone.description }}</textarea>
+      <small class="text-muted">{% trans "Maximum 500 characters" %}</small>
+
+      <label class="avant-label mt-1" for="image">{% trans "Stone Image" %}</label>
+      {% if stone.image %}
+        <div class="mb-1">
+          <img src="{{ stone.image.url }}" alt="{{ stone.PK_stone }}" class="stone-edit-preview border-radius-8">
+        </div>
+      {% endif %}
+      <input type="file" class="avant-input" id="image" name="image" accept="image/*"
+             {% if not stone.can_be_edited %}disabled{% endif %}>
+      <div id="image-validation-msg" class="js-hidden"></div>
+      <small class="text-muted">{% trans "Upload a new image to replace the current one" %}</small>
+
+      <label class="avant-label mt-1" for="color">{% trans "Stone Color" %}</label>
+      <input type="color" class="avant-input stone-color-input" id="color" name="color" value="{{ stone.color }}"
+             {% if not stone.can_be_edited %}disabled{% endif %}>
+
+      <div class="mt-0-5">
+        <span class="avant-label">{% trans "Stone Type" %}</span>
+        <div class="mt-0-3">
+          <span class="stone-status-pill stone-type-{{ stone.stone_type }}">{{ stone.get_stone_type_display }}</span>
+          <small class="text-muted ml-0-5">{% trans "Stone type cannot be changed after creation." %}</small>
+        </div>
+      </div>
+
+      {% if stone.can_be_edited %}
+      <div class="stone-edit-actions mt-1-5">
+        <button type="submit" name="action" value="save" class="avant-btn bg-muted">{% trans "Save Draft" %}</button>
+        <button type="submit" name="action" value="publish" class="avant-btn bg-accent text-white">{% trans "Publish Stone" %}</button>
+      </div>
+      {% endif %}
+    </form>
+
+    <!-- QR Code Section -->
+    <div class="stone-edit-section mt-2">
+      <h4 class="avant-label fs-1-1 mb-0-5">{% trans "QR Code" %}</h4>
+      <p class="text-muted fs-0-9 mb-1">{% trans "Your stone has a persistent QR code that will always lead to the stone page." %}</p>
+      <a href="{% url 'stone_qr' stone.PK_stone %}" class="avant-btn bg-accent text-white">{% trans "Download QR Code" %}</a>
+      <div class="mt-0-7">
+        <small class="text-muted"><strong>{% trans "QR URL:" %}</strong> {{ stone.get_qr_url }}</small>
+      </div>
+    </div>
+
+    <!-- Certificate Section -->
+    <div class="stone-edit-section mt-2">
+      <h4 class="avant-label fs-1-1 mb-0-5">{% trans "Stone Certificate" %}</h4>
+      <p class="text-muted fs-0-9 mb-1">{% trans "Download a printable certificate of creation for your stone." %}</p>
+      <a href="{% url 'stone_certificate' stone.PK_stone %}" class="avant-btn bg-muted">{% trans "Download Certificate" %}</a>
+    </div>
+
+    <!-- Send Off Section -->
+    {% if stone.status == 'published' and stone.can_be_sent_off %}
+    <div class="stone-edit-section mt-2">
+      <h4 class="avant-label fs-1-1 mb-0-5">{% trans "Send Off Stone" %}</h4>
+      <p class="text-muted fs-0-9 mb-1">{% trans "Once you send off your stone, it becomes finalized and ready for its journey. This action cannot be undone." %}</p>
+      <form method="post" action="{% url 'stone_send_off' stone.PK_stone %}">
+        {% csrf_token %}
+        <button type="submit" class="avant-btn bg-warning"
+                onclick="return confirm('{% trans "Are you sure you want to send off this stone? This action cannot be undone." %}')">
+          {% trans "Send Off Stone" %}
+        </button>
+      </form>
+    </div>
+    {% endif %}
+
+    <!-- Navigation -->
+    <div class="stone-edit-nav mt-2">
+      <a href="{% url 'stonewalker_start' %}" class="avant-btn bg-muted">{% trans "Back to Map" %}</a>
+      <a href="{% url 'my_stones' %}" class="avant-btn bg-muted">{% trans "My Stones" %}</a>
+    </div>
+  </div>
 </div>
 <script>
 if (typeof setupImageUpload === 'function') {

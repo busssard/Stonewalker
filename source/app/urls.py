@@ -8,6 +8,7 @@ from django.views.generic import TemplateView
 from main.views import IndexPageView, ChangeLanguageView
 from main.views import StoneWalkerStartPageView
 from main.views import MyStonesView
+from accounts.views import TermsView
 from main.views import add_stone, StoneScanView, check_stone_name
 from main.views import StoneQRCodeView, StoneLinkView, check_stone_uuid, StoneEditView, StoneSendOffView, StoneCertificateView, generate_qr_code_api, download_enhanced_qr_code, StoneShareView
 
@@ -67,7 +68,7 @@ urlpatterns += i18n_patterns(
     path('claim-stone/<str:stone_uuid>/', ClaimStoneView.as_view(), name='claim_stone'),
 
     path('about/', TemplateView.as_view(template_name='main/about.html'), name='about'),
-    path('terms/', TemplateView.as_view(template_name='accounts/terms.html'), name='terms'),
+    path('terms/', TermsView.as_view(), name='terms'),
     # New stone management URLs
     path('stone/<str:pk>/edit/', StoneEditView.as_view(), name='stone_edit'),
     path('stone/<str:pk>/qr/', StoneQRCodeView.as_view(), name='stone_qr'),

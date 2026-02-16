@@ -613,5 +613,27 @@ class DiscourseSSOView(View):
         return redirect(f'{discourse_url}/session/sso_login?{response_payload}')
 
 
-class TermsView(TemplateView):
+class TermsView(View):
     template_name = 'accounts/terms.html'
+
+    def get(self, request):
+        from django.shortcuts import render
+        needs_acceptance = (
+            request.user.is_authenticated
+            and not hasattr(request.user, 'terms_acceptance')
+        )
+        return render(request, self.template_name, {
+            'needs_acceptance': needs_acceptance,
+            'next': request.GET.get('next', ''),
+        })
+
+    def post(self, request):
+        if not request.user.is_authenticated:
+            return redirect('accounts:log_in')
+        if not hasattr(request.user, 'terms_acceptance'):
+            TermsAcceptance.objects.create(user=request.user)
+            messages.success(request, _('Thank you for accepting the Terms of Use.'))
+        next_url = request.POST.get('next', '')
+        if next_url and is_safe_url(next_url, allowed_hosts={request.get_host()}):
+            return redirect(next_url)
+        return redirect('stonewalker_start')
