@@ -55,19 +55,17 @@
 <div class="h-map-wrapper">
   <div class="main-map-flex-root h-map-container flex-column">
     <div class="avant-card avant-card-map flex-1-auto flex-column">
-      <!-- Filter controls -->
-      <div class="map-filter-controls p-0-7 border-bottom-2 avant-bg-right">
-        <div class="flex-center gap-0-5 flex-wrap">
+      <div id="map-container" class="avant-bg-right avant-shadow flex-1-auto position-relative">
+        <div id="map" class="flex-1-auto"></div>
+        <!-- Filter controls floating overlay (bottom-left of map) -->
+        <div class="map-filter-overlay">
           <input type="checkbox" id="filter-all" checked class="filter-toggle-input">
           <label for="filter-all" class="filter-toggle-btn">{% trans 'All' %}</label>
           <input type="checkbox" id="filter-hidden" checked class="filter-toggle-input">
-          <label for="filter-hidden" class="filter-toggle-btn filter-has-info" title="{% trans 'Stones placed in the wild, waiting to be found' %}">{% trans 'Hidden' %}<span class="filter-info-icon" aria-label="{% trans 'Info' %}">?</span></label>
+          <label for="filter-hidden" class="filter-toggle-btn filter-has-info" title="{% trans 'Only show stones where only the last found spot is known, not where it moved next' %}">{% trans 'Hidden' %}<span class="filter-info-icon" aria-label="{% trans 'Info' %}">?</span></label>
           <input type="checkbox" id="filter-hunted" checked class="filter-toggle-input">
-          <label for="filter-hunted" class="filter-toggle-btn filter-has-info" title="{% trans 'Stones that have been discovered by someone' %}">{% trans 'Hunted' %}<span class="filter-info-icon" aria-label="{% trans 'Info' %}">?</span></label>
+          <label for="filter-hunted" class="filter-toggle-btn filter-has-info" title="{% trans 'Only show stones with a known location that everyone tries to find first' %}">{% trans 'Hunted' %}<span class="filter-info-icon" aria-label="{% trans 'Info' %}">?</span></label>
         </div>
-      </div>
-      <div id="map-container" class="avant-bg-right avant-shadow flex-1-auto">
-        <div id="map" class="flex-1-auto"></div>
       </div>
       <div id="stone-details" class="avant-card display-none">
         <!-- Stone details content -->

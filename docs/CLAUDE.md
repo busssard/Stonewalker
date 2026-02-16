@@ -231,6 +231,8 @@ make clean       # Clean generated files
 8. **GitHub PAT scope** - Needs `workflow` scope to push `.github/workflows/` changes
 9. **pytest.ini section header** - Must be `[pytest]` not `[tool:pytest]` (that's the setup.cfg format)
 10. **Pre-push hook runs full suite** - Budget ~3 minutes per push; stderr from `git push` appears after the hook output
+11. **Django template comments** - `{# ... #}` comments CANNOT span multiple lines. Multi-line comments will render as visible text on the page. Use `{% comment %}...{% endcomment %}` for multi-line comments instead.
+12. **header.js has two copies** - `source/content/assets/js/header.js` and `source/content/static/js/header.js` are separate copies (not symlinked). Changes must be applied to both files.
 
 ## File Structure Key Points
 
@@ -710,7 +712,7 @@ In Discourse Admin → Settings → Login:
 | `source/main/tests/test_stone_features.py` | QR numbering + certificate tests |
 | `source/accounts/test_email_templates.py` | Email template tests |
 
-### Test Count: 321 (was 280, +41 premium tests)
+### Test Count: 347+ (was 321, +25 sprint 3 backend tests)
 
 ## Premium Supporter Tier (February 2026)
 
@@ -752,6 +754,83 @@ Premium plans defined in `shop_config.json` with `is_subscription: true` and `bi
 - Dark mode: logo inverted to white via `filter: brightness(0) invert(1)`
 - Dark mode: "Scan a Stone" button icon tinted red to match border color
 - Map filter checkboxes restyled to pill-shaped toggle buttons matching nav style, with "?" info tooltips on Hidden/Hunted
+
+### Sprint 3 UI Fixes (February 2026)
+
+**1. Mobile Burger Menu / Floating Button Clash**
+- **Problem**: On mobile, the burger menu nav items could overlap with the fixed-position "Create New Stone" / "Scan a Stone" floating action buttons at the bottom-right of the screen.
+- **Fix (CSS)**: Added `overflow-y: auto` and `padding-bottom: 120px` to `.header-burger-nav` in `styles.css` (line ~980). The padding creates a safe zone at the bottom so even when all 8+ nav items are visible, they scroll above the FAB area. The overflow enables scrolling on short screens.
+- **Fix (JS)**: Added FAB hide/show toggle to `updateAria()` in `header.js` (both `assets/js/` and `static/js/` copies). When the burger menu checkbox is checked, `document.querySelector('.floating-action-bar').style.display` is set to `'none'`; when unchecked, it's restored to `''`. This prevents FABs from overlapping nav items on very short viewports (< 700px height).
+- **Gotcha**: The 120px padding-bottom must be at least as tall as the floating action bar height (56px) + its bottom offset (2rem) + some breathing room. If FAB sizing changes in responsive breakpoints, this padding may need adjustment. The JS toggle must be maintained in both `assets/js/header.js` and `static/js/header.js` — these are separate copies (not symlinked).
+
+**2. Map Filter Moved to Floating Overlay**
+- **Problem**: The All/Hidden/Hunted filter toggles sat in a bar above the map, taking up vertical space and breaking the card layout.
+- **Fix**: Moved the filter controls inside `#map-container` (which has `position: relative`) as an absolutely-positioned overlay at bottom-left. New CSS class `.map-filter-overlay` in `styles.css` (line ~1320). Uses glassmorphic style (semi-transparent white background + backdrop-filter blur) matching the floating action buttons' design language.
+- **Template change**: `stonewalker_start.html` lines 58-68 — the `<div class="map-filter-controls">` wrapper was removed; filters now live inside `#map-container` as `<div class="map-filter-overlay">`.
+- **Dark mode**: `.map-filter-overlay` gets dark background at line ~5285 in styles.css.
+- **Gotcha**: The overlay is `position: absolute` inside a `position: relative` container, not `position: fixed`. This means it scrolls with the map card rather than sticking to the viewport — which is correct behavior since the FABs (fixed) are at bottom-right and the filters (absolute) are at bottom-left of the map.
+
+**3. Hunted/Hidden Tooltip Text Corrected**
+- **Problem**: The title attributes on the Hidden and Hunted filter labels had swapped/incorrect descriptions.
+- **Fix**: Updated tooltip text in `stonewalker_start.html` (lines 65-67):
+  - **Hidden**: "Only show stones where only the last found spot is known, not where it moved next"
+  - **Hunted**: "Only show stones with a known location that everyone tries to find first"
+- These are translatable strings wrapped in `{% trans %}` tags.
+
+**4. About Page Dark Mode**
+- **Problem**: The about page uses utility classes `.text-dark` (`color: #333 !important`) and `.text-dark-gray` (`color: #444 !important`) which have `!important` and override the generic dark mode body/container color. Similarly, `.avant-about-list` has hardcoded `color: #444`.
+- **Fix**: Added dark mode overrides in `styles.css` (lines ~5610-5630) that use `!important` to win specificity: `.text-dark` → `var(--text-primary)`, `.text-dark-gray` → `var(--text-secondary)`, `.avant-about-list` and `.avant-fact-box` → `var(--text-primary)`.
+- **Gotcha**: Any utility class with hardcoded colors + `!important` will need a matching `[data-theme="dark"]` override. If you add new `.text-*` utility classes with `!important`, add the dark mode counterpart too.
+
+**5. Change Language Page Dark Mode White Stripe**
+- **Problem**: In dark mode, the Change Language page showed a white stripe at the bottom because the content only fills `min-height: 70vh`, leaving 30% of the viewport with the default (white) background.
+- **Fix**: Added `min-height: calc(100vh - var(--header-height))` to `[data-theme="dark"] .container-fluid` in `styles.css` (line ~5380). This ensures the dark-themed container always fills the full viewport height below the header.
+- **Gotcha**: This applies to ALL pages in dark mode, not just the language page. That's intentional — no page should show a white gap at the bottom in dark mode. The `var(--header-height)` deduction accounts for the fixed header.
+
+**6. Burger Nav Dark Mode**
+- **Bonus fix**: The burger nav menu background stayed white (`rgba(255,255,255,0.98)`) in dark mode. Added `[data-theme="dark"] .header-burger-nav` override (line ~5640 in styles.css) with dark background matching the card palette (`rgba(26,26,46,0.98)`).
+
+**7. About Page QR Button Smart Routing**
+- **Problem**: The "Get Your First QR Code" button on the about page always linked to `/shop/`, but the shop shouldn't be the primary destination until 1000 users have signed up.
+- **Fix**: In `about.html` (lines 77-83), the button now conditionally routes based on `shop_visible` (from the `shop_visibility` context processor in `app/context_processors.py`). When `shop_visible` is False (< 1000 users), it links to `{% url 'create_stone' %}` — the same smart router used by the "Create New Stone" FAB, which gives users a free QR claim flow. When `shop_visible` is True (>= 1000 users), it links to the full shop.
+- **Gotcha**: The `create_stone` URL requires authentication. Unauthenticated users clicking this button will be redirected to login first, then to the create-stone flow. This matches the FAB behavior on the main page.
+
+### Sprint 3 Backend Logic (February 2026)
+
+Four backend features that work together to manage the early growth phase. They all share one config value: `SHOP_VISIBLE_USER_THRESHOLD` (default 1000) in both dev/prod settings.
+
+**1. Welcome Email with User Number + Early Premium Grant**
+- **What**: Activation emails now show "You are member #42 of StoneWalker!" and early users see a lifetime premium promise.
+- **How**: `accounts/models.py` has three helper functions (`get_user_number`, `is_early_user`, `grant_early_premium`) placed before the `Activation` class. `accounts/utils.py:send_activation_email` accepts an optional `user` param to inject user_number/is_early_user into the email template context. `accounts/views.py:ActivateView` calls `grant_early_premium(user)` after activation.
+- **Why at activation, not signup**: Prevents throwaway accounts from consuming early-user slots. The premium is only granted after email verification.
+- **Files**: `accounts/models.py`, `accounts/utils.py`, `accounts/views.py`, `accounts/templates/accounts/emails/activate_profile.html`, `accounts/templates/accounts/emails/activate_profile.txt`
+- **Migration**: `accounts/migrations/0011_add_lifetime_plan_choice.py` (adds `lifetime` to Subscription PLAN_CHOICES)
+
+**2. QR Code Limit (1 Unclaimed at a Time)**
+- **What**: Before the threshold, non-premium users can only have 1 unclaimed QR at a time. This prevents hoarding during the free-QR phase.
+- **How**: `Stone.user_has_unclaimed_qr(user)` checks for unclaimed stones in user's packs. `Stone.user_can_get_new_qr(user)` combines threshold check + premium bypass + unclaimed check. Enforced in `CheckoutView.post()` and `FreeQRView.get()`.
+- **Dev mode bypass**: `CheckoutView` skips the limit when `DEBUG=True` so developers can test checkout flows without claiming stones between tests.
+- **Gotcha**: The check looks at `FK_pack__FK_user=user` (pack owner), not `FK_user=user` (stone owner), because unclaimed stones have `FK_user=None`.
+- **Files**: `main/models.py` (Stone class methods), `main/shop_views.py` (CheckoutView, FreeQRView)
+
+**3. Premium Pricing Visibility Gate**
+- **What**: The premium landing page always shows features and FAQ, but pricing cards are hidden until user count >= threshold. Early users see "As an early supporter, you have lifetime premium!" instead.
+- **How**: `PremiumView.get_context_data()` sets `show_pricing = user_count >= threshold`. The template gates `{% if not is_premium and show_pricing %}` around the pricing section.
+- **Why**: Before the threshold, all users get lifetime premium automatically, so showing prices would be confusing. The features list stays visible as a preview of what they're getting for free.
+- **Files**: `main/premium_views.py` (PremiumView), `content/templates/main/premium.html`
+
+**4. About Page QR Button Smart Routing**
+- **What**: The "Get Your First QR Code" button on the about page routes to `/create-stone/` (free claim flow) before the threshold, and to `/shop/` after.
+- **How**: Template uses `{% if shop_visible %}` from the `shop_visibility` context processor.
+- **Files**: `content/templates/main/about.html` (conditional routing already done by UI-fixes agent; backend tests added)
+
+**Key Design Decisions**:
+- The `SHOP_VISIBLE_USER_THRESHOLD` setting is the single control point for all four features. Changing it from 1000 to any other number adjusts everything at once.
+- `grant_early_premium` is idempotent — calling it multiple times on the same user is safe.
+- The `lifetime` plan has no Stripe subscription ID. It's a local-only status that bypasses all Stripe billing logic.
+- Tests use `@override_settings(SHOP_VISIBLE_USER_THRESHOLD=0)` to test post-threshold behavior with just 1-2 test users.
+
+**Test Count**: 25 new tests across `accounts/tests.py` (UserNumberTests, GrantEarlyPremiumTests, ActivationEmailUserNumberTests, QRCodeLimitTests, PremiumVisibilityGateTests, AboutPageQRButtonTests)
 
 ## Chrome DevTools MCP Integration (Flatpak Chromium)
 

@@ -5,7 +5,7 @@ Handles Stripe Checkout Sessions, subscriptions, and webhook processing.
 import stripe
 import uuid as uuid_lib
 import logging
-from datetime import datetime
+from datetime import datetime, timezone as dt_tz
 from django.conf import settings
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -330,8 +330,8 @@ class StripeService:
                 'stripe_subscription_id': stripe_sub_id,
                 'plan': plan,
                 'status': status,
-                'current_period_start': datetime.fromtimestamp(period_start, tz=timezone.utc) if period_start else None,
-                'current_period_end': datetime.fromtimestamp(period_end, tz=timezone.utc) if period_end else None,
+                'current_period_start': datetime.fromtimestamp(period_start, tz=dt_tz.utc) if period_start else None,
+                'current_period_end': datetime.fromtimestamp(period_end, tz=dt_tz.utc) if period_end else None,
             }
         )
         logger.info(f"{'Created' if created else 'Updated'} subscription for user {user.id}: {status}")
@@ -357,9 +357,9 @@ class StripeService:
 
         sub.status = status
         if period_start:
-            sub.current_period_start = datetime.fromtimestamp(period_start, tz=timezone.utc)
+            sub.current_period_start = datetime.fromtimestamp(period_start, tz=dt_tz.utc)
         if period_end:
-            sub.current_period_end = datetime.fromtimestamp(period_end, tz=timezone.utc)
+            sub.current_period_end = datetime.fromtimestamp(period_end, tz=dt_tz.utc)
         if cancel_at_period_end:
             sub.canceled_at = timezone.now()
         elif sub.canceled_at and not cancel_at_period_end:

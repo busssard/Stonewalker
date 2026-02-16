@@ -10,6 +10,49 @@ from math import radians, sin, cos, sqrt, atan2
 from django.core.management.base import BaseCommand
 
 
+# --- Early User System ---
+# StoneWalker rewards the first N users (controlled by SHOP_VISIBLE_USER_THRESHOLD,
+# default 1000) with free lifetime premium. This creates a sense of exclusivity and
+# incentivizes early adoption before the paid shop/subscription goes live.
+# The same threshold gates shop visibility, premium pricing display, and QR limits.
+
+def get_user_number(user):
+    """Get the registration order number for a user (1-based).
+    Uses id__lte instead of date-based ordering because Django auto-increment IDs
+    are monotonically increasing and survive deletions (gaps don't matter)."""
+    return User.objects.filter(id__lte=user.id).count()
+
+
+def is_early_user(user):
+    """Check if a user registered within the first N users (threshold from settings).
+    Used by: context processor (nav badge), email templates (welcome message),
+    premium landing page (lifetime premium message), grant_early_premium()."""
+    threshold = getattr(settings, 'SHOP_VISIBLE_USER_THRESHOLD', 1000)
+    return get_user_number(user) <= threshold
+
+
+def grant_early_premium(user):
+    """Grant lifetime premium to an early user. Returns the Subscription or None.
+    Called during account activation (ActivateView) so the premium is granted
+    only after email verification, not at signup. This prevents throwaway accounts
+    from consuming early-user slots. Idempotent: safe to call multiple times."""
+    if not is_early_user(user):
+        return None
+    sub, created = Subscription.objects.get_or_create(
+        user=user,
+        defaults={
+            'plan': 'lifetime',
+            'status': 'active',
+        }
+    )
+    # If the user already had a lapsed/canceled subscription, upgrade it
+    if not created and not sub.grants_premium:
+        sub.plan = 'lifetime'
+        sub.status = 'active'
+        sub.save()
+    return sub
+
+
 class Activation(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -113,9 +156,12 @@ class NotificationPreference(models.Model):
 
 class Subscription(models.Model):
     """Tracks premium supporter subscriptions via Stripe recurring billing."""
+    # 'lifetime' plan is granted automatically to early users (first N registrations)
+    # and has no Stripe subscription — it's a local-only status that bypasses billing.
     PLAN_CHOICES = [
         ('monthly', 'Monthly ($3.99/mo)'),
         ('yearly', 'Yearly ($29.99/yr)'),
+        ('lifetime', 'Lifetime (Early Supporter)'),
     ]
 
     STATUS_CHOICES = [

@@ -70,6 +70,16 @@ class PremiumView(TemplateView):
             context['subscription'] = None
             context['is_premium'] = False
 
+        # Premium pricing is hidden until the community reaches SHOP_VISIBLE_USER_THRESHOLD
+        # users. Before that, early users get lifetime premium for free (no need to show
+        # prices). After the threshold, the features list is still shown but now with
+        # pricing cards and subscribe buttons. This prevents confusion during early growth
+        # when all users get premium automatically.
+        from django.contrib.auth.models import User
+        threshold = getattr(settings, 'SHOP_VISIBLE_USER_THRESHOLD', 1000)
+        user_count = User.objects.count()
+        context['show_pricing'] = user_count >= threshold
+
         context['stripe_public_key'] = getattr(settings, 'STRIPE_PUBLIC_KEY', '')
         return context
 

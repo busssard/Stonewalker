@@ -19,15 +19,23 @@ def shop_visibility(request):
 def premium_status(request):
     """
     Context processor to expose premium subscription status to all templates.
+    Also exposes is_early_user so templates can show the "early supporter" badge/message
+    (e.g., premium.html shows "lifetime premium" instead of pricing for early users,
+    and nav_links.html can differentiate the Premium link destination).
     """
+    is_premium = False
+    is_early = False
+
     if request.user.is_authenticated:
         try:
             is_premium = request.user.profile.is_premium
         except Exception:
-            is_premium = False
-    else:
-        is_premium = False
+            pass
+
+        from accounts.models import is_early_user
+        is_early = is_early_user(request.user)
 
     return {
         'is_premium_user': is_premium,
+        'is_early_user': is_early,
     }

@@ -1,4 +1,4 @@
-from django.test import TestCase, RequestFactory
+from django.test import TestCase, RequestFactory, override_settings
 from django.urls import reverse
 from django.contrib.auth.models import User, AnonymousUser
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -481,6 +481,7 @@ class PremiumViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Premium Supporter')
 
+    @override_settings(SHOP_VISIBLE_USER_THRESHOLD=0)
     def test_premium_page_shows_pricing_for_non_subscriber(self):
         self.client.force_login(self.user)
         response = self.client.get(reverse('premium'))
@@ -489,18 +490,26 @@ class PremiumViewTests(TestCase):
         self.assertContains(response, '$3.99')
         self.assertContains(response, '$29.99')
 
+    @override_settings(SHOP_VISIBLE_USER_THRESHOLD=0)
     def test_premium_page_shows_login_cta_for_anonymous(self):
         response = self.client.get(reverse('premium'))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Log in to Subscribe')
+
+    def test_premium_page_hides_pricing_before_threshold(self):
+        """Pricing is hidden when user count < threshold."""
+        self.client.force_login(self.user)
+        response = self.client.get(reverse('premium'))
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, 'Choose Your Plan')
 
     def test_premium_page_shows_already_premium_for_subscriber(self):
         Subscription.objects.create(user=self.user, status='active', plan='monthly')
         self.client.force_login(self.user)
         response = self.client.get(reverse('premium'))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'You are a Premium Supporter!')
-        self.assertContains(response, 'Manage Subscription')
+        # User is early (< 1000 users), so sees early supporter message
+        self.assertContains(response, 'early supporter')
 
     def test_premium_page_hides_pricing_for_active_subscriber(self):
         Subscription.objects.create(user=self.user, status='active', plan='monthly')
@@ -675,7 +684,8 @@ class PremiumContextProcessorTests(TestCase):
         request = factory.get('/')
         request.user = AnonymousUser()
         result = premium_status(request)
-        self.assertEqual(result, {'is_premium_user': False})
+        self.assertFalse(result['is_premium_user'])
+        self.assertFalse(result['is_early_user'])
 
     def test_context_processor_direct_authenticated_no_sub(self):
         """Test premium_status function directly with authenticated user, no subscription."""
@@ -684,7 +694,8 @@ class PremiumContextProcessorTests(TestCase):
         request = factory.get('/')
         request.user = self.user
         result = premium_status(request)
-        self.assertEqual(result, {'is_premium_user': False})
+        self.assertFalse(result['is_premium_user'])
+        self.assertIn('is_early_user', result)
 
     def test_context_processor_direct_authenticated_with_sub(self):
         """Test premium_status function directly with premium user."""
@@ -694,7 +705,8 @@ class PremiumContextProcessorTests(TestCase):
         request = factory.get('/')
         request.user = self.user
         result = premium_status(request)
-        self.assertEqual(result, {'is_premium_user': True})
+        self.assertTrue(result['is_premium_user'])
+        self.assertIn('is_early_user', result)
 
 
 class PremiumRequiredDecoratorTests(TestCase):
@@ -786,7 +798,10 @@ class PremiumRequiredDecoratorTests(TestCase):
 
 
 class PremiumNavLinkTests(TestCase):
-    """Tests that the Premium link appears correctly in navigation."""
+    """Tests that the Premium link appears correctly in navigation.
+
+    Premium nav is hidden until SHOP_VISIBLE_USER_THRESHOLD users are signed up.
+    """
 
     def setUp(self):
         self.user = User.objects.create_user(
@@ -796,18 +811,31 @@ class PremiumNavLinkTests(TestCase):
         from django.utils.translation import activate
         activate('en')
 
-    def test_premium_link_in_nav_for_anonymous(self):
+    def test_premium_link_hidden_for_anonymous_before_threshold(self):
+        """Before 1000 users, premium link should not appear for anonymous."""
         response = self.client.get(reverse('index'))
-        self.assertContains(response, 'Premium')
-        # Non-premium users see a link to the landing page
+        self.assertNotContains(response, reverse('premium'))
+
+    def test_premium_link_hidden_for_non_premium_before_threshold(self):
+        """Before 1000 users, premium link should not appear for non-premium users."""
+        self.client.force_login(self.user)
+        response = self.client.get(reverse('index'))
+        self.assertNotContains(response, reverse('premium'))
+
+    @override_settings(SHOP_VISIBLE_USER_THRESHOLD=0)
+    def test_premium_link_in_nav_for_anonymous_after_threshold(self):
+        """After threshold, premium link should appear for anonymous."""
+        response = self.client.get(reverse('index'))
         self.assertContains(response, reverse('premium'))
 
+    @override_settings(SHOP_VISIBLE_USER_THRESHOLD=0)
     def test_premium_link_in_nav_for_authenticated_non_premium(self):
         self.client.force_login(self.user)
         response = self.client.get(reverse('index'))
         self.assertContains(response, 'Premium')
         self.assertContains(response, reverse('premium'))
 
+    @override_settings(SHOP_VISIBLE_USER_THRESHOLD=0)
     def test_premium_link_in_nav_for_premium_user(self):
         Subscription.objects.create(user=self.user, status='active', plan='monthly')
         self.client.force_login(self.user)
@@ -821,4 +849,318 @@ class PremiumNavLinkTests(TestCase):
     def test_premium_link_no_special_class_for_non_premium(self):
         self.client.force_login(self.user)
         response = self.client.get(reverse('index'))
-        self.assertNotContains(response, 'premium-nav-link') 
+        self.assertNotContains(response, 'premium-nav-link')
+
+
+# ---------------------------------------------------------------------------
+# Early User / User Number Tests (Sprint 3)
+# ---------------------------------------------------------------------------
+
+class UserNumberTests(TestCase):
+    """Tests for get_user_number and is_early_user helpers."""
+
+    def test_get_user_number_first_user(self):
+        from accounts.models import get_user_number
+        user = User.objects.create_user(username='first', email='first@example.com', password='Test1234!')
+        self.assertEqual(get_user_number(user), 1)
+
+    def test_get_user_number_sequential(self):
+        from accounts.models import get_user_number
+        u1 = User.objects.create_user(username='u1', email='u1@example.com', password='Test1234!')
+        u2 = User.objects.create_user(username='u2', email='u2@example.com', password='Test1234!')
+        u3 = User.objects.create_user(username='u3', email='u3@example.com', password='Test1234!')
+        self.assertEqual(get_user_number(u1), 1)
+        self.assertEqual(get_user_number(u2), 2)
+        self.assertEqual(get_user_number(u3), 3)
+
+    def test_is_early_user_within_threshold(self):
+        from accounts.models import is_early_user
+        user = User.objects.create_user(username='earlybird', email='early@example.com', password='Test1234!')
+        # With only 1 user and threshold of 1000, user is early
+        self.assertTrue(is_early_user(user))
+
+    def test_is_early_user_respects_setting(self):
+        from accounts.models import is_early_user
+        from django.test import override_settings
+        user = User.objects.create_user(username='thresh', email='thresh@example.com', password='Test1234!')
+        with override_settings(SHOP_VISIBLE_USER_THRESHOLD=0):
+            # Threshold is 0, so user number 1 is > 0 => not early
+            self.assertFalse(is_early_user(user))
+
+
+class GrantEarlyPremiumTests(TestCase):
+    """Tests for granting lifetime premium to early users."""
+
+    def test_grant_early_premium_creates_subscription(self):
+        from accounts.models import grant_early_premium
+        user = User.objects.create_user(username='gifted', email='gifted@example.com', password='Test1234!')
+        sub = grant_early_premium(user)
+        self.assertIsNotNone(sub)
+        self.assertEqual(sub.plan, 'lifetime')
+        self.assertEqual(sub.status, 'active')
+        self.assertTrue(sub.grants_premium)
+
+    def test_grant_early_premium_idempotent(self):
+        from accounts.models import grant_early_premium
+        user = User.objects.create_user(username='idem', email='idem@example.com', password='Test1234!')
+        sub1 = grant_early_premium(user)
+        sub2 = grant_early_premium(user)
+        self.assertEqual(sub1.pk, sub2.pk)
+        self.assertEqual(Subscription.objects.filter(user=user).count(), 1)
+
+    def test_grant_early_premium_returns_none_for_late_user(self):
+        from accounts.models import grant_early_premium
+        from django.test import override_settings
+        user = User.objects.create_user(username='late', email='late@example.com', password='Test1234!')
+        with override_settings(SHOP_VISIBLE_USER_THRESHOLD=0):
+            result = grant_early_premium(user)
+            self.assertIsNone(result)
+
+    def test_profile_is_premium_with_lifetime_subscription(self):
+        user = User.objects.create_user(username='lifeprem', email='lifeprem@example.com', password='Test1234!')
+        Subscription.objects.create(user=user, plan='lifetime', status='active')
+        self.assertTrue(user.profile.is_premium)
+
+    def test_activation_grants_early_premium(self):
+        """Test that activating an account grants premium to early users."""
+        # Sign up
+        self.client.post(reverse('accounts:sign_up'), {
+            'username': 'activateuser',
+            'email': 'activate@example.com',
+            'password1': 'StrongPass123!',
+            'password2': 'StrongPass123!',
+            'accept_terms': 'on',
+        })
+        user = User.objects.get(username='activateuser')
+        self.assertFalse(user.is_active)
+
+        # Activate
+        from accounts.models import Activation
+        act = Activation.objects.get(user=user)
+        self.client.get(reverse('accounts:activate', args=[act.code]))
+
+        user.refresh_from_db()
+        self.assertTrue(user.is_active)
+        # Should have a lifetime premium subscription
+        self.assertTrue(Subscription.objects.filter(user=user, plan='lifetime', status='active').exists())
+        self.assertTrue(user.profile.is_premium)
+
+
+class ActivationEmailUserNumberTests(TestCase):
+    """Tests that activation email includes user number."""
+
+    def test_activation_email_contains_user_number(self):
+        from django.core import mail
+        # Sign up triggers activation email
+        self.client.post(reverse('accounts:sign_up'), {
+            'username': 'emailnumuser',
+            'email': 'emailnum@example.com',
+            'password1': 'StrongPass123!',
+            'password2': 'StrongPass123!',
+            'accept_terms': 'on',
+        })
+        # The console email backend stores emails in mail.outbox
+        self.assertTrue(len(mail.outbox) > 0)
+        email_body = mail.outbox[-1].body
+        # Should contain "member number" text
+        self.assertIn('member number', email_body.lower())
+
+    def test_activation_email_contains_early_supporter_message(self):
+        from django.core import mail
+        self.client.post(reverse('accounts:sign_up'), {
+            'username': 'earlymailuser',
+            'email': 'earlymail@example.com',
+            'password1': 'StrongPass123!',
+            'password2': 'StrongPass123!',
+            'accept_terms': 'on',
+        })
+        self.assertTrue(len(mail.outbox) > 0)
+        email_body = mail.outbox[-1].body
+        # Should contain early supporter message
+        self.assertIn('early supporter', email_body.lower())
+
+
+# ---------------------------------------------------------------------------
+# QR Code Limit Tests (Sprint 3, Task #5)
+# ---------------------------------------------------------------------------
+
+class QRCodeLimitTests(TestCase):
+    """Tests for the unclaimed QR code limit before 1000 users."""
+
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username='qrlimituser', email='qrlimit@example.com',
+            password='TestPassword123', is_active=True,
+        )
+        from accounts.models import TermsAcceptance
+        TermsAcceptance.objects.get_or_create(user=self.user)
+
+    def test_user_can_get_new_qr_no_unclaimed(self):
+        """User with no unclaimed QRs can get a new one."""
+        from main.models import Stone
+        self.assertTrue(Stone.user_can_get_new_qr(self.user))
+
+    def test_user_cannot_get_new_qr_with_unclaimed(self):
+        """User with an unclaimed QR cannot get another (before threshold)."""
+        from main.models import Stone, QRPack
+        pack = QRPack.objects.create(
+            FK_user=self.user, pack_type='free_single',
+            status='fulfilled', price_cents=0,
+        )
+        Stone.objects.create(
+            PK_stone='UNCLAIMED-TEST1',
+            FK_pack=pack, FK_user=None, status='unclaimed',
+        )
+        self.assertFalse(Stone.user_can_get_new_qr(self.user))
+
+    def test_user_can_get_new_qr_after_claiming(self):
+        """After claiming an unclaimed stone, user can get another QR."""
+        from main.models import Stone, QRPack
+        pack = QRPack.objects.create(
+            FK_user=self.user, pack_type='free_single',
+            status='fulfilled', price_cents=0,
+        )
+        stone = Stone.objects.create(
+            PK_stone='UNCLAIMED-TEST2',
+            FK_pack=pack, FK_user=None, status='unclaimed',
+        )
+        # Claim the stone
+        stone.status = 'draft'
+        stone.FK_user = self.user
+        stone.save()
+        self.assertTrue(Stone.user_can_get_new_qr(self.user))
+
+    def test_user_has_unclaimed_qr(self):
+        """Test user_has_unclaimed_qr helper."""
+        from main.models import Stone, QRPack
+        self.assertFalse(Stone.user_has_unclaimed_qr(self.user))
+        pack = QRPack.objects.create(
+            FK_user=self.user, pack_type='free_single',
+            status='fulfilled', price_cents=0,
+        )
+        Stone.objects.create(
+            PK_stone='UNCLAIMED-HAS1',
+            FK_pack=pack, FK_user=None, status='unclaimed',
+        )
+        self.assertTrue(Stone.user_has_unclaimed_qr(self.user))
+
+    def test_premium_user_bypasses_qr_limit(self):
+        """Premium users can get QRs even with unclaimed stones."""
+        from main.models import Stone, QRPack
+        Subscription.objects.create(user=self.user, plan='monthly', status='active')
+        pack = QRPack.objects.create(
+            FK_user=self.user, pack_type='free_single',
+            status='fulfilled', price_cents=0,
+        )
+        Stone.objects.create(
+            PK_stone='UNCLAIMED-PREM1',
+            FK_pack=pack, FK_user=None, status='unclaimed',
+        )
+        self.assertTrue(Stone.user_can_get_new_qr(self.user))
+
+    def test_qr_limit_removed_after_threshold(self):
+        """After 1000 users, QR limit is removed."""
+        from main.models import Stone, QRPack
+        pack = QRPack.objects.create(
+            FK_user=self.user, pack_type='free_single',
+            status='fulfilled', price_cents=0,
+        )
+        Stone.objects.create(
+            PK_stone='UNCLAIMED-AFTER1',
+            FK_pack=pack, FK_user=None, status='unclaimed',
+        )
+        with override_settings(SHOP_VISIBLE_USER_THRESHOLD=0):
+            # With threshold=0, user_count(1) >= 0, so limit is removed
+            self.assertTrue(Stone.user_can_get_new_qr(self.user))
+
+
+# ---------------------------------------------------------------------------
+# Premium Visibility Gate Tests (Sprint 3, Task #6)
+# ---------------------------------------------------------------------------
+
+class PremiumVisibilityGateTests(TestCase):
+    """Tests that premium pricing is only shown after 1000 users."""
+
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username='gateuser', email='gate@example.com',
+            password='TestPassword123', is_active=True,
+        )
+        from django.utils.translation import activate
+        activate('en')
+
+    def test_premium_page_hides_pricing_before_threshold(self):
+        """Before 1000 users, pricing section is not shown."""
+        self.client.force_login(self.user)
+        response = self.client.get(reverse('premium'))
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, 'Choose Your Plan')
+        self.assertFalse(response.context['show_pricing'])
+
+    @override_settings(SHOP_VISIBLE_USER_THRESHOLD=0)
+    def test_premium_page_shows_pricing_after_threshold(self):
+        """After threshold, pricing section is shown."""
+        self.client.force_login(self.user)
+        response = self.client.get(reverse('premium'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Choose Your Plan')
+        self.assertTrue(response.context['show_pricing'])
+
+    def test_early_user_sees_lifetime_premium_message(self):
+        """Early user with lifetime premium sees the special message."""
+        Subscription.objects.create(user=self.user, plan='lifetime', status='active')
+        self.client.force_login(self.user)
+        response = self.client.get(reverse('premium'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'early supporter')
+        self.assertContains(response, 'lifetime premium')
+
+    @override_settings(SHOP_VISIBLE_USER_THRESHOLD=0)
+    def test_non_early_premium_user_sees_normal_message(self):
+        """A paid subscriber (not early) sees the normal premium message."""
+        Subscription.objects.create(user=self.user, plan='monthly', status='active')
+        self.client.force_login(self.user)
+        response = self.client.get(reverse('premium'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'You are a Premium Supporter!')
+        self.assertContains(response, 'Manage Subscription')
+
+    def test_show_pricing_context_false_before_threshold(self):
+        """show_pricing is False when user count < threshold."""
+        response = self.client.get(reverse('premium'))
+        self.assertFalse(response.context['show_pricing'])
+
+
+# ---------------------------------------------------------------------------
+# About Page QR Button Routing Tests (Sprint 3, Task #7)
+# ---------------------------------------------------------------------------
+
+class AboutPageQRButtonTests(TestCase):
+    """Tests that the about page QR button routes correctly based on shop_visible."""
+
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username='aboutuser', email='about@example.com',
+            password='TestPassword123', is_active=True,
+        )
+        from django.utils.translation import activate
+        activate('en')
+
+    def test_about_button_links_to_create_stone_before_threshold(self):
+        """Before 1000 users, the QR button links to create_stone (not shop)."""
+        response = self.client.get(reverse('about'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, reverse('create_stone'))
+        self.assertNotContains(response, '"%s"' % reverse('shop'))
+
+    @override_settings(SHOP_VISIBLE_USER_THRESHOLD=0)
+    def test_about_button_links_to_shop_after_threshold(self):
+        """After 1000 users, the QR button links to the shop."""
+        response = self.client.get(reverse('about'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, reverse('shop'))
+
+    def test_about_page_has_qr_button(self):
+        """The about page always has the 'Get Your First QR Code' button."""
+        response = self.client.get(reverse('about'))
+        self.assertContains(response, 'Get Your First QR Code')

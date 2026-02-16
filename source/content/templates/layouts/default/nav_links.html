@@ -2,10 +2,12 @@
 {% comment %} DRY, centralized navigation links for both main and burger nav. All logic is here. {% endcomment %}
 <nav id="main-nav" class="header-main-nav{% if burger %} header-burger-nav-list{% endif %}" aria-label="Main Navigation">
   <a class="nav-link avant-btn header-nav-btn" href="{% url 'about' %}">{% trans 'About' %}</a>
-  {% if is_premium_user %}
-  <a class="nav-link avant-btn header-nav-btn premium-nav-link" href="{% url 'premium_manage' %}">&#11088; {% trans 'Premium' %}</a>
-  {% else %}
-  <a class="nav-link avant-btn header-nav-btn" href="{% url 'premium' %}">{% trans 'Premium' %}</a>
+  {% if shop_visible %}
+    {% if is_premium_user %}
+    <a class="nav-link avant-btn header-nav-btn premium-nav-link" href="{% url 'premium_manage' %}">&#11088; {% trans 'Premium' %}</a>
+    {% else %}
+    <a class="nav-link avant-btn header-nav-btn" href="{% url 'premium' %}">{% trans 'Premium' %}</a>
+    {% endif %}
   {% endif %}
   {% if shop_visible %}
   <a class="nav-link avant-btn header-nav-btn" href="{% url 'shop' %}">{% trans 'Shop' %}</a>

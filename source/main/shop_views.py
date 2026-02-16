@@ -270,6 +270,14 @@ class CheckoutView(LoginRequiredMixin, View):
 
         dev_mode = getattr(settings, 'DEBUG', False)
 
+        # QR limit gate: before SHOP_VISIBLE_USER_THRESHOLD users, each user can
+        # only have 1 unclaimed QR at a time. This prevents free-QR hoarding during
+        # the early growth phase. Skipped in dev mode so developers can test checkout
+        # flows without needing to claim stones between each test.
+        if not dev_mode and not Stone.user_can_get_new_qr(request.user):
+            messages.error(request, _('You already have an unclaimed QR code. Claim your existing stone before getting a new one.'))
+            return redirect('shop')
+
         # Check user limits (skipped in dev mode for free_single)
         limit = product.get('limit_per_user')
         if limit and not (dev_mode and product_id == 'free_single'):
@@ -357,7 +365,12 @@ class FreeQRView(LoginRequiredMixin, View):
     """Generate a free single QR code (legacy endpoint)"""
 
     def get(self, request):
-        # Check if user already claimed free QR
+        # Check unclaimed QR limit (before 1000 users, max 1 unclaimed at a time)
+        if not Stone.user_can_get_new_qr(request.user):
+            messages.error(request, _('You already have an unclaimed QR code. Claim your existing stone before getting a new one.'))
+            return redirect('create_stone')
+
+        # Check if user already claimed free QR (dev mode allows repeats via CheckoutView)
         existing_free = QRPack.objects.filter(
             FK_user=request.user,
             pack_type='free_single'

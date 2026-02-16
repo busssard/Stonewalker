@@ -48,6 +48,13 @@ window.addEventListener('DOMContentLoaded', function() {
       var firstLink = burgerNav.querySelector('a');
       if (firstLink) firstLink.focus();
     }
+    // Hide floating action buttons when burger menu is open to prevent overlap
+    // on short mobile screens. The FABs are position:fixed at bottom-right and
+    // can collide with the burger nav items on viewports shorter than ~700px.
+    var fab = document.querySelector('.floating-action-bar');
+    if (fab) {
+      fab.style.display = expanded ? 'none' : '';
+    }
   }
 
   if (menuToggle && burgerNav && burgerOverlay && burgerLabel) {

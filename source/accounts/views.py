@@ -34,7 +34,7 @@ from .forms import (
     ResendActivationCodeForm, ResendActivationCodeViaEmailForm, CombinedProfileForm,
 )
 from .models import Activation, EmailAddressState, TermsAcceptance, NotificationPreference
-from .models import EmailChangeAttempt
+from .models import EmailChangeAttempt, grant_early_premium
 from django.utils import timezone
 from datetime import timedelta
 from django.contrib.auth.decorators import login_required
@@ -133,8 +133,8 @@ class SignUpView(GuestOnlyView, FormView):
             act.user = user
             act.save()
 
-            # Try to send activation email
-            email_sent = send_activation_email(request, user.email, code)
+            # Try to send activation email (with user number info)
+            email_sent = send_activation_email(request, user.email, code, user=user)
             
             if email_sent:
                 # Mark email as sent in database
@@ -185,6 +185,9 @@ class ActivateView(View):
 
         # Remove the activation record
         act.delete()
+
+        # Grant lifetime premium to early users (first N registrations)
+        grant_early_premium(user)
 
         messages.success(request, _('You have successfully activated your account!'))
 

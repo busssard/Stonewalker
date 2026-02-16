@@ -2,7 +2,7 @@
 Tests for Premium Supporter tier — views, model, context processor, nav links, access control.
 """
 from unittest.mock import patch, MagicMock
-from django.test import TestCase, Client
+from django.test import TestCase, Client, override_settings
 from django.urls import reverse
 from django.contrib.auth.models import User
 from django.utils import timezone
@@ -94,15 +94,16 @@ class PremiumViewTests(TestCase):
         response = self.client.get(reverse('premium'))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Premium Supporter')
-        self.assertContains(response, 'Log in to Subscribe')
+        # Before threshold, pricing is hidden for anonymous users
+        self.assertNotContains(response, 'Choose Your Plan')
 
     def test_premium_landing_authenticated_no_sub(self):
         self.client.login(username='viewtest', password='pass123')
         response = self.client.get(reverse('premium'))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'Subscribe Monthly')
-        self.assertContains(response, 'Subscribe Yearly')
-        self.assertNotContains(response, 'Log in to Subscribe')
+        # Before threshold, pricing is hidden
+        self.assertNotContains(response, 'Subscribe Monthly')
+        self.assertNotContains(response, 'Choose Your Plan')
 
     def test_premium_landing_shows_features(self):
         response = self.client.get(reverse('premium'))
@@ -120,8 +121,9 @@ class PremiumViewTests(TestCase):
         self.client.login(username='viewtest', password='pass123')
         Subscription.objects.create(user=self.user, status='active', plan='monthly')
         response = self.client.get(reverse('premium'))
-        self.assertContains(response, 'You are a Premium Supporter!')
-        self.assertContains(response, 'Manage Subscription')
+        # User is early (< 1000 users), so sees early supporter message
+        self.assertContains(response, 'early supporter')
+        self.assertContains(response, 'lifetime premium')
 
     def test_premium_manage_requires_login(self):
         response = self.client.get(reverse('premium_manage'))
@@ -235,15 +237,23 @@ class PremiumNavTests(TestCase):
             username='navtest', password='pass123', email='nav@test.com'
         )
 
-    def test_nav_shows_premium_link_anonymous(self):
+    def test_nav_hides_premium_link_before_threshold(self):
+        """Premium link is hidden before 1000 users for everyone."""
+        response = self.client.get(reverse('index'))
+        self.assertNotContains(response, reverse('premium'))
+
+    @override_settings(SHOP_VISIBLE_USER_THRESHOLD=0)
+    def test_nav_shows_premium_link_anonymous_after_threshold(self):
         response = self.client.get(reverse('index'))
         self.assertContains(response, reverse('premium'))
 
+    @override_settings(SHOP_VISIBLE_USER_THRESHOLD=0)
     def test_nav_shows_premium_link_non_subscriber(self):
         self.client.login(username='navtest', password='pass123')
         response = self.client.get(reverse('index'))
         self.assertContains(response, reverse('premium'))
 
+    @override_settings(SHOP_VISIBLE_USER_THRESHOLD=0)
     def test_nav_shows_premium_manage_for_subscriber(self):
         self.client.login(username='navtest', password='pass123')
         Subscription.objects.create(user=self.user, status='active', plan='monthly')

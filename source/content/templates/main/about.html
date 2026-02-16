@@ -75,7 +75,12 @@
     </div>
 
     <div class="flex-center">
+      {% comment %}Before 1000 users (shop_visible=False), route to the create-stone smart router which gives early users a free QR claim flow. After 1000 users, route to the full shop page.{% endcomment %}
+      {% if shop_visible %}
       <a href="{% url 'shop' %}" class="avant-btn">{% trans 'Get Your First QR Code' %}</a>
+      {% else %}
+      <a href="{% url 'create_stone' %}" class="avant-btn">{% trans 'Get Your First QR Code' %}</a>
+      {% endif %}
       <a href="{% url 'stonewalker_start' %}" class="avant-btn ml-20">{% trans 'Start Your Journey' %}</a>
     </div>
   </div>

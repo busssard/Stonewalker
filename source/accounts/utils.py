@@ -23,11 +23,23 @@ def send_mail(to, template, context):
         return False
 
 
-def send_activation_email(request, email, code):
+def send_activation_email(request, email, code, user=None):
+    """Send account activation email. When user is provided, the email includes
+    the user's registration number ("You are member #42!") and, for early users,
+    a message about lifetime premium. This creates excitement and a sense of
+    belonging from the very first interaction."""
+    from django.contrib.auth.models import User
+
     context = {
         'subject': _('Profile activation'),
         'uri': request.build_absolute_uri(reverse('accounts:activate', kwargs={'code': code})),
     }
+
+    if user is not None:
+        from .models import get_user_number, is_early_user
+        user_number = get_user_number(user)
+        context['user_number'] = user_number
+        context['is_early_user'] = is_early_user(user)
 
     return send_mail(email, 'activate_profile', context)
 

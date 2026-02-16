@@ -6,6 +6,10 @@ STONEWALKER
 
 {% trans 'Activate Your Profile' %}
 
+{% if user_number %}{% blocktrans with number=user_number %}You are member number {{ number }} of StoneWalker!{% endblocktrans %}
+{% if is_early_user %}
+{% trans 'As an early supporter, you will receive lifetime premium access once you activate your account!' %}
+{% endif %}{% endif %}
 {% trans 'To activate your profile, please follow this link:' %}
 
 {{ uri }}

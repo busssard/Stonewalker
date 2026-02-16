@@ -6,7 +6,7 @@ StoneWalker is a Django-based web application for tracking the journeys of paint
 
 - **Modern UI & Navigation:** Responsive, artsy/avantgarde design with a unified header and burger menu. The header includes a logo, navigation links (My Stones, Forum, Shop, About, Change Language), and a login/profile button that turns into your profile picture after login. The menu is mobile-friendly and consistent across all pages.
 - **Profile Popup Modal:** Edit your profile (username, email, password, profile picture) in a popup modal window that overlays the current page, with a close (cross) button. Accessible from the header via the "Edit Profile" link or your profile picture.
-- **Interactive Map:** Visualize the journeys of painted stones across the globe on `/stonewalker/`. Filter by stone type (hidden/hunted) with toggle controls.
+- **Interactive Map:** Visualize the journeys of painted stones across the globe on `/stonewalker/`. Filter by stone type (hidden/hunted) with pill-shaped toggle controls floating over the bottom-left of the map.
 - **User Authentication:** Register, log in, log out, activate accounts via email, reset password, and manage your profile securely (username, email, password, profile info).
 - **Personal Dashboard:** View your stones and submissions in a dedicated area (`/my-stones/`).
 - **Add Stones:** Authenticated users can add new stones with name, description, color, shape, and image. The "Create New Stone" button is visually prominent, with a random color highlight on hover and a clear subtitle.
@@ -16,11 +16,14 @@ StoneWalker is a Django-based web application for tracking the journeys of paint
 - **Cooldown for Updates:** Users can only update (scan) a given stone once every 3 days; the scan form is locked if accessed again within this period.
 - **Branded Transactional Emails:** All account emails (activation, password reset, email change, username recovery) use consistent StoneWalker branding with green header, responsive layout, and professional footer.
 - **Premium Supporter Tier:** Monthly ($3.99) or yearly ($29.99) subscription via Stripe recurring billing. Unlocks journey analytics, premium badge, unlimited drafts, priority support, and early access. Includes subscription management page, Stripe Billing Portal integration, and webhook handling for subscription lifecycle events.
-- **Smart Shop Visibility:** The Shop link automatically appears in navigation once the community reaches 1,000 registered users (configurable threshold).
+- **Early Supporter Rewards:** The first 1,000 registered users receive lifetime premium access for free upon account activation. Their welcome email shows their member number ("You are member #42!"). Early supporters are exempt from QR code limits.
+- **QR Code Limits:** Before 1,000 users, each non-premium user can only have 1 unclaimed QR code at a time. This prevents hoarding during the free growth phase. Premium users and early supporters are exempt.
+- **Smart Shop Visibility:** The Shop link and premium pricing automatically appear in navigation once the community reaches 1,000 registered users (configurable threshold). Before that, users get free QR codes via the create-stone flow.
 - **Forum (Discourse SSO):** Built-in Discourse SSO integration — users clicking "Forum" are automatically logged in with their StoneWalker account.
 - **Multilingual Support:** English, French, Russian, Simplified Chinese, Spanish, German, and Italian with browser language detection.
 - **Admin Panel:** Manage users and content via Django admin (`/admin/`).
-- **Mobile-friendly:** Works on desktop and mobile browsers.
+- **Mobile-friendly:** Works on desktop and mobile browsers. Burger menu scrolls properly on small screens without overlapping the floating action buttons.
+- **Dark Mode:** Full dark mode support across all pages including the about page, change language page, and mobile burger menu.
 - **API Endpoint:** Check if a stone name is available (`/api/check_stone_name/`).
 - **Change Language:** Users can change the UI language (`/language/`) and are automatically redirected to the main page after language change.
 
@@ -287,7 +290,7 @@ The StoneWalker application uses Django ORM models to represent its core data:
 | user                    | OneToOneField  | Linked user                                     |
 | stripe_customer_id      | CharField      | Stripe Customer ID                              |
 | stripe_subscription_id  | CharField      | Stripe Subscription ID                          |
-| plan                    | CharField      | Plan type: monthly or yearly                    |
+| plan                    | CharField      | Plan type: monthly, yearly, or lifetime (early supporter) |
 | status                  | CharField      | Status: active, canceled, past_due, unpaid, trialing, incomplete |
 | current_period_start    | DateTimeField  | Start of current billing period                 |
 | current_period_end      | DateTimeField  | End of current billing period                   |

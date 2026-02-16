@@ -99,21 +99,25 @@ class CreateNewStoneRouterTests(BaseStoneWalkerTestCase):
 
 
 class ShopDevModeTests(BaseStoneWalkerTestCase):
-    """Test dev mode overrides in the shop"""
+    """Test dev mode overrides in the shop.
 
-    @override_settings(DEBUG=True)
+    SHOP_VISIBLE_USER_THRESHOLD=0 disables the QR-per-user limit so these
+    tests focus purely on dev-mode vs prod-mode shop behaviour.
+    """
+
+    @override_settings(DEBUG=True, SHOP_VISIBLE_USER_THRESHOLD=0)
     def test_dev_mode_banner_shown(self):
         """Dev mode banner should appear in the shop page"""
         response = self.client.get(reverse('shop'))
         self.assertContains(response, 'Local dev sale')
 
-    @override_settings(DEBUG=False)
+    @override_settings(DEBUG=False, SHOP_VISIBLE_USER_THRESHOLD=0)
     def test_prod_mode_no_banner(self):
         """Dev mode banner should not appear in production"""
         response = self.client.get(reverse('shop'))
         self.assertNotContains(response, 'Local dev sale')
 
-    @override_settings(DEBUG=True)
+    @override_settings(DEBUG=True, SHOP_VISIBLE_USER_THRESHOLD=0)
     def test_dev_mode_free_single_not_disabled(self):
         """In dev mode, free_single should not be disabled even after claiming"""
         # Create an existing fulfilled free_single pack
@@ -125,7 +129,7 @@ class ShopDevModeTests(BaseStoneWalkerTestCase):
         # The "Get Free" button should still be present (not replaced by "Claimed")
         self.assertContains(response, 'Get Free')
 
-    @override_settings(DEBUG=False)
+    @override_settings(DEBUG=False, SHOP_VISIBLE_USER_THRESHOLD=0)
     def test_prod_mode_free_single_disabled_after_claim(self):
         """In production, free_single should be disabled after claiming"""
         QRPack.objects.create(
@@ -135,7 +139,7 @@ class ShopDevModeTests(BaseStoneWalkerTestCase):
         response = self.client.get(reverse('shop'))
         self.assertContains(response, 'Claimed')
 
-    @override_settings(DEBUG=True)
+    @override_settings(DEBUG=True, SHOP_VISIBLE_USER_THRESHOLD=0)
     def test_dev_mode_checkout_allows_multiple_free(self):
         """In dev mode, user can checkout free_single multiple times"""
         # First checkout
@@ -149,7 +153,7 @@ class ShopDevModeTests(BaseStoneWalkerTestCase):
         self.assertIn(response.status_code, [200, 302])
         self.assertEqual(QRPack.objects.filter(FK_user=self.user, pack_type='free_single').count(), 2)
 
-    @override_settings(DEBUG=False)
+    @override_settings(DEBUG=False, SHOP_VISIBLE_USER_THRESHOLD=0)
     def test_prod_mode_checkout_blocks_second_free(self):
         """In production, second free_single checkout should be blocked"""
         # First checkout

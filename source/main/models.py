@@ -1,4 +1,5 @@
 from django.db import models
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 import re
@@ -195,6 +196,45 @@ class Stone(models.Model):
         # Non-premium users can only have one draft stone at a time
         draft_count = cls.objects.filter(FK_user=user, status='draft').count()
         return draft_count == 0
+
+    # --- QR Code Limiting (Pre-Launch Growth Control) ---
+    # Before reaching SHOP_VISIBLE_USER_THRESHOLD users, each non-premium user
+    # can only have 1 unclaimed QR at a time. This prevents hoarding during the
+    # early growth phase when every QR is free. After the threshold, the shop opens
+    # and the limit is lifted (users pay for additional QRs).
+
+    @classmethod
+    def user_has_unclaimed_qr(cls, user):
+        """Check if user has any unclaimed QR codes (stones in 'unclaimed' status from their packs).
+        Looks at packs owned by the user, not stones owned by the user, because
+        unclaimed stones have FK_user=None (no owner yet)."""
+        return cls.objects.filter(
+            FK_pack__FK_user=user,
+            status='unclaimed',
+        ).exists()
+
+    @classmethod
+    def user_can_get_new_qr(cls, user):
+        """Check if user can acquire a new QR code.
+        Enforced in CheckoutView and FreeQRView. Skipped in dev mode (DEBUG=True)
+        to allow repeated testing without hitting the limit."""
+        from django.contrib.auth.models import User as UserModel
+        threshold = getattr(settings, 'SHOP_VISIBLE_USER_THRESHOLD', 1000)
+        user_count = UserModel.objects.count()
+
+        # After threshold, no QR limit — the shop is open and users pay
+        if user_count >= threshold:
+            return True
+
+        # Premium users (including lifetime early supporters) bypass the limit
+        try:
+            if user.profile.is_premium:
+                return True
+        except Exception:
+            pass
+
+        # Before threshold: only 1 unclaimed QR at a time per non-premium user
+        return not cls.user_has_unclaimed_qr(user)
     
     @classmethod
     def get_user_draft_stone(cls, user):

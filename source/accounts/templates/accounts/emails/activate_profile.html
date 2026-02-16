@@ -27,6 +27,17 @@
                         <td style="padding: 40px 30px;">
                             <h2 style="margin: 0 0 20px 0; color: #222222; font-size: 24px;">{% trans 'Activate Your Profile' %}</h2>
 
+                            {% if user_number %}
+                            <p style="margin: 0 0 10px 0; color: #555555; font-size: 16px; line-height: 1.6;">
+                                {% blocktrans with number=user_number %}You are member number {{ number }} of StoneWalker!{% endblocktrans %}
+                            </p>
+                            {% if is_early_user %}
+                            <p style="margin: 0 0 20px 0; color: #4CAF50; font-size: 16px; line-height: 1.6; font-weight: bold;">
+                                {% trans 'As an early supporter, you will receive lifetime premium access once you activate your account!' %}
+                            </p>
+                            {% endif %}
+                            {% endif %}
+
                             <p style="margin: 0 0 20px 0; color: #555555; font-size: 16px; line-height: 1.6;">
                                 {% trans 'To activate your profile, please follow this link:' %}
                             </p>
