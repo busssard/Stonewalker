@@ -1,9 +1,10 @@
 """
 Tests for the shop-based stone creation flow.
 
-The "Create New Stone" button routes through the shop:
-- If user has an unclaimed QR → redirect straight to claim
-- If no unclaimed QR → redirect to shop
+The "Create New Stone" button routes through CreateNewStoneView:
+- If user has unclaimed QR → redirect to my-stones with message
+- If no unclaimed QR + before threshold → create free QR → redirect to my-stones
+- If no unclaimed QR + after threshold → redirect to shop
 - In dev mode (DEBUG=True): free_single has no limit_per_user
 """
 
@@ -19,13 +20,17 @@ from .base import BaseStoneWalkerTestCase
 class CreateNewStoneRouterTests(BaseStoneWalkerTestCase):
     """Test the CreateNewStoneView smart router"""
 
-    def test_no_packs_redirects_to_shop(self):
-        """User with no packs should be redirected to the shop"""
+    def test_no_packs_creates_free_qr_before_threshold(self):
+        """User with no packs before threshold gets a free QR and redirects to my-stones"""
         response = self.client.get(reverse('create_stone'))
-        self.assertRedirects(response, reverse('shop'))
+        self.assertRedirects(response, reverse('my_stones'))
+        # A new pack and unclaimed stone should have been created
+        pack = QRPack.objects.filter(FK_user=self.user, pack_type='free_single').first()
+        self.assertIsNotNone(pack)
+        self.assertTrue(pack.stones.filter(status='unclaimed').exists())
 
-    def test_no_unclaimed_stones_redirects_to_shop(self):
-        """User with packs but no unclaimed stones should go to shop"""
+    def test_no_unclaimed_stones_creates_free_qr_before_threshold(self):
+        """User with packs but no unclaimed stones gets a free QR before threshold"""
         pack = QRPack.objects.create(
             FK_user=self.user,
             pack_type='free_single',
@@ -41,10 +46,20 @@ class CreateNewStoneRouterTests(BaseStoneWalkerTestCase):
             status='draft',
         )
         response = self.client.get(reverse('create_stone'))
+        self.assertRedirects(response, reverse('my_stones'))
+        # A new free pack should have been created
+        self.assertEqual(
+            QRPack.objects.filter(FK_user=self.user, pack_type='free_single').count(), 2
+        )
+
+    @override_settings(SHOP_VISIBLE_USER_THRESHOLD=0)
+    def test_no_unclaimed_stones_redirects_to_shop_after_threshold(self):
+        """User with no unclaimed stones goes to shop after threshold"""
+        response = self.client.get(reverse('create_stone'))
         self.assertRedirects(response, reverse('shop'))
 
-    def test_unclaimed_stone_redirects_to_claim(self):
-        """User with an unclaimed stone should be redirected to the claim page"""
+    def test_unclaimed_stone_redirects_to_my_stones(self):
+        """User with an unclaimed stone should be redirected to my-stones"""
         pack = QRPack.objects.create(
             FK_user=self.user,
             pack_type='free_single',
@@ -59,13 +74,10 @@ class CreateNewStoneRouterTests(BaseStoneWalkerTestCase):
             status='unclaimed',
         )
         response = self.client.get(reverse('create_stone'))
-        self.assertRedirects(
-            response,
-            reverse('claim_stone', kwargs={'stone_uuid': str(stone.uuid)})
-        )
+        self.assertRedirects(response, reverse('my_stones'))
 
-    def test_multiple_packs_finds_first_unclaimed(self):
-        """With multiple packs, the first unclaimed stone should be found"""
+    def test_multiple_packs_with_unclaimed_redirects_to_my_stones(self):
+        """With multiple packs, unclaimed stone redirects to my-stones"""
         # Pack 1: all claimed
         pack1 = QRPack.objects.create(
             FK_user=self.user, pack_type='free_single',
@@ -85,10 +97,7 @@ class CreateNewStoneRouterTests(BaseStoneWalkerTestCase):
             FK_user=None, status='unclaimed',
         )
         response = self.client.get(reverse('create_stone'))
-        self.assertRedirects(
-            response,
-            reverse('claim_stone', kwargs={'stone_uuid': str(unclaimed.uuid)})
-        )
+        self.assertRedirects(response, reverse('my_stones'))
 
     def test_requires_login(self):
         """Anonymous users should be redirected to login"""
@@ -168,12 +177,27 @@ class ShopDevModeTests(BaseStoneWalkerTestCase):
 
 
 class ShopFlowEndToEndTests(BaseStoneWalkerTestCase):
-    """End-to-end tests for the complete create stone → shop → claim flow"""
+    """End-to-end tests for the complete create stone flow"""
 
-    @override_settings(DEBUG=True)
-    def test_full_flow_no_qr_to_shop_to_claim(self):
-        """Full flow: create-stone → shop → checkout → create-stone → claim"""
-        # Step 1: No unclaimed QR, should go to shop
+    def test_full_flow_create_stone_before_threshold(self):
+        """Full flow before threshold: create-stone creates free QR → my-stones → claim"""
+        # Step 1: No unclaimed QR, before threshold → creates free QR → my-stones
+        response = self.client.get(reverse('create_stone'))
+        self.assertRedirects(response, reverse('my_stones'))
+
+        # Verify pack and unclaimed stone were created
+        pack = QRPack.objects.get(FK_user=self.user, pack_type='free_single')
+        unclaimed = pack.stones.filter(status='unclaimed').first()
+        self.assertIsNotNone(unclaimed)
+
+        # Step 2: Now create-stone should redirect to my-stones with message (unclaimed exists)
+        response = self.client.get(reverse('create_stone'))
+        self.assertRedirects(response, reverse('my_stones'))
+
+    @override_settings(SHOP_VISIBLE_USER_THRESHOLD=0)
+    def test_full_flow_after_threshold_to_shop(self):
+        """After threshold: create-stone → shop → checkout → create-stone → my-stones"""
+        # Step 1: No unclaimed QR, after threshold → shop
         response = self.client.get(reverse('create_stone'))
         self.assertRedirects(response, reverse('shop'))
 
@@ -186,12 +210,9 @@ class ShopFlowEndToEndTests(BaseStoneWalkerTestCase):
         unclaimed = pack.stones.filter(status='unclaimed').first()
         self.assertIsNotNone(unclaimed)
 
-        # Step 3: Now create-stone should redirect to claim
+        # Step 3: Now create-stone should redirect to my-stones (unclaimed exists)
         response = self.client.get(reverse('create_stone'))
-        self.assertRedirects(
-            response,
-            reverse('claim_stone', kwargs={'stone_uuid': str(unclaimed.uuid)})
-        )
+        self.assertRedirects(response, reverse('my_stones'))
 
     def test_stonewalker_page_has_create_stone_link(self):
         """The stonewalker start page should link to create-stone route"""
