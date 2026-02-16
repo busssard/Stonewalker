@@ -101,10 +101,11 @@ make clean       # Clean generated files
 - **`app/`** - Project configuration with separate dev/production settings
 
 ### Key Models
-- **User** (Django built-in) + **Profile** (1:1 extension with profile picture)
+- **User** (Django built-in) + **Profile** (1:1 extension with profile picture, social links, `is_premium` property)
 - **Stone** - Painted stones with UUID, QR codes, location tracking, types (hidden/hunted)
 - **StoneMove** - Movement records when stones are scanned/found
 - **Activation** - Email verification and account activation
+- **Subscription** - Premium supporter subscriptions via Stripe (1:1 with User, tracks plan/status/billing period)
 
 ### Settings Configuration
 - **Development**: `source/app/conf/development/settings.py` (console email backend, relaxed SSL)
@@ -162,7 +163,7 @@ make clean       # Clean generated files
 - **Pre-push hook**: `.git/hooks/pre-push` runs full suite before every push
 - **Markers are auto-applied** by `conftest.py` based on file path - no need for `@pytest.mark` decorators
 
-### Test Files (118 tests total)
+### Test Files (321 tests total)
 - `accounts/tests.py` - Auth, profiles, navigation, CSS utility checks (15 tests)
 - `main/tests/test_models.py` - Stone model, StoneMove, scan attempts (23 tests)
 - `main/tests/test_qr_system.py` - QR generation, download, display (10 tests)
@@ -170,6 +171,7 @@ make clean       # Clean generated files
 - `main/tests/test_stone_workflow.py` - Creation, editing, status transitions, name validation (26 tests)
 - `main/tests/test_api_endpoints.py` - AJAX endpoints, name availability (15+ tests)
 - `main/tests/test_ui_templates.py` - Page loading, modals, auth gates (15+ tests)
+- `main/tests/test_premium.py` - Premium subscription model, views, context processor, nav, webhooks (40+ tests)
 - `main/tests/base.py` - Shared base classes: `BaseStoneWalkerTestCase`, `BaseQRTestCase`, `BaseAuthenticatedTestCase`, `BaseAnonymousTestCase`
 
 ### Test Runner
@@ -708,4 +710,150 @@ In Discourse Admin → Settings → Login:
 | `source/main/tests/test_stone_features.py` | QR numbering + certificate tests |
 | `source/accounts/test_email_templates.py` | Email template tests |
 
-### Test Count: 181 (was 150, +31 new tests)
+### Test Count: 321 (was 280, +41 premium tests)
+
+## Premium Supporter Tier (February 2026)
+
+### Architecture
+- **Model**: `accounts.models.Subscription` — OneToOne with User, tracks Stripe customer/subscription IDs, plan (monthly/yearly), status, billing period
+- **Views**: `main/premium_views.py` — `PremiumView` (landing), `PremiumCheckoutView` (creates Stripe Checkout Session), `PremiumManageView` (subscription status), `PremiumBillingPortalView` (redirects to Stripe portal)
+- **Stripe Integration**: `main/stripe_service.py` — `create_subscription_checkout()`, `create_billing_portal_session()`, webhook handlers for subscription lifecycle (created/updated/deleted/payment_failed)
+- **Context Processor**: `app/context_processors.premium_status` — exposes `is_premium_user` to all templates
+- **Nav**: Premium link in `nav_links.html` — shows "Premium" for non-subscribers, star + "Premium" linking to manage page for subscribers
+- **Decorator/Mixin**: `premium_required` decorator and `PremiumRequiredMixin` for gating premium-only features
+
+### URLs
+| Path | Name | View |
+|------|------|------|
+| `/premium/` | `premium` | Landing page with features, pricing, FAQ |
+| `/premium/checkout/` | `premium_checkout` | POST → creates Stripe Checkout Session |
+| `/premium/manage/` | `premium_manage` | Subscription status and billing portal access |
+| `/premium/billing/` | `premium_billing` | POST → redirects to Stripe Billing Portal |
+
+### Configuration (Environment Variables)
+```
+STRIPE_PUBLIC_KEY=pk_...
+STRIPE_SECRET_KEY=sk_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+STRIPE_PRICE_MONTHLY=price_...   # Stripe Price ID for monthly plan
+STRIPE_PRICE_YEARLY=price_...    # Stripe Price ID for yearly plan
+```
+
+### Product Config
+Premium plans defined in `shop_config.json` with `is_subscription: true` and `billing_interval: "month"/"year"`. The `SUBSCRIPTION_PRICE_MAP` in `stripe_service.py` maps intervals to Stripe Price IDs from settings.
+
+### Subscription Status Logic
+- `grants_premium` = `is_active` (status in active/trialing) OR `is_canceled_but_active` (canceled but before period end)
+- Profile property `is_premium` delegates to subscription's `grants_premium`
+- Webhook keeps subscription in sync: `customer.subscription.created/updated/deleted` and `invoice.payment_failed`
+
+### UI Fixes (This Session)
+- Fixed duplicate "Log in" button in nav (removed redundant `Login-Signup-container` from `page.html`)
+- Dark mode: logo inverted to white via `filter: brightness(0) invert(1)`
+- Dark mode: "Scan a Stone" button icon tinted red to match border color
+- Map filter checkboxes restyled to pill-shaped toggle buttons matching nav style, with "?" info tooltips on Hidden/Hunted
+
+## Chrome DevTools MCP Integration (Flatpak Chromium)
+
+### The Problem
+This machine runs **Chromium via Flatpak** (`org.chromium.Chromium`), not Google Chrome. The `chrome-devtools-mcp` tool expects Chrome at `/opt/google/chrome/chrome` (the standard Google Chrome path) and fails with:
+```
+Could not find Google Chrome executable for channel 'stable' at:
+ - /opt/google/chrome/chrome.
+```
+
+### The Solution: Remote Debugging + `--browserUrl`
+
+The MCP tool can connect to an **already-running browser** via Chrome DevTools Protocol instead of launching its own. This requires two things:
+
+#### 1. Launch Chromium with Remote Debugging Enabled
+
+Close any running Chromium instance, then relaunch with the `--remote-debugging-port` flag:
+
+```bash
+# Kill existing Chromium
+pkill -f "app/chromium/chrome"
+
+# Relaunch with remote debugging on port 9222
+flatpak run org.chromium.Chromium --remote-debugging-port=9222
+```
+
+To verify it's working:
+```bash
+curl -s http://localhost:9222/json/version
+# Should return JSON with Browser, Protocol-Version, webSocketDebuggerUrl, etc.
+```
+
+**Tip**: To make this permanent, create a desktop file override or alias:
+```bash
+alias chromium='flatpak run org.chromium.Chromium --remote-debugging-port=9222'
+```
+
+#### 2. Configure the MCP Server with `--browserUrl`
+
+The MCP server config lives in `~/.claude.json` under the top-level `mcpServers` key. Add `--browserUrl=http://localhost:9222` to the args:
+
+```json
+{
+  "mcpServers": {
+    "chrome-devtools": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "chrome-devtools-mcp@latest",
+        "--browserUrl=http://localhost:9222"
+      ],
+      "env": {}
+    }
+  }
+}
+```
+
+**Without `--browserUrl`**: MCP tries to find and launch Chrome itself → fails on Flatpak.
+**With `--browserUrl`**: MCP connects to the existing Chromium on port 9222 → works.
+
+#### 3. Restart Claude Code
+
+The MCP server config is read at session startup. After updating `~/.claude.json`, you must start a new Claude Code session for the change to take effect. The running session's MCP process was already spawned with the old args.
+
+### Full Startup Sequence (Every Session)
+
+```bash
+# Step 1: Make sure Chromium is running with remote debugging
+# If not already running:
+flatpak run org.chromium.Chromium --remote-debugging-port=9222 &
+
+# Step 2: Verify the debugging port is accessible
+curl -s http://localhost:9222/json/version
+# Should return JSON with Browser, Protocol-Version, webSocketDebuggerUrl, etc.
+
+# Step 3: Start Claude Code (MCP connects automatically via config)
+claude
+
+# Step 4: Start the Django dev server
+export DATABASE_URL="postgresql://stone_user:stone_pass@localhost:5432/stone_dev"
+cd source && ../venv/bin/python manage.py runserver
+# OR: ./run_dev.sh
+
+# Step 5: Use MCP tools to navigate, take snapshots, etc.
+# list_pages, navigate_page, take_snapshot, take_screenshot, click, fill, etc.
+```
+
+**Confirmed working (Feb 2026)**: Chromium 145.0.7632.45 via Flatpak with `--remote-debugging-port=9222` connects successfully to `chrome-devtools-mcp` via `--browserUrl=http://localhost:9222`. All MCP tools (navigate, snapshot, screenshot, click, fill, emulate viewport) work correctly for both light/dark mode testing and mobile responsive verification.
+
+### Key Details
+- **Chromium binary path (inside Flatpak sandbox)**: `/app/chromium/chrome` — not directly accessible from the host
+- **Flatpak app ID**: `org.chromium.Chromium`
+- **Chromium version**: 145.0.7632.45 (as of Feb 2026)
+- **Default debugging port**: 9222 (standard Chrome DevTools Protocol port)
+- **MCP config location**: `~/.claude.json` → `mcpServers` (top-level, NOT inside `projects`)
+- **There are also per-project `mcpServers` keys** inside `projects.<path>` — those are empty and for project-specific MCP servers. The global one is what matters here.
+
+### Troubleshooting
+
+| Symptom | Cause | Fix |
+|---------|-------|-----|
+| "Could not find Google Chrome executable" | MCP trying to launch Chrome (no `--browserUrl`) | Add `--browserUrl=http://localhost:9222` to MCP args |
+| "Port 9222 not reachable" | Chromium not running with remote debugging | Relaunch: `flatpak run org.chromium.Chromium --remote-debugging-port=9222` |
+| MCP tools still fail after config update | Session started before config change | Restart Claude Code (start new session) |
+| Two MCP processes visible in `ps aux` | One from a terminal, one from Claude Code | The Claude Code one is the one that matters; check its args |

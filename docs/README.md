@@ -15,6 +15,7 @@ StoneWalker is a Django-based web application for tracking the journeys of paint
 - **Stone Certificate:** Download a professional PDF certificate after creating a stone, featuring the stone image, owner name, creation date, and QR code.
 - **Cooldown for Updates:** Users can only update (scan) a given stone once every 3 days; the scan form is locked if accessed again within this period.
 - **Branded Transactional Emails:** All account emails (activation, password reset, email change, username recovery) use consistent StoneWalker branding with green header, responsive layout, and professional footer.
+- **Premium Supporter Tier:** Monthly ($3.99) or yearly ($29.99) subscription via Stripe recurring billing. Unlocks journey analytics, premium badge, unlimited drafts, priority support, and early access. Includes subscription management page, Stripe Billing Portal integration, and webhook handling for subscription lifecycle events.
 - **Smart Shop Visibility:** The Shop link automatically appears in navigation once the community reaches 1,000 registered users (configurable threshold).
 - **Forum (Discourse SSO):** Built-in Discourse SSO integration — users clicking "Forum" are automatically logged in with their StoneWalker account.
 - **Multilingual Support:** English, French, Russian, Simplified Chinese, Spanish, German, and Italian with browser language detection.
@@ -160,6 +161,15 @@ This project includes a comprehensive translation quality assurance system to en
 | `/stone-link/<uuid>/` | Stone found page from QR scan (`StoneLinkView`) |
 | `/claim-stone/<uuid>/` | Claim an unclaimed stone (`ClaimStoneView`) |
 
+### Premium Supporter (login required)
+
+| URL Pattern | View / Description |
+|-------------|-------------------|
+| `/premium/` | Premium landing page with features, pricing, FAQ (`PremiumView`) |
+| `/premium/checkout/` | POST — creates Stripe Checkout Session (`PremiumCheckoutView`) |
+| `/premium/manage/` | Subscription status and billing portal access (`PremiumManageView`) |
+| `/premium/billing/` | POST — redirects to Stripe Billing Portal (`PremiumBillingPortalView`) |
+
 ### Shop (login required for checkout)
 
 | URL Pattern | View / Description |
@@ -267,10 +277,29 @@ The StoneWalker application uses Django ORM models to represent its core data:
 | code       | CharField    | Unique activation code                        |
 | email      | EmailField   | Email for activation (optional)               |
 
+### Subscription
+- Tracks premium supporter subscriptions via Stripe recurring billing.
+- One-to-one relationship with User.
+
+| Field                   | Type           | Description                                     |
+|-------------------------|----------------|-------------------------------------------------|
+| id                      | BigAutoField   | Primary key                                     |
+| user                    | OneToOneField  | Linked user                                     |
+| stripe_customer_id      | CharField      | Stripe Customer ID                              |
+| stripe_subscription_id  | CharField      | Stripe Subscription ID                          |
+| plan                    | CharField      | Plan type: monthly or yearly                    |
+| status                  | CharField      | Status: active, canceled, past_due, unpaid, trialing, incomplete |
+| current_period_start    | DateTimeField  | Start of current billing period                 |
+| current_period_end      | DateTimeField  | End of current billing period                   |
+| canceled_at             | DateTimeField  | When subscription was canceled (null if active) |
+| created_at              | DateTimeField  | When subscription was created                   |
+| updated_at              | DateTimeField  | Last update timestamp                           |
+
 #### Model Relationships Diagram
 
 ```
 User <1----1> Profile
+User <1----1> Subscription
 User <1----*> Stone
 User <1----*> StoneMove
 Stone <1----*> StoneMove
