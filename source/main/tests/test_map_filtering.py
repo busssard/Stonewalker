@@ -85,8 +85,8 @@ class MapFilteringTests(TestCase):
         response = self.client.get(reverse('stonewalker_start'))
         self.assertEqual(response.status_code, 200)
 
-        # Check for filter labels
-        self.assertContains(response, 'Filter:')
+        # Check for filter toggle controls and labels
+        self.assertContains(response, 'filter-all')
         self.assertContains(response, 'All')
         self.assertContains(response, 'Hidden')
         self.assertContains(response, 'Hunted')
