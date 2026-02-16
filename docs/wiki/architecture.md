@@ -72,13 +72,13 @@ The central entity. Each stone represents a painted stone tracked by the app.
 | `color` | CharField(7) | Hex color code, default `#4CAF50` |
 | `shape` | CharField(20) | `circle` (hidden) or `triangle` (hunted) |
 | `stone_type` | CharField(20) | `hidden` or `hunted` |
-| `status` | CharField(20) | `unclaimed`, `draft`, `published`, `sent_off` |
+| `status` | CharField(20) | `unclaimed`, `draft`, `published`, `wandering` |
 | `distance_km` | FloatField | Total distance traveled |
 | `qr_code_url` | URLField | Persistent production QR URL |
-| `sent_off_at` | DateTimeField | When stone was sent off |
+| `wandering_at` | DateTimeField | When stone started wandering |
 | `claimed_at` | DateTimeField | When stone was claimed from shop |
 
-**Status lifecycle:** `unclaimed` -> `draft` -> `published` -> `sent_off`
+**Status lifecycle:** `unclaimed` -> `draft` -> `published` -> `wandering`
 
 #### StoneMove
 Records each time someone finds/scans a stone and logs its new location.

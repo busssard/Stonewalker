@@ -5855,7 +5855,7 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
 }
 .stone-status-draft { background: #e0e0e0; color: #555; }
 .stone-status-published { background: #c8e6c9; color: #2e7d32; }
-.stone-status-sent_off { background: #bbdefb; color: #1565c0; }
+.stone-status-wandering { background: #bbdefb; color: #1565c0; }
 .stone-type-hidden { background: #bbdefb; color: #1565c0; }
 .stone-type-trackable { background: #fff3e0; color: #e65100; }
 
@@ -5899,7 +5899,7 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
 /* Stone Edit Dark Mode */
 [data-theme="dark"] .stone-status-draft { background: #444; color: #ccc; }
 [data-theme="dark"] .stone-status-published { background: #1b5e20; color: #a5d6a7; }
-[data-theme="dark"] .stone-status-sent_off { background: #0d47a1; color: #90caf9; }
+[data-theme="dark"] .stone-status-wandering { background: #0d47a1; color: #90caf9; }
 [data-theme="dark"] .stone-type-hidden { background: #0d47a1; color: #90caf9; }
 [data-theme="dark"] .stone-type-trackable { background: #bf360c; color: #ffab91; }
 [data-theme="dark"] .stone-edit-section {

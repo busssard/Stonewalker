@@ -1,0 +1,41 @@
+{% extends 'layouts/default/page.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Stone Sealed!" %} - {{ stone.PK_stone }}{% endblock %}
+
+{% block content %}
+<div class="avant-section avant-bg-right flex-center min-h-70vh overflow-auto">
+  <div class="avant-card max-w-600 m-2-5-auto">
+    <div class="avant-header text-center mb-1-2">{% trans "Stone Sealed!" %}</div>
+
+    <div class="bg-green p-2 border-radius-8 mb-2">
+      <p class="claim-info-text">{% trans "This stone has been sealed and is now wandering! Its journey has officially begun." %}</p>
+    </div>
+
+    {% if was_draft %}
+    <div class="bg-blue p-2 border-radius-8 mb-2">
+      <p class="claim-info-text">{% trans "Note: This stone was in draft mode and has been automatically published and sealed." %}</p>
+    </div>
+    {% endif %}
+
+    <div class="bg-gray p-2 border-radius-8 mb-2">
+      <h4 class="stone-found-heading">{% trans "Stone Information" %}</h4>
+      <p class="stone-found-info-line"><strong>{% trans "Name:" %}</strong> {{ stone.PK_stone }}</p>
+      <p class="stone-found-info-line"><strong>{% trans "Status:" %}</strong> <span class="stone-status-pill stone-status-wandering">{% trans "Wandering" %}</span></p>
+    </div>
+
+    {% if is_owner %}
+    <div class="stone-edit-section mt-2">
+      <h4 class="avant-label fs-1-1 mb-0-5">{% trans "Downloads" %}</h4>
+      <div class="stone-downloads">
+        <a href="{% url 'stone_certificate' stone.PK_stone %}" class="avant-btn bg-accent text-white">{% trans "Download Certificate" %}</a>
+      </div>
+    </div>
+    {% endif %}
+
+    <div class="text-center mt-2">
+      <a href="{% url 'stonewalker_start' %}" class="avant-btn bg-muted">{% trans "View Map" %}</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

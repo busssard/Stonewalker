@@ -314,9 +314,7 @@ class StoneEditView(LoginRequiredMixin, TemplateView):
     def get(self, request, pk):
         try:
             stone = Stone.objects.get(PK_stone=pk, FK_user=request.user)
-            if not stone.can_be_edited():
-                messages.error(request, f'Stone "{stone.PK_stone}" cannot be edited because it has been {stone.status}.')
-                return redirect('stonewalker_start')
+            # Allow viewing the edit page for all owned stones (template handles readonly)
             return render(request, self.template_name, {'stone': stone})
         except Stone.DoesNotExist:
             messages.error(request, 'Stone not found or you do not have permission to edit it.')
@@ -375,6 +373,9 @@ class StoneQRCodeView(View):
     def get(self, request, pk):
         try:
             stone = Stone.objects.get(PK_stone=pk, FK_user=request.user)
+            if not stone.can_download_qr():
+                messages.error(request, 'QR code download is not available for wandering stones.')
+                return redirect('stone_edit', pk=pk)
             from .qr_service import QRCodeService
             response = QRCodeService.create_download_response(stone, request)
             if response:
@@ -393,6 +394,9 @@ class StoneCertificateView(View):
     def get(self, request, pk):
         try:
             stone = Stone.objects.get(PK_stone=pk, FK_user=request.user)
+            if not stone.can_download_certificate():
+                messages.error(request, 'Certificate is only available after the stone has been sealed (wandering).')
+                return redirect('stone_edit', pk=pk)
             from .certificate_service import CertificateService
             pdf_bytes = CertificateService.generate_certificate(stone)
             if pdf_bytes:
@@ -408,20 +412,11 @@ class StoneCertificateView(View):
 
 
 class StoneSendOffView(View):
-    """Send off a published stone (finalize it)"""
+    """Deprecated: stones are now sealed via QR scan, not a button"""
     @method_decorator(login_required)
     def post(self, request, pk):
-        try:
-            stone = Stone.objects.get(PK_stone=pk, FK_user=request.user)
-            if stone.send_off():
-                messages.success(request, f'Stone "{stone.PK_stone}" sent off successfully! It\'s now finalized and ready for its journey.')
-                return redirect(f'/stonewalker/?focus={pk}')
-            else:
-                messages.error(request, f'Cannot send off stone "{stone.PK_stone}". It must be published first.')
-                return redirect(f'/stonewalker/?focus={pk}')
-        except Stone.DoesNotExist:
-            messages.error(request, 'Stone not found or you do not have permission to access it.')
-            return redirect('stonewalker_start')
+        messages.info(request, 'Stones are now sealed by scanning the QR code. Print your QR code and scan it to start your stone\'s journey!')
+        return redirect('stone_edit', pk=pk)
 
 
 class StoneLinkView(View):
@@ -450,21 +445,39 @@ class StoneLinkView(View):
                     login_url='accounts:log_in'
                 )
 
+        # Scan-based sealing: if stone is draft or published, seal it (start wandering)
+        if stone.status in ('draft', 'published'):
+            was_draft = stone.status == 'draft'
+            is_owner = request.user.is_authenticated and stone.FK_user == request.user
+            stone.start_wandering()
+            # Record scan attempt if authenticated
+            if request.user.is_authenticated:
+                StoneScanAttempt.record_scan_attempt(stone, request.user, request)
+            return render(request, 'main/stone_sealed.html', {
+                'stone': stone,
+                'stone_uuid': stone_uuid,
+                'is_owner': is_owner,
+                'was_draft': was_draft,
+            })
+
         # If user is authenticated, record scan attempt
         if request.user.is_authenticated:
             StoneScanAttempt.record_scan_attempt(stone, request.user, request)
 
         # Check if this is user's first stone
         is_first_stone = False
+        is_owner = False
         if request.user.is_authenticated:
             user_stone_count = StoneMove.objects.filter(FK_user=request.user).count()
             is_first_stone = user_stone_count == 0
+            is_owner = stone.FK_user == request.user
 
         # Create response with cookie
         response = render(request, 'main/stone_found.html', {
             'stone': stone,
             'stone_uuid': stone_uuid,
             'is_first_stone': is_first_stone,
+            'is_owner': is_owner,
         })
         response.set_cookie(
             f'stone_scan_{stone_uuid}',
@@ -491,6 +504,10 @@ class StoneLinkView(View):
             messages.error(request, 'You have already scanned this stone in the last week. Please wait before scanning again.')
             return redirect('stonewalker_start')
         
+        # Safety check: if stone is still published when find is submitted, seal it
+        if stone.status == 'published':
+            stone.start_wandering()
+
         # Get form data
         comment = request.POST.get('comment', '')
         image = request.FILES.get('image')

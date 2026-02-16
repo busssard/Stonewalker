@@ -23,11 +23,11 @@
       </div>
     {% elif stone.status == 'published' %}
       <div class="bg-yellow p-2 border-radius-8 mb-2">
-        <p class="claim-info-text">{% trans "This stone is published and visible on the map. You can no longer edit it, but you can send it off to finalize it." %}</p>
+        <p class="claim-info-text">{% trans "This stone is published and visible on the map. Scan the QR code to seal it and start its journey." %}</p>
       </div>
-    {% elif stone.status == 'sent_off' %}
+    {% elif stone.status == 'wandering' %}
       <div class="bg-green p-2 border-radius-8 mb-2">
-        <p class="claim-info-text">{% trans "This stone has been sent off and is finalized. No further changes can be made." %}</p>
+        <p class="claim-info-text">{% trans "This stone is wandering! It has been sealed and is on its journey. No further changes can be made." %}</p>
       </div>
     {% endif %}
 
@@ -87,26 +87,29 @@
     <div class="stone-edit-section mt-2">
       <h4 class="avant-label fs-1-1 mb-0-5">{% trans "Downloads" %}</h4>
       <div class="stone-downloads">
-        <a href="{% url 'stone_qr' stone.PK_stone %}" class="avant-btn bg-accent text-white">{% trans "QR Code" %}</a>
-        <a href="{% url 'stone_certificate' stone.PK_stone %}" class="avant-btn bg-muted">{% trans "Certificate" %}</a>
+        {% if stone.can_download_qr %}
+          <a href="{% url 'stone_qr' stone.PK_stone %}" class="avant-btn bg-accent text-white">{% trans "QR Code" %}</a>
+        {% else %}
+          <span class="avant-btn bg-muted" style="opacity:0.5; cursor:not-allowed;">{% trans "QR Code" %}</span>
+        {% endif %}
+        {% if stone.can_download_certificate %}
+          <a href="{% url 'stone_certificate' stone.PK_stone %}" class="avant-btn bg-accent text-white">{% trans "Certificate" %}</a>
+        {% else %}
+          <span class="avant-btn bg-muted" style="opacity:0.5; cursor:not-allowed;">{% trans "Certificate" %}</span>
+        {% endif %}
       </div>
+      {% if stone.can_download_qr %}
       <div class="mt-0-7">
         <small class="text-muted"><strong>{% trans "QR URL:" %}</strong> {{ stone.get_qr_url }}</small>
       </div>
+      {% endif %}
     </div>
 
-    <!-- Send Off Section -->
-    {% if stone.status == 'published' and stone.can_be_sent_off %}
+    <!-- Seal Your Stone Section (for published stones) -->
+    {% if stone.status == 'published' %}
     <div class="stone-edit-section mt-2">
-      <h4 class="avant-label fs-1-1 mb-0-5">{% trans "Send Off Stone" %}</h4>
-      <p class="text-muted fs-0-9 mb-1">{% trans "Once you send off your stone, it becomes finalized and ready for its journey. This action cannot be undone." %}</p>
-      <form method="post" action="{% url 'stone_send_off' stone.PK_stone %}">
-        {% csrf_token %}
-        <button type="submit" class="avant-btn bg-warning"
-                onclick="return confirm('{% trans "Are you sure you want to send off this stone? This action cannot be undone." %}')">
-          {% trans "Send Off Stone" %}
-        </button>
-      </form>
+      <h4 class="avant-label fs-1-1 mb-0-5">{% trans "Seal Your Stone" %}</h4>
+      <p class="text-muted fs-0-9 mb-1">{% trans "Print your QR code, attach it to your stone, and scan it to seal the stone and start its journey!" %}</p>
     </div>
     {% endif %}
 

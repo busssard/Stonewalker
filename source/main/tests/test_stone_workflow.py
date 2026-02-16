@@ -1,5 +1,5 @@
 """
-Tests for stone creation, editing, and workflow (draft -> published -> sent_off).
+Tests for stone creation, editing, and workflow (draft -> published -> wandering).
 
 Stone creation now goes through the shop flow:
   CreateNewStoneView -> ShopView -> CheckoutView -> ClaimStoneView -> StoneEditView
@@ -23,7 +23,7 @@ class StoneCreationTests(BaseStoneWalkerTestCase):
         stone = self.create_stone('NEWSTONE')
         self.assertEqual(stone.status, 'draft')
         self.assertTrue(stone.can_be_edited())
-        self.assertFalse(stone.can_be_sent_off())
+        self.assertTrue(stone.can_start_wandering())
 
     def test_stone_creation_with_uuid(self):
         """Test that stones get a UUID upon creation"""
@@ -92,7 +92,7 @@ class StoneUUIDConsistencyTests(BaseStoneWalkerTestCase):
 
     def test_stone_link_works_with_uuid(self):
         """The stone-link URL using the stone's UUID should find the stone"""
-        stone = self.create_stone('LINK_TEST', status='published')
+        stone = self.create_stone('LINK_TEST', status='wandering')
         self.create_stone_move(stone=stone)
         response = self.client.get(f'/stone-link/{stone.uuid}/')
         self.assertEqual(response.status_code, 200)
@@ -104,7 +104,7 @@ class StoneUUIDConsistencyTests(BaseStoneWalkerTestCase):
             PK_stone='CUSTOM_UUID',
             FK_user=self.user,
             uuid=custom_uuid,
-            status='published',
+            status='wandering',
         )
         self.create_stone_move(stone=stone)
         response = self.client.get(f'/stone-link/{custom_uuid}/')
@@ -118,11 +118,11 @@ class StoneUUIDConsistencyTests(BaseStoneWalkerTestCase):
         stone.refresh_from_db()
         self.assertEqual(stone.uuid, original_uuid)
 
-    def test_uuid_persists_through_send_off(self):
-        """UUID should remain the same after sending off"""
-        stone = self.create_stone('SENDOFF', status='published')
+    def test_uuid_persists_through_wandering(self):
+        """UUID should remain the same after starting wandering"""
+        stone = self.create_stone('WANDER', status='published')
         original_uuid = stone.uuid
-        stone.send_off()
+        stone.start_wandering()
         stone.refresh_from_db()
         self.assertEqual(stone.uuid, original_uuid)
 
@@ -296,21 +296,21 @@ class StoneEditTests(BaseStoneWalkerTestCase):
         stone.refresh_from_db()
         self.assertEqual(stone.description, 'Updated description')
 
-    def test_cannot_edit_published_stone(self):
-        """Test that published stones cannot be edited"""
+    def test_view_published_stone_edit_page(self):
+        """Test that published stones can view the edit page (readonly)"""
         stone = self.create_stone(status='published')
 
         response = self.client.get(f'/stone/{stone.PK_stone}/edit/')
-        self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, '/stonewalker/')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Scan the QR code to seal it')
 
-    def test_cannot_edit_sent_off_stone(self):
-        """Test that sent off stones cannot be edited"""
-        stone = self.create_stone(status='sent_off')
+    def test_view_wandering_stone_edit_page(self):
+        """Test that wandering stones can view the edit page (readonly)"""
+        stone = self.create_stone(status='wandering')
 
         response = self.client.get(f'/stone/{stone.PK_stone}/edit/')
-        self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, '/stonewalker/')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'wandering')
 
 
 class StoneWorkflowTests(BaseStoneWalkerTestCase):
@@ -329,28 +329,43 @@ class StoneWorkflowTests(BaseStoneWalkerTestCase):
         stone.refresh_from_db()
         self.assertEqual(stone.status, 'published')
         self.assertFalse(stone.can_be_edited())
-        self.assertTrue(stone.can_be_sent_off())
+        self.assertTrue(stone.can_start_wandering())
 
-    def test_send_off_published_stone(self):
-        """Test sending off a published stone"""
+    def test_scan_seals_published_stone(self):
+        """Test that scanning a published stone's QR seals it (starts wandering)"""
+        stone = self.create_stone(status='published')
+
+        response = self.client.get(f'/stone-link/{stone.uuid}/')
+
+        stone.refresh_from_db()
+        self.assertEqual(stone.status, 'wandering')
+        self.assertIsNotNone(stone.wandering_at)
+        # Should show the sealed template
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Stone Sealed')
+
+    def test_scan_seals_draft_stone(self):
+        """Test that scanning a draft stone's QR seals it directly"""
+        stone = self.create_stone(status='draft')
+
+        response = self.client.get(f'/stone-link/{stone.uuid}/')
+
+        stone.refresh_from_db()
+        self.assertEqual(stone.status, 'wandering')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Stone Sealed')
+
+    def test_send_off_deprecated(self):
+        """Test that send-off endpoint returns info message"""
         stone = self.create_stone(status='published')
 
         response = self.client.post(f'/stone/{stone.PK_stone}/send-off/')
 
+        # Should redirect with info message
+        self.assertEqual(response.status_code, 302)
+        # Stone should NOT have changed status
         stone.refresh_from_db()
-        self.assertEqual(stone.status, 'sent_off')
-        self.assertIsNotNone(stone.sent_off_at)
-        self.assertFalse(stone.can_be_edited())
-        self.assertFalse(stone.can_be_sent_off())
-
-    def test_cannot_send_off_draft_stone(self):
-        """Test that draft stones cannot be sent off"""
-        stone = self.create_stone(status='draft')
-
-        response = self.client.post(f'/stone/{stone.PK_stone}/send-off/')
-
-        stone.refresh_from_db()
-        self.assertEqual(stone.status, 'draft')
+        self.assertEqual(stone.status, 'published')
 
 
 class LanguageSwitchTests(BaseStoneWalkerTestCase):

@@ -68,7 +68,7 @@ class Stone(models.Model):
         ('unclaimed', 'Unclaimed'),  # Pre-generated, no owner yet
         ('draft', 'Draft'),
         ('published', 'Published'),
-        ('sent_off', 'Sent Off'),
+        ('wandering', 'Wandering'),
     ]
 
     PK_stone = models.CharField(
@@ -106,7 +106,7 @@ class Stone(models.Model):
     ])
     status = models.CharField(max_length=20, default='draft', choices=STATUS_CHOICES)
     qr_code_url = models.URLField(blank=True, help_text='Persistent QR code URL')
-    sent_off_at = models.DateTimeField(null=True, blank=True)
+    wandering_at = models.DateTimeField(null=True, blank=True)
     claimed_at = models.DateTimeField(null=True, blank=True, help_text='When this stone was claimed by a user')
 
     def __str__(self):
@@ -152,23 +152,34 @@ class Stone(models.Model):
         """Check if stone can be published"""
         return self.status == 'draft'
     
-    def can_be_sent_off(self):
-        """Check if stone can be sent off"""
-        return self.status == 'published'
-    
+    def can_start_wandering(self):
+        """Check if stone can start wandering (sealed via QR scan)"""
+        return self.status in ('draft', 'published')
+
+    def start_wandering(self):
+        """Transition stone to wandering status (sealed via QR scan)"""
+        if self.can_start_wandering():
+            if self.status == 'draft':
+                self.status = 'wandering'
+            else:
+                self.status = 'wandering'
+            self.wandering_at = timezone.now()
+            self.save()
+            return True
+        return False
+
+    def can_download_qr(self):
+        """QR code download is only available for draft/published stones"""
+        return self.status in ('draft', 'published')
+
+    def can_download_certificate(self):
+        """Certificate download is only available for wandering stones"""
+        return self.status == 'wandering'
+
     def publish(self):
         """Publish the stone (make it visible on map)"""
         if self.can_be_published():
             self.status = 'published'
-            self.save()
-            return True
-        return False
-    
-    def send_off(self):
-        """Send off the stone (finalize it, no more editing)"""
-        if self.can_be_sent_off():
-            self.status = 'sent_off'
-            self.sent_off_at = timezone.now()
             self.save()
             return True
         return False

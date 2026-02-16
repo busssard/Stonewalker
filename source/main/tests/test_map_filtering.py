@@ -17,7 +17,7 @@ class MapFilteringTests(TestCase):
             PK_stone='HiddenStone',
             FK_user=self.user,
             stone_type='hidden',
-            status='sent_off',
+            status='wandering',
             color='#FF0000'
         )
         StoneMove.objects.create(
@@ -32,7 +32,7 @@ class MapFilteringTests(TestCase):
             PK_stone='HuntedStone',
             FK_user=self.user,
             stone_type='hunted',
-            status='sent_off',
+            status='wandering',
             color='#00FF00'
         )
         StoneMove.objects.create(

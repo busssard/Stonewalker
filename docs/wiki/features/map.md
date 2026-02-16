@@ -84,5 +84,5 @@ Stone distance is pre-calculated server-side using the Haversine formula and sto
 ## Related Pages
 
 - [[features/scanning]] -- How new moves are added to stones
-- [[features/stone-management]] -- Stone lifecycle (only published/sent_off stones appear)
+- [[features/stone-management]] -- Stone lifecycle (only published/wandering stones appear)
 - [[architecture]] -- Template structure and static assets

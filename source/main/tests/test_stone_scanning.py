@@ -129,9 +129,9 @@ class StoneLinkTests(BaseStoneWalkerTestCase):
     """Test stone-link functionality (QR code target)"""
     
     def test_stone_link_view_loads(self):
-        """Test that stone-link view loads correctly"""
-        stone = self.create_stone()
-        
+        """Test that stone-link view loads correctly for wandering stones"""
+        stone = self.create_stone(status='wandering')
+
         response = self.client.get(f'/stone-link/{stone.uuid}/')
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, stone.PK_stone)
@@ -150,29 +150,29 @@ class StoneLinkTests(BaseStoneWalkerTestCase):
     
     def test_stone_link_scan_attempt_recording(self):
         """Test that stone-link records scan attempts"""
-        stone = self.create_stone()
-        
+        stone = self.create_stone(status='wandering')
+
         # Visit stone-link page
         response = self.client.get(f'/stone-link/{stone.uuid}/')
         self.assertEqual(response.status_code, 200)
-        
+
         # Check that scan attempt was recorded
         attempt = StoneScanAttempt.objects.filter(FK_stone=stone, FK_user=self.user).first()
         self.assertIsNotNone(attempt)
-    
+
     def test_stone_link_move_submission(self):
         """Test submitting a move via stone-link"""
-        stone = self.create_stone()
-        
+        stone = self.create_stone(status='wandering')
+
         response = self.client.post(f'/stone-link/{stone.uuid}/', {
             'comment': 'Found via QR code!',
             'latitude': '40.7128',
             'longitude': '-74.0060'
         })
-        
+
         # Should redirect to map
         self.assertRedirects(response, f'/stonewalker/?focus={stone.PK_stone}')
-        
+
         # Check that move was created
         move = StoneMove.objects.filter(FK_stone=stone, FK_user=self.user).first()
         self.assertIsNotNone(move)
@@ -207,7 +207,64 @@ class CheckStoneUUIDTests(BaseStoneWalkerTestCase):
         """Test checking invalid UUID format"""
         response = self.client.get('/api/check-stone-uuid/invalid-uuid/')
         self.assertEqual(response.status_code, 200)
-        
+
         data = response.json()
         self.assertFalse(data['exists'])
         self.assertIn('error', data)
+
+
+class StoneSealOnScanTests(BaseStoneWalkerTestCase):
+    """Test scan-based stone sealing (QR scan transitions stone to wandering)"""
+
+    def test_scan_seals_published_stone(self):
+        """Scanning a published stone's QR should seal it to wandering"""
+        stone = self.create_stone('SEALME', status='published')
+        response = self.client.get(f'/stone-link/{stone.uuid}/')
+
+        stone.refresh_from_db()
+        self.assertEqual(stone.status, 'wandering')
+        self.assertIsNotNone(stone.wandering_at)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Stone Sealed')
+
+    def test_scan_seals_draft_stone(self):
+        """Scanning a draft stone's QR should seal it directly"""
+        stone = self.create_stone('DRAFTSL', status='draft')
+        response = self.client.get(f'/stone-link/{stone.uuid}/')
+
+        stone.refresh_from_db()
+        self.assertEqual(stone.status, 'wandering')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Stone Sealed')
+        # Should indicate it was a draft
+        self.assertContains(response, 'draft')
+
+    def test_non_owner_can_seal_stone(self):
+        """A non-owner scanning the QR should also seal the stone"""
+        other_user = self.create_user('other', 'otherpass')
+        stone = self.create_stone('OTHERSEAL', user=other_user, status='published')
+
+        response = self.client.get(f'/stone-link/{stone.uuid}/')
+
+        stone.refresh_from_db()
+        self.assertEqual(stone.status, 'wandering')
+        self.assertEqual(response.status_code, 200)
+
+    def test_owner_sees_certificate_link_on_seal(self):
+        """Owner scanning their own stone should see certificate download link"""
+        stone = self.create_stone('OWNSEAL', status='published')
+        response = self.client.get(f'/stone-link/{stone.uuid}/')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'certificate')
+
+    def test_wandering_stone_shows_found_page(self):
+        """Scanning a wandering stone should show the stone_found page, not seal again"""
+        stone = self.create_stone('WANDERER', status='wandering')
+        self.create_stone_move(stone=stone)
+        response = self.client.get(f'/stone-link/{stone.uuid}/')
+
+        stone.refresh_from_db()
+        self.assertEqual(stone.status, 'wandering')  # Still wandering
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Stone Found')

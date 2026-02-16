@@ -22,6 +22,15 @@
       <p class="stone-found-info-line"><strong>{% trans 'Created by:' %}</strong> {{ stone.user|default:"Unknown" }}</p>
     </div>
     
+    <!-- Owner Info -->
+    {% if is_owner %}
+    <div class="bg-blue p-2 border-radius-8 mb-2">
+      <h4 class="stone-found-heading">{% trans "This is your stone!" %}</h4>
+      <p class="stone-found-info-line">{% trans "You own this stone. You can manage it from your stone edit page." %}</p>
+      <a href="{% url 'stone_edit' stone.PK_stone %}" class="avant-btn bg-accent text-white mt-1">{% trans "Manage Stone" %}</a>
+    </div>
+    {% endif %}
+
     <!-- First Stone Welcome -->
     {% if is_first_stone %}
     <div class="bg-blue p-2 border-radius-8 mb-2">

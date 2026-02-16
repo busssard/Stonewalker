@@ -164,19 +164,27 @@ class StoneFoundTemplateTests(BaseStoneWalkerTestCase):
     """Test stone found page functionality"""
     
     def test_stone_found_page_via_link(self):
-        """Test stone found page loads via stone-link"""
-        stone = self.create_stone()
-        
+        """Test stone found page loads via stone-link for wandering stones"""
+        stone = self.create_stone(status='wandering')
+
         response = self.client.get(f'/stone-link/{stone.uuid}/')
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'You found')
+        self.assertContains(response, 'Stone Found')
         self.assertContains(response, stone.PK_stone)
-    
+
+    def test_stone_sealed_page_via_link(self):
+        """Test that scanning a draft/published stone shows sealed page"""
+        stone = self.create_stone(status='published')
+
+        response = self.client.get(f'/stone-link/{stone.uuid}/')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Stone Sealed')
+
     def test_first_stone_detection(self):
-        """Test first stone detection logic"""
+        """Test first stone detection logic for wandering stones"""
         # User has no previous moves, so this should be their first
-        stone = self.create_stone()
-        
+        stone = self.create_stone(status='wandering')
+
         response = self.client.get(f'/stone-link/{stone.uuid}/')
         self.assertEqual(response.status_code, 200)
         # Should indicate it's their first stone

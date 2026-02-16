@@ -331,7 +331,7 @@ layouts/default/page.html (base template)
    - User marks stone as "published" (visible on map)
 
 5. **Send Off Stone:**
-   - User finalizes stone (status: `sent_off`, no more editing)
+   - User finalizes stone (status: `wandering`, no more editing)
 
 **QR Code System:**
 
@@ -728,9 +728,9 @@ Represents a painted stone tracked in the app.
 | shape | CharField | circle or triangle |
 | distance_km | FloatField | Total distance traveled |
 | stone_type | CharField | hidden or hunted |
-| status | CharField | unclaimed, draft, published, sent_off |
+| status | CharField | unclaimed, draft, published, wandering |
 | qr_code_url | URLField | Persistent QR code URL |
-| sent_off_at | DateTimeField | When finalized |
+| wandering_at | DateTimeField | When stone started wandering |
 | claimed_at | DateTimeField | When claimed (if unclaimed) |
 
 **Methods:**

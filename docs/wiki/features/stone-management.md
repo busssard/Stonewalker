@@ -1,7 +1,7 @@
 ---
 title: Stone Management
 tags: [feature, stones, creation, editing, workflow]
-last-updated: 2026-02-10
+last-updated: 2026-02-16
 ---
 
 # Stone Management
@@ -11,12 +11,14 @@ Stones are the core entities in StoneWalker. This page covers creation, editing,
 ## Stone Lifecycle
 
 ```
-[unclaimed] --> [draft] --> [published] --> [sent_off]
-     |              |
-     |  (claim)     |  (edit)
-     v              v
-  draft          draft
+[unclaimed] --> [draft] --> [published] --> [wandering]
+     |              |             |
+     |  (claim)     |  (edit)     |  (QR scan seals)
+     v              v             v
+  draft          draft        wandering
 ```
+
+Stones are "sealed" by scanning the QR code (not a button). This transitions them from draft/published to wandering.
 
 ### Status Definitions
 
@@ -24,8 +26,8 @@ Stones are the core entities in StoneWalker. This page covers creation, editing,
 |--------|---------|-----------|---------|
 | `unclaimed` | Pre-generated from shop, no owner yet | No | No |
 | `draft` | Owned by a user, being set up | Yes | No |
-| `published` | Visible on the map, ready for journey | No | Yes |
-| `sent_off` | Finalized, physically placed in the world | No | Yes |
+| `published` | Visible on the map, ready to be sealed | No | Yes |
+| `wandering` | Sealed via QR scan, on its journey | No | Yes |
 
 ## Creating a Stone
 
@@ -64,7 +66,7 @@ For hunted stones, the initial location is provided during creation and a `Stone
 - **URL:** `GET/POST /stone/<pk>/edit/`
 - **View:** `StoneEditView` (`source/main/views.py`)
 - **Editable fields:** Description, image, color
-- **Guard:** Only the owner can edit. Only `draft` stones can be edited.
+- **Guard:** Only the owner can access. Only `draft` stones can be edited. Published/wandering stones can view the page but not submit edits.
 - **Actions from the edit page:**
   - **Save** -- Save changes, stay on edit page
   - **Publish** -- Change status to `published`, redirect to map
@@ -75,13 +77,21 @@ For hunted stones, the initial location is provided during creation and a `Stone
 - Stone becomes visible on the interactive map
 - No more editing allowed after publishing
 
-## Sending Off
+## Sealing (via QR Scan)
 
-- **URL:** `POST /stone/<pk>/send-off/`
-- **View:** `StoneSendOffView`
-- Changes status from `published` to `sent_off`
-- Records `sent_off_at` timestamp
-- The stone is finalized -- the physical stone has been placed in the world
+- Triggered by scanning the stone's QR code (visiting the stone-link URL)
+- Works for both `draft` and `published` stones
+- Transitions stone to `wandering` status
+- Records `wandering_at` timestamp
+- Shows `stone_sealed.html` confirmation page
+- Owner sees certificate download link on the sealed page
+
+## Downloads
+
+| Download | Available When |
+|----------|---------------|
+| QR Code | `draft` or `published` only |
+| Certificate | `wandering` only |
 
 ## Name Validation
 
@@ -117,10 +127,10 @@ The result is stored in `stone.distance_km` and displayed on the map and in My S
 | File | Purpose |
 |------|---------|
 | `source/main/models.py` | `Stone` model with lifecycle methods |
-| `source/main/views.py` | `add_stone`, `StoneEditView`, `StoneSendOffView` |
+| `source/main/views.py` | `StoneEditView`, `StoneLinkView` (scan-sealing), `StoneSendOffView` (deprecated) |
 | `source/main/shop_views.py` | `ClaimStoneView`, `CreateNewStoneView` |
-| `source/content/templates/main/new_add_stone_modal.html` | Creation modal |
 | `source/content/templates/main/stone_edit.html` | Edit page |
+| `source/content/templates/main/stone_sealed.html` | Sealed confirmation page |
 | `source/content/templates/main/claim_stone.html` | Claim page |
 
 ## Related Pages
