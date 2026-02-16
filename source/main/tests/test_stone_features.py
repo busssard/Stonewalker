@@ -87,18 +87,22 @@ class QRCodeWithStoneNumberTests(BaseQRTestCase):
         self.assertEqual(response['Content-Type'], 'image/png')
         self.assertIn('attachment', response['Content-Disposition'])
 
-    def test_stone_number_banner_added(self):
-        """Test that _add_stone_number_banner creates valid image"""
+    def test_qr_image_is_grayscale(self):
+        """Test that the QR image is pure black and white (no color)"""
         from PIL import Image
 
-        img = Image.new('RGB', (200, 36), 'white')
-        QRCodeService._add_stone_number_banner(img, 200, 36, 42)
+        stone = self.create_stone()
+        result = QRCodeService.generate_enhanced_qr_for_download(stone)
+        self.assertTrue(result['success'])
 
-        # Check that the banner area is no longer pure white (the green fill)
+        from io import BytesIO
+        img = Image.open(BytesIO(result['image_data']))
         pixels = list(img.getdata())
-        # At least some pixels should be green (#4CAF50 = (76, 175, 80))
-        has_green = any(p[1] > 150 and p[0] < 100 and p[2] < 100 for p in pixels)
-        self.assertTrue(has_green, "Banner should contain green pixels")
+
+        # Every pixel should be grayscale: R == G == B
+        for p in pixels:
+            self.assertEqual(p[0], p[1], f"Pixel {p} is not grayscale (R != G)")
+            self.assertEqual(p[1], p[2], f"Pixel {p} is not grayscale (G != B)")
 
     def test_create_enhanced_image_with_number(self):
         """Test that the enhanced image is taller when stone_number is provided"""
@@ -139,14 +143,32 @@ class StoneCertificateTests(BaseQRTestCase):
         self.assertEqual(response.status_code, 302)
 
     def test_certificate_view_returns_pdf(self):
-        """Certificate download should return a PDF"""
-        stone = self.create_stone('CERTSTONE')
+        """Certificate download should return a PDF for wandering stones"""
+        stone = self.create_stone('CERTSTONE', status='wandering')
         response = self.client.get(f'/stone/{stone.PK_stone}/certificate/')
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response['Content-Type'], 'application/pdf')
         self.assertIn('attachment', response['Content-Disposition'])
         self.assertIn('certificate', response['Content-Disposition'].lower())
+
+    def test_certificate_blocked_for_draft(self):
+        """Certificate should be blocked for draft stones"""
+        stone = self.create_stone('DRAFTCERT', status='draft')
+        response = self.client.get(f'/stone/{stone.PK_stone}/certificate/')
+        self.assertEqual(response.status_code, 302)
+
+    def test_certificate_blocked_for_published(self):
+        """Certificate should be blocked for published stones"""
+        stone = self.create_stone('PUBCERT', status='published')
+        response = self.client.get(f'/stone/{stone.PK_stone}/certificate/')
+        self.assertEqual(response.status_code, 302)
+
+    def test_qr_download_blocked_for_wandering(self):
+        """QR download should be blocked for wandering stones"""
+        stone = self.create_stone('WANDERQR', status='wandering')
+        response = self.client.get(f'/stone/{stone.PK_stone}/qr/')
+        self.assertEqual(response.status_code, 302)
 
     def test_certificate_only_for_owner(self):
         """Only the stone owner should be able to download the certificate"""
@@ -186,9 +208,9 @@ class StoneCertificateTests(BaseQRTestCase):
         self.assertTrue(len(pdf_bytes) > 0)
 
     def test_certificate_link_on_stone_edit_page(self):
-        """Stone edit page should have a link to download the certificate"""
-        stone = self.create_stone('EDITCERT')
+        """Stone edit page should show certificate section (enabled for wandering)"""
+        stone = self.create_stone('EDITCERT', status='wandering')
         response = self.client.get(f'/stone/{stone.PK_stone}/edit/')
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'certificate')
+        self.assertContains(response, 'Certificate')

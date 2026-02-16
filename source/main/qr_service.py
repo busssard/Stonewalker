@@ -296,14 +296,14 @@ class QRCodeService:
     @classmethod
     def _create_enhanced_image_with_branding(cls, qr_img, url_text, stone_name, stone_number=None):
         """
-        Create a compact QR code label for physical stones (2-5cm total size)
-        Includes the stone's sequential number prominently if available.
+        Create a compact, black-and-white QR code label for physical stones.
+        Layout: QR code (200px) -> "STONEWALKER.org" (black) -> "Stone #N" (black, if available)
+        No colored elements — pure black text on white background.
         """
-        # Compact dimensions for stone labels
-        qr_size = 200  # Much smaller QR code
-        number_banner_height = 36 if stone_number is not None else 0
-        text_height = int(qr_size * 0.15)  # Text area is 15% of QR height
-        padding = 4  # Minimal padding
+        qr_size = 200
+        padding = 4
+        domain_text_height = 24
+        number_text_height = 22 if stone_number is not None else 0
 
         # Handle older PIL versions
         try:
@@ -313,77 +313,41 @@ class QRCodeService:
 
         qr_img = qr_img.resize((qr_size, qr_size), resample_method)
 
-        # Compact layout: number banner + QR code + slim text underneath
+        # Layout: QR code + domain text + optional stone number
         total_width = qr_size
-        total_height = number_banner_height + qr_size + text_height + padding
+        total_height = qr_size + domain_text_height + number_text_height + padding
 
         # Create new image with white background
         final_img = Image.new('RGB', (total_width, total_height), 'white')
 
-        # Draw stone number banner at the top
+        # Paste QR code at top
+        final_img.paste(qr_img, (0, 0))
+
+        draw = ImageDraw.Draw(final_img)
+
+        # Draw "STONEWALKER.org" in black below QR code
+        domain_font = cls._get_font(14)
+        domain_text = "STONEWALKER.org"
+        try:
+            bbox = draw.textbbox((0, 0), domain_text, font=domain_font)
+            tw = bbox[2] - bbox[0]
+        except AttributeError:
+            tw, _ = draw.textsize(domain_text, font=domain_font)
+        domain_x = (total_width - tw) // 2
+        domain_y = qr_size + 2
+        draw.text((domain_x, domain_y), domain_text, fill='#000000', font=domain_font)
+
+        # Draw "Stone #N" in black below domain text
         if stone_number is not None:
-            cls._add_stone_number_banner(final_img, total_width, number_banner_height, stone_number)
-
-        # Paste QR code below the banner
-        final_img.paste(qr_img, (0, number_banner_height))
-
-        # Add compact text below QR code
-        text_y = number_banner_height + qr_size + 2  # Small gap
-        cls._add_compact_text(final_img, total_width, text_y, text_height)
+            number_font = cls._get_font(12)
+            number_text = f"Stone #{stone_number}"
+            try:
+                bbox = draw.textbbox((0, 0), number_text, font=number_font)
+                ntw = bbox[2] - bbox[0]
+            except AttributeError:
+                ntw, _ = draw.textsize(number_text, font=number_font)
+            number_x = (total_width - ntw) // 2
+            number_y = qr_size + domain_text_height + 2
+            draw.text((number_x, number_y), number_text, fill='#000000', font=number_font)
 
         return final_img
-
-    @classmethod
-    def _add_stone_number_banner(cls, img, img_width, banner_height, stone_number):
-        """Add a prominent stone number banner at the top of the QR image"""
-        draw = ImageDraw.Draw(img)
-
-        # Draw green background banner
-        draw.rectangle([0, 0, img_width, banner_height], fill='#4CAF50')
-
-        # Draw the stone number text
-        number_text = f"Stone #{stone_number}"
-        font_size = max(14, int(banner_height * 0.55))
-        font = cls._get_font(font_size)
-
-        # Calculate text dimensions with fallback
-        try:
-            text_bbox = draw.textbbox((0, 0), number_text, font=font)
-            text_width = text_bbox[2] - text_bbox[0]
-            text_height_actual = text_bbox[3] - text_bbox[1]
-        except AttributeError:
-            text_width, text_height_actual = draw.textsize(number_text, font=font)
-
-        # Center the text in the banner
-        text_x = (img_width - text_width) // 2
-        text_y = (banner_height - text_height_actual) // 2
-
-        # Draw text in white on green
-        draw.text((text_x, text_y), number_text, fill='#FFFFFF', font=font)
-
-    @classmethod
-    def _add_compact_text(cls, img, img_width, text_y, text_height):
-        """Add compact 'STONEWALKER.org' text underneath QR code for physical stones"""
-        draw = ImageDraw.Draw(img)
-
-        # Very small font for compact label
-        font_size = max(8, int(text_height * 0.6))  # Font scales with available height
-        font = cls._get_font(font_size)
-
-        # Just the domain name
-        text = "STONEWALKER.org"
-
-        # Calculate text dimensions with fallback
-        try:
-            text_bbox = draw.textbbox((0, 0), text, font=font)
-            text_width = text_bbox[2] - text_bbox[0]
-            text_height_actual = text_bbox[3] - text_bbox[1]
-        except AttributeError:
-            text_width, text_height_actual = draw.textsize(text, font=font)
-
-        # Center the text
-        text_x = (img_width - text_width) // 2
-        text_y_centered = text_y + (text_height - text_height_actual) // 2
-
-        # Draw text in dark gray
-        draw.text((text_x, text_y_centered), text, fill='#333333', font=font)
