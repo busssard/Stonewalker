@@ -57,6 +57,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'app.context_processors.shop_visibility',
+                'app.context_processors.premium_status',
             ],
         },
     },
@@ -212,6 +213,10 @@ LOGGING = {
 STRIPE_PUBLIC_KEY = os.environ.get('STRIPE_PUBLIC_KEY', '')
 STRIPE_SECRET_KEY = os.environ.get('STRIPE_SECRET_KEY', '')
 STRIPE_WEBHOOK_SECRET = os.environ.get('STRIPE_WEBHOOK_SECRET', '')
+
+# Stripe Subscription Price IDs (create in Stripe Dashboard → Products)
+STRIPE_PRICE_MONTHLY = os.environ.get('STRIPE_PRICE_MONTHLY', '')
+STRIPE_PRICE_YEARLY = os.environ.get('STRIPE_PRICE_YEARLY', '')
 
 # Shop Configuration
 SHOP_CONFIG_PATH = os.path.join(BASE_DIR, 'main', 'shop_config.json')

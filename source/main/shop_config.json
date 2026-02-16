@@ -1,7 +1,13 @@
 {
-  "version": "1.1",
+  "version": "1.2",
   "currency": "USD",
   "categories": [
+    {
+      "id": "premium",
+      "name": "Premium Supporter",
+      "description": "Support StoneWalker and unlock exclusive features",
+      "order": 0
+    },
     {
       "id": "starter",
       "name": "Starter Packs",
@@ -22,6 +28,48 @@
     }
   ],
   "products": [
+    {
+      "id": "premium_monthly",
+      "category": "premium",
+      "name": "Premium Supporter (Monthly)",
+      "description": "Journey analytics, premium badge, priority support, and more!",
+      "price_cents": 399,
+      "is_free": false,
+      "is_subscription": true,
+      "billing_interval": "month",
+      "pack_size": 0,
+      "enabled": true,
+      "picture": "/static/images/shop/premium.png",
+      "limit_per_user": 1,
+      "features": [
+        "Stone journey analytics dashboard",
+        "Premium supporter badge",
+        "Unlimited draft stones",
+        "Priority email support",
+        "Early access to new features"
+      ]
+    },
+    {
+      "id": "premium_yearly",
+      "category": "premium",
+      "name": "Premium Supporter (Yearly)",
+      "description": "All premium features — save 37% with yearly billing!",
+      "price_cents": 2999,
+      "is_free": false,
+      "is_subscription": true,
+      "billing_interval": "year",
+      "pack_size": 0,
+      "enabled": true,
+      "picture": "/static/images/shop/premium.png",
+      "limit_per_user": 1,
+      "features": [
+        "Stone journey analytics dashboard",
+        "Premium supporter badge",
+        "Unlimited draft stones",
+        "Priority email support",
+        "Early access to new features"
+      ]
+    },
     {
       "id": "free_single",
       "category": "starter",

@@ -53,6 +53,14 @@ class Profile(models.Model):
             return f'@{handle}'
         return self.user.username
 
+    @property
+    def is_premium(self):
+        """Check if user has an active premium subscription."""
+        try:
+            return self.user.subscription.grants_premium
+        except Subscription.DoesNotExist:
+            return False
+
     def __str__(self):
         return f"Profile of {self.user.username}"
 
@@ -101,3 +109,54 @@ class NotificationPreference(models.Model):
 
     def __str__(self):
         return f"Notification prefs for {self.user.username}"
+
+
+class Subscription(models.Model):
+    """Tracks premium supporter subscriptions via Stripe recurring billing."""
+    PLAN_CHOICES = [
+        ('monthly', 'Monthly ($3.99/mo)'),
+        ('yearly', 'Yearly ($29.99/yr)'),
+    ]
+
+    STATUS_CHOICES = [
+        ('active', 'Active'),
+        ('canceled', 'Canceled'),
+        ('past_due', 'Past Due'),
+        ('unpaid', 'Unpaid'),
+        ('trialing', 'Trialing'),
+        ('incomplete', 'Incomplete'),
+    ]
+
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='subscription')
+    stripe_customer_id = models.CharField(max_length=255, blank=True, default='')
+    stripe_subscription_id = models.CharField(max_length=255, blank=True, default='')
+    plan = models.CharField(max_length=20, choices=PLAN_CHOICES, default='monthly')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='incomplete')
+    current_period_start = models.DateTimeField(null=True, blank=True)
+    current_period_end = models.DateTimeField(null=True, blank=True)
+    canceled_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.user.username} - {self.get_plan_display()} ({self.status})"
+
+    @property
+    def is_active(self):
+        """Check if subscription grants premium access."""
+        return self.status in ('active', 'trialing')
+
+    @property
+    def is_canceled_but_active(self):
+        """Subscription canceled but still in paid period."""
+        if self.status == 'canceled' and self.current_period_end:
+            return timezone.now() < self.current_period_end
+        return False
+
+    @property
+    def grants_premium(self):
+        """Whether this subscription currently grants premium features."""
+        return self.is_active or self.is_canceled_but_active
+
+    class Meta:
+        ordering = ['-created_at']

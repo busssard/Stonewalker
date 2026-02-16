@@ -16,6 +16,9 @@ from main.shop_views import (
     ShopView, ClaimStoneView, CheckoutView, CreateNewStoneView,
     CheckoutSuccessView, DownloadPackPDFView, FreeQRView, DownloadStoneQRView
 )
+from main.premium_views import (
+    PremiumView, PremiumCheckoutView, PremiumManageView, PremiumBillingPortalView
+)
 from main.stripe_service import stripe_webhook
 
 # URLs that should not have language prefix
@@ -45,6 +48,12 @@ urlpatterns += i18n_patterns(
 
     # Create New Stone → smart router (unclaimed QR → claim, else → shop)
     path('create-stone/', CreateNewStoneView.as_view(), name='create_stone'),
+
+    # Premium URLs
+    path('premium/', PremiumView.as_view(), name='premium'),
+    path('premium/checkout/', PremiumCheckoutView.as_view(), name='premium_checkout'),
+    path('premium/manage/', PremiumManageView.as_view(), name='premium_manage'),
+    path('premium/billing/', PremiumBillingPortalView.as_view(), name='premium_billing'),
 
     # Shop URLs
     path('shop/', ShopView.as_view(), name='shop'),

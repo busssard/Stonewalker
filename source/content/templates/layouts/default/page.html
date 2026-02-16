@@ -192,10 +192,6 @@ function checkImageSize(imageUrl) {
       <img src="{{ request.user.profile.get_picture_url }}" alt="{% trans 'Profile picture' %}" class="header-profile-img">
     </button>
   </div>
-  {% else %}
-  <div id="Login-Signup-container" class="flex-center position-relative">
-    <a class="nav-link avant-btn header-nav-btn" href="{% url 'accounts:log_in' %}">{% trans 'Log in' %}</a>
-  </div>
   {% endif %}
   <button id="dark-mode-toggle" class="dark-mode-toggle" aria-label="{% trans 'Toggle dark mode' %}" title="{% trans 'Toggle dark mode' %}">
     <svg class="icon-moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>

@@ -1,0 +1,82 @@
+{% extends 'layouts/default/page.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block content %}
+<div class="avant-section avant-bg-left flex-center min-h-60vh">
+  <div class="avant-card max-w-600 m-2-auto">
+    <div class="avant-card-title mb-0-5 fs-2-1 text-center">{% trans 'Manage Subscription' %}</div>
+
+    {% if messages %}
+      {% for message in messages %}
+        <div class="text-center mb-1 p-1 border-radius-8 {% if message.tags == 'error' %}bg-error-light text-error{% elif message.tags == 'success' %}bg-success-light text-success{% else %}bg-info-light text-info{% endif %}">
+          {{ message }}
+        </div>
+      {% endfor %}
+    {% endif %}
+
+    {% if subscription %}
+      <div class="premium-status-card mb-2">
+        <div class="premium-status-header">
+          {% if is_premium %}
+            <span class="premium-status-badge premium-status-active">{% trans 'Active' %}</span>
+          {% elif subscription.status == 'canceled' %}
+            <span class="premium-status-badge premium-status-canceled">{% trans 'Canceled' %}</span>
+          {% elif subscription.status == 'past_due' %}
+            <span class="premium-status-badge premium-status-past-due">{% trans 'Past Due' %}</span>
+          {% else %}
+            <span class="premium-status-badge premium-status-inactive">{{ subscription.get_status_display }}</span>
+          {% endif %}
+        </div>
+
+        <div class="premium-status-details">
+          <div class="premium-detail-row">
+            <span class="premium-detail-label">{% trans 'Plan' %}:</span>
+            <span class="premium-detail-value">{{ subscription.get_plan_display }}</span>
+          </div>
+          {% if subscription.current_period_end %}
+          <div class="premium-detail-row">
+            <span class="premium-detail-label">
+              {% if subscription.canceled_at %}
+                {% trans 'Access until' %}:
+              {% else %}
+                {% trans 'Next billing date' %}:
+              {% endif %}
+            </span>
+            <span class="premium-detail-value">{{ subscription.current_period_end|date:"F j, Y" }}</span>
+          </div>
+          {% endif %}
+          {% if subscription.canceled_at and is_premium %}
+          <div class="text-center mt-1 p-1 border-radius-8 bg-info-light text-info">
+            {% trans 'Your subscription has been canceled but you still have access until the end of the current period.' %}
+          </div>
+          {% endif %}
+        </div>
+
+        <!-- Billing Portal Button -->
+        <div class="text-center mt-1-5">
+          <form method="post" action="{% url 'premium_billing' %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary">
+              {% trans 'Open Billing Portal' %}
+            </button>
+          </form>
+          <p class="text-muted mt-0-5" style="font-size: 0.8rem;">
+            {% trans 'Update payment method, change plan, view invoices, or cancel' %}
+          </p>
+        </div>
+      </div>
+
+    {% else %}
+      <div class="text-center mb-2 p-1-5 border-radius-8" style="background: var(--bg-secondary, #f5f5f5);">
+        <p class="mb-1">{% trans 'You do not have an active subscription.' %}</p>
+        <a href="{% url 'premium' %}" class="btn btn-primary">{% trans 'Become a Premium Supporter' %}</a>
+      </div>
+    {% endif %}
+
+    <div class="text-center mt-2">
+      <a href="{% url 'stonewalker_start' %}" class="text-muted">{% trans 'Back to Home' %}</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

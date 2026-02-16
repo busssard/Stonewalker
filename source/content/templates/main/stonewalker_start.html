@@ -58,19 +58,12 @@
       <!-- Filter controls -->
       <div class="map-filter-controls p-0-7 border-bottom-2 avant-bg-right">
         <div class="flex-center gap-0-5 flex-wrap">
-          <span class="fw-600 mr-0-3">{% trans 'Filter:' %}</span>
-          <label class="flex-center gap-0-3 cursor-pointer">
-            <input type="checkbox" id="filter-all" checked class="cursor-pointer">
-            <span>{% trans 'All' %}</span>
-          </label>
-          <label class="flex-center gap-0-3 cursor-pointer">
-            <input type="checkbox" id="filter-hidden" checked class="cursor-pointer">
-            <span>{% trans 'Hidden' %}</span>
-          </label>
-          <label class="flex-center gap-0-3 cursor-pointer">
-            <input type="checkbox" id="filter-hunted" checked class="cursor-pointer">
-            <span>{% trans 'Hunted' %}</span>
-          </label>
+          <input type="checkbox" id="filter-all" checked class="filter-toggle-input">
+          <label for="filter-all" class="filter-toggle-btn">{% trans 'All' %}</label>
+          <input type="checkbox" id="filter-hidden" checked class="filter-toggle-input">
+          <label for="filter-hidden" class="filter-toggle-btn filter-has-info" title="{% trans 'Stones placed in the wild, waiting to be found' %}">{% trans 'Hidden' %}<span class="filter-info-icon" aria-label="{% trans 'Info' %}">?</span></label>
+          <input type="checkbox" id="filter-hunted" checked class="filter-toggle-input">
+          <label for="filter-hunted" class="filter-toggle-btn filter-has-info" title="{% trans 'Stones that have been discovered by someone' %}">{% trans 'Hunted' %}<span class="filter-info-icon" aria-label="{% trans 'Info' %}">?</span></label>
         </div>
       </div>
       <div id="map-container" class="avant-bg-right avant-shadow flex-1-auto">

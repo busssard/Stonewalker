@@ -1,10 +1,11 @@
 """
 Stripe Payment Service for the Shop.
-Handles Stripe Checkout Sessions and webhook processing.
+Handles Stripe Checkout Sessions, subscriptions, and webhook processing.
 """
 import stripe
 import uuid as uuid_lib
 import logging
+from datetime import datetime
 from django.conf import settings
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -15,6 +16,12 @@ from .models import QRPack, Stone
 from .qr_service import QRCodeService
 
 logger = logging.getLogger(__name__)
+
+# Mapping from shop_config billing_interval to Stripe Price IDs
+SUBSCRIPTION_PRICE_MAP = {
+    'month': lambda: getattr(settings, 'STRIPE_PRICE_MONTHLY', ''),
+    'year': lambda: getattr(settings, 'STRIPE_PRICE_YEARLY', ''),
+}
 
 
 class StripeService:
@@ -165,6 +172,235 @@ class StripeService:
         logger.info(f"Fulfilled pack {pack.id} with {len(stones)} stones")
 
     @classmethod
+    def _get_or_create_stripe_customer(cls, user):
+        """Get or create a Stripe Customer for the user."""
+        from accounts.models import Subscription
+        cls._init_stripe()
+
+        # Check if user already has a subscription with a customer ID
+        try:
+            sub = user.subscription
+            if sub.stripe_customer_id:
+                return sub.stripe_customer_id
+        except Subscription.DoesNotExist:
+            pass
+
+        # Create new Stripe Customer
+        customer = stripe.Customer.create(
+            email=user.email,
+            metadata={'user_id': str(user.id), 'username': user.username},
+        )
+        return customer.id
+
+    @classmethod
+    def create_subscription_checkout(cls, user, product, success_url, cancel_url):
+        """
+        Create a Stripe Checkout Session for a subscription product.
+
+        Args:
+            user: Django User instance
+            product: Product dict from shop_config.json (must have is_subscription=True)
+            success_url: URL to redirect on success
+            cancel_url: URL to redirect on cancel
+
+        Returns:
+            tuple: (session_id, checkout_url)
+        """
+        cls._init_stripe()
+
+        billing_interval = product.get('billing_interval', 'month')
+        price_id_fn = SUBSCRIPTION_PRICE_MAP.get(billing_interval)
+        price_id = price_id_fn() if price_id_fn else ''
+
+        if not price_id:
+            raise ValueError(
+                f"No Stripe Price ID configured for interval '{billing_interval}'. "
+                f"Set STRIPE_PRICE_MONTHLY or STRIPE_PRICE_YEARLY in environment."
+            )
+
+        customer_id = cls._get_or_create_stripe_customer(user)
+
+        session = stripe.checkout.Session.create(
+            customer=customer_id,
+            payment_method_types=['card'],
+            line_items=[{'price': price_id, 'quantity': 1}],
+            mode='subscription',
+            success_url=success_url + f'?subscription=1',
+            cancel_url=cancel_url,
+            metadata={
+                'user_id': str(user.id),
+                'product_id': product['id'],
+                'plan': 'yearly' if billing_interval == 'year' else 'monthly',
+            },
+        )
+
+        logger.info(f"Created subscription checkout {session.id} for user {user.id}")
+        return session.id, session.url
+
+    @classmethod
+    def create_billing_portal_session(cls, user, return_url):
+        """
+        Create a Stripe Billing Portal session so the user can manage their subscription.
+
+        Args:
+            user: Django User instance
+            return_url: URL to redirect after portal session
+
+        Returns:
+            str: Portal session URL
+        """
+        from accounts.models import Subscription
+        cls._init_stripe()
+
+        try:
+            sub = user.subscription
+            if not sub.stripe_customer_id:
+                raise ValueError("No Stripe customer ID found")
+        except Subscription.DoesNotExist:
+            raise ValueError("No subscription found")
+
+        portal_session = stripe.billing_portal.Session.create(
+            customer=sub.stripe_customer_id,
+            return_url=return_url,
+        )
+        return portal_session.url
+
+    @classmethod
+    def handle_subscription_event(cls, event_type, event_object):
+        """
+        Handle Stripe subscription lifecycle events.
+
+        Args:
+            event_type: Stripe event type string
+            event_object: Event data object
+        """
+        from accounts.models import Subscription
+
+        if event_type == 'customer.subscription.created':
+            cls._handle_subscription_created(event_object)
+        elif event_type == 'customer.subscription.updated':
+            cls._handle_subscription_updated(event_object)
+        elif event_type == 'customer.subscription.deleted':
+            cls._handle_subscription_deleted(event_object)
+        elif event_type == 'invoice.payment_failed':
+            cls._handle_invoice_payment_failed(event_object)
+
+    @classmethod
+    def _handle_subscription_created(cls, stripe_sub):
+        """Handle new subscription creation from webhook."""
+        from accounts.models import Subscription
+        from django.contrib.auth.models import User
+
+        customer_id = stripe_sub.get('customer', '')
+        stripe_sub_id = stripe_sub.get('id', '')
+        status = stripe_sub.get('status', 'incomplete')
+
+        # Determine plan from price interval
+        items = stripe_sub.get('items', {}).get('data', [])
+        interval = 'month'
+        if items:
+            interval = items[0].get('price', {}).get('recurring', {}).get('interval', 'month')
+        plan = 'yearly' if interval == 'year' else 'monthly'
+
+        # Find user by customer ID (check existing subs) or by metadata
+        user = None
+        existing_sub = Subscription.objects.filter(stripe_customer_id=customer_id).first()
+        if existing_sub:
+            user = existing_sub.user
+        else:
+            metadata = stripe_sub.get('metadata', {})
+            user_id = metadata.get('user_id')
+            if user_id:
+                try:
+                    user = User.objects.get(id=int(user_id))
+                except (User.DoesNotExist, ValueError):
+                    pass
+
+        if not user:
+            logger.error(f"Cannot find user for subscription {stripe_sub_id}")
+            return
+
+        period_start = stripe_sub.get('current_period_start')
+        period_end = stripe_sub.get('current_period_end')
+
+        sub, created = Subscription.objects.update_or_create(
+            user=user,
+            defaults={
+                'stripe_customer_id': customer_id,
+                'stripe_subscription_id': stripe_sub_id,
+                'plan': plan,
+                'status': status,
+                'current_period_start': datetime.fromtimestamp(period_start, tz=timezone.utc) if period_start else None,
+                'current_period_end': datetime.fromtimestamp(period_end, tz=timezone.utc) if period_end else None,
+            }
+        )
+        logger.info(f"{'Created' if created else 'Updated'} subscription for user {user.id}: {status}")
+
+    @classmethod
+    def _handle_subscription_updated(cls, stripe_sub):
+        """Handle subscription update (plan change, renewal, cancellation schedule)."""
+        from accounts.models import Subscription
+
+        stripe_sub_id = stripe_sub.get('id', '')
+        status = stripe_sub.get('status', '')
+        cancel_at_period_end = stripe_sub.get('cancel_at_period_end', False)
+
+        try:
+            sub = Subscription.objects.get(stripe_subscription_id=stripe_sub_id)
+        except Subscription.DoesNotExist:
+            # Might be a new sub via update event — delegate to created handler
+            cls._handle_subscription_created(stripe_sub)
+            return
+
+        period_start = stripe_sub.get('current_period_start')
+        period_end = stripe_sub.get('current_period_end')
+
+        sub.status = status
+        if period_start:
+            sub.current_period_start = datetime.fromtimestamp(period_start, tz=timezone.utc)
+        if period_end:
+            sub.current_period_end = datetime.fromtimestamp(period_end, tz=timezone.utc)
+        if cancel_at_period_end:
+            sub.canceled_at = timezone.now()
+        elif sub.canceled_at and not cancel_at_period_end:
+            # User resubscribed
+            sub.canceled_at = None
+        sub.save()
+        logger.info(f"Updated subscription {stripe_sub_id}: status={status}")
+
+    @classmethod
+    def _handle_subscription_deleted(cls, stripe_sub):
+        """Handle subscription cancellation (end of billing period)."""
+        from accounts.models import Subscription
+
+        stripe_sub_id = stripe_sub.get('id', '')
+        try:
+            sub = Subscription.objects.get(stripe_subscription_id=stripe_sub_id)
+            sub.status = 'canceled'
+            sub.canceled_at = timezone.now()
+            sub.save(update_fields=['status', 'canceled_at', 'updated_at'])
+            logger.info(f"Subscription {stripe_sub_id} canceled for user {sub.user.id}")
+        except Subscription.DoesNotExist:
+            logger.warning(f"Subscription {stripe_sub_id} not found for deletion")
+
+    @classmethod
+    def _handle_invoice_payment_failed(cls, invoice):
+        """Handle failed invoice payment — mark subscription past_due."""
+        from accounts.models import Subscription
+
+        stripe_sub_id = invoice.get('subscription', '')
+        if not stripe_sub_id:
+            return
+
+        try:
+            sub = Subscription.objects.get(stripe_subscription_id=stripe_sub_id)
+            sub.status = 'past_due'
+            sub.save(update_fields=['status', 'updated_at'])
+            logger.info(f"Subscription {stripe_sub_id} marked past_due due to failed payment")
+        except Subscription.DoesNotExist:
+            logger.warning(f"Subscription {stripe_sub_id} not found for payment failure")
+
+    @classmethod
     def handle_payment_failed(cls, session):
         """
         Handle failed payment.
@@ -227,13 +463,25 @@ def stripe_webhook(request):
 
     # Handle the event
     event_type = event.get('type', '')
+    event_object = event.get('data', {}).get('object', {})
 
     if event_type == 'checkout.session.completed':
-        session = event['data']['object']
-        StripeService.handle_checkout_completed(session)
+        # Check if this is a subscription or one-time payment
+        if event_object.get('mode') == 'subscription':
+            # Subscription checkout completed — the actual subscription is handled
+            # by customer.subscription.created event
+            logger.info(f"Subscription checkout completed: {event_object.get('id')}")
+        else:
+            StripeService.handle_checkout_completed(event_object)
     elif event_type == 'checkout.session.expired':
-        session = event['data']['object']
-        StripeService.handle_payment_failed(session)
+        StripeService.handle_payment_failed(event_object)
+    elif event_type in (
+        'customer.subscription.created',
+        'customer.subscription.updated',
+        'customer.subscription.deleted',
+        'invoice.payment_failed',
+    ):
+        StripeService.handle_subscription_event(event_type, event_object)
     else:
         logger.debug(f"Unhandled event type: {event_type}")
 

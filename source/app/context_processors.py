@@ -14,3 +14,20 @@ def shop_visibility(request):
         'user_count': user_count,
         'shop_visible': user_count >= threshold,
     }
+
+
+def premium_status(request):
+    """
+    Context processor to expose premium subscription status to all templates.
+    """
+    if request.user.is_authenticated:
+        try:
+            is_premium = request.user.profile.is_premium
+        except Exception:
+            is_premium = False
+    else:
+        is_premium = False
+
+    return {
+        'is_premium_user': is_premium,
+    }

@@ -1,0 +1,149 @@
+{% extends 'layouts/default/page.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block content %}
+<div class="avant-section avant-bg-left flex-center min-h-60vh">
+  <div class="avant-card max-w-800 m-2-auto">
+    <div class="avant-card-title mb-0-5 fs-2-1 text-center">{% trans 'Premium Supporter' %}</div>
+    <p class="text-center text-muted mb-2">{% trans 'Support StoneWalker and unlock exclusive features' %}</p>
+
+    {% if messages %}
+      {% for message in messages %}
+        <div class="text-center mb-1 p-1 border-radius-8 {% if message.tags == 'error' %}bg-error-light text-error{% elif message.tags == 'success' %}bg-success-light text-success{% else %}bg-info-light text-info{% endif %}">
+          {{ message }}
+        </div>
+      {% endfor %}
+    {% endif %}
+
+    {% if is_premium %}
+    <div class="text-center mb-2 p-1-5 border-radius-8" style="background: linear-gradient(135deg, #e8f5e9, #c8e6c9); border: 2px solid #4CAF50;">
+      <span style="font-size: 1.5rem;">&#11088;</span>
+      <strong>{% trans 'You are a Premium Supporter!' %}</strong>
+      <p class="text-muted mt-0-5">{% trans 'Thank you for supporting StoneWalker.' %}</p>
+      <a href="{% url 'premium_manage' %}" class="btn btn-primary mt-1">{% trans 'Manage Subscription' %}</a>
+    </div>
+    {% endif %}
+
+    <!-- Features -->
+    <div class="mb-2">
+      <h3 class="text-center mb-1-2">{% trans 'What You Get' %}</h3>
+      <div class="premium-features-grid">
+        <div class="premium-feature-card">
+          <div class="premium-feature-icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#4CAF50" stroke-width="2">
+              <path d="M3 3h18v18H3zM9 9h6v6H9z"/><path d="M9 3v6M15 3v6M9 15v6M15 15v6M3 9h6M3 15h6M15 9h6M15 15h6"/>
+            </svg>
+          </div>
+          <h4>{% trans 'Journey Analytics' %}</h4>
+          <p>{% trans 'See detailed stats on how far your stones have traveled, with maps and charts.' %}</p>
+        </div>
+        <div class="premium-feature-card">
+          <div class="premium-feature-icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#4CAF50" stroke-width="2">
+              <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
+            </svg>
+          </div>
+          <h4>{% trans 'Premium Badge' %}</h4>
+          <p>{% trans 'A special badge on your profile and share pages showing your supporter status.' %}</p>
+        </div>
+        <div class="premium-feature-card">
+          <div class="premium-feature-icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#4CAF50" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
+            </svg>
+          </div>
+          <h4>{% trans 'Unlimited Drafts' %}</h4>
+          <p>{% trans 'Create as many draft stones as you want — no limits on your creativity.' %}</p>
+        </div>
+        <div class="premium-feature-card">
+          <div class="premium-feature-icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#4CAF50" stroke-width="2">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>
+            </svg>
+          </div>
+          <h4>{% trans 'Priority Support' %}</h4>
+          <p>{% trans 'Get faster responses and priority help from the StoneWalker team.' %}</p>
+        </div>
+        <div class="premium-feature-card">
+          <div class="premium-feature-icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#4CAF50" stroke-width="2">
+              <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+            </svg>
+          </div>
+          <h4>{% trans 'Early Access' %}</h4>
+          <p>{% trans 'Be the first to try new features before they go live for everyone.' %}</p>
+        </div>
+      </div>
+    </div>
+
+    {% if not is_premium %}
+    <!-- Pricing Cards -->
+    <div class="mb-2">
+      <h3 class="text-center mb-1-2">{% trans 'Choose Your Plan' %}</h3>
+      <div class="premium-plans-grid">
+        {% if monthly_plan %}
+        <div class="premium-plan-card">
+          <h4 class="premium-plan-name">{% trans 'Monthly' %}</h4>
+          <div class="premium-plan-price">
+            <span class="premium-price-amount">$3.99</span>
+            <span class="premium-price-interval">/{% trans 'month' %}</span>
+          </div>
+          <p class="text-muted mb-1-5">{% trans 'Cancel anytime' %}</p>
+          {% if user.is_authenticated %}
+          <form method="post" action="{% url 'premium_checkout' %}">
+            {% csrf_token %}
+            <input type="hidden" name="plan" value="monthly">
+            <button type="submit" class="btn btn-primary btn-block premium-subscribe-btn">{% trans 'Subscribe Monthly' %}</button>
+          </form>
+          {% else %}
+          <a href="{% url 'accounts:log_in' %}" class="btn btn-primary btn-block premium-subscribe-btn">{% trans 'Log in to Subscribe' %}</a>
+          {% endif %}
+        </div>
+        {% endif %}
+
+        {% if yearly_plan %}
+        <div class="premium-plan-card premium-plan-recommended">
+          <div class="premium-plan-badge">{% trans 'Best Value' %}</div>
+          <h4 class="premium-plan-name">{% trans 'Yearly' %}</h4>
+          <div class="premium-plan-price">
+            <span class="premium-price-amount">$29.99</span>
+            <span class="premium-price-interval">/{% trans 'year' %}</span>
+          </div>
+          <p class="text-muted mb-0-5">{% trans 'Save 37% vs monthly' %}</p>
+          <p class="text-muted mb-1-5" style="font-size: 0.85rem;">{% trans 'Just $2.50/month' %}</p>
+          {% if user.is_authenticated %}
+          <form method="post" action="{% url 'premium_checkout' %}">
+            {% csrf_token %}
+            <input type="hidden" name="plan" value="yearly">
+            <button type="submit" class="btn btn-primary btn-block premium-subscribe-btn">{% trans 'Subscribe Yearly' %}</button>
+          </form>
+          {% else %}
+          <a href="{% url 'accounts:log_in' %}" class="btn btn-primary btn-block premium-subscribe-btn">{% trans 'Log in to Subscribe' %}</a>
+          {% endif %}
+        </div>
+        {% endif %}
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- FAQ -->
+    <div class="mb-2">
+      <h3 class="text-center mb-1-2">{% trans 'Questions?' %}</h3>
+      <details class="premium-faq-item">
+        <summary>{% trans 'Can I cancel anytime?' %}</summary>
+        <p>{% trans 'Yes! You can cancel your subscription at any time. You will keep premium access until the end of your current billing period.' %}</p>
+      </details>
+      <details class="premium-faq-item">
+        <summary>{% trans 'What happens to my stones if I cancel?' %}</summary>
+        <p>{% trans 'Nothing changes. All your stones, journeys, and data remain safe. You just lose access to premium-only features like analytics.' %}</p>
+      </details>
+      <details class="premium-faq-item">
+        <summary>{% trans 'Can I switch between monthly and yearly?' %}</summary>
+        <p>{% trans 'Yes, you can change your plan at any time through the billing portal. Changes take effect at your next billing date.' %}</p>
+      </details>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

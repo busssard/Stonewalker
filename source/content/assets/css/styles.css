@@ -909,6 +909,11 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
   .header-main-nav, .header-profile-main-nav {
     display: none !important;
   }
+  /* Override: nav links INSIDE the burger menu must be visible */
+  .header-burger-nav .header-main-nav {
+    display: flex !important;
+    flex-direction: column;
+  }
 }
 .header-profile-link {
   display: flex;
@@ -1254,6 +1259,56 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
     width: 100%;
     max-width: 280px;
   }
+}
+
+/* Map Filter Toggle Buttons */
+.filter-toggle-input {
+  display: none;
+}
+
+.filter-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3em;
+  padding: 0.35em 1.1em;
+  border-radius: var(--radius-full);
+  border: 2px solid var(--color-primary);
+  background: transparent;
+  color: var(--color-primary);
+  font-weight: 600;
+  font-size: 0.92rem;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+  user-select: none;
+}
+
+.filter-toggle-input:checked + .filter-toggle-btn {
+  background: var(--color-primary);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(255, 107, 107, 0.25);
+}
+
+.filter-toggle-btn:hover {
+  box-shadow: 0 2px 12px rgba(255, 107, 107, 0.3);
+}
+
+.filter-info-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  border: 1.5px solid currentColor;
+  font-size: 0.65rem;
+  font-weight: 700;
+  line-height: 1;
+  opacity: 0.6;
+  margin-left: 0.15em;
+}
+
+.filter-toggle-btn:hover .filter-info-icon {
+  opacity: 1;
 }
 
 /* Floating Action Bar and Buttons */
@@ -5150,6 +5205,10 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
   color: var(--text-primary);
 }
 
+[data-theme="dark"] .header-logo-img {
+  filter: brightness(0) invert(1);
+}
+
 [data-theme="dark"] .avant-card {
   background: var(--card-bg);
   border-color: var(--border-color);
@@ -5199,10 +5258,24 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
   color: var(--text-primary);
 }
 
+[data-theme="dark"] .filter-toggle-btn {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+[data-theme="dark"] .filter-toggle-input:checked + .filter-toggle-btn {
+  background: var(--color-primary);
+  color: #fff;
+}
+
 [data-theme="dark"] .floating-action-btn.secondary {
   background: var(--card-bg);
   backdrop-filter: blur(12px);
-  border-color: var(--border-color);
+  border-color: var(--color-primary);
+}
+
+[data-theme="dark"] .floating-action-btn.secondary img {
+  filter: brightness(0) saturate(100%) invert(56%) sepia(59%) saturate(1057%) hue-rotate(314deg) brightness(101%) contrast(101%);
 }
 
 [data-theme="dark"] .profile-modal-overlay {
@@ -5273,4 +5346,228 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
 
 [data-theme="dark"] .container-fluid {
   color: var(--text-primary);
+}
+
+/* ===== Premium Supporter Styles ===== */
+
+.premium-features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.2rem;
+  margin-bottom: 1.5rem;
+}
+
+.premium-feature-card {
+  background: var(--bg-primary, #fff);
+  border: 1px solid var(--border-color, #e0e0e0);
+  border-radius: 12px;
+  padding: 1.2rem;
+  text-align: center;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.premium-feature-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.premium-feature-icon {
+  margin-bottom: 0.6rem;
+}
+
+.premium-feature-card h4 {
+  margin: 0 0 0.4rem;
+  font-size: 1rem;
+  color: var(--text-primary, #333);
+}
+
+.premium-feature-card p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--text-secondary, #666);
+  line-height: 1.4;
+}
+
+.premium-plans-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.5rem;
+  max-width: 560px;
+  margin: 0 auto;
+}
+
+.premium-plan-card {
+  background: var(--bg-primary, #fff);
+  border: 2px solid var(--border-color, #e0e0e0);
+  border-radius: 16px;
+  padding: 2rem 1.5rem;
+  text-align: center;
+  position: relative;
+}
+
+.premium-plan-recommended {
+  border-color: #4CAF50;
+  box-shadow: 0 4px 16px rgba(76, 175, 80, 0.15);
+}
+
+.premium-plan-badge {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #4CAF50;
+  color: #fff;
+  padding: 0.2rem 1rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.premium-plan-name {
+  font-size: 1.2rem;
+  margin: 0 0 0.8rem;
+  color: var(--text-primary, #333);
+}
+
+.premium-plan-price {
+  margin-bottom: 0.5rem;
+}
+
+.premium-price-amount {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: var(--text-primary, #333);
+}
+
+.premium-price-interval {
+  font-size: 1rem;
+  color: var(--text-secondary, #666);
+}
+
+.premium-subscribe-btn {
+  background: #4CAF50;
+  color: #fff;
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
+  transition: background 0.2s;
+}
+
+.premium-subscribe-btn:hover {
+  background: #43A047;
+}
+
+.premium-faq-item {
+  border: 1px solid var(--border-color, #e0e0e0);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 0.8rem;
+  background: var(--bg-primary, #fff);
+}
+
+.premium-faq-item summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--text-primary, #333);
+}
+
+.premium-faq-item p {
+  margin: 0.8rem 0 0;
+  color: var(--text-secondary, #666);
+  line-height: 1.5;
+}
+
+/* Premium manage page */
+.premium-status-card {
+  background: var(--bg-primary, #fff);
+  border: 2px solid var(--border-color, #e0e0e0);
+  border-radius: 16px;
+  padding: 2rem;
+}
+
+.premium-status-header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.premium-status-badge {
+  display: inline-block;
+  padding: 0.3rem 1.2rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.premium-status-active {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.premium-status-canceled {
+  background: #fff3e0;
+  color: #e65100;
+}
+
+.premium-status-past-due {
+  background: #fbe9e7;
+  color: #c62828;
+}
+
+.premium-status-inactive {
+  background: #f5f5f5;
+  color: #666;
+}
+
+.premium-status-details {
+  margin-bottom: 1rem;
+}
+
+.premium-detail-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--border-color, #eee);
+}
+
+.premium-detail-label {
+  color: var(--text-secondary, #666);
+}
+
+.premium-detail-value {
+  font-weight: 600;
+  color: var(--text-primary, #333);
+}
+
+.premium-nav-link {
+  color: #4CAF50 !important;
+  font-weight: 600;
+}
+
+/* Dark mode premium overrides */
+[data-theme="dark"] .premium-feature-card,
+[data-theme="dark"] .premium-plan-card,
+[data-theme="dark"] .premium-status-card,
+[data-theme="dark"] .premium-faq-item {
+  background: var(--bg-secondary);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .premium-status-active {
+  background: #1b5e20;
+  color: #a5d6a7;
+}
+
+[data-theme="dark"] .premium-status-canceled {
+  background: #e65100;
+  color: #ffcc80;
+}
+
+[data-theme="dark"] .premium-status-past-due {
+  background: #b71c1c;
+  color: #ef9a9a;
 }
