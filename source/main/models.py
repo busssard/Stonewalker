@@ -108,17 +108,23 @@ class Stone(models.Model):
     qr_code_url = models.URLField(blank=True, help_text='Persistent QR code URL')
     wandering_at = models.DateTimeField(null=True, blank=True)
     claimed_at = models.DateTimeField(null=True, blank=True, help_text='When this stone was claimed by a user')
+    stone_number = models.PositiveIntegerField(unique=True, null=True, blank=True, help_text='Sequential stone number, auto-assigned on creation')
 
     def __str__(self):
         return f"{self.PK_stone} ({self.status})"
 
+    def save(self, *args, **kwargs):
+        if self.stone_number is None:
+            max_num = Stone.objects.aggregate(models.Max('stone_number'))['stone_number__max']
+            self.stone_number = (max_num or 0) + 1
+            # Ensure stone_number is persisted even when update_fields is used
+            if 'update_fields' in kwargs and kwargs['update_fields'] is not None:
+                kwargs['update_fields'] = list(kwargs['update_fields']) + ['stone_number']
+        super().save(*args, **kwargs)
+
     def get_stone_number(self):
-        """Get this stone's sequential number based on creation order.
-        Returns the 1-based position among all stones ordered by created_at."""
-        if not self.created_at:
-            return None
-        count = Stone.objects.filter(created_at__lt=self.created_at).count()
-        return count + 1
+        """Get this stone's sequential number."""
+        return self.stone_number
 
     def is_unclaimed(self):
         """Check if stone is unclaimed and available to be claimed"""

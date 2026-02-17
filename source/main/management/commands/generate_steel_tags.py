@@ -41,8 +41,8 @@ class Command(BaseCommand):
         with open(output, 'w', newline='') as f:
             writer = csv.writer(f)
             writer.writerow(['stone_number', 'uuid', 'qr_url'])
-            for i, stone in enumerate(stones, start=1):
-                writer.writerow([i, stone.uuid, stone.get_qr_url()])
+            for stone in stones:
+                writer.writerow([stone.stone_number, stone.uuid, stone.get_qr_url()])
 
         self.stdout.write(self.style.SUCCESS(
             f'Created {count} unclaimed stones. CSV written to {output}'

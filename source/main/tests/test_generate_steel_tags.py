@@ -73,3 +73,33 @@ class GenerateSteelTagsTests(TestCase):
             self.assertEqual(Stone.objects.filter(status='unclaimed').count(), 500)
         finally:
             os.unlink(output_path)
+
+    def test_stone_numbers_are_sequential(self):
+        """Stone numbers should be sequential integers"""
+        with tempfile.NamedTemporaryFile(suffix='.csv', delete=False) as f:
+            output_path = f.name
+        try:
+            call_command('generate_steel_tags', count=5, output=output_path)
+            with open(output_path) as f:
+                reader = csv.DictReader(f)
+                numbers = [int(row['stone_number']) for row in reader]
+            self.assertEqual(numbers, [1, 2, 3, 4, 5])
+        finally:
+            os.unlink(output_path)
+
+    def test_stone_numbers_continue_sequence(self):
+        """Running twice should continue the numbering sequence"""
+        with tempfile.NamedTemporaryFile(suffix='.csv', delete=False) as f:
+            path1 = f.name
+        with tempfile.NamedTemporaryFile(suffix='.csv', delete=False) as f:
+            path2 = f.name
+        try:
+            call_command('generate_steel_tags', count=3, output=path1)
+            call_command('generate_steel_tags', count=2, output=path2)
+            with open(path2) as f:
+                reader = csv.DictReader(f)
+                numbers = [int(row['stone_number']) for row in reader]
+            self.assertEqual(numbers, [4, 5])
+        finally:
+            os.unlink(path1)
+            os.unlink(path2)
