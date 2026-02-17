@@ -99,6 +99,32 @@ The webhook endpoint (`/webhooks/stripe/`) is CSRF exempt and verifies the Strip
 | `/create-stone/` | `CreateNewStoneView` | Smart router to claim or shop |
 | `/claim-stone/<uuid>/` | `ClaimStoneView` | Claim an unclaimed stone |
 
+## Steel Tag Bulk Generation
+
+For physical steel tags (laser-engraved QR codes), use the management command to bulk-create unclaimed stones and export a CSV:
+
+```bash
+# Generate 500 steel tag QR codes (default)
+python source/manage.py generate_steel_tags --output steel_tags.csv
+
+# Generate a custom number
+python source/manage.py generate_steel_tags --count 100 --output /tmp/batch_100.csv
+```
+
+**Arguments:**
+| Flag | Default | Description |
+|------|---------|-------------|
+| `--count N` | 500 | Number of unclaimed stones to create |
+| `--output PATH` | `steel_tags.csv` | CSV output file path |
+
+**CSV columns:** `stone_number`, `uuid`, `qr_url`
+
+Each stone is created with `status='unclaimed'`, no owner, no pack. The QR URLs point to production (`https://stonewalker.org/stone-link/{uuid}/`). When scanned, the two-scan flow applies:
+1. **Scan 1**: Buyer scans → redirected to claim page → names the stone → becomes draft
+2. **Scan 2**: Owner scans → stone is sealed → starts wandering
+
+**Source:** `source/main/management/commands/generate_steel_tags.py`
+
 ## Dev Mode Behavior
 
 When `DEBUG=True`:
