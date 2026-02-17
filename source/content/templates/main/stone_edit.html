@@ -8,6 +8,7 @@
   <div class="avant-card max-w-600 m-2-5-auto">
     <div class="avant-header text-center mb-0-5">{% trans "Edit Stone" %}: {{ stone.PK_stone }}</div>
     <div class="text-center mb-1-5">
+      {% if stone.stone_number %}<span class="fs-0-9 text-muted mr-0-5">#{{ stone.stone_number }}</span>{% endif %}
       <span class="stone-status-pill stone-status-{{ stone.status }}">{{ stone.get_status_display }}</span>
     </div>
 

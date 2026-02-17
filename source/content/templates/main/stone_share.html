@@ -23,6 +23,7 @@
     </div>
     {% endif %}
     <h1 class="avant-header mb-0-5">{{ stone.PK_stone }}</h1>
+    {% if stone.stone_number %}<p class="fs-0-9 text-muted mb-0-3">#{{ stone.stone_number }}</p>{% endif %}
     <p class="fs-1-05 text-muted">{% trans 'on StoneWalker' %}</p>
   </div>
 
