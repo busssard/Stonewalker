@@ -3,6 +3,13 @@
 from django.db import migrations, models
 
 
+def backfill_stone_numbers(apps, schema_editor):
+    Stone = apps.get_model('main', 'Stone')
+    for i, stone in enumerate(Stone.objects.order_by('created_at'), start=1):
+        stone.stone_number = i
+        stone.save(update_fields=['stone_number'])
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -15,4 +22,5 @@ class Migration(migrations.Migration):
             name='stone_number',
             field=models.PositiveIntegerField(blank=True, help_text='Sequential stone number, auto-assigned on creation', null=True, unique=True),
         ),
+        migrations.RunPython(backfill_stone_numbers, migrations.RunPython.noop),
     ]
