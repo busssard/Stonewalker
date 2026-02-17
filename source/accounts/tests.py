@@ -823,28 +823,17 @@ class PremiumNavLinkTests(TestCase):
         self.assertNotContains(response, reverse('premium'))
 
     @override_settings(SHOP_VISIBLE_USER_THRESHOLD=0)
-    def test_premium_link_in_nav_for_anonymous_after_threshold(self):
-        """After threshold, premium link should appear for anonymous."""
+    def test_premium_link_not_in_nav_after_threshold(self):
+        """Premium/Support link was moved out of nav to About and Shop pages."""
         response = self.client.get(reverse('index'))
-        self.assertContains(response, reverse('premium'))
+        self.assertNotContains(response, 'premium-nav-link')
 
     @override_settings(SHOP_VISIBLE_USER_THRESHOLD=0)
-    def test_premium_link_in_nav_for_authenticated_non_premium(self):
-        self.client.force_login(self.user)
-        response = self.client.get(reverse('index'))
-        self.assertContains(response, 'Premium')
+    def test_support_us_on_about_page(self):
+        """After threshold, 'Support Us' link should appear on the About page."""
+        response = self.client.get(reverse('about'))
+        self.assertContains(response, 'Support Us')
         self.assertContains(response, reverse('premium'))
-
-    @override_settings(SHOP_VISIBLE_USER_THRESHOLD=0)
-    def test_premium_link_in_nav_for_premium_user(self):
-        Subscription.objects.create(user=self.user, status='active', plan='monthly')
-        self.client.force_login(self.user)
-        response = self.client.get(reverse('index'))
-        self.assertContains(response, 'Premium')
-        # Premium users see a link to the manage page
-        self.assertContains(response, reverse('premium_manage'))
-        # Premium nav link has the special CSS class
-        self.assertContains(response, 'premium-nav-link')
 
     def test_premium_link_no_special_class_for_non_premium(self):
         self.client.force_login(self.user)

@@ -503,6 +503,11 @@ class DownloadStoneQRView(LoginRequiredMixin, View):
             messages.error(request, _('You do not have access to this QR code.'))
             return redirect('shop')
 
+        # Block download for wandering stones (already sealed)
+        if not stone.can_download_qr():
+            messages.error(request, _('This stone is already wandering. QR code download is no longer available.'))
+            return redirect('shop')
+
         # Generate QR if needed and return download
         response = QRCodeService.create_download_response(stone, request)
         if response:

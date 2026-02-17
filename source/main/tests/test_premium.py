@@ -243,22 +243,25 @@ class PremiumNavTests(TestCase):
         self.assertNotContains(response, reverse('premium'))
 
     @override_settings(SHOP_VISIBLE_USER_THRESHOLD=0)
-    def test_nav_shows_premium_link_anonymous_after_threshold(self):
+    def test_nav_does_not_show_premium_link_after_threshold(self):
+        """Premium/Support link was moved from nav to About and Shop pages."""
         response = self.client.get(reverse('index'))
+        self.assertNotContains(response, 'premium-nav-link')
+
+    @override_settings(SHOP_VISIBLE_USER_THRESHOLD=0)
+    def test_support_us_on_about_page(self):
+        """After threshold, 'Support Us' appears on About page."""
+        response = self.client.get(reverse('about'))
+        self.assertContains(response, 'Support Us')
         self.assertContains(response, reverse('premium'))
 
     @override_settings(SHOP_VISIBLE_USER_THRESHOLD=0)
-    def test_nav_shows_premium_link_non_subscriber(self):
+    def test_support_us_on_shop_page(self):
+        """After threshold, 'Support Us' appears on Shop page."""
         self.client.login(username='navtest', password='pass123')
-        response = self.client.get(reverse('index'))
+        response = self.client.get(reverse('shop'))
+        self.assertContains(response, 'Support Us')
         self.assertContains(response, reverse('premium'))
-
-    @override_settings(SHOP_VISIBLE_USER_THRESHOLD=0)
-    def test_nav_shows_premium_manage_for_subscriber(self):
-        self.client.login(username='navtest', password='pass123')
-        Subscription.objects.create(user=self.user, status='active', plan='monthly')
-        response = self.client.get(reverse('index'))
-        self.assertContains(response, reverse('premium_manage'))
 
 
 class PremiumRequiredDecoratorTests(TestCase):
