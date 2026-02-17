@@ -186,6 +186,13 @@
         <p>{% trans 'Yes! All your purchases appear in the "Your Purchases" bar at the bottom of this page. You can re-download them anytime.' %}</p>
       </details>
     </div>
+
+    {% if shop_visible %}
+    <div class="text-center mt-2 mb-1">
+      <p class="text-muted mb-1">{% trans 'Love what we do? Help us keep StoneWalker running.' %}</p>
+      <a href="{% url 'premium' %}" class="avant-btn">{% trans 'Support Us' %}</a>
+    </div>
+    {% endif %}
   </div>
 </div>
 

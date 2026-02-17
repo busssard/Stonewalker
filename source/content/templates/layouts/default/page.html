@@ -193,12 +193,11 @@ function checkImageSize(imageUrl) {
   <div id="profile-nav-container" class="flex-center ml-20 position-relative">
     <nav id="profile-main-nav" class="header-main-nav header-profile-main-nav">
       <a class="nav-link avant-btn header-nav-btn" href="{% url 'my_stones' %}">{% trans 'My Stones' %}</a>
-      <a class="nav-link avant-btn header-nav-btn" href="{% url 'accounts:change_profile' %}">{% trans 'Edit Profile' %}</a>
       <a class="nav-link avant-btn header-nav-btn" href="{% url 'accounts:log_out_confirm' %}">{% trans 'Log out' %}</a>
     </nav>
   </div>
   <div id="profile-menu-container" class="flex-center position-relative">
-    <button id="profile-menu-btn" class="avant-btn header-profile-menu-btn m-0 border-none bg-transparent h-full flex-center" aria-label="{% trans 'Profile menu' %}">
+    <button id="profile-menu-btn" class="avant-btn header-profile-menu-btn m-0 border-none bg-transparent h-full flex-center cursor-pointer" aria-label="{% trans 'Edit Profile' %}" onclick="openProfileModal()">
       <img src="{{ request.user.profile.get_picture_url }}" alt="{% trans 'Profile picture' %}" class="header-profile-img">
     </button>
   </div>

@@ -74,14 +74,17 @@
       <p>{% trans 'Thousands of painted stones are waiting to be created, hidden, and discovered. Whether you are an artist, a hiker, a teacher, or just someone who loves a good adventure, there is a place for you here.' %}</p>
     </div>
 
-    <div class="flex-center">
-      {% comment %}Before 1000 users (shop_visible=False), route to the create-stone smart router which gives early users a free QR claim flow. After 1000 users, route to the full shop page.{% endcomment %}
+    <div class="flex-center flex-wrap gap-1">
+      {% comment %}Before threshold (shop_visible=False), route to the create-stone smart router which gives early users a free QR claim flow. After threshold, route to the full shop page.{% endcomment %}
       {% if shop_visible %}
       <a href="{% url 'shop' %}" class="avant-btn">{% trans 'Get Your First QR Code' %}</a>
       {% else %}
       <a href="{% url 'create_stone' %}" class="avant-btn">{% trans 'Get Your First QR Code' %}</a>
       {% endif %}
-      <a href="{% url 'stonewalker_start' %}" class="avant-btn ml-20">{% trans 'Start Your Journey' %}</a>
+      <a href="{% url 'stonewalker_start' %}" class="avant-btn">{% trans 'Start Your Journey' %}</a>
+      {% if shop_visible %}
+      <a href="{% url 'premium' %}" class="avant-btn">{% trans 'Support Us' %}</a>
+      {% endif %}
     </div>
   </div>
 </div>

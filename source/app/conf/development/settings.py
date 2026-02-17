@@ -207,4 +207,4 @@ DISCOURSE_SSO_SECRET = os.environ.get('DISCOURSE_SSO_SECRET', 'dev_secret_change
 DISCOURSE_SSO_ENABLED = True
 
 # Shop Configuration - visibility threshold
-SHOP_VISIBLE_USER_THRESHOLD = 1000
+SHOP_VISIBLE_USER_THRESHOLD = int(os.environ.get('SHOP_VISIBLE_USER_THRESHOLD', 1000))
