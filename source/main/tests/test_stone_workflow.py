@@ -90,15 +90,15 @@ class StoneUUIDConsistencyTests(BaseStoneWalkerTestCase):
     transitions and be reachable via stone-link URLs.
     """
 
-    def test_stone_link_works_with_uuid(self):
-        """The stone-link URL using the stone's UUID should find the stone"""
+    def test_stone_link_works_with_stone_number(self):
+        """The stone-link URL using the stone's number and key should find the stone"""
         stone = self.create_stone('LINK_TEST', status='wandering')
         self.create_stone_move(stone=stone)
-        response = self.client.get(f'/stone-link/{stone.uuid}/')
+        response = self.client.get(f'/stone-link/{stone.stone_number}/?key={stone.uuid}')
         self.assertEqual(response.status_code, 200)
 
     def test_stone_link_with_custom_uuid(self):
-        """A stone created with a specific UUID should be reachable via that UUID"""
+        """A stone created with a specific UUID should be reachable via stone_number and key"""
         custom_uuid = uuid_lib.uuid4()
         stone = Stone.objects.create(
             PK_stone='CUSTOM_UUID',
@@ -107,7 +107,7 @@ class StoneUUIDConsistencyTests(BaseStoneWalkerTestCase):
             status='wandering',
         )
         self.create_stone_move(stone=stone)
-        response = self.client.get(f'/stone-link/{custom_uuid}/')
+        response = self.client.get(f'/stone-link/{stone.stone_number}/?key={custom_uuid}')
         self.assertEqual(response.status_code, 200)
 
     def test_uuid_persists_through_publish(self):
@@ -126,9 +126,9 @@ class StoneUUIDConsistencyTests(BaseStoneWalkerTestCase):
         stone.refresh_from_db()
         self.assertEqual(stone.uuid, original_uuid)
 
-    def test_invalid_uuid_returns_error(self):
-        """An invalid UUID in stone-link should redirect with error"""
-        response = self.client.get('/stone-link/not-a-valid-uuid/')
+    def test_invalid_stone_number_returns_error(self):
+        """A non-existent stone number in stone-link should redirect with error"""
+        response = self.client.get('/stone-link/99999/')
         self.assertRedirects(response, reverse('stonewalker_start'))
 
 
@@ -160,12 +160,16 @@ class StoneClaimNameValidationTests(BaseStoneWalkerTestCase):
         )
         return stone
 
+    def _claim_url(self, stone):
+        """Helper: build claim URL with stone_number."""
+        return reverse('claim_stone', kwargs={'stone_number': stone.stone_number})
+
     def test_claim_with_valid_name(self):
         """A valid name should successfully claim the stone"""
         stone = self._create_unclaimed_stone()
         response = self.client.post(
-            reverse('claim_stone', kwargs={'stone_uuid': str(stone.uuid)}),
-            {'stone_name': 'Rocky', 'description': 'A lovely stone'},
+            self._claim_url(stone),
+            {'stone_name': 'Rocky', 'description': 'A lovely stone', 'stone_uuid': str(stone.uuid)},
         )
         self.assertRedirects(response, reverse('stone_edit', kwargs={'pk': 'Rocky'}))
         self.assertTrue(Stone.objects.filter(PK_stone='Rocky', status='draft').exists())
@@ -174,8 +178,8 @@ class StoneClaimNameValidationTests(BaseStoneWalkerTestCase):
         """An empty name should be rejected"""
         stone = self._create_unclaimed_stone()
         response = self.client.post(
-            reverse('claim_stone', kwargs={'stone_uuid': str(stone.uuid)}),
-            {'stone_name': '', 'description': 'No name'},
+            self._claim_url(stone),
+            {'stone_name': '', 'description': 'No name', 'stone_uuid': str(stone.uuid)},
         )
         self.assertEqual(response.status_code, 200)  # Re-renders form
         # Stone should still be unclaimed
@@ -186,8 +190,8 @@ class StoneClaimNameValidationTests(BaseStoneWalkerTestCase):
         """Names longer than 10 chars should be rejected"""
         stone = self._create_unclaimed_stone()
         response = self.client.post(
-            reverse('claim_stone', kwargs={'stone_uuid': str(stone.uuid)}),
-            {'stone_name': 'VeryLongName', 'description': 'Too long'},
+            self._claim_url(stone),
+            {'stone_name': 'VeryLongName', 'description': 'Too long', 'stone_uuid': str(stone.uuid)},
         )
         self.assertEqual(response.status_code, 200)  # Re-renders form
         self.assertFalse(Stone.objects.filter(PK_stone='VeryLongName').exists())
@@ -196,8 +200,8 @@ class StoneClaimNameValidationTests(BaseStoneWalkerTestCase):
         """Names with spaces should be rejected"""
         stone = self._create_unclaimed_stone()
         response = self.client.post(
-            reverse('claim_stone', kwargs={'stone_uuid': str(stone.uuid)}),
-            {'stone_name': 'My Stone', 'description': 'Has space'},
+            self._claim_url(stone),
+            {'stone_name': 'My Stone', 'description': 'Has space', 'stone_uuid': str(stone.uuid)},
         )
         self.assertEqual(response.status_code, 200)  # Re-renders form
         self.assertFalse(Stone.objects.filter(PK_stone='My Stone').exists())
@@ -207,8 +211,8 @@ class StoneClaimNameValidationTests(BaseStoneWalkerTestCase):
         self.create_stone('Taken')
         stone = self._create_unclaimed_stone()
         response = self.client.post(
-            reverse('claim_stone', kwargs={'stone_uuid': str(stone.uuid)}),
-            {'stone_name': 'Taken', 'description': 'Name collision'},
+            self._claim_url(stone),
+            {'stone_name': 'Taken', 'description': 'Name collision', 'stone_uuid': str(stone.uuid)},
         )
         self.assertEqual(response.status_code, 200)  # Re-renders form
 
@@ -217,8 +221,8 @@ class StoneClaimNameValidationTests(BaseStoneWalkerTestCase):
         stone = self._create_unclaimed_stone()
         original_uuid = stone.uuid
         self.client.post(
-            reverse('claim_stone', kwargs={'stone_uuid': str(stone.uuid)}),
-            {'stone_name': 'UUIDTest', 'description': ''},
+            self._claim_url(stone),
+            {'stone_name': 'UUIDTest', 'description': '', 'stone_uuid': str(stone.uuid)},
         )
         claimed = Stone.objects.get(PK_stone='UUIDTest')
         self.assertEqual(claimed.uuid, original_uuid)
@@ -227,8 +231,8 @@ class StoneClaimNameValidationTests(BaseStoneWalkerTestCase):
         """Claiming should assign the stone to the current user"""
         stone = self._create_unclaimed_stone()
         self.client.post(
-            reverse('claim_stone', kwargs={'stone_uuid': str(stone.uuid)}),
-            {'stone_name': 'Mine', 'description': ''},
+            self._claim_url(stone),
+            {'stone_name': 'Mine', 'description': '', 'stone_uuid': str(stone.uuid)},
         )
         claimed = Stone.objects.get(PK_stone='Mine')
         self.assertEqual(claimed.FK_user, self.user)
@@ -238,8 +242,8 @@ class StoneClaimNameValidationTests(BaseStoneWalkerTestCase):
         """A stone that's already been claimed should not be claimable"""
         stone = self.create_stone('ALREADY', status='draft')
         response = self.client.post(
-            reverse('claim_stone', kwargs={'stone_uuid': str(stone.uuid)}),
-            {'stone_name': 'NewName', 'description': ''},
+            self._claim_url(stone),
+            {'stone_name': 'NewName', 'description': '', 'stone_uuid': str(stone.uuid)},
         )
         # Should redirect with error (stone is not unclaimed)
         self.assertEqual(response.status_code, 302)
@@ -248,8 +252,8 @@ class StoneClaimNameValidationTests(BaseStoneWalkerTestCase):
         """Unicode names within the limit should work"""
         stone = self._create_unclaimed_stone()
         response = self.client.post(
-            reverse('claim_stone', kwargs={'stone_uuid': str(stone.uuid)}),
-            {'stone_name': 'Stein-42', 'description': ''},
+            self._claim_url(stone),
+            {'stone_name': 'Stein-42', 'description': '', 'stone_uuid': str(stone.uuid)},
         )
         self.assertRedirects(response, reverse('stone_edit', kwargs={'pk': 'Stein-42'}))
         self.assertTrue(Stone.objects.filter(PK_stone='Stein-42').exists())
@@ -258,8 +262,8 @@ class StoneClaimNameValidationTests(BaseStoneWalkerTestCase):
         """A 10-character name (the max) should be accepted"""
         stone = self._create_unclaimed_stone()
         response = self.client.post(
-            reverse('claim_stone', kwargs={'stone_uuid': str(stone.uuid)}),
-            {'stone_name': 'ABCDEFGHIJ', 'description': ''},
+            self._claim_url(stone),
+            {'stone_name': 'ABCDEFGHIJ', 'description': '', 'stone_uuid': str(stone.uuid)},
         )
         self.assertRedirects(response, reverse('stone_edit', kwargs={'pk': 'ABCDEFGHIJ'}))
 
@@ -268,7 +272,7 @@ class StoneClaimNameValidationTests(BaseStoneWalkerTestCase):
         stone = self._create_unclaimed_stone()
         self.client.logout()
         response = self.client.get(
-            reverse('claim_stone', kwargs={'stone_uuid': str(stone.uuid)})
+            f"{self._claim_url(stone)}?key={stone.uuid}"
         )
         self.assertEqual(response.status_code, 302)
         self.assertIn('accounts', response.url)
@@ -335,25 +339,24 @@ class StoneWorkflowTests(BaseStoneWalkerTestCase):
         """Test that scanning a published stone's QR seals it (starts wandering)"""
         stone = self.create_stone(status='published')
 
-        response = self.client.get(f'/stone-link/{stone.uuid}/')
+        response = self.client.get(f'/stone-link/{stone.stone_number}/?key={stone.uuid}')
 
         stone.refresh_from_db()
         self.assertEqual(stone.status, 'wandering')
         self.assertIsNotNone(stone.wandering_at)
-        # Should show the sealed template
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'Stone Sealed')
+        # Sealing now redirects to public page with success message
+        self.assertEqual(response.status_code, 302)
 
     def test_scan_seals_draft_stone(self):
         """Test that scanning a draft stone's QR seals it directly"""
         stone = self.create_stone(status='draft')
 
-        response = self.client.get(f'/stone-link/{stone.uuid}/')
+        response = self.client.get(f'/stone-link/{stone.stone_number}/?key={stone.uuid}')
 
         stone.refresh_from_db()
         self.assertEqual(stone.status, 'wandering')
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'Stone Sealed')
+        # Sealing now redirects to public page
+        self.assertEqual(response.status_code, 302)
 
     def test_send_off_deprecated(self):
         """Test that send-off endpoint returns info message"""

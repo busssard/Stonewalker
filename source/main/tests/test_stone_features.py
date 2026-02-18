@@ -71,7 +71,7 @@ class QRCodeWithStoneNumberTests(BaseQRTestCase):
                 self.uuid = 'test-uuid'
 
             def get_qr_url(self):
-                return f'https://stonewalker.org/stone-link/{self.uuid}/'
+                return f'https://stonewalker.org/stone-link/0/?key={self.uuid}'
 
         temp = TempStone()
         result = QRCodeService.generate_enhanced_qr_for_download(temp)

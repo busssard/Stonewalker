@@ -78,39 +78,57 @@ class ClaimStoneView(LoginRequiredMixin, View):
     """Handle claiming an unclaimed stone"""
     template_name = 'main/claim_stone.html'
 
-    def get(self, request, stone_uuid):
+    def get(self, request, stone_number):
         """Show the claim stone form"""
         try:
-            uuid_obj = uuid_lib.UUID(stone_uuid)
-            stone = Stone.objects.get(uuid=uuid_obj)
-        except (ValueError, Stone.DoesNotExist):
+            stone = Stone.objects.get(stone_number=stone_number)
+        except Stone.DoesNotExist:
             messages.error(request, _('Stone not found.'))
+            return redirect('stonewalker_start')
+
+        # Validate ?key= matches stone UUID
+        key = request.GET.get('key', '')
+        try:
+            key_uuid = uuid_lib.UUID(key)
+            if key_uuid != stone.uuid:
+                raise ValueError("UUID mismatch")
+        except (ValueError, AttributeError):
+            messages.error(request, _('Invalid claim link.'))
             return redirect('stonewalker_start')
 
         if not stone.can_be_claimed():
             messages.error(request, _('This stone has already been claimed.'))
-            return redirect('stone_link', stone_uuid=stone_uuid)
+            return redirect('stone_link', stone_number=stone.stone_number)
 
         needs_terms = not hasattr(request.user, 'terms_acceptance')
 
         return render(request, self.template_name, {
             'stone': stone,
-            'stone_uuid': stone_uuid,
+            'stone_uuid': str(stone.uuid),
             'needs_terms': needs_terms,
         })
 
-    def post(self, request, stone_uuid):
+    def post(self, request, stone_number):
         """Process the claim stone form"""
         try:
-            uuid_obj = uuid_lib.UUID(stone_uuid)
-            stone = Stone.objects.get(uuid=uuid_obj)
-        except (ValueError, Stone.DoesNotExist):
+            stone = Stone.objects.get(stone_number=stone_number)
+        except Stone.DoesNotExist:
             messages.error(request, _('Stone not found.'))
+            return redirect('stonewalker_start')
+
+        # Validate UUID from hidden form field
+        stone_uuid = request.POST.get('stone_uuid', '')
+        try:
+            uuid_obj = uuid_lib.UUID(stone_uuid)
+            if uuid_obj != stone.uuid:
+                raise ValueError("UUID mismatch")
+        except (ValueError, AttributeError):
+            messages.error(request, _('Invalid claim link.'))
             return redirect('stonewalker_start')
 
         if not stone.can_be_claimed():
             messages.error(request, _('This stone has already been claimed.'))
-            return redirect('stone_link', stone_uuid=stone_uuid)
+            return redirect('stone_link', stone_number=stone.stone_number)
 
         # Check terms acceptance
         needs_terms = not hasattr(request.user, 'terms_acceptance')
@@ -119,7 +137,7 @@ class ClaimStoneView(LoginRequiredMixin, View):
                 messages.error(request, _('You must accept the Terms of Use before creating a stone.'))
                 return render(request, self.template_name, {
                     'stone': stone,
-                    'stone_uuid': stone_uuid,
+                    'stone_uuid': str(stone.uuid),
                     'stone_name': request.POST.get('stone_name', '').strip(),
                     'description': request.POST.get('description', '').strip(),
                     'needs_terms': True,
@@ -142,7 +160,7 @@ class ClaimStoneView(LoginRequiredMixin, View):
             messages.error(request, e.message)
             return render(request, self.template_name, {
                 'stone': stone,
-                'stone_uuid': stone_uuid,
+                'stone_uuid': str(stone.uuid),
                 'stone_name': stone_name,
                 'description': description,
             })
@@ -164,7 +182,7 @@ class ClaimStoneView(LoginRequiredMixin, View):
                 messages.error(request, error)
             return render(request, self.template_name, {
                 'stone': stone,
-                'stone_uuid': stone_uuid,
+                'stone_uuid': str(stone.uuid),
                 'stone_name': stone_name,
                 'description': description,
             })
@@ -198,6 +216,7 @@ class ClaimStoneView(LoginRequiredMixin, View):
                     'status': 'draft',
                     'qr_code_url': stone.qr_code_url,
                     'claimed_at': timezone.now(),
+                    'stone_number': stone.stone_number,
                 }
 
                 # Delete the old stone
@@ -218,11 +237,11 @@ class ClaimStoneView(LoginRequiredMixin, View):
             return redirect('stone_edit', pk=stone_name)
 
         except Exception as e:
-            logger.error(f"Error claiming stone {stone_uuid}: {str(e)}")
+            logger.error(f"Error claiming stone {stone.uuid}: {str(e)}")
             messages.error(request, _('An error occurred while claiming the stone. Please try again.'))
             return render(request, self.template_name, {
                 'stone': stone,
-                'stone_uuid': stone_uuid,
+                'stone_uuid': str(stone.uuid),
                 'stone_name': stone_name,
                 'description': description,
             })
@@ -490,11 +509,10 @@ class DownloadPackPDFView(LoginRequiredMixin, View):
 class DownloadStoneQRView(LoginRequiredMixin, View):
     """Download QR code for a single stone from a pack"""
 
-    def get(self, request, stone_uuid):
+    def get(self, request, stone_number):
         try:
-            uuid_obj = uuid_lib.UUID(stone_uuid)
-            stone = Stone.objects.get(uuid=uuid_obj)
-        except (ValueError, Stone.DoesNotExist):
+            stone = Stone.objects.get(stone_number=stone_number)
+        except Stone.DoesNotExist:
             messages.error(request, _('Stone not found.'))
             return redirect('shop')
 

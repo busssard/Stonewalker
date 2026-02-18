@@ -420,51 +420,125 @@ class StoneSendOffView(View):
 
 
 class StoneLinkView(View):
-    """Handle stone-link functionality with cookie tracking and database storage"""
+    """Handle stone-link functionality.
 
-    def get(self, request, stone_uuid):
+    URL format: /stone-link/{stone_number}/?key={uuid}
+    - Without ?key= → public page (view-only)
+    - With ?key= → scan/claim flow (QR code target)
+    """
+
+    def _render_public_page(self, request, stone):
+        """Render the public stone page (same as StoneShareView)."""
+        stone = Stone.objects.select_related('FK_user', 'FK_user__profile').get(pk=stone.pk)
+        moves = list(stone.moves.order_by('timestamp').all())
+        num_moves = len(moves)
+        distance = round(stone.distance_km, 1)
+        owner = stone.FK_user
+        profile = owner.profile if owner else None
+
+        share_url = request.build_absolute_uri(request.path)
+        stone_title = f'{stone.PK_stone} on StoneWalker'
+        share_handle = profile.get_share_handle() if profile else ''
+        share_text = f'Check out the journey of {stone.PK_stone}'
+        if share_handle:
+            share_text += f' by {share_handle}'
+        share_text += f' - {distance} km traveled!'
+        encoded_text = urllib.parse.quote(share_text)
+        encoded_url = urllib.parse.quote(share_url)
+
+        twitter_url = f'https://twitter.com/intent/tweet?text={encoded_text}&url={encoded_url}'
+        facebook_url = f'https://www.facebook.com/sharer/sharer.php?u={encoded_url}'
+        whatsapp_url = f'https://wa.me/?text={encoded_text}%20{encoded_url}'
+
+        moves_data = []
+        for m in moves:
+            moves_data.append({
+                'latitude': m.latitude,
+                'longitude': m.longitude,
+                'timestamp': m.timestamp.isoformat() if m.timestamp else '',
+                'timestamp_display': m.timestamp.strftime('%b %d, %Y') if m.timestamp else '',
+                'user': m.FK_user.username if m.FK_user else '',
+                'comment': m.comment,
+            })
+
+        stone_image_url = ''
+        if stone.image:
+            stone_image_url = request.build_absolute_uri(stone.image.url)
+
+        context = {
+            'stone': stone,
+            'moves': moves,
+            'moves_json': json.dumps(moves_data),
+            'num_moves': num_moves,
+            'distance': distance,
+            'owner': owner,
+            'profile': profile,
+            'share_url': share_url,
+            'stone_title': stone_title,
+            'share_text': share_text,
+            'stone_image_url': stone_image_url,
+            'twitter_url': twitter_url,
+            'facebook_url': facebook_url,
+            'whatsapp_url': whatsapp_url,
+        }
+        return render(request, 'main/stone_share.html', context)
+
+    def get(self, request, stone_number):
         try:
-            # Parse UUID and find stone
-            stone_uuid_obj = uuid_lib.UUID(stone_uuid)
-            stone = Stone.objects.get(uuid=stone_uuid_obj)
-        except (ValueError, Stone.DoesNotExist):
+            stone = Stone.objects.get(stone_number=stone_number)
+        except Stone.DoesNotExist:
             messages.error(request, 'Invalid stone link.')
             return redirect('stonewalker_start')
 
-        # Check if this is an unclaimed stone from the shop
+        key = request.GET.get('key')
+
+        # No key → public page (or redirect for unclaimed)
+        if not key:
+            if stone.is_unclaimed():
+                return redirect('stonewalker_start')
+            return self._render_public_page(request, stone)
+
+        # Validate key matches stone UUID
+        try:
+            key_uuid = uuid_lib.UUID(key)
+        except ValueError:
+            messages.error(request, 'Invalid stone link.')
+            return redirect('stone_link', stone_number=stone.stone_number)
+        if key_uuid != stone.uuid:
+            messages.error(request, 'Invalid stone link.')
+            return redirect('stone_link', stone_number=stone.stone_number)
+
+        # --- Key present: scan/claim flow ---
+
+        # Unclaimed → redirect to claim page
         if stone.is_unclaimed():
-            # Unclaimed stones need to be claimed first
             if request.user.is_authenticated:
-                # Redirect to claim page
-                return redirect('claim_stone', stone_uuid=stone_uuid)
+                return redirect(f'{reverse("claim_stone", kwargs={"stone_number": stone.stone_number})}?key={stone.uuid}')
             else:
-                # Not logged in - redirect to login with next URL
                 from django.contrib.auth.views import redirect_to_login
                 return redirect_to_login(
                     next=request.get_full_path(),
                     login_url='accounts:log_in'
                 )
 
-        # Scan-based sealing: if stone is draft or published, seal it (start wandering)
+        # Draft/published → seal stone, redirect to public page (strips key)
         if stone.status in ('draft', 'published'):
-            was_draft = stone.status == 'draft'
-            is_owner = request.user.is_authenticated and stone.FK_user == request.user
             stone.start_wandering()
-            # Record scan attempt if authenticated
             if request.user.is_authenticated:
                 StoneScanAttempt.record_scan_attempt(stone, request.user, request)
-            return render(request, 'main/stone_sealed.html', {
-                'stone': stone,
-                'stone_uuid': stone_uuid,
-                'is_owner': is_owner,
-                'was_draft': was_draft,
-            })
+            messages.success(request, 'Stone sealed!')
+            return redirect('stone_link', stone_number=stone.stone_number)
+
+        # Wandering stone
+        # Check if already scanned this week → redirect to public page (strips key)
+        if request.user.is_authenticated and not StoneScanAttempt.can_scan_again(stone, request.user):
+            return redirect('stone_link', stone_number=stone.stone_number)
 
         # If user is authenticated, record scan attempt
         if request.user.is_authenticated:
             StoneScanAttempt.record_scan_attempt(stone, request.user, request)
 
-        # Check if this is user's first stone
+        # First scan → show stone_found form (key stays in URL for POST)
         is_first_stone = False
         is_owner = False
         if request.user.is_authenticated:
@@ -472,15 +546,14 @@ class StoneLinkView(View):
             is_first_stone = user_stone_count == 0
             is_owner = stone.FK_user == request.user
 
-        # Create response with cookie
         response = render(request, 'main/stone_found.html', {
             'stone': stone,
-            'stone_uuid': stone_uuid,
+            'stone_uuid': str(stone.uuid),
             'is_first_stone': is_first_stone,
             'is_owner': is_owner,
         })
         response.set_cookie(
-            f'stone_scan_{stone_uuid}',
+            f'stone_scan_{stone.uuid}',
             timezone.now().isoformat(),
             max_age=7*24*60*60,  # 7 days
             httponly=True,
@@ -488,22 +561,25 @@ class StoneLinkView(View):
         )
 
         return response
-    
+
     @method_decorator(login_required)
-    def post(self, request, stone_uuid):
+    def post(self, request, stone_number):
+        # Look up stone by stone_number, validate UUID from hidden form field
+        stone_uuid = request.POST.get('stone_uuid', '')
         try:
-            # Parse UUID and find stone
-            stone_uuid_obj = uuid_lib.UUID(stone_uuid)
-            stone = Stone.objects.get(uuid=stone_uuid_obj)
-        except (ValueError, Stone.DoesNotExist):
+            stone = Stone.objects.get(stone_number=stone_number)
+            uuid_obj = uuid_lib.UUID(stone_uuid)
+            if uuid_obj != stone.uuid:
+                raise ValueError("UUID mismatch")
+        except (Stone.DoesNotExist, ValueError):
             messages.error(request, 'Invalid stone link.')
             return redirect('stonewalker_start')
-        
+
         # Check one-week blackout period
         if not StoneScanAttempt.can_scan_again(stone, request.user):
             messages.error(request, 'You have already scanned this stone in the last week. Please wait before scanning again.')
             return redirect('stonewalker_start')
-        
+
         # Safety check: if stone is still published when find is submitted, seal it
         if stone.status == 'published':
             stone.start_wandering()
@@ -523,7 +599,7 @@ class StoneLinkView(View):
             validate_no_contact_info(comment)
         except DjangoValidationError as e:
             messages.error(request, e.message)
-            return redirect(f'/stone-link/{stone_uuid}/')
+            return redirect('stone_link', stone_number=stone.stone_number)
 
         # Validate coordinates
         try:
@@ -533,12 +609,12 @@ class StoneLinkView(View):
                 raise ValueError("Missing coordinates")
         except ValueError:
             messages.error(request, 'Please provide valid coordinates for where you found the stone.')
-            return redirect(f'/stone-link/{stone_uuid}/')
-        
+            return redirect('stone_link', stone_number=stone.stone_number)
+
         try:
             # Record the scan attempt
             StoneScanAttempt.record_scan_attempt(stone, request.user, request)
-            
+
             # Create the stone move
             stone_move = StoneMove.objects.create(
                 FK_stone=stone,
@@ -548,18 +624,17 @@ class StoneLinkView(View):
                 latitude=lat,
                 longitude=lng
             )
-            
+
             # Update stone distance
             stone.distance_km = calculate_stone_distance(stone)
             stone.save()
-            
+
             # For hunted stones, store the new location for next week
             if stone.stone_type == 'hunted' and new_latitude and new_longitude:
                 try:
                     new_lat = float(new_latitude)
                     new_lng = float(new_longitude)
-                    # Store new location in session for next week placement
-                    request.session[f'new_location_{stone_uuid}'] = {
+                    request.session[f'new_location_{stone.uuid}'] = {
                         'latitude': new_lat,
                         'longitude': new_lng,
                         'user_id': request.user.id,
@@ -567,14 +642,26 @@ class StoneLinkView(View):
                     }
                 except ValueError:
                     messages.error(request, 'Please provide valid coordinates for the new location.')
-                    return redirect(f'/stone-link/{stone_uuid}/')
-            
+                    return redirect('stone_link', stone_number=stone.stone_number)
+
             messages.success(request, 'Your stone find has been recorded!')
             return redirect(f'/stonewalker/?focus={stone.PK_stone}')
-            
+
         except Exception as e:
             messages.error(request, f'Could not record stone find: {str(e)}')
-            return redirect(f'/stone-link/{stone_uuid}/')
+            return redirect('stone_link', stone_number=stone.stone_number)
+
+
+class StoneLinkLegacyRedirectView(View):
+    """Redirect old /stone-link/{uuid}/ URLs to new /stone-link/{number}/?key={uuid} format."""
+
+    def get(self, request, stone_uuid):
+        try:
+            stone = Stone.objects.get(uuid=stone_uuid)
+        except Stone.DoesNotExist:
+            messages.error(request, 'Invalid stone link.')
+            return redirect('stonewalker_start')
+        return redirect(f'{reverse("stone_link", kwargs={"stone_number": stone.stone_number})}?key={stone.uuid}')
 
 
 def generate_qr_code_api(request):
@@ -592,9 +679,12 @@ def generate_qr_code_api(request):
         # Validate UUID format
         uuid_obj = uuid_lib.UUID(stone_uuid)
 
-        # Generate QR code with production domain
-        # This allows the frontend to show QR codes before stone creation
-        qr_url = f'https://{Stone.PRODUCTION_DOMAIN}/stone-link/{stone_uuid}/'
+        # Try to find existing stone for proper URL, fall back for preview
+        try:
+            stone = Stone.objects.get(uuid=uuid_obj)
+            qr_url = stone.get_qr_url()
+        except Stone.DoesNotExist:
+            qr_url = f'https://{Stone.PRODUCTION_DOMAIN}/stone-link/0/?key={stone_uuid}'
         
         # Create QR code
         import qrcode
@@ -718,17 +808,21 @@ def download_enhanced_qr_code(request):
         # Validate UUID format
         uuid_obj = uuid_lib.UUID(stone_uuid)
         
-        # Create a temporary stone-like object for QR generation
-        class TempStone:
-            def __init__(self, name, uuid_str):
-                self.PK_stone = name
-                self.uuid = uuid_str
-            
-            def get_qr_url(self):
-                return f'/stone-link/{self.uuid}/'
-        
-        temp_stone = TempStone(stone_name, stone_uuid)
-        
+        # Try to find existing stone for proper URL, fall back for preview
+        try:
+            real_stone = Stone.objects.get(uuid=uuid_obj)
+            temp_stone = real_stone
+        except Stone.DoesNotExist:
+            class TempStone:
+                def __init__(self, name, uuid_str):
+                    self.PK_stone = name
+                    self.uuid = uuid_str
+
+                def get_qr_url(self):
+                    return f'https://{Stone.PRODUCTION_DOMAIN}/stone-link/0/?key={self.uuid}'
+
+            temp_stone = TempStone(stone_name, stone_uuid)
+
         # Generate enhanced QR code
         from .qr_service import QRCodeService
         enhanced_result = QRCodeService.generate_enhanced_qr_for_download(temp_stone, request)

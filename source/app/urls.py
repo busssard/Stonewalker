@@ -10,7 +10,7 @@ from main.views import StoneWalkerStartPageView
 from main.views import MyStonesView
 from accounts.views import TermsView
 from main.views import add_stone, StoneScanView, check_stone_name
-from main.views import StoneQRCodeView, StoneLinkView, check_stone_uuid, StoneEditView, StoneSendOffView, StoneCertificateView, generate_qr_code_api, download_enhanced_qr_code, StoneShareView
+from main.views import StoneQRCodeView, StoneLinkView, StoneLinkLegacyRedirectView, check_stone_uuid, StoneEditView, StoneSendOffView, StoneCertificateView, generate_qr_code_api, download_enhanced_qr_code, StoneShareView
 
 # Shop views
 from main.shop_views import (
@@ -61,11 +61,11 @@ urlpatterns += i18n_patterns(
     path('shop/checkout/<str:product_id>/', CheckoutView.as_view(), name='checkout'),
     path('shop/success/', CheckoutSuccessView.as_view(), name='checkout_success'),
     path('shop/download/<uuid:pack_id>/', DownloadPackPDFView.as_view(), name='download_pack_pdf'),
-    path('shop/download-qr/<str:stone_uuid>/', DownloadStoneQRView.as_view(), name='download_stone_qr'),
+    path('shop/download-qr/<int:stone_number>/', DownloadStoneQRView.as_view(), name='download_stone_qr'),
     path('shop/free-qr/', FreeQRView.as_view(), name='free_qr'),
 
     # Stone claiming
-    path('claim-stone/<str:stone_uuid>/', ClaimStoneView.as_view(), name='claim_stone'),
+    path('claim-stone/<int:stone_number>/', ClaimStoneView.as_view(), name='claim_stone'),
 
     path('about/', TemplateView.as_view(template_name='main/about.html'), name='about'),
     path('terms/', TermsView.as_view(), name='terms'),
@@ -77,7 +77,9 @@ urlpatterns += i18n_patterns(
     path('stone/<str:pk>/share/', StoneShareView.as_view(), name='stone_share'),
 
     # Stone-link functionality
-    path('stone-link/<str:stone_uuid>/', StoneLinkView.as_view(), name='stone_link'),
+    path('stone-link/<int:stone_number>/', StoneLinkView.as_view(), name='stone_link'),
+    # Legacy redirect (old QR codes with UUID in path)
+    path('stone-link/<uuid:stone_uuid>/', StoneLinkLegacyRedirectView.as_view(), name='stone_link_legacy'),
     
     # Debug and test pages
     path('debug/modals/', TemplateView.as_view(template_name='main/debug_modals.html'), name='debug_modals'),

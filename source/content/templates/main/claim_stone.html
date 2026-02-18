@@ -41,6 +41,7 @@
 
     <form class="claim-stone-form flex-column gap-0-7" method="post" enctype="multipart/form-data" autocomplete="off">
       {% csrf_token %}
+      <input type="hidden" name="stone_uuid" value="{{ stone_uuid }}">
 
       <label class="avant-label" for="id_stone_name">{% trans 'Stone Name' %} <span class="text-error">*</span></label>
       <input type="text"

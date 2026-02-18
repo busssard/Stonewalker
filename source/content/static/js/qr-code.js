@@ -154,16 +154,24 @@ class QRCodeManager {
     // Handle QR code detection
     onQRCodeDetected(decodedText, decodedResult) {
         console.log('QR Code detected:', decodedText);
-        
+
         // Stop scanning
         this.stopQRScanner();
-        
+
         // Extract UUID from the decoded text
-        // The QR code should contain a URL like /stone-link/{uuid}/
-        const uuidMatch = decodedText.match(/\/stone-link\/([^\/]+)\//);
-        if (uuidMatch) {
-            const uuid = uuidMatch[1];
+        // New format: /stone-link/{number}/?key={uuid}
+        const newMatch = decodedText.match(/\/stone-link\/(\d+)\/?\?key=([0-9a-f-]+)/i);
+        // Legacy: /stone-link/{uuid}/
+        const legacyMatch = decodedText.match(/\/stone-link\/([0-9a-f]{8}-[0-9a-f]{4}-)/i);
+        if (newMatch) {
+            const uuid = newMatch[2];
             this.handleScannedUUID(uuid);
+        } else if (legacyMatch) {
+            const uuidMatch = decodedText.match(/\/stone-link\/([^\/]+)\//);
+            if (uuidMatch) {
+                const uuid = uuidMatch[1];
+                this.handleScannedUUID(uuid);
+            }
         } else {
             // Try to extract UUID directly if it's just a UUID
             const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;

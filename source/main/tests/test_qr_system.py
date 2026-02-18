@@ -99,8 +99,9 @@ class QRCodeDisplayTests(BaseStoneWalkerTestCase):
         """Test that QR URLs are persistent"""
         stone = self.create_stone()
         qr_url = stone.get_qr_url()
-        
+
         self.assertIsNotNone(qr_url)
-        self.assertIn(str(stone.uuid), qr_url)
+        expected = f'https://stonewalker.org/stone-link/{stone.stone_number}/?key={stone.uuid}'
+        self.assertEqual(qr_url, expected)
         # QR URL should remain the same after multiple calls
         self.assertEqual(qr_url, stone.get_qr_url())

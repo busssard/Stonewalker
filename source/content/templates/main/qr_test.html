@@ -127,11 +127,17 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('QR Code detected:', decodedText);
         
         // Extract UUID from the decoded text
-        const uuidMatch = decodedText.match(/\/stone-link\/([^\/]+)\//);
+        // New format: /stone-link/{number}/?key={uuid}
+        const newMatch = decodedText.match(/\/stone-link\/(\d+)\/?\?key=([0-9a-f-]+)/i);
+        // Legacy: /stone-link/{uuid}/
+        const legacyMatch = decodedText.match(/\/stone-link\/([0-9a-f]{8}-[0-9a-f]{4}-)/i);
         let extractedUuid = '';
-        
-        if (uuidMatch) {
-            extractedUuid = uuidMatch[1];
+
+        if (newMatch) {
+            extractedUuid = newMatch[2];
+        } else if (legacyMatch) {
+            const uuidMatch = decodedText.match(/\/stone-link\/([^\/]+)\//);
+            if (uuidMatch) extractedUuid = uuidMatch[1];
         } else {
             // Try to extract UUID directly if it's just a UUID
             const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;

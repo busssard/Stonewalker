@@ -39,7 +39,7 @@ class GenerateSteelTagsTests(TestCase):
             os.unlink(output_path)
 
     def test_csv_urls_are_production(self):
-        """Verify URLs match https://stonewalker.org/stone-link/{uuid}/"""
+        """Verify URLs match https://stonewalker.org/stone-link/{stone_number}/?key={uuid}"""
         with tempfile.NamedTemporaryFile(suffix='.csv', delete=False) as f:
             output_path = f.name
         try:
@@ -47,7 +47,7 @@ class GenerateSteelTagsTests(TestCase):
             with open(output_path) as f:
                 reader = csv.DictReader(f)
                 for row in reader:
-                    expected = f"https://stonewalker.org/stone-link/{row['uuid']}/"
+                    expected = f"https://stonewalker.org/stone-link/{row['stone_number']}/?key={row['uuid']}"
                     self.assertEqual(row['qr_url'], expected)
         finally:
             os.unlink(output_path)

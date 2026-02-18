@@ -282,7 +282,7 @@
         <h4 class="shared-modal-info-heading">{% trans 'QR Code Information' %}</h4>
         <p class="shared-modal-info-line"><strong>{% trans 'Stone Name:' %}</strong> <span id="qr-modal-stone-name">Sample Stone</span></p>
         <p class="shared-modal-info-line"><strong>{% trans 'UUID:' %}</strong> <span id="qr-modal-uuid">550e8400-e29b-41d4-a716-446655440000</span></p>
-        <p class="shared-modal-info-line"><strong>{% trans 'Scan URL:' %}</strong> <code id="qr-modal-url" class="shared-modal-qr-scan-url">http://localhost:8000/stone-link/550e8400-e29b-41d4-a716-446655440000/</code></p>
+        <p class="shared-modal-info-line"><strong>{% trans 'Scan URL:' %}</strong> <code id="qr-modal-url" class="shared-modal-qr-scan-url">http://localhost:8000/stone-link/1/?key=550e8400-e29b-41d4-a716-446655440000</code></p>
       </div>
       
       <!-- Download Button -->
@@ -754,15 +754,24 @@ document.addEventListener('DOMContentLoaded', function() {
     if (scanCameraScanner && window.qrCodeManager) {
       // Custom behavior for scan modal
       window.qrCodeManager.onQRCodeDetected = function(decodedText, decodedResult) {
-        
+
         // Stop scanning
         this.stopQRScanner();
-        
+
         // Extract UUID from the decoded text
-        const uuidMatch = decodedText.match(/\/stone-link\/([^\/]+)\//);
-        if (uuidMatch) {
-          const uuid = uuidMatch[1];
+        // New format: /stone-link/{number}/?key={uuid}
+        const newMatch = decodedText.match(/\/stone-link\/(\d+)\/?\?key=([0-9a-f-]+)/i);
+        // Legacy: /stone-link/{uuid}/
+        const legacyMatch = decodedText.match(/\/stone-link\/([0-9a-f]{8}-[0-9a-f]{4}-)/i);
+        if (newMatch) {
+          const uuid = newMatch[2];
           this.handleScannedUUIDForScanModal(uuid);
+        } else if (legacyMatch) {
+          const uuidMatch = decodedText.match(/\/stone-link\/([^\/]+)\//);
+          if (uuidMatch) {
+            const uuid = uuidMatch[1];
+            this.handleScannedUUIDForScanModal(uuid);
+          }
         } else {
           // Try to extract UUID directly if it's just a UUID
           const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;

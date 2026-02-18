@@ -11,7 +11,7 @@
     <p class="unclaimed-qr-desc">{% trans 'You have QR codes waiting to be claimed. Give your stone a name to get started!' %}</p>
     <div class="unclaimed-qr-list">
       {% for stone in unclaimed_stones %}
-      <a href="{% url 'claim_stone' stone_uuid=stone.uuid %}" class="unclaimed-qr-item avant-btn">
+      <a href="{% url 'claim_stone' stone_number=stone.stone_number %}?key={{ stone.uuid }}" class="unclaimed-qr-item avant-btn">
         {% trans 'Claim Stone' %} #{{ forloop.counter }}
       </a>
       {% endfor %}

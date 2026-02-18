@@ -120,8 +120,8 @@ class StoneModelTests(BaseStoneWalkerTestCase):
         qr_url = stone.get_qr_url()
 
         self.assertIsNotNone(qr_url)
-        self.assertIn(str(stone.uuid), qr_url)
-        self.assertIn('/stone-link/', qr_url)
+        expected = f'https://stonewalker.org/stone-link/{stone.stone_number}/?key={stone.uuid}'
+        self.assertEqual(qr_url, expected)
 
     def test_user_can_create_stone_logic(self):
         """Test user stone creation permission logic"""

@@ -195,8 +195,9 @@ class Stone(models.Model):
 
     def get_qr_url(self):
         """Get the QR code URL for this stone - always uses production domain"""
-        # Always generate the production URL for QR codes
-        production_url = f'https://{self.PRODUCTION_DOMAIN}/stone-link/{self.uuid}/'
+        if self.stone_number is None:
+            self.save()  # triggers auto-assignment
+        production_url = f'https://{self.PRODUCTION_DOMAIN}/stone-link/{self.stone_number}/?key={self.uuid}'
 
         # Update stored URL if different
         if self.qr_code_url != production_url:
