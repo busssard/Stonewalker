@@ -5,7 +5,7 @@ from django.conf.urls.i18n import i18n_patterns
 from django.conf.urls.static import static
 from django.views.generic import TemplateView
 
-from main.views import IndexPageView, ChangeLanguageView
+from main.views import IndexPageView, ChangeLanguageView, ImpressumView
 from main.views import StoneWalkerStartPageView
 from main.views import MyStonesView
 from accounts.views import TermsView
@@ -68,6 +68,7 @@ urlpatterns += i18n_patterns(
     path('claim-stone/<int:stone_number>/', ClaimStoneView.as_view(), name='claim_stone'),
 
     path('about/', TemplateView.as_view(template_name='main/about.html'), name='about'),
+    path('impressum/', ImpressumView.as_view(), name='impressum'),
     path('terms/', TermsView.as_view(), name='terms'),
     # New stone management URLs
     path('stone/<str:pk>/edit/', StoneEditView.as_view(), name='stone_edit'),
