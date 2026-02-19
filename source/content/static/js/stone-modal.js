@@ -77,6 +77,7 @@ export function openStoneModal(pk, color, stonesData) {
   });
   let html = `<div style='text-align:center;margin-bottom:1.2rem;'>
     <span style="font-family:var(--font-title);font-size:2.1rem;font-weight:700;letter-spacing:1px;color:${color};text-shadow:0 2px 8px rgba(0,0,0,0.07);">${stone.PK_stone}</span>
+    ${stone.stone_number ? `<div style="font-size:0.85rem;color:#aaa;font-family:monospace;margin-top:0.2rem;">#${stone.stone_number}</div>` : ''}
   </div>`;
   if (images.length) {
     html += `<div style='display:flex;align-items:center;justify-content:center;gap:0.7rem;margin-bottom:0.3rem;padding:0;'>

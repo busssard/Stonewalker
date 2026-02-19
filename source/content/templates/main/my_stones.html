@@ -87,6 +87,7 @@ const creationsData = [
   {% for stone in my_stones %}
     {
       PK_stone: "{{ stone.PK_stone }}",
+      stone_number: {{ stone.stone_number|default:0 }},
       description: `{{ stone.description|escapejs }}`,
       image: "{% if stone.image %}{{ stone.image.url }}{% else %}{% static 'stone.png' %}{% endif %}",
       created_at: "{{ stone.created_at|date:'c' }}",
@@ -117,6 +118,7 @@ const interactionsData = [
   {% for stone in my_interactions %}
     {
       PK_stone: "{{ stone.PK_stone }}",
+      stone_number: {{ stone.stone_number|default:0 }},
       description: `{{ stone.description|escapejs }}`,
       image: "{% if stone.image %}{{ stone.image.url }}{% else %}{% static 'stone.png' %}{% endif %}",
       created_at: "{{ stone.created_at|date:'c' }}",
@@ -292,6 +294,7 @@ function showSimpleModal(pk, color, data) {
   const html = `
     <div style='text-align:center;margin-bottom:1.2rem;'>
       <span style="font-family:var(--font-title);font-size:2.1rem;font-weight:700;letter-spacing:1px;color:${color};text-shadow:0 2px 8px rgba(0,0,0,0.07);">${stone.PK_stone}</span>
+      ${stone.stone_number ? `<div style="font-size:0.85rem;color:#aaa;font-family:monospace;margin-top:0.2rem;">#${stone.stone_number}</div>` : ''}
     </div>
     <div style="background:linear-gradient(90deg,${color}11 0%,#fff 100%);border-radius:12px;padding:1.1rem 1.3rem;margin-bottom:1.2rem;font-size:1.13rem;font-family:var(--font-serif);box-shadow:0 2px 8px rgba(0,0,0,0.04);color:#333;">${stone.description}</div>
     <div style='display:flex;justify-content:center;align-items:center;margin-bottom:1.2rem;font-size:1.05em;color:#888;font-family:monospace;gap:0;'>

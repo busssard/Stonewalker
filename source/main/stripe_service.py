@@ -75,6 +75,7 @@ class StripeService:
                 'quantity': 1,
             }],
             mode='payment',
+            allow_promotion_codes=True,
             success_url=success_url + f'?pack_id={pack.id}',
             cancel_url=cancel_url,
             metadata={
@@ -225,6 +226,7 @@ class StripeService:
             payment_method_types=['card'],
             line_items=[{'price': price_id, 'quantity': 1}],
             mode='subscription',
+            allow_promotion_codes=True,
             success_url=success_url + f'?subscription=1',
             cancel_url=cancel_url,
             metadata={
