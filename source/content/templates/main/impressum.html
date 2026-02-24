@@ -48,6 +48,27 @@
       </div>
     </div>
 
+    <!-- Project -->
+    {% if impressum.project %}
+    <div class="avant-fact-box mb-2">
+      <div class="avant-fact-text">
+        <strong>{% trans 'Project' %}</strong>
+      </div>
+      {% if impressum.project.github_url %}
+      <div class="avant-fact-text position-relative z-1 fs-1-2 line-height-1-7 text-dark-gray mt-0-5">
+        <strong>{% trans 'Source Code' %}</strong><br>
+        <a href="{{ impressum.project.github_url }}" target="_blank" rel="noopener noreferrer">{{ impressum.project.github_url }}</a>
+      </div>
+      {% endif %}
+      {% if impressum.project.ai_disclaimer %}
+      <div class="avant-fact-text position-relative z-1 fs-1-2 line-height-1-7 text-dark-gray mt-0-5">
+        <strong>{% trans 'AI Disclaimer' %}</strong><br>
+        {{ impressum.project.ai_disclaimer }}
+      </div>
+      {% endif %}
+    </div>
+    {% endif %}
+
     <!-- Disclaimer: Liability -->
     <div class="avant-fact-box mb-2">
       <div class="avant-fact-text">

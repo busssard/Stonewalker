@@ -11,6 +11,10 @@
     "country": "Switzerland",
     "email": "mail [at] stonewalker [dot] org"
   },
+  "project": {
+    "github_url": "https://github.com/busssard/Stonewalker",
+    "ai_disclaimer": "This project was realized with the help of Cursor and Claude Opus 4.6 by Anthropic."
+  },
   "disclaimer": {
     "liability": "The author assumes no liability for the correctness, accuracy, timeliness, reliability, or completeness of the information provided. Liability claims against the author for material or immaterial damage resulting from access to, use or non-use of the published information, or from misuse of the connection or technical faults, are excluded.",
     "links": "References and links to third-party websites are outside our area of responsibility. We decline any responsibility for such websites. Access to and use of such websites is at the user's own risk.",

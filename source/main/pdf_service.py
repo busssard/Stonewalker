@@ -1,6 +1,7 @@
 """
 PDF Service for generating QR code pack sheets.
 Creates printable PDF with multiple QR codes in a grid layout.
+Designed to match the single QR download style: black & white, toner-friendly.
 """
 import os
 from io import BytesIO
@@ -27,16 +28,17 @@ class PDFService:
     ROWS = 5
 
     # Margins (in mm, converted to points)
-    MARGIN_TOP = 25 * mm
-    MARGIN_BOTTOM = 20 * mm
+    MARGIN_TOP = 22 * mm
+    MARGIN_BOTTOM = 16 * mm
     MARGIN_LEFT = 15 * mm
     MARGIN_RIGHT = 15 * mm
 
-    # Colors
-    COLOR_PRIMARY = HexColor('#4CAF50')
-    COLOR_TEXT = HexColor('#333333')
+    # Colors — black & white only for toner-friendly output
+    COLOR_BLACK = HexColor('#000000')
+    COLOR_DARK_GRAY = HexColor('#333333')
+    COLOR_MID_GRAY = HexColor('#999999')
     COLOR_LIGHT_GRAY = HexColor('#CCCCCC')
-    COLOR_LIGHT_BG = HexColor('#F5F5F5')
+    COLOR_CUT_LINE = HexColor('#BBBBBB')
 
     @classmethod
     def generate_pack_pdf(cls, pack, stones):
@@ -60,7 +62,7 @@ class PDFService:
         buffer = BytesIO()
         c = canvas.Canvas(buffer, pagesize=A4)
 
-        # Add header with branding
+        # Add header
         cls._add_header(c)
 
         # Add QR codes in grid
@@ -69,7 +71,7 @@ class PDFService:
             col = idx % cls.COLS
             cls._add_qr_cell(c, stone, row, col, idx + 1, cell_width, cell_height)
 
-        # Add footer with instructions
+        # Add footer
         cls._add_footer(c)
 
         c.save()
@@ -88,45 +90,52 @@ class PDFService:
 
     @classmethod
     def _add_header(cls, c):
-        """Add StoneWalker header to the PDF."""
-        # Logo/title area
-        c.setFillColor(cls.COLOR_PRIMARY)
-        c.setFont("Helvetica-Bold", 22)
-        c.drawCentredString(cls.PAGE_WIDTH / 2, cls.PAGE_HEIGHT - 18 * mm, "StoneWalker")
+        """Add minimal black & white header."""
+        # "STONEWALKER" title in bold black
+        c.setFillColor(cls.COLOR_BLACK)
+        c.setFont("Helvetica-Bold", 20)
+        c.drawCentredString(cls.PAGE_WIDTH / 2, cls.PAGE_HEIGHT - 14 * mm, "STONEWALKER.org")
 
-        # Subtitle
-        c.setFillColor(cls.COLOR_TEXT)
-        c.setFont("Helvetica", 11)
-        c.drawCentredString(
-            cls.PAGE_WIDTH / 2,
-            cls.PAGE_HEIGHT - 24 * mm,
-            "QR Code Pack - Cut out each code and attach to your painted stone"
-        )
+        # Thin separator line
+        line_y = cls.PAGE_HEIGHT - 17.5 * mm
+        c.setStrokeColor(cls.COLOR_LIGHT_GRAY)
+        c.setLineWidth(0.5)
+        c.line(cls.MARGIN_LEFT, line_y, cls.PAGE_WIDTH - cls.MARGIN_RIGHT, line_y)
 
     @classmethod
     def _add_qr_cell(cls, c, stone, row, col, number, cell_width, cell_height):
-        """Add a single QR code cell to the PDF."""
+        """
+        Add a single QR code cell matching the single-QR download style:
+        QR code centered, "STONEWALKER.org" below, "Stone #N" below that.
+        """
         # Calculate cell position (from top-left)
         x = cls.MARGIN_LEFT + (col * cell_width)
         y = cls.PAGE_HEIGHT - cls.MARGIN_TOP - ((row + 1) * cell_height)
 
-        # Draw dashed border for cutting guide
+        # Draw light dashed border for cutting guide
         c.saveState()
-        c.setDash(4, 4)
-        c.setStrokeColor(cls.COLOR_LIGHT_GRAY)
-        c.setLineWidth(0.5)
+        c.setDash(3, 5)
+        c.setStrokeColor(cls.COLOR_CUT_LINE)
+        c.setLineWidth(0.4)
         c.rect(x, y, cell_width, cell_height)
         c.restoreState()
 
-        # QR code sizing - leave space for number and name field
-        qr_size = min(cell_width, cell_height) * 0.65
-        qr_x = x + (cell_width - qr_size) / 2
-        qr_y = y + cell_height - qr_size - 12 * mm  # Space from top for number
+        # Scissors icon hint at top-left corner
+        c.setFillColor(cls.COLOR_CUT_LINE)
+        c.setFont("Helvetica", 7)
+        c.drawString(x + 1.5 * mm, y + cell_height - 4 * mm, "- - -")
 
-        # Draw stone number in corner
-        c.setFillColor(cls.COLOR_PRIMARY)
-        c.setFont("Helvetica-Bold", 14)
-        c.drawString(x + 3 * mm, y + cell_height - 8 * mm, f"#{number}")
+        # QR code sizing — maximize within cell, leave room for text below
+        text_block_height = 14 * mm  # Space for domain + stone number
+        top_padding = 5 * mm
+        side_padding = 6 * mm
+        available_height = cell_height - text_block_height - top_padding - 4 * mm
+        available_width = cell_width - (2 * side_padding)
+        qr_size = min(available_width, available_height)
+
+        # Center QR code horizontally, place in upper portion of cell
+        qr_x = x + (cell_width - qr_size) / 2
+        qr_y = y + text_block_height + 2 * mm  # Above the text block
 
         # Load and draw QR code image
         qr_path = os.path.join(
@@ -141,62 +150,55 @@ class PDFService:
                 c.drawImage(qr_img, qr_x, qr_y, width=qr_size, height=qr_size)
             except Exception as e:
                 logger.warning(f"Could not load QR image for {stone.PK_stone}: {e}")
-                # Draw placeholder
-                c.setStrokeColor(cls.COLOR_LIGHT_GRAY)
-                c.rect(qr_x, qr_y, qr_size, qr_size)
-                c.setFillColor(cls.COLOR_TEXT)
-                c.setFont("Helvetica", 10)
-                c.drawCentredString(
-                    qr_x + qr_size / 2,
-                    qr_y + qr_size / 2,
-                    "QR Code"
-                )
+                cls._draw_qr_placeholder(c, qr_x, qr_y, qr_size)
         else:
-            # Draw placeholder if QR not found
-            c.setStrokeColor(cls.COLOR_LIGHT_GRAY)
-            c.rect(qr_x, qr_y, qr_size, qr_size)
-            c.setFillColor(cls.COLOR_TEXT)
-            c.setFont("Helvetica", 10)
-            c.drawCentredString(
-                qr_x + qr_size / 2,
-                qr_y + qr_size / 2,
-                "QR Code"
-            )
+            cls._draw_qr_placeholder(c, qr_x, qr_y, qr_size)
 
-        # Add "Stone name:" line at the bottom of the cell
-        line_y = y + 8 * mm
-        c.setFillColor(cls.COLOR_TEXT)
-        c.setFont("Helvetica", 9)
-        c.drawString(x + 8 * mm, line_y, "Stone name:")
+        # "STONEWALKER.org" centered below QR code — matching single-QR style
+        domain_y = y + 8 * mm
+        c.setFillColor(cls.COLOR_BLACK)
+        c.setFont("Helvetica-Bold", 9)
+        c.drawCentredString(x + cell_width / 2, domain_y, "STONEWALKER.org")
 
-        # Draw underline for writing
-        line_start_x = x + 30 * mm
-        line_end_x = x + cell_width - 8 * mm
+        # "Stone #N" centered below domain
+        stone_number = None
+        if hasattr(stone, 'get_stone_number') and callable(stone.get_stone_number):
+            stone_number = stone.get_stone_number()
+        number_label = f"Stone #{stone_number}" if stone_number else f"#{number}"
+        number_y = y + 3 * mm
+        c.setFillColor(cls.COLOR_DARK_GRAY)
+        c.setFont("Helvetica", 8)
+        c.drawCentredString(x + cell_width / 2, number_y, number_label)
+
+    @classmethod
+    def _draw_qr_placeholder(cls, c, x, y, size):
+        """Draw a placeholder box when QR image is missing."""
+        c.saveState()
         c.setStrokeColor(cls.COLOR_LIGHT_GRAY)
         c.setLineWidth(0.5)
-        c.line(line_start_x, line_y - 1, line_end_x, line_y - 1)
+        c.rect(x, y, size, size)
+        c.setFillColor(cls.COLOR_MID_GRAY)
+        c.setFont("Helvetica", 9)
+        c.drawCentredString(x + size / 2, y + size / 2 - 4, "QR Code")
+        c.restoreState()
 
     @classmethod
     def _add_footer(cls, c):
-        """Add footer with instructions."""
-        footer_y = 10 * mm
+        """Add minimal footer."""
+        footer_y = 8 * mm
 
-        # Instructions
-        c.setFillColor(cls.COLOR_TEXT)
-        c.setFont("Helvetica", 9)
+        # Thin separator line
+        c.setStrokeColor(cls.COLOR_LIGHT_GRAY)
+        c.setLineWidth(0.5)
+        c.line(cls.MARGIN_LEFT, footer_y + 5 * mm, cls.PAGE_WIDTH - cls.MARGIN_RIGHT, footer_y + 5 * mm)
+
+        # Instruction text
+        c.setFillColor(cls.COLOR_DARK_GRAY)
+        c.setFont("Helvetica", 8)
         c.drawCentredString(
             cls.PAGE_WIDTH / 2,
-            footer_y + 3 * mm,
-            "Scan any QR code to claim and name your stone at stonewalker.org"
-        )
-
-        # Copyright/branding
-        c.setFont("Helvetica", 7)
-        c.setFillColor(cls.COLOR_LIGHT_GRAY)
-        c.drawCentredString(
-            cls.PAGE_WIDTH / 2,
-            footer_y - 2 * mm,
-            "stonewalker.org"
+            footer_y + 1 * mm,
+            "Cut out each QR code and attach to your painted stone  |  stonewalker.org"
         )
 
     @classmethod
