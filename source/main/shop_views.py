@@ -337,11 +337,11 @@ class CheckoutView(LoginRequiredMixin, View):
 
         dev_mode = getattr(settings, 'DEBUG', False)
 
-        # QR limit gate: before SHOP_VISIBLE_USER_THRESHOLD users, each user can
-        # only have 1 unclaimed QR at a time. This prevents free-QR hoarding during
-        # the early growth phase. Skipped in dev mode so developers can test checkout
-        # flows without needing to claim stones between each test.
-        if not dev_mode and not Stone.user_can_get_new_qr(request.user):
+        # QR limit gate: only applies to free products. Paid packs can always be
+        # purchased regardless of unclaimed stones. Before SHOP_VISIBLE_USER_THRESHOLD
+        # users, free QR hoarding is prevented by limiting to 1 unclaimed at a time.
+        # Skipped in dev mode so developers can test checkout flows.
+        if product.get('is_free') and not dev_mode and not Stone.user_can_get_new_qr(request.user):
             messages.error(request, _('You already have an unclaimed QR code. Claim your existing stone before getting a new one.'))
             return redirect('shop')
 
