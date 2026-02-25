@@ -80,17 +80,37 @@ translations.xlsx
 forum/discourse_data/
 forum/discourse_docker/
 
-# Agent scratchpad files
+# Agent/Claude internal files (scratchpads, tasks, ideas, local settings)
 .claude/scratchpad_*
+.claude/scratchpad.sh
 .claude/agent_test.txt
 .claude/complete.md
+.claude/tasks.md
+.claude/idea_scratchpad.md
+.claude/settings.local.json
 
 # Obsidian editor config
 .obsidian/
 docs/.obsidian/
+
+# Internal strategy/business documents
+docs/BUSINESS_STRATEGY.md
+docs/marketing-strategy.md
 
 # Local tools
 db
 setup.cfg
 .pre-commit-config.yaml
 1000-most-common-passwords.csv
+
+# OS / editor junk
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+*.bak
+
+# Linter / type checker caches
+.ruff_cache/
+.mypy_cache/
