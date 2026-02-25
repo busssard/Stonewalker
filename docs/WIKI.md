@@ -425,7 +425,7 @@ layouts/default/page.html (base template)
 |------|-------|----------|
 | Monthly | $3.99/mo | Unlimited drafts, analytics, premium badge, priority support |
 | Yearly | $29.99/yr | Same as monthly + 37% discount |
-| Lifetime | Free | Early supporters (first 1000 users) get lifetime premium |
+| Lifetime | — | Granted to early supporters |
 
 **Flow:**
 
