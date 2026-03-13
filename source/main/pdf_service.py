@@ -105,9 +105,11 @@ class PDFService:
     @classmethod
     def _add_qr_cell(cls, c, stone, row, col, number, cell_width, cell_height):
         """
-        Add a single QR code cell matching the single-QR download style:
-        QR code centered, "STONEWALKER.org" below, "Stone #N" below that.
+        Add a single QR code cell using the same enhanced QR image
+        as the single-stone download (via QRCodeService).
         """
+        from .qr_service import QRCodeService
+
         # Calculate cell position (from top-left)
         x = cls.MARGIN_LEFT + (col * cell_width)
         y = cls.PAGE_HEIGHT - cls.MARGIN_TOP - ((row + 1) * cell_height)
@@ -125,50 +127,46 @@ class PDFService:
         c.setFont("Helvetica", 7)
         c.drawString(x + 1.5 * mm, y + cell_height - 4 * mm, "- - -")
 
-        # QR code sizing — maximize within cell, leave room for text below
-        text_block_height = 14 * mm  # Space for domain + stone number
-        top_padding = 5 * mm
-        side_padding = 6 * mm
-        available_height = cell_height - text_block_height - top_padding - 4 * mm
-        available_width = cell_width - (2 * side_padding)
-        qr_size = min(available_width, available_height)
+        # Generate the enhanced QR image (same as single download)
+        result = QRCodeService.generate_enhanced_qr_for_download(stone)
 
-        # Center QR code horizontally, place in upper portion of cell
-        qr_x = x + (cell_width - qr_size) / 2
-        qr_y = y + text_block_height + 2 * mm  # Above the text block
-
-        # Load and draw QR code image
-        qr_path = os.path.join(
-            settings.MEDIA_ROOT,
-            'qr_codes',
-            f'{stone.PK_stone}_{stone.uuid}.png'
-        )
-
-        if os.path.exists(qr_path):
+        if result['success']:
             try:
-                qr_img = ImageReader(qr_path)
-                c.drawImage(qr_img, qr_x, qr_y, width=qr_size, height=qr_size)
+                qr_img = ImageReader(BytesIO(result['image_data']))
+
+                # The enhanced image is 200x250 (3:4-ish with branding text).
+                # Fit it within the cell with padding.
+                side_padding = 6 * mm
+                top_padding = 5 * mm
+                bottom_padding = 3 * mm
+                available_width = cell_width - (2 * side_padding)
+                available_height = cell_height - top_padding - bottom_padding
+
+                # Get the actual image aspect ratio (width:height)
+                img_width, img_height = qr_img.getSize()
+                aspect = img_width / img_height
+
+                # Scale to fit within available space, preserving aspect ratio
+                if available_width / available_height > aspect:
+                    # Height-constrained
+                    draw_height = available_height
+                    draw_width = draw_height * aspect
+                else:
+                    # Width-constrained
+                    draw_width = available_width
+                    draw_height = draw_width / aspect
+
+                # Center within cell
+                qr_x = x + (cell_width - draw_width) / 2
+                qr_y = y + bottom_padding + (available_height - draw_height) / 2
+
+                c.drawImage(qr_img, qr_x, qr_y, width=draw_width, height=draw_height)
             except Exception as e:
-                logger.warning(f"Could not load QR image for {stone.PK_stone}: {e}")
-                cls._draw_qr_placeholder(c, qr_x, qr_y, qr_size)
+                logger.warning(f"Could not render enhanced QR for {stone.PK_stone}: {e}")
+                cls._draw_qr_placeholder(c, x + 6 * mm, y + 3 * mm, cell_width - 12 * mm)
         else:
-            cls._draw_qr_placeholder(c, qr_x, qr_y, qr_size)
-
-        # "STONEWALKER.org" centered below QR code — matching single-QR style
-        domain_y = y + 8 * mm
-        c.setFillColor(cls.COLOR_BLACK)
-        c.setFont("Helvetica-Bold", 9)
-        c.drawCentredString(x + cell_width / 2, domain_y, "STONEWALKER.org")
-
-        # "Stone #N" centered below domain
-        stone_number = None
-        if hasattr(stone, 'get_stone_number') and callable(stone.get_stone_number):
-            stone_number = stone.get_stone_number()
-        number_label = f"Stone #{stone_number}" if stone_number else f"#{number}"
-        number_y = y + 3 * mm
-        c.setFillColor(cls.COLOR_DARK_GRAY)
-        c.setFont("Helvetica", 8)
-        c.drawCentredString(x + cell_width / 2, number_y, number_label)
+            logger.warning(f"Failed to generate enhanced QR for {stone.PK_stone}: {result.get('error')}")
+            cls._draw_qr_placeholder(c, x + 6 * mm, y + 3 * mm, cell_width - 12 * mm)
 
     @classmethod
     def _draw_qr_placeholder(cls, c, x, y, size):
