@@ -5,8 +5,13 @@
 
 {% block content %}
 {% if user_packs %}
-<div class="my-stones-packs">
-  <h3 class="my-stones-packs-title">{% trans 'Your QR Packs' %}</h3>
+<details class="my-stones-packs" open>
+  <summary class="my-stones-packs-summary">
+    <span class="my-stones-packs-title">{% trans 'Your QR Packs' %}</span>
+    <span class="my-stones-packs-count">({{ user_packs|length }})</span>
+    <span class="my-stones-packs-chevron" aria-hidden="true">&#9660;</span>
+  </summary>
+  <div class="my-stones-packs-body">
   {% for pack in user_packs %}
   <div class="floating-pack">
     <div class="floating-pack-header">
@@ -45,7 +50,8 @@
     {% endif %}
   </div>
   {% endfor %}
-</div>
+  </div>
+</details>
 {% endif %}
 <div class="my-stones-split">
   <div class="my-stones-left">

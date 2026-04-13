@@ -4856,24 +4856,65 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
 }
 
 .my-stones-packs {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
   margin: 1rem 0 1.5rem;
-  padding: 1rem 1.25rem;
-  background: #fafafa;
-  border-radius: 10px;
+  background: linear-gradient(135deg, #FFF5F5 0%, #FFFBF5 50%, #F0FDF9 100%);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 14px;
+  box-shadow: 0 2px 12px rgba(60, 60, 60, 0.06);
+  overflow: hidden;
+}
+
+.my-stones-packs-summary {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+}
+
+.my-stones-packs-summary::-webkit-details-marker {
+  display: none;
 }
 
 .my-stones-packs-title {
-  width: 100%;
-  margin: 0 0 0.25rem;
   font-family: 'Quicksand', var(--font-main);
-  font-size: 2.1rem;
+  font-size: 1.6rem;
   font-weight: 700;
   letter-spacing: 0.5px;
   color: var(--color-text-main);
-  text-shadow: 0 2px 8px rgba(60,60,60,0.07);
+}
+
+.my-stones-packs-count {
+  font-family: var(--font-main);
+  font-size: 1rem;
+  color: var(--color-text-main);
+  opacity: 0.7;
+}
+
+.my-stones-packs-chevron {
+  margin-left: auto;
+  font-size: 0.85rem;
+  color: var(--color-text-main);
+  opacity: 0.6;
+  transition: transform 0.2s ease;
+}
+
+.my-stones-packs[open] .my-stones-packs-chevron {
+  transform: rotate(180deg);
+}
+
+.my-stones-packs-body {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 0 1.5rem 1.25rem;
+}
+
+[data-theme="dark"] .my-stones-packs {
+  background: linear-gradient(135deg, #2a2020 0%, #25231e 50%, #1e2a28 100%);
+  border-color: rgba(255, 255, 255, 0.08);
 }
 
 .floating-pack {
