@@ -4,21 +4,6 @@
 {% load l10n %}
 
 {% block content %}
-{% if unclaimed_stones %}
-<div class="unclaimed-qr-banner">
-  <div class="unclaimed-qr-inner">
-    <h3 class="unclaimed-qr-title">{% trans 'Unclaimed QR Codes' %}</h3>
-    <p class="unclaimed-qr-desc">{% trans 'You have QR codes waiting to be claimed. Give your stone a name to get started!' %}</p>
-    <div class="unclaimed-qr-list">
-      {% for stone in unclaimed_stones %}
-      <a href="{% url 'claim_stone' stone_number=stone.stone_number %}?key={{ stone.uuid }}" class="unclaimed-qr-item avant-btn">
-        {% trans 'Claim Stone' %} #{{ forloop.counter }}
-      </a>
-      {% endfor %}
-    </div>
-  </div>
-</div>
-{% endif %}
 {% if user_packs %}
 <div class="my-stones-packs">
   <h3 class="my-stones-packs-title">{% trans 'Your QR Packs' %}</h3>

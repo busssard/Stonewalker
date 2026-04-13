@@ -4868,7 +4868,12 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
 .my-stones-packs-title {
   width: 100%;
   margin: 0 0 0.25rem;
-  font-size: 1.1rem;
+  font-family: 'Quicksand', var(--font-main);
+  font-size: 2.1rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: var(--color-text-main);
+  text-shadow: 0 2px 8px rgba(60,60,60,0.07);
 }
 
 .floating-pack {
