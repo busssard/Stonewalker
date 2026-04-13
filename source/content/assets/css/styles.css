@@ -3047,9 +3047,9 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
   z-index: 1;
 }
 .my-stones-split #creations-title, .my-stones-split #interactions-title {
-  font-family: var(--font-title);
+  font-family: 'Quicksand', var(--font-main);
   font-size: 2.1rem;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: 0.5px;
   color: var(--color-text-main);
   text-shadow: 0 2px 8px rgba(60,60,60,0.07);
@@ -3085,7 +3085,7 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
   gap: 1rem;
 }
 .my-stones-split .stone-sort-label {
-  font-family: var(--font-title);
+  font-family: 'Quicksand', var(--font-main);
   font-size: 1.1rem;
   color: var(--color-primary);
   margin-right: 0.5rem;
@@ -3168,10 +3168,10 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
   font-weight: bold;
 }
 .my-stones-split .stone-list-title {
-  font-family: var(--font-title) !important;
+  font-family: 'Quicksand', var(--font-main) !important;
   font-size: 1.25rem;
   color: var(--color-text-main);
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: 0.5px;
 }
 .my-stones-split .stone-list-distance {
@@ -4853,6 +4853,22 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
   max-height: 180px;
   overflow-y: auto;
   background: #fafafa;
+}
+
+.my-stones-packs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin: 1rem 0 1.5rem;
+  padding: 1rem 1.25rem;
+  background: #fafafa;
+  border-radius: 10px;
+}
+
+.my-stones-packs-title {
+  width: 100%;
+  margin: 0 0 0.25rem;
+  font-size: 1.1rem;
 }
 
 .floating-pack {

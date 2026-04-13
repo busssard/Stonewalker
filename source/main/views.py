@@ -1,5 +1,5 @@
 from django.views.generic import TemplateView, DetailView
-from .models import Stone, StoneMove, calculate_stone_distance, StoneScanAttempt
+from .models import Stone, StoneMove, calculate_stone_distance, StoneScanAttempt, QRPack
 import json
 from django.shortcuts import redirect, render, get_object_or_404
 from django.http import HttpResponse
@@ -171,6 +171,11 @@ class MyStonesView(LoginRequiredMixin, TemplateView):
         ).select_related('FK_pack')
         context['unclaimed_stones'] = unclaimed_stones
         context['has_unclaimed'] = unclaimed_stones.exists()
+
+        # Fulfilled packs for re-downloading QR codes / pack PDFs
+        context['user_packs'] = QRPack.objects.filter(
+            FK_user=user, status='fulfilled'
+        ).prefetch_related('stones')
 
         # Stones where user has moved but is not the creator
         moved_stone_ids = StoneMove.objects.filter(FK_user=user).exclude(FK_stone__FK_user=user).values_list('FK_stone', flat=True).distinct()

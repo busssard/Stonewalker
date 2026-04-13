@@ -19,6 +19,49 @@
   </div>
 </div>
 {% endif %}
+{% if user_packs %}
+<div class="my-stones-packs">
+  <h3 class="my-stones-packs-title">{% trans 'Your QR Packs' %}</h3>
+  {% for pack in user_packs %}
+  <div class="floating-pack">
+    <div class="floating-pack-header">
+      <span class="floating-pack-type">{{ pack.get_pack_type_display }}</span>
+      <span class="floating-pack-count">{{ pack.stones.count }} {% trans 'QR codes' %}</span>
+    </div>
+    <div class="floating-pack-stones">
+      {% for stone in pack.stones.all %}{% if stone.stone_number %}
+      {% if stone.status == 'unclaimed' %}
+      <a href="{% url 'claim_stone' stone_number=stone.stone_number %}?key={{ stone.uuid }}" class="floating-stone-btn" title="{% trans 'Claim Stone' %}">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="3" width="18" height="18" rx="2"/>
+          <path d="M7 7h3v3H7zM14 7h3v3h-3zM7 14h3v3H7z"/>
+        </svg>
+      </a>
+      {% else %}
+      <a href="{% url 'download_stone_qr' stone.stone_number %}" class="floating-stone-btn" title="{{ stone.PK_stone }}">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="3" width="18" height="18" rx="2"/>
+          <path d="M7 7h3v3H7zM14 7h3v3h-3zM7 14h3v3H7z"/>
+        </svg>
+        <span class="floating-stone-name">{{ stone.PK_stone }}</span>
+      </a>
+      {% endif %}
+      {% endif %}{% endfor %}
+    </div>
+    {% if pack.pdf_generated %}
+    <a href="{% url 'download_pack_pdf' pack.id %}" class="floating-pdf-btn" title="{% trans 'Download all QR codes as one printable PDF' %}">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+        <polyline points="7 10 12 15 17 10"/>
+        <line x1="12" y1="15" x2="12" y2="3"/>
+      </svg>
+      {% trans 'Download PDF' %}
+    </a>
+    {% endif %}
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
 <div class="my-stones-split">
   <div class="my-stones-left">
     <div class="stone-header flex-center gap-1-5 justify-between">
