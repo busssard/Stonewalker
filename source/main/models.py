@@ -56,6 +56,9 @@ class QRPack(models.Model):
     pdf_generated = models.BooleanField(default=False)
     download_count = models.IntegerField(default=0)
 
+    # Language for PDF generation (captured at checkout time)
+    language = models.CharField(max_length=10, default='en')
+
     def __str__(self):
         return f"{self.get_pack_type_display()} - {self.get_status_display()} ({self.id})"
 
