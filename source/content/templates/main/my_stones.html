@@ -330,7 +330,7 @@ function showSimpleModal(pk, color, data) {
       <span style="font-family:var(--font-title);font-size:2.1rem;font-weight:700;letter-spacing:1px;color:${color};text-shadow:0 2px 8px rgba(0,0,0,0.07);">${stone.PK_stone}</span>
       ${stone.stone_number ? `<div style="font-size:0.85rem;color:#aaa;font-family:monospace;margin-top:0.2rem;">#${stone.stone_number}</div>` : ''}
     </div>
-    <div style="background:linear-gradient(90deg,${color}11 0%,#fff 100%);border-radius:12px;padding:1.1rem 1.3rem;margin-bottom:1.2rem;font-size:1.13rem;font-family:var(--font-serif);box-shadow:0 2px 8px rgba(0,0,0,0.04);color:#333;">${stone.description}</div>
+    <div style="background:${color}11;border-radius:12px;padding:1.1rem 1.3rem;margin-bottom:1.2rem;font-size:1.13rem;font-family:var(--font-serif);box-shadow:0 2px 8px rgba(0,0,0,0.04);color:#333;">${stone.description}</div>
     <div style='display:flex;justify-content:center;align-items:center;margin-bottom:1.2rem;font-size:1.05em;color:#888;font-family:monospace;gap:0;'>
       <div style='flex:1;min-width:120px;max-width:160px;text-align:center;padding:0 0.5em;'>
         <span style='display:block;font-size:0.97em;color:#aaa;'>Created</span>
@@ -349,7 +349,7 @@ function showSimpleModal(pk, color, data) {
     </div>
   `;
   
-  modalBody.innerHTML = `<div style='background:repeating-linear-gradient(135deg,${color}09 0 12px,transparent 12px 24px);border-radius:18px;padding:1.2rem 0.7rem;'>${html}</div>`;
+  modalBody.innerHTML = `<div style='background:${color}09;border-radius:18px;padding:1.2rem 0.7rem;'>${html}</div>`;
   modal.style.display = 'flex';
 }
 document.addEventListener('DOMContentLoaded', function() {

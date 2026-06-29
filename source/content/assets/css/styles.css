@@ -29,30 +29,32 @@
   --color-accent-blue: #38BDF8;
   --color-warm: #FBBF24;
 
-  /* Contemporary gradients */
-  --color-bg-left: linear-gradient(135deg, #FFF1F1 0%, #FFF8F0 50%, #FFFBF5 100%);
-  --color-bg-right: linear-gradient(135deg, #F0FDF9 0%, #F5F3FF 50%, #FDF4FF 100%);
-  --gradient-primary: linear-gradient(135deg, #FF6B6B 0%, #FF8E8E 100%);
-  --gradient-secondary: linear-gradient(135deg, #00D4AA 0%, #38BDF8 100%);
-  --gradient-accent: linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%);
-  --gradient-warm: linear-gradient(135deg, #FBBF24 0%, #F97316 100%);
-  --gradient-glass: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.7) 100%);
+  /* Flat solid surfaces (no gradients — playful, pre-2020 flat aesthetic).
+     These keep the --gradient-* / --color-bg-* names so existing references
+     resolve, but each now resolves to a single solid colour. */
+  --color-bg-left: #FFF6F0;
+  --color-bg-right: #F1FBF7;
+  --gradient-primary: #FF6B6B;
+  --gradient-secondary: #00D4AA;
+  --gradient-accent: #8B5CF6;
+  --gradient-warm: #FBBF24;
+  --gradient-glass: #FFFFFF;
 
-  /* Glassmorphism backgrounds */
-  --color-bg-card: rgba(255, 255, 255, 0.85);
-  --color-bg-modal: rgba(255, 255, 255, 0.95);
-  --color-bg-glass: rgba(255, 255, 255, 0.6);
+  /* Solid card/modal surfaces (was glassmorphism) */
+  --color-bg-card: #FFFFFF;
+  --color-bg-modal: #FFFFFF;
+  --color-bg-glass: #FFFFFF;
 
   /* Text colors */
   --color-text-main: #2D3748;
   --color-text-light: #718096;
   --color-text-accent: #FF6B6B;
 
-  /* Modern shadows */
-  --color-shadow: 0 4px 24px rgba(0,0,0,0.06);
-  --shadow-soft: 0 8px 32px rgba(0,0,0,0.08);
-  --shadow-glow: 0 4px 20px rgba(255, 107, 107, 0.25);
-  --shadow-glass: 0 8px 32px rgba(31, 38, 135, 0.08);
+  /* Flat shadows — tighter, no glow (pre-2020 flat look) */
+  --color-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  --shadow-soft: 0 3px 12px rgba(0,0,0,0.10);
+  --shadow-glow: 0 4px 0 rgba(232, 85, 85, 0.25);
+  --shadow-glass: 0 3px 12px rgba(0,0,0,0.10);
 
   /* Typography */
   --font-title: 'GiantBoom', 'Futura', sans-serif;
@@ -71,15 +73,15 @@
   --bg-secondary: #f5f5f5;
   --text-primary: #2D3748;
   --text-secondary: #718096;
-  --card-bg: rgba(255, 255, 255, 0.85);
-  --border-color: rgba(255, 255, 255, 0.5);
+  --card-bg: #ffffff;
+  --border-color: #ECECEC;
   --accent-green: #4CAF50;
-  --header-bg: rgba(255, 255, 255, 0.85);
+  --header-bg: #ffffff;
   --shadow-color: rgba(0,0,0,0.1);
-  --input-bg: rgba(255, 255, 255, 0.8);
+  --input-bg: #ffffff;
   --input-border: #E2E8F0;
-  --modal-bg: rgba(255, 255, 255, 0.95);
-  --body-bg: linear-gradient(135deg, #FEFEFE 0%, #FFF5F5 25%, #F5F3FF 50%, #F0FDF9 75%, #FFFBEB 100%);
+  --modal-bg: #ffffff;
+  --body-bg: #FFF8F2;
   --popup-bg: #ffffff;
   --filter-bg: var(--color-bg-right);
 }
@@ -89,29 +91,29 @@
   --bg-secondary: #16213e;
   --text-primary: #e0e0e0;
   --text-secondary: #b0b0b0;
-  --card-bg: rgba(30, 42, 58, 0.9);
+  --card-bg: #1e2a3a;
   --border-color: #2d3a4a;
   --accent-green: #66BB6A;
-  --header-bg: rgba(15, 25, 35, 0.92);
+  --header-bg: #0f1923;
   --shadow-color: rgba(0,0,0,0.3);
-  --input-bg: rgba(30, 42, 58, 0.8);
+  --input-bg: #1e2a3a;
   --input-border: #3d4a5a;
-  --modal-bg: rgba(26, 26, 46, 0.97);
-  --body-bg: linear-gradient(135deg, #0f1923 0%, #1a1a2e 25%, #16213e 50%, #1e2a3a 75%, #0f1923 100%);
+  --modal-bg: #1a1a2e;
+  --body-bg: #16213e;
   --popup-bg: #1e2a3a;
-  --filter-bg: linear-gradient(135deg, #16213e 0%, #1a1a2e 100%);
+  --filter-bg: #1a1a2e;
 
   --color-bg-card: var(--card-bg);
   --color-bg-modal: var(--modal-bg);
-  --color-bg-glass: rgba(30, 42, 58, 0.6);
+  --color-bg-glass: #1e2a3a;
   --color-text-main: var(--text-primary);
   --color-text-light: var(--text-secondary);
-  --color-shadow: 0 4px 24px var(--shadow-color);
-  --shadow-soft: 0 8px 32px rgba(0,0,0,0.2);
-  --shadow-glass: 0 8px 32px rgba(0,0,0,0.15);
+  --color-shadow: 0 2px 8px var(--shadow-color);
+  --shadow-soft: 0 3px 12px rgba(0,0,0,0.2);
+  --shadow-glass: 0 3px 12px rgba(0,0,0,0.15);
   --color-bg-left: var(--body-bg);
   --color-bg-right: var(--filter-bg);
-  --gradient-glass: linear-gradient(135deg, rgba(30,42,58,0.9) 0%, rgba(30,42,58,0.7) 100%);
+  --gradient-glass: #1e2a3a;
 }
 
 .avant-header {
@@ -127,8 +129,8 @@
 
 .avant-card {
   background: var(--color-bg-card);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+
+
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-glass);
   border: 1px solid rgba(255, 255, 255, 0.5);
@@ -182,7 +184,7 @@
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  background: transparent;
   transition: left 0.5s ease;
 }
 
@@ -277,7 +279,7 @@
   margin-bottom: 0.7rem;
   margin-top: 0.3rem;
   transition: all 0.3s ease;
-  backdrop-filter: blur(8px);
+
 }
 
 .avant-input:focus, .avant-select:focus {
@@ -302,8 +304,8 @@
 
 .avant-modal {
   background: var(--color-bg-modal);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
+
+
   border-radius: var(--radius-lg);
   box-shadow: 0 24px 64px rgba(0, 0, 0, 0.15);
   border: 1px solid rgba(255, 255, 255, 0.5);
@@ -345,7 +347,7 @@ body, html {
     padding: 0;
     font-family: var(--font-main);
     min-height: 100%;
-    background: linear-gradient(135deg, #FEFEFE 0%, #FFF5F5 25%, #F5F3FF 50%, #F0FDF9 75%, #FFFBEB 100%);
+    background: #FFF8F2;
     background-attachment: fixed;
     color: var(--color-text-main);
     overflow-x: hidden;
@@ -396,7 +398,7 @@ body::after {
 body::before {
     width: 500px;
     height: 500px;
-    background: linear-gradient(135deg, rgba(255, 107, 107, 0.3) 0%, rgba(236, 72, 153, 0.2) 100%);
+    background: rgba(255, 107, 107, 0.18);
     top: -10%;
     right: -10%;
     animation-delay: 0s;
@@ -405,7 +407,7 @@ body::before {
 body::after {
     width: 400px;
     height: 400px;
-    background: linear-gradient(135deg, rgba(139, 92, 246, 0.25) 0%, rgba(56, 189, 248, 0.2) 100%);
+    background: rgba(139, 92, 246, 0.18);
     bottom: -10%;
     left: -10%;
     animation-delay: -10s;
@@ -663,13 +665,13 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
+
+
 }
 .modal-content {
     background: rgba(255, 255, 255, 0.98);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+
+
     margin: 10% auto;
     padding: 2rem;
     border: 1px solid rgba(255, 255, 255, 0.5);
@@ -737,8 +739,8 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
 }
 .pebble-item, .submission-item {
     background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+
+
     border-radius: var(--radius-md);
     padding: 1.2rem;
     box-shadow: var(--shadow-glass);
@@ -822,8 +824,8 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
   display: flex;
   align-items: center;
   background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+
+
   color: var(--color-text-main);
   border-bottom: none;
   position: fixed;
@@ -930,10 +932,10 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
   aspect-ratio: 1/1;
   border-radius: 50%;
   object-fit: cover;
-  border: 3px solid transparent;
-  background: linear-gradient(#fff, #fff) padding-box, var(--gradient-primary) border-box;
+  border: 3px solid var(--gradient-primary);
+  background: #fff;
   vertical-align: middle;
-  box-shadow: 0 4px 16px rgba(255, 107, 107, 0.25);
+  box-shadow: 0 3px 0 rgba(232, 85, 85, 0.25);
   transition: all 0.3s ease;
   align-self: center;
 }
@@ -984,8 +986,8 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
   height: calc(100vh - var(--header-height));
   width: 280px;
   background: rgba(255, 255, 255, 0.98);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+
+
   box-shadow: -4px 0 24px rgba(0,0,0,0.1);
   flex-direction: column;
   align-items: flex-start;
@@ -1043,7 +1045,7 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  background: transparent;
   transition: left 0.5s ease;
 }
 
@@ -1086,8 +1088,8 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
   width: 100vw;
   height: 100%;
   background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+
+
   z-index: 10000;
   align-items: center;
   justify-content: center;
@@ -1098,8 +1100,8 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
   width: 95vw;
   margin: auto;
   background: rgba(255, 255, 255, 0.98);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+
+
   border-radius: var(--radius-lg);
   box-shadow: 0 24px 64px rgba(0, 0, 0, 0.2);
   border: 1px solid rgba(255, 255, 255, 0.5);
@@ -1132,9 +1134,9 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
 
 /* Welcome Modal Enhanced Styling */
 #welcome-modal-content {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 245, 245, 0.9) 100%);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
+  background: #ffffff;
+
+
   border: 1px solid rgba(255, 255, 255, 0.5);
   box-shadow: 0 24px 64px rgba(255, 107, 107, 0.15);
   position: relative;
@@ -1149,7 +1151,7 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
   right: -50%;
   width: 200%;
   height: 200%;
-  background: radial-gradient(circle, rgba(255, 107, 107, 0.08) 0%, transparent 60%);
+  background: rgba(255, 107, 107, 0.08);
   animation: welcome-glow 8s ease-in-out infinite alternate;
 }
 
@@ -1160,7 +1162,7 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
   left: -30%;
   width: 150%;
   height: 150%;
-  background: radial-gradient(circle, rgba(139, 92, 246, 0.06) 0%, transparent 60%);
+  background: rgba(139, 92, 246, 0.06);
   animation: welcome-glow 12s ease-in-out infinite alternate-reverse;
 }
 
@@ -1225,7 +1227,7 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  background: transparent;
   transition: left 0.5s;
 }
 
@@ -1337,8 +1339,8 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
   gap: 0.35rem;
   flex-wrap: nowrap;
   background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+
+
   border: 1.5px solid rgba(0, 0, 0, 0.1);
   border-radius: var(--radius-full);
   padding: 0.3rem 0.6rem;
@@ -1427,7 +1429,7 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
 
 .floating-action-btn.secondary {
   background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(12px);
+
   color: var(--color-primary);
   border: 2px solid var(--color-primary);
 }
@@ -1616,7 +1618,7 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
 
 .avant-about-section {
   min-height: 100vh;
-  background: linear-gradient(135deg, #f6f6f6, #e3eaf2);
+  background: #eef1f5;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1624,7 +1626,7 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
 }
 .avant-about-card {
   background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(8px);
+
   border-radius: 1.5rem;
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.06);
   max-width: 880px;
@@ -2817,23 +2819,23 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
 }
 
 .bg-gradient-left {
-  background: linear-gradient(135deg, #ffe7d1 0%, #fff6e9 100%) !important;
+  background: #fff1e2 !important;
 }
 
 .bg-gradient-right {
-  background: linear-gradient(135deg, #e3f0ff 0%, #f0f7ff 100%) !important;
+  background: #eaf3ff !important;
 }
 
 .bg-gradient-profile {
-  background: linear-gradient(135deg, #eee 60%, #f7f7f7 100%) !important;
+  background: #f1f1f1 !important;
 }
 
 .bg-gradient-decor-1 {
-  background: radial-gradient(circle at center, #ffecd2 0%, transparent 70%) !important;
+  background: #ffecd2 !important;
 }
 
 .bg-gradient-decor-2 {
-  background: radial-gradient(circle at center, #dcefff 0%, transparent 70%) !important;
+  background: #dcefff !important;
 }
 
 .border-3-5 {
@@ -2944,8 +2946,8 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
 
 .auth-modal {
   background: var(--color-bg-modal);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
+
+
   border-radius: var(--radius-lg);
   box-shadow: 0 24px 64px rgba(0, 0, 0, 0.15);
   border: 1px solid rgba(255, 255, 255, 0.5);
@@ -3012,7 +3014,7 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
   min-height: 0; /* allow flex children to size properly */
 }
 .my-stones-left {
-  background: linear-gradient(135deg, #FFF5F5 0%, #FFFBF5 50%, #FFF9F0 100%);
+  background: #FFF7F2;
   position: relative;
 }
 
@@ -3023,14 +3025,14 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
   right: -20%;
   width: 300px;
   height: 300px;
-  background: radial-gradient(circle, rgba(255, 107, 107, 0.15) 0%, transparent 70%);
+  background: rgba(255, 107, 107, 0.12);
   border-radius: 50%;
   filter: blur(40px);
   z-index: 1;
 }
 
 .my-stones-right {
-  background: linear-gradient(135deg, #F5F3FF 0%, #F0FDF9 50%, #ECFDF5 100%);
+  background: #F1F6F4;
   position: relative;
 }
 
@@ -3041,7 +3043,7 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
   left: -20%;
   width: 300px;
   height: 300px;
-  background: radial-gradient(circle, rgba(139, 92, 246, 0.12) 0%, transparent 70%);
+  background: rgba(139, 92, 246, 0.10);
   border-radius: 50%;
   filter: blur(40px);
   z-index: 1;
@@ -3113,8 +3115,8 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
   flex-direction: row;
   align-items: center;
   background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+
+
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-glass);
   border: 2px solid rgba(255, 255, 255, 0.5);
@@ -3181,7 +3183,7 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
   display: flex;
   align-items: center;
   gap: 0.3em;
-  background: linear-gradient(135deg, rgba(0, 212, 170, 0.1) 0%, rgba(56, 189, 248, 0.1) 100%);
+  background: rgba(0, 212, 170, 0.10);
   padding: 0.3em 0.8em;
   border-radius: var(--radius-full);
 }
@@ -3693,8 +3695,8 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
   width: 100%;
   height: 100%;
   background: rgba(0,0,0,0.5);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+
+
   z-index: 9999;
 }
 
@@ -3704,8 +3706,8 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
   left: 50%;
   transform: translate(-50%, -50%);
   background: rgba(255, 255, 255, 0.98);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+
+
   border-radius: 28px;
   padding: 28px;
   max-width: 500px;
@@ -3750,7 +3752,7 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
   height: 120px;
   border: 4px solid #00D4AA;
   border-radius: 20px;
-  background: linear-gradient(135deg, #F0FDF9 0%, #F5F3FF 100%);
+  background: #F2F8F6;
   margin: 0 auto;
   display: flex;
   align-items: center;
@@ -3839,7 +3841,7 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
 .new-modal-type-desc {
   margin-top: 8px;
   padding: 10px 12px;
-  background: linear-gradient(135deg, rgba(0, 212, 170, 0.08) 0%, rgba(56, 189, 248, 0.08) 100%);
+  background: rgba(0, 212, 170, 0.08);
   border-radius: 12px;
   font-size: 14px;
   color: #718096;
@@ -3897,7 +3899,7 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
 .new-modal-btn-primary {
   padding: 12px 24px;
   border: none;
-  background: linear-gradient(135deg, #FF6B6B 0%, #FF8E8E 100%);
+  background: #FF6B6B;
   color: white;
   border-radius: 9999px;
   cursor: pointer;
@@ -3909,7 +3911,7 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
 .new-modal-btn-accent {
   padding: 12px 24px;
   border: none;
-  background: linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%);
+  background: #8B5CF6;
   color: white;
   border-radius: 9999px;
   cursor: pointer;
@@ -3921,7 +3923,7 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
 .new-modal-btn-teal {
   padding: 12px 24px;
   border: none;
-  background: linear-gradient(135deg, #00D4AA 0%, #38BDF8 100%);
+  background: #00D4AA;
   color: white;
   border-radius: 9999px;
   cursor: pointer;
@@ -3952,7 +3954,7 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
   border: 2px dashed #E2E8F0;
   border-radius: 16px;
   color: #718096;
-  background: linear-gradient(135deg, rgba(0, 212, 170, 0.05) 0%, rgba(56, 189, 248, 0.05) 100%);
+  background: rgba(0, 212, 170, 0.05);
 }
 
 .new-modal-qr-loading-icon {
@@ -4857,7 +4859,7 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
 
 .my-stones-packs {
   margin: 1rem 0 1.5rem;
-  background: linear-gradient(135deg, #FFF5F5 0%, #FFFBF5 50%, #F0FDF9 100%);
+  background: #FAF6F2;
   border: 1px solid rgba(255, 255, 255, 0.6);
   border-radius: 14px;
   box-shadow: 0 2px 12px rgba(60, 60, 60, 0.06);
@@ -4913,7 +4915,7 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
 }
 
 [data-theme="dark"] .my-stones-packs {
-  background: linear-gradient(135deg, #2a2020 0%, #25231e 50%, #1e2a28 100%);
+  background: #26221e;
   border-color: rgba(255, 255, 255, 0.08);
 }
 
@@ -5306,18 +5308,18 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
 }
 
 [data-theme="dark"] body::before {
-  background: linear-gradient(135deg, rgba(102, 187, 106, 0.15) 0%, rgba(56, 189, 248, 0.1) 100%);
+  background: rgba(102, 187, 106, 0.12);
   opacity: 0.3;
 }
 
 [data-theme="dark"] body::after {
-  background: linear-gradient(135deg, rgba(139, 92, 246, 0.12) 0%, rgba(236, 72, 153, 0.08) 100%);
+  background: rgba(139, 92, 246, 0.10);
   opacity: 0.3;
 }
 
 [data-theme="dark"] .header {
   background: var(--header-bg);
-  backdrop-filter: blur(20px);
+
   color: var(--text-primary);
 }
 
@@ -5395,7 +5397,7 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
 
 [data-theme="dark"] .floating-action-btn.secondary {
   background: var(--card-bg);
-  backdrop-filter: blur(12px);
+
   border-color: var(--color-primary);
 }
 
@@ -5737,7 +5739,7 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
 
 /* ===== Unclaimed QR Banner ===== */
 .unclaimed-qr-banner {
-  background: linear-gradient(135deg, #e8f5e9 0%, #fff8e1 50%, #e3f2fd 100%);
+  background: #eef6ec;
   padding: 1.2rem 2rem;
   border-bottom: 2px solid rgba(76, 175, 80, 0.2);
   /* Match .my-stones-split negative margins to fill container-fluid */
@@ -5784,7 +5786,7 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
 .new-qr-button-bar {
   text-align: center;
   padding: 1.2rem 1rem;
-  background: linear-gradient(135deg, #FFF5F5 0%, #F5F3FF 100%);
+  background: #FAF6FB;
   border-top: 1px solid rgba(0,0,0,0.06);
 }
 .new-qr-btn {
@@ -5805,16 +5807,16 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
 
 /* ===== My Stones Dark Mode ===== */
 [data-theme="dark"] .my-stones-left {
-  background: linear-gradient(135deg, #1a1a2e 0%, #1e2a3a 50%, #16213e 100%);
+  background: #1a1a2e;
 }
 [data-theme="dark"] .my-stones-left::before {
-  background: radial-gradient(circle, rgba(255, 107, 107, 0.08) 0%, transparent 70%);
+  background: rgba(255, 107, 107, 0.08);
 }
 [data-theme="dark"] .my-stones-right {
-  background: linear-gradient(135deg, #16213e 0%, #1a1a2e 50%, #1e2a3a 100%);
+  background: #16213e;
 }
 [data-theme="dark"] .my-stones-right::before {
-  background: radial-gradient(circle, rgba(139, 92, 246, 0.06) 0%, transparent 70%);
+  background: rgba(139, 92, 246, 0.06);
 }
 [data-theme="dark"] .my-stones-split #creations-title,
 [data-theme="dark"] .my-stones-split #interactions-title {
@@ -5871,7 +5873,7 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
 
 /* Unclaimed QR banner dark mode */
 [data-theme="dark"] .unclaimed-qr-banner {
-  background: linear-gradient(135deg, rgba(30, 42, 58, 0.95) 0%, rgba(26, 26, 46, 0.95) 100%);
+  background: #1e2a3a;
   border-bottom-color: rgba(102, 187, 106, 0.2);
 }
 [data-theme="dark"] .unclaimed-qr-title {
@@ -5889,7 +5891,7 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
 
 /* New QR button bar dark mode */
 [data-theme="dark"] .new-qr-button-bar {
-  background: linear-gradient(135deg, rgba(26, 26, 46, 0.95) 0%, rgba(30, 42, 58, 0.95) 100%);
+  background: #1a1a2e;
   border-top-color: var(--border-color);
 }
 [data-theme="dark"] .new-qr-btn {
@@ -6136,3 +6138,38 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
 /* ===== Stone Type: hunted ===== */
 .stone-type-hunted { background: #fff3e0; color: #e65100; }
 [data-theme="dark"] .stone-type-hunted { background: #bf360c; color: #ffab91; }
+
+
+/* ===== Site footer (legal links) ===== */
+.site-footer {
+  border-top: 2px solid var(--color-primary-light);
+  background: #fff;
+  padding: 1.4rem 1rem 1.8rem;
+  text-align: center;
+  font-family: var(--font-main);
+}
+.site-footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.4rem 1.4rem;
+  margin-bottom: 0.6rem;
+}
+.site-footer-links a {
+  color: var(--color-text-light);
+  font-size: 0.95rem;
+  text-decoration: none;
+  font-weight: 600;
+}
+.site-footer-links a:hover {
+  color: var(--color-primary);
+  text-decoration: underline;
+}
+.site-footer-copy {
+  color: var(--color-text-light);
+  font-size: 0.85rem;
+}
+[data-theme="dark"] .site-footer {
+  background: #1a202c;
+  border-top-color: var(--color-accent);
+}
