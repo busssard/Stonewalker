@@ -114,3 +114,7 @@ Thumbs.db
 # Linter / type checker caches
 .ruff_cache/
 .mypy_cache/
+
+# Generated QR/PDF test exports at repo root
+/stonewalker_test_*.pdf
+/stonewalker_test_*.png
