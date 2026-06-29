@@ -251,9 +251,9 @@
     var mapEl = document.getElementById('new-hunted-map');
     if (!mapEl || typeof L === 'undefined') return;
     huntedMap = L.map('new-hunted-map').setView([20, 0], 3);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 19,
-      attribution: '\u00a9 OpenStreetMap'
+    L.tileLayer('https://tiles.stadiamaps.com/tiles/stamen_watercolor/{z}/{x}/{y}.jpg{% if stadia_api_key %}?api_key={{ stadia_api_key }}{% endif %}', {
+      maxNativeZoom: 16, maxZoom: 19,
+      attribution: '\u00a9 Stadia Maps \u00a9 Stamen Design \u00a9 OpenStreetMap'
     }).addTo(huntedMap);
     huntedMarker = L.marker([20, 0], {draggable: true}).addTo(huntedMap);
     huntedMarker.on('dragend', function() {

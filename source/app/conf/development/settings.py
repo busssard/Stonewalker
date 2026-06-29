@@ -76,6 +76,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'app.context_processors.shop_visibility',
                 'app.context_processors.premium_status',
+                'app.context_processors.map_config',
             ],
         },
     },
@@ -208,3 +209,12 @@ DISCOURSE_SSO_ENABLED = True
 
 # Shop Configuration - visibility threshold
 SHOP_VISIBLE_USER_THRESHOLD = int(os.environ.get('SHOP_VISIBLE_USER_THRESHOLD', 1000))
+
+# Map tiles (Stadia Maps / Stamen Watercolor).
+# Keyless from localhost/127.0.0.1; set STADIA_API_KEY to test prod-style auth.
+STADIA_API_KEY = os.environ.get('STADIA_API_KEY', '')
+
+# Send the origin to cross-origin requests (map tile providers require a Referer
+# to authenticate; Django's default "same-origin" strips it). Privacy-preserving:
+# sends only the origin, not the full path.
+SECURE_REFERRER_POLICY = 'strict-origin-when-cross-origin'

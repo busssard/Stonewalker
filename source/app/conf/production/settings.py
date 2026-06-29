@@ -58,6 +58,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'app.context_processors.shop_visibility',
                 'app.context_processors.premium_status',
+                'app.context_processors.map_config',
             ],
         },
     },
@@ -190,6 +191,10 @@ SECURE_HSTS_PRELOAD = True
 SESSION_COOKIE_SECURE = True        # Only send session cookie over HTTPS
 CSRF_COOKIE_SECURE = True           # Only send CSRF cookie over HTTPS
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')  # Trust nginx's header
+# Send the origin (not full path) to cross-origin requests. Django's default
+# "same-origin" strips the Referer entirely, which breaks map tile providers
+# (Stadia/OSM) that authenticate by Referer/Origin.
+SECURE_REFERRER_POLICY = 'strict-origin-when-cross-origin'
 
 # Log Django request errors to console (visible in Render logs)
 LOGGING = {
@@ -228,3 +233,9 @@ DISCOURSE_SSO_ENABLED = bool(os.environ.get('DISCOURSE_SSO_SECRET'))
 
 # Shop Configuration - visibility threshold
 SHOP_VISIBLE_USER_THRESHOLD = int(os.environ.get('SHOP_VISIBLE_USER_THRESHOLD', 1000))
+
+# Map tiles (Stadia Maps / Stamen Watercolor). REQUIRED in production: create a
+# free key at https://client.stadiamaps.com, allow-list stonewalker.org, and set
+# STADIA_API_KEY. Without it (and without domain auth) tiles return "invalid
+# authentication".
+STADIA_API_KEY = os.environ.get('STADIA_API_KEY', '')

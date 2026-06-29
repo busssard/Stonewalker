@@ -16,6 +16,19 @@ def shop_visibility(request):
     }
 
 
+def map_config(request):
+    """Expose the Stadia Maps API key to templates for the Leaflet tile layers.
+
+    Empty in local development — Stadia allows keyless access from
+    localhost/127.0.0.1 as long as a Referer/Origin is sent (see
+    SECURE_REFERRER_POLICY). In production this must be set via the
+    STADIA_API_KEY env var, with the domain allow-listed in the Stadia dashboard.
+    """
+    return {
+        'stadia_api_key': getattr(settings, 'STADIA_API_KEY', ''),
+    }
+
+
 def premium_status(request):
     """
     Context processor to expose premium subscription status to all templates.

@@ -105,8 +105,9 @@
   if (!movesData.length) return;
 
   var map = L.map('share-map', { scrollWheelZoom: false });
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; OpenStreetMap'
+  L.tileLayer('https://tiles.stadiamaps.com/tiles/stamen_watercolor/{z}/{x}/{y}.jpg{% if stadia_api_key %}?api_key={{ stadia_api_key }}{% endif %}', {
+    maxNativeZoom: 16, maxZoom: 19,
+    attribution: '&copy; Stadia Maps &copy; Stamen Design &copy; OpenStreetMap'
   }).addTo(map);
 
   var latlngs = [];
