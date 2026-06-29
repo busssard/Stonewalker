@@ -92,7 +92,7 @@
         </div>
 
         <!-- Hidden fields -->
-        <input type="hidden" name="color" id="new-stone-color" value="#00D4AA">
+        <input type="hidden" name="color" id="new-stone-color" value="#00268F">
         <input type="hidden" name="stone_uuid" id="new-stone-uuid" value="">
 
       </form>
@@ -319,11 +319,11 @@
         if (data.taken) {
           nameStatus.textContent = '❌';
           nameMessage.textContent = 'Name already taken';
-          nameMessage.style.color = '#FF6B6B';
+          nameMessage.style.color = '#A4652A';
         } else {
           nameStatus.textContent = '✅';
           nameMessage.textContent = 'Available';
-          nameMessage.style.color = '#00D4AA';
+          nameMessage.style.color = '#00268F';
         }
       })
       .catch(() => {
