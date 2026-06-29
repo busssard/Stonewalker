@@ -6074,3 +6074,36 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
 /* ===== Stone Type: hunted ===== */
 .stone-type-hunted { background: #fff3e0; color: #e65100; }
 [data-theme="dark"] .stone-type-hunted { background: #bf360c; color: #ffab91; }
+/* ===== Site footer (legal links) ===== */
+.site-footer {
+  border-top: 2px solid var(--color-primary-light);
+  background: #fff;
+  padding: 1.4rem 1rem 1.8rem;
+  text-align: center;
+  font-family: var(--font-main);
+}
+.site-footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.4rem 1.4rem;
+  margin-bottom: 0.6rem;
+}
+.site-footer-links a {
+  color: var(--color-text-light);
+  font-size: 0.95rem;
+  text-decoration: none;
+  font-weight: 600;
+}
+.site-footer-links a:hover {
+  color: var(--color-primary);
+  text-decoration: underline;
+}
+.site-footer-copy {
+  color: var(--color-text-light);
+  font-size: 0.85rem;
+}
+[data-theme="dark"] .site-footer {
+  background: #1a202c;
+  border-top-color: var(--color-accent);
+}

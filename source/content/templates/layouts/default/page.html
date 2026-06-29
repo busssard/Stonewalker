@@ -295,6 +295,16 @@ window.addEventListener('DOMContentLoaded', function() {
 
 </div>
 
+<footer class="site-footer">
+  <nav class="site-footer-links" aria-label="{% trans 'Legal' %}">
+    <a href="{% url 'about' %}">{% trans 'About' %}</a>
+    <a href="{% url 'impressum' %}">{% trans 'Impressum' %}</a>
+    <a href="{% url 'privacy' %}">{% trans 'Privacy Policy' %}</a>
+    <a href="{% url 'terms' %}">{% trans 'Terms of Use' %}</a>
+  </nav>
+  <div class="site-footer-copy">&copy; StoneWalker</div>
+</footer>
+
 <script src="{% static 'vendor/jquery/jquery-3.4.1.min.js' %}"></script>
 <script src="{% static 'vendor/popper/popper.min.js' %}"></script>
 <script src="{% static 'vendor/bootstrap/js/bootstrap.min.js' %}"></script>

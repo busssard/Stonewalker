@@ -44,6 +44,18 @@ class ImpressumView(TemplateView):
         return context
 
 
+class PrivacyView(TemplateView):
+    template_name = 'main/privacy.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        import os
+        json_path = os.path.join(os.path.dirname(__file__), 'impressum.json')
+        with open(json_path, 'r', encoding='utf-8') as f:
+            context['impressum'] = json.load(f)
+        return context
+
+
 class ChangeLanguageView(TemplateView):
     template_name = 'main/change_language.html'
 

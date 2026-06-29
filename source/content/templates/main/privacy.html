@@ -1,0 +1,103 @@
+{% extends 'layouts/default/page.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% trans 'Privacy Policy' %} - StoneWalker{% endblock %}
+
+{% block content %}
+<div class="avant-section avant-bg-left flex-center min-h-80vh overflow-auto">
+  <div class="avant-card max-w-700 m-2-auto position-relative">
+    <div class="avant-card-title fs-2-4 fw-600 mb-1-8 text-dark text-center">{% trans 'Privacy Policy' %}</div>
+
+    <div class="fs-1-1 line-height-1-7 text-dark-gray">
+
+      <p class="mb-1-5">
+        This Privacy Policy explains how StoneWalker collects, uses, and protects your
+        personal data. We process personal data in accordance with the Swiss Federal Act
+        on Data Protection (revFADP) and, where applicable, the EU General Data Protection
+        Regulation (GDPR).
+      </p>
+
+      <h2 class="fs-1-4 fw-600 text-dark mt-2 mb-0-7">1. Who is responsible</h2>
+      <p class="mb-1-5">
+        The controller responsible for data processing on this website is:<br>
+        {% if impressum.identity.type == "natural_person" %}
+          {{ impressum.identity.first_name }} {{ impressum.identity.last_name }}
+        {% else %}
+          {{ impressum.identity.company_name }}{% if impressum.identity.uid %} (UID {{ impressum.identity.uid }}){% endif %}
+        {% endif %}<br>
+        {{ impressum.contact.street }}, {{ impressum.contact.postal_code }} {{ impressum.contact.city }}, {{ impressum.contact.country }}<br>
+        {% trans 'Email' %}: {{ impressum.contact.email }}
+      </p>
+
+      <h2 class="fs-1-4 fw-600 text-dark mt-2 mb-0-7">2. What data we collect</h2>
+      <ul class="pl-1-5 mb-1-5">
+        <li><strong>Account data:</strong> username, first and last name, email address, and password (stored only as a salted hash).</li>
+        <li><strong>Profile data:</strong> an optional profile picture and optional links to your social media accounts.</li>
+        <li><strong>Stone &amp; location data:</strong> the stones you create, the photos you upload, and the geographic coordinates (latitude/longitude) where stones are found or placed. <strong>This location data is shown publicly on the map.</strong></li>
+        <li><strong>Technical log data:</strong> when a stone is scanned, we record your IP address and browser user-agent to enforce a one-week scan limit and to protect against abuse.</li>
+        <li><strong>Payment data:</strong> if you buy a QR pack or a premium subscription, payment is handled by Stripe. We store only a payment reference, not your card details.</li>
+      </ul>
+
+      <h2 class="fs-1-4 fw-600 text-dark mt-2 mb-0-7">3. Why we process it and on what legal basis</h2>
+      <ul class="pl-1-5 mb-1-5">
+        <li><strong>To provide the service</strong> (create an account, manage stones, display the map) — performance of our agreement with you.</li>
+        <li><strong>To send service emails</strong> (account activation, password reset, scan/move notifications) — performance of the agreement and your consent to notifications.</li>
+        <li><strong>To keep the service secure</strong> (scan-limit enforcement, abuse prevention via IP/user-agent logging) — our legitimate interest.</li>
+        <li><strong>To process payments</strong> — performance of the agreement and our legal obligations.</li>
+      </ul>
+
+      <h2 class="fs-1-4 fw-600 text-dark mt-2 mb-0-7">4. Cookies</h2>
+      <p class="mb-1-5">
+        We use only strictly necessary, first-party cookies: a session cookie to keep you
+        logged in, a CSRF token for security, a cookie that remembers your chosen language,
+        and a short-lived cookie for status messages. We do <strong>not</strong> use any
+        analytics, advertising, or tracking cookies, which is why no cookie consent banner
+        is shown.
+      </p>
+
+      <h2 class="fs-1-4 fw-600 text-dark mt-2 mb-0-7">5. Service providers and third parties</h2>
+      <p class="mb-0-7">We share data with the following processors only as needed to run the service:</p>
+      <ul class="pl-1-5 mb-1-5">
+        <li><strong>Stripe</strong> — payment processing.</li>
+        <li><strong>Maileroo</strong> — sending transactional emails.</li>
+        <li><strong>Google Fonts</strong> — web fonts (your IP is transmitted to Google when fonts load).</li>
+        <li><strong>OpenStreetMap</strong> — map tiles (your IP is transmitted when the map loads).</li>
+        <li><strong>unpkg (CDN)</strong> — map and QR-scanner libraries.</li>
+        <li><strong>Discourse</strong> — our community forum, if you choose to use it.</li>
+      </ul>
+      <p class="mb-1-5">
+        Some of these providers are based outside Switzerland and the EU (e.g. in the United
+        States). Where data is transferred internationally, it is protected by appropriate
+        safeguards such as the providers' standard contractual clauses.
+      </p>
+
+      <h2 class="fs-1-4 fw-600 text-dark mt-2 mb-0-7">6. How long we keep your data</h2>
+      <p class="mb-1-5">
+        We keep your account and stone data for as long as your account exists. Scan log data
+        (IP address and user-agent) is retained only as long as needed for scan-limit
+        enforcement and abuse prevention, and is then deleted or anonymised. If you delete
+        your account, we delete or anonymise your personal data, except where we are legally
+        required to retain certain records (for example, payment records).
+      </p>
+
+      <h2 class="fs-1-4 fw-600 text-dark mt-2 mb-0-7">7. Your rights</h2>
+      <p class="mb-1-5">
+        You have the right to access the personal data we hold about you, to have inaccurate
+        data corrected, to have your data deleted, to restrict or object to processing, and
+        to receive your data in a portable format. To exercise any of these rights, or to
+        delete your account, contact us at {{ impressum.contact.email }}. You also have the
+        right to lodge a complaint with the Swiss Federal Data Protection and Information
+        Commissioner (FDPIC) or your local supervisory authority.
+      </p>
+
+      <h2 class="fs-1-4 fw-600 text-dark mt-2 mb-0-7">8. Changes to this policy</h2>
+      <p class="mb-0-5">
+        We may update this Privacy Policy from time to time. The current version is always
+        available on this page.
+      </p>
+
+    </div>
+  </div>
+</div>
+{% endblock %}
