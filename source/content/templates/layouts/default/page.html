@@ -208,7 +208,7 @@ function checkImageSize(imageUrl) {
   </button>
   <div id="burger-menu-container" class="flex-center position-relative h-full">
     <label for="menu-toggle" class="avant-btn header-burger-label" id="burger-label" role="button" aria-label="{% trans 'Toggle navigation menu' %}">
-      <svg viewBox="0 0 32 32" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><rect y="6" width="32" height="4" rx="2" fill="#A4652A"/><rect y="14" width="32" height="4" rx="2" fill="#A4652A"/><rect y="22" width="32" height="4" rx="2" fill="#A4652A"/></svg>
+      <svg viewBox="0 0 32 32" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><rect y="6" width="32" height="4" rx="2" fill="#D15A16"/><rect y="14" width="32" height="4" rx="2" fill="#D15A16"/><rect y="22" width="32" height="4" rx="2" fill="#D15A16"/></svg>
     </label>
   </div>
   <div id="burger-overlay" class="header-burger-overlay"></div>
@@ -295,14 +295,16 @@ window.addEventListener('DOMContentLoaded', function() {
 
 </div>
 
-<footer class="site-footer">
-  <nav class="site-footer-links" aria-label="{% trans 'Legal' %}">
-    <a href="{% url 'about' %}">{% trans 'About' %}</a>
-    <a href="{% url 'impressum' %}">{% trans 'Impressum' %}</a>
-    <a href="{% url 'privacy' %}">{% trans 'Privacy Policy' %}</a>
-    <a href="{% url 'terms' %}">{% trans 'Terms of Use' %}</a>
-  </nav>
-  <div class="site-footer-copy">&copy; StoneWalker</div>
+<footer class="site-footer" aria-label="{% trans 'Legal' %}">
+  <a href="{% url 'about' %}">{% trans 'About' %}</a>
+  <span class="site-footer-sep" aria-hidden="true">&middot;</span>
+  <a href="{% url 'impressum' %}">{% trans 'Impressum' %}</a>
+  <span class="site-footer-sep" aria-hidden="true">&middot;</span>
+  <a href="{% url 'privacy' %}">{% trans 'Privacy Policy' %}</a>
+  <span class="site-footer-sep" aria-hidden="true">&middot;</span>
+  <a href="{% url 'terms' %}">{% trans 'Terms of Use' %}</a>
+  <span class="site-footer-sep" aria-hidden="true">&middot;</span>
+  <span class="site-footer-copy">&copy; StoneWalker</span>
 </footer>
 
 <script src="{% static 'vendor/jquery/jquery-3.4.1.min.js' %}"></script>

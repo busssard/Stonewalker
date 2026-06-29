@@ -10,6 +10,7 @@
 */
 :root {
   --header-height: 80px;
+  --footer-height: 30px;
 }
 
 /* Example usage: */
@@ -18,27 +19,27 @@
 /* Replace all hardcoded breakpoints in media queries below with the corresponding var(--breakpoint-...) */
 /* --- StoneWalker Contemporary Artsy Theme --- */
 :root {
-  /* Watercolor-map palette: darkest terracotta orange (#A4652A) + darkest
-     cobalt blue (#00268F) sampled from the Stamen Watercolor tiles. */
-  --color-primary: #A4652A;
-  --color-primary-dark: #7E4D20;
-  --color-primary-light: #E3C7A8;
-  --color-secondary: #00268F;
-  --color-secondary-dark: #001C6B;
-  --color-accent: #00268F;
-  --color-accent-light: #B9C3E0;
-  --color-accent-blue: #00268F;
-  --color-warm: #C8783C;
+  /* Watercolor-map palette: darkest terracotta orange (#D15A16) + darkest
+     cobalt blue (#002DB7) sampled from the Stamen Watercolor tiles. */
+  --color-primary: #D15A16;
+  --color-primary-dark: #A8480F;
+  --color-primary-light: #F3CBA6;
+  --color-secondary: #002DB7;
+  --color-secondary-dark: #0022A0;
+  --color-accent: #002DB7;
+  --color-accent-light: #BFD0F2;
+  --color-accent-blue: #002DB7;
+  --color-warm: #E07A2E;
 
   /* Flat solid surfaces (no gradients — playful, pre-2020 flat aesthetic).
      These keep the --gradient-* / --color-bg-* names so existing references
      resolve, but each now resolves to a single solid colour. */
-  --color-bg-left: #FFF6F0;
-  --color-bg-right: #F1FBF7;
-  --gradient-primary: #A4652A;
-  --gradient-secondary: #00268F;
-  --gradient-accent: #00268F;
-  --gradient-warm: #C8783C;
+  --color-bg-left: #FFF0D8;
+  --color-bg-right: #FFF0D8;
+  --gradient-primary: #D15A16;
+  --gradient-secondary: #002DB7;
+  --gradient-accent: #002DB7;
+  --gradient-warm: #E07A2E;
   --gradient-glass: #FFFFFF;
 
   /* Solid card/modal surfaces (was glassmorphism) */
@@ -49,12 +50,12 @@
   /* Text colors */
   --color-text-main: #2D3748;
   --color-text-light: #718096;
-  --color-text-accent: #A4652A;
+  --color-text-accent: #D15A16;
 
   /* Flat shadows — tighter, no glow (pre-2020 flat look) */
   --color-shadow: 0 2px 8px rgba(0,0,0,0.08);
   --shadow-soft: 0 3px 12px rgba(0,0,0,0.10);
-  --shadow-glow: 0 4px 0 rgba(164, 101, 42, 0.25);
+  --shadow-glow: 0 4px 0 rgba(209, 90, 22, 0.25);
   --shadow-glass: 0 3px 12px rgba(0,0,0,0.10);
 
   /* Typography */
@@ -82,7 +83,7 @@
   --input-bg: #ffffff;
   --input-border: #E2E8F0;
   --modal-bg: #ffffff;
-  --body-bg: #FFF8F2;
+  --body-bg: #FFF0D8;
   --popup-bg: #ffffff;
   --filter-bg: var(--color-bg-right);
 }
@@ -123,7 +124,7 @@
   font-weight: 700;
   letter-spacing: 0.02em;
   color: var(--color-text-main);
-  text-shadow: 0 2px 12px rgba(164, 101, 42, 0.12);
+  text-shadow: 0 2px 12px rgba(209, 90, 22, 0.12);
   margin-bottom: 1.2rem;
   line-height: 1.2;
 }
@@ -195,7 +196,7 @@
 
 .avant-btn:focus, .avant-btn:hover {
   transform: translateY(-2px) scale(1.02);
-  box-shadow: 0 8px 28px rgba(164, 101, 42, 0.4);
+  box-shadow: 0 8px 28px rgba(209, 90, 22, 0.4);
 }
 
 .avant-btn:active {
@@ -219,20 +220,20 @@
 /* Accent button variants */
 .avant-btn.accent {
   background: var(--gradient-accent);
-  box-shadow: 0 4px 20px rgba(0, 38, 143, 0.3);
+  box-shadow: 0 4px 20px rgba(0, 45, 183, 0.3);
 }
 
 .avant-btn.accent:hover {
-  box-shadow: 0 8px 28px rgba(0, 38, 143, 0.5);
+  box-shadow: 0 8px 28px rgba(0, 45, 183, 0.5);
 }
 
 .avant-btn.teal {
   background: var(--gradient-secondary);
-  box-shadow: 0 4px 20px rgba(0, 38, 143, 0.3);
+  box-shadow: 0 4px 20px rgba(0, 45, 183, 0.3);
 }
 
 .avant-btn.teal:hover {
-  box-shadow: 0 8px 28px rgba(0, 38, 143, 0.5);
+  box-shadow: 0 8px 28px rgba(0, 45, 183, 0.5);
 }
 .avant-bg-left {
   background: var(--color-bg-left);
@@ -285,7 +286,7 @@
 
 .avant-input:focus, .avant-select:focus {
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 4px rgba(164, 101, 42, 0.15);
+  box-shadow: 0 0 0 4px rgba(209, 90, 22, 0.15);
   outline: none;
   background: #fff;
 }
@@ -348,7 +349,7 @@ body, html {
     padding: 0;
     font-family: var(--font-main);
     min-height: 100%;
-    background: #FFF8F2;
+    background: #FFF0D8;
     background-attachment: fixed;
     color: var(--color-text-main);
     overflow-x: hidden;
@@ -358,12 +359,12 @@ body, html {
 
 /* Contemporary selection styling */
 ::selection {
-    background: rgba(164, 101, 42, 0.25);
+    background: rgba(209, 90, 22, 0.25);
     color: var(--color-text-main);
 }
 
 ::-moz-selection {
-    background: rgba(164, 101, 42, 0.25);
+    background: rgba(209, 90, 22, 0.25);
     color: var(--color-text-main);
 }
 
@@ -399,7 +400,7 @@ body::after {
 body::before {
     width: 500px;
     height: 500px;
-    background: rgba(164, 101, 42, 0.18);
+    background: rgba(209, 90, 22, 0.18);
     top: -10%;
     right: -10%;
     animation-delay: 0s;
@@ -408,7 +409,7 @@ body::before {
 body::after {
     width: 400px;
     height: 400px;
-    background: rgba(0, 38, 143, 0.18);
+    background: rgba(0, 45, 183, 0.18);
     bottom: -10%;
     left: -10%;
     animation-delay: -10s;
@@ -466,9 +467,10 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.5);
 }
 
-/* Prevent scrolling on startpage */
+/* Prevent scrolling on startpage: leave room for the slim footer so the
+   page is exactly one viewport tall (no accidental scroll when zooming). */
 .h-map-wrapper {
-  height: calc(100vh - var(--header-height));
+  height: calc(100vh - var(--header-height) - var(--footer-height));
   overflow: hidden;
   padding: 1.2rem 2vw 1rem 2vw;
   box-sizing: border-box;
@@ -635,7 +637,7 @@ body.startpage {
 }
 .login-button:hover, .logout-button:hover, .btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 28px rgba(164, 101, 42, 0.4);
+    box-shadow: 0 8px 28px rgba(209, 90, 22, 0.4);
 }
 button, input[type="submit"], .modal button {
     background: #f5f5f5;
@@ -713,7 +715,7 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
 .modal input[type="text"]:focus,
 .modal input[type="password"]:focus {
     border-color: var(--color-primary);
-    box-shadow: 0 0 0 4px rgba(164, 101, 42, 0.12);
+    box-shadow: 0 0 0 4px rgba(209, 90, 22, 0.12);
     outline: none;
 }
 #personal-area {
@@ -752,7 +754,7 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
 .pebble-item:hover, .submission-item:hover {
     transform: translateY(-3px);
     box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1);
-    border-color: rgba(164, 101, 42, 0.3);
+    border-color: rgba(209, 90, 22, 0.3);
 }
 .pebble-item img, .submission-item img {
     width: 100%;
@@ -936,14 +938,14 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
   border: 3px solid var(--gradient-primary);
   background: #fff;
   vertical-align: middle;
-  box-shadow: 0 3px 0 rgba(164, 101, 42, 0.25);
+  box-shadow: 0 3px 0 rgba(209, 90, 22, 0.25);
   transition: all 0.3s ease;
   align-self: center;
 }
 
 .header-profile-img:hover, .header-profile-link:focus .header-profile-img {
   transform: scale(1.08);
-  box-shadow: 0 6px 24px rgba(164, 101, 42, 0.35);
+  box-shadow: 0 6px 24px rgba(209, 90, 22, 0.35);
 }
 /* Burger label: hidden on desktop/tablet, shown on mobile */
 .header-burger-label {
@@ -1055,7 +1057,7 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
 }
 
 .header-nav-btn:focus, .header-nav-btn:hover {
-  box-shadow: 0 8px 24px rgba(164, 101, 42, 0.4);
+  box-shadow: 0 8px 24px rgba(209, 90, 22, 0.4);
   background: var(--gradient-primary);
   color: #fff !important;
 }
@@ -1139,7 +1141,7 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
 
 
   border: 1px solid rgba(255, 255, 255, 0.5);
-  box-shadow: 0 24px 64px rgba(164, 101, 42, 0.15);
+  box-shadow: 0 24px 64px rgba(209, 90, 22, 0.15);
   position: relative;
   overflow: hidden;
   border-radius: var(--radius-lg);
@@ -1152,7 +1154,7 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
   right: -50%;
   width: 200%;
   height: 200%;
-  background: rgba(164, 101, 42, 0.08);
+  background: rgba(209, 90, 22, 0.08);
   animation: welcome-glow 8s ease-in-out infinite alternate;
 }
 
@@ -1163,7 +1165,7 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
   left: -30%;
   width: 150%;
   height: 150%;
-  background: rgba(0, 38, 143, 0.06);
+  background: rgba(0, 45, 183, 0.06);
   animation: welcome-glow 12s ease-in-out infinite alternate-reverse;
 }
 
@@ -1295,11 +1297,11 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
 .filter-toggle-input:checked + .filter-toggle-btn {
   background: var(--color-primary);
   color: #fff;
-  box-shadow: 0 2px 8px rgba(164, 101, 42, 0.25);
+  box-shadow: 0 2px 8px rgba(209, 90, 22, 0.25);
 }
 
 .filter-toggle-btn:hover {
-  box-shadow: 0 2px 12px rgba(164, 101, 42, 0.3);
+  box-shadow: 0 2px 12px rgba(209, 90, 22, 0.3);
 }
 
 .filter-info-icon {
@@ -1437,7 +1439,7 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
 
 .floating-action-btn.primary:hover {
   transform: translateY(-3px) scale(1.02);
-  box-shadow: 0 12px 36px rgba(164, 101, 42, 0.4);
+  box-shadow: 0 12px 36px rgba(209, 90, 22, 0.4);
 }
 
 .floating-action-btn.secondary:hover {
@@ -1975,7 +1977,7 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
 }
 
 .header-burger-nav a:hover, .header-profile-dropdown a:hover {
-  background: rgba(164, 101, 42, 0.08);
+  background: rgba(209, 90, 22, 0.08);
   color: var(--color-primary);
   padding-left: 1.8rem;
 }
@@ -2921,7 +2923,7 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
 .auth-form p > select:focus,
 .auth-form p > textarea:focus {
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 4px rgba(164, 101, 42, 0.12);
+  box-shadow: 0 0 0 4px rgba(209, 90, 22, 0.12);
   outline: none;
   background: #fff;
 }
@@ -3040,7 +3042,7 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
   right: -20%;
   width: 300px;
   height: 300px;
-  background: rgba(164, 101, 42, 0.12);
+  background: rgba(209, 90, 22, 0.12);
   border-radius: 50%;
   filter: blur(40px);
   z-index: 1;
@@ -3058,7 +3060,7 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
   left: -20%;
   width: 300px;
   height: 300px;
-  background: rgba(0, 38, 143, 0.10);
+  background: rgba(0, 45, 183, 0.10);
   border-radius: 50%;
   filter: blur(40px);
   z-index: 1;
@@ -3092,7 +3094,7 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
 }
 .my-stones-split .stone-sort-dropdown:focus {
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 4px rgba(164, 101, 42, 0.15);
+  box-shadow: 0 0 0 4px rgba(209, 90, 22, 0.15);
 }
 .my-stones-split .stone-sort-row {
   display: flex;
@@ -3158,7 +3160,7 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
 .my-stones-split .stone-list-item:hover {
   transform: translateY(-4px) scale(1.01);
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
-  border-color: rgba(164, 101, 42, 0.3);
+  border-color: rgba(209, 90, 22, 0.3);
 }
 .my-stones-split .stone-list-img {
   width: 72px;
@@ -3198,7 +3200,7 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
   display: flex;
   align-items: center;
   gap: 0.3em;
-  background: rgba(0, 38, 143, 0.10);
+  background: rgba(0, 45, 183, 0.10);
   padding: 0.3em 0.8em;
   border-radius: var(--radius-full);
 }
@@ -3697,8 +3699,8 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
 
 .hunted-coord-input:focus {
   outline: none;
-  border-color: #00268F;
-  box-shadow: 0 0 0 2px rgba(0, 38, 143, 0.15);
+  border-color: #002DB7;
+  box-shadow: 0 0 0 2px rgba(0, 45, 183, 0.15);
 }
 
 /* --- New Add Stone Modal --- */
@@ -3765,7 +3767,7 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
 .new-modal-preview {
   width: 120px;
   height: 120px;
-  border: 4px solid #00268F;
+  border: 4px solid #002DB7;
   border-radius: 20px;
   background: #F2F8F6;
   margin: 0 auto;
@@ -3773,7 +3775,7 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
   align-items: center;
   justify-content: center;
   font-size: 48px;
-  box-shadow: 0 8px 24px rgba(0, 38, 143, 0.15);
+  box-shadow: 0 8px 24px rgba(0, 45, 183, 0.15);
 }
 
 .new-modal-field {
@@ -3834,8 +3836,8 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
 }
 
 .new-modal-type-btn--active {
-  border-color: #00268F;
-  background: #00268F;
+  border-color: #002DB7;
+  background: #002DB7;
   color: white;
 }
 
@@ -3856,7 +3858,7 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
 .new-modal-type-desc {
   margin-top: 8px;
   padding: 10px 12px;
-  background: rgba(0, 38, 143, 0.08);
+  background: rgba(0, 45, 183, 0.08);
   border-radius: 12px;
   font-size: 14px;
   color: #718096;
@@ -3914,36 +3916,36 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
 .new-modal-btn-primary {
   padding: 12px 24px;
   border: none;
-  background: #A4652A;
+  background: #D15A16;
   color: white;
   border-radius: 9999px;
   cursor: pointer;
   font-weight: 600;
-  box-shadow: 0 4px 20px rgba(164, 101, 42, 0.25);
+  box-shadow: 0 4px 20px rgba(209, 90, 22, 0.25);
   transition: all 0.3s ease;
 }
 
 .new-modal-btn-accent {
   padding: 12px 24px;
   border: none;
-  background: #00268F;
+  background: #002DB7;
   color: white;
   border-radius: 9999px;
   cursor: pointer;
   font-weight: 600;
-  box-shadow: 0 4px 20px rgba(0, 38, 143, 0.25);
+  box-shadow: 0 4px 20px rgba(0, 45, 183, 0.25);
   transition: all 0.3s ease;
 }
 
 .new-modal-btn-teal {
   padding: 12px 24px;
   border: none;
-  background: #00268F;
+  background: #002DB7;
   color: white;
   border-radius: 9999px;
   cursor: pointer;
   font-weight: 600;
-  box-shadow: 0 4px 20px rgba(0, 38, 143, 0.3);
+  box-shadow: 0 4px 20px rgba(0, 45, 183, 0.3);
   transition: all 0.3s ease;
 }
 
@@ -3969,7 +3971,7 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
   border: 2px dashed #E2E8F0;
   border-radius: 16px;
   color: #718096;
-  background: rgba(0, 38, 143, 0.05);
+  background: rgba(0, 45, 183, 0.05);
 }
 
 .new-modal-qr-loading-icon {
@@ -3980,10 +3982,10 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
 .new-modal-qr-error {
   display: none;
   padding: 20px;
-  border: 2px solid #A4652A;
-  background: rgba(164, 101, 42, 0.1);
+  border: 2px solid #D15A16;
+  background: rgba(209, 90, 22, 0.1);
   border-radius: 16px;
-  color: #7E4D20;
+  color: #A8480F;
 }
 
 .new-modal-download-wrap {
@@ -4295,10 +4297,10 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
 }
 
 .claim-stone-form .avant-input:invalid {
-  border-color: #A4652A;
+  border-color: #D15A16;
 }
 .claim-stone-form .avant-input:valid {
-  border-color: #00268F;
+  border-color: #002DB7;
 }
 
 .claim-progress {
@@ -5328,7 +5330,7 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
 }
 
 [data-theme="dark"] body::after {
-  background: rgba(0, 38, 143, 0.10);
+  background: rgba(0, 45, 183, 0.10);
   opacity: 0.3;
 }
 
@@ -5825,13 +5827,13 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
   background: #1a1a2e;
 }
 [data-theme="dark"] .my-stones-left::before {
-  background: rgba(164, 101, 42, 0.08);
+  background: rgba(209, 90, 22, 0.08);
 }
 [data-theme="dark"] .my-stones-right {
   background: #16213e;
 }
 [data-theme="dark"] .my-stones-right::before {
-  background: rgba(0, 38, 143, 0.06);
+  background: rgba(0, 45, 183, 0.06);
 }
 [data-theme="dark"] .my-stones-split #creations-title,
 [data-theme="dark"] .my-stones-split #interactions-title {
@@ -6114,7 +6116,7 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
   border-right: 1px solid #ddd;
 }
 .stone-type-toggle-btn.active {
-  background: var(--color-primary, #A4652A);
+  background: var(--color-primary, #D15A16);
   color: #fff;
 }
 .stone-type-toggle-btn:not(.active):hover {
@@ -6131,7 +6133,7 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
   border-right-color: #555;
 }
 [data-theme="dark"] .stone-type-toggle-btn.active {
-  background: var(--color-primary, #A4652A);
+  background: var(--color-primary, #D15A16);
   color: #fff;
 }
 [data-theme="dark"] .stone-type-toggle-btn:not(.active):hover {
@@ -6156,47 +6158,70 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
 
 
 /* ===== Site footer (legal links) ===== */
+/* Slim single-line footer pinned at the very bottom. Tiny, classy, and exactly
+   --footer-height tall so it never adds a page scrollbar. */
 .site-footer {
-  border-top: 2px solid var(--color-primary-light);
-  background: #fff;
-  padding: 1.4rem 1rem 1.8rem;
-  text-align: center;
-  font-family: var(--font-main);
-}
-.site-footer-links {
+  height: var(--footer-height);
   display: flex;
-  flex-wrap: wrap;
+  align-items: center;
   justify-content: center;
-  gap: 0.4rem 1.4rem;
-  margin-bottom: 0.6rem;
+  flex-wrap: nowrap;
+  gap: 0.55rem;
+  padding: 0 0.8rem;
+  background: #fff;
+  border-top: 1px solid var(--color-primary-light);
+  font-family: var(--font-main);
+  font-size: 0.68rem;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  overflow: hidden;
 }
-.site-footer-links a {
+.site-footer a {
   color: var(--color-text-light);
-  font-size: 0.95rem;
   text-decoration: none;
-  font-weight: 600;
 }
-.site-footer-links a:hover {
+.site-footer a:hover {
   color: var(--color-primary);
-  text-decoration: underline;
+}
+.site-footer-sep {
+  color: var(--color-text-light);
+  opacity: 0.4;
 }
 .site-footer-copy {
   color: var(--color-text-light);
-  font-size: 0.85rem;
+  opacity: 0.75;
 }
 [data-theme="dark"] .site-footer {
-  background: #1a202c;
-  border-top-color: var(--color-accent);
+  background: #14213d;
+  border-top-color: rgba(255, 255, 255, 0.12);
 }
 
-/* ===== Marker cluster (themed to watercolor navy + terracotta) ===== */
-.marker-cluster { background: rgba(0, 38, 143, 0.25); }
+/* ===== Marker cluster (themed; adapts to light/dark) ===== */
+/* Light: solid blue (small) / orange (bigger), white number, translucent halo. */
+.marker-cluster {
+  background: rgba(0, 45, 183, 0.22);
+}
 .marker-cluster div {
   background: var(--color-secondary);
   color: #fff;
   font-family: var(--font-main);
   font-weight: 700;
+  border: 2px solid rgba(255, 255, 255, 0.7);
 }
 .marker-cluster-medium div,
-.marker-cluster-large div { background: var(--color-primary); }
-[data-theme="dark"] .marker-cluster { background: rgba(185, 195, 224, 0.25); }
+.marker-cluster-large div {
+  background: var(--color-primary);
+}
+/* Dark: lighter fills + dark number so clusters stay legible on the dark map. */
+[data-theme="dark"] .marker-cluster {
+  background: rgba(191, 208, 242, 0.30);
+}
+[data-theme="dark"] .marker-cluster div {
+  background: var(--color-accent-light);
+  color: #14213d;
+  border-color: rgba(0, 0, 0, 0.25);
+}
+[data-theme="dark"] .marker-cluster-medium div,
+[data-theme="dark"] .marker-cluster-large div {
+  background: var(--color-primary-light);
+}
