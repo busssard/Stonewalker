@@ -149,6 +149,9 @@ document.addEventListener('DOMContentLoaded', function() {
 <script id="stones-data" type="application/json">{{ stones_json|safe }}</script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" crossorigin=""/>
 <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" crossorigin=""></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" crossorigin=""/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" crossorigin=""/>
+<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js" crossorigin=""></script>
 <script type="module">
   // Main world-map initialization: renders Leaflet markers for all stones,
   // draws journey polylines, and handles ?focus=PK_stone deep-linking.
@@ -162,11 +165,17 @@ document.addEventListener('DOMContentLoaded', function() {
     }).addTo(map);
     // Faint place-name labels on top of the watercolor base (it has none).
     L.tileLayer('https://tiles.stadiamaps.com/tiles/stamen_terrain_labels/{z}/{x}/{y}.png{% if stadia_api_key %}?api_key={{ stadia_api_key }}{% endif %}', { opacity: 0.5, maxNativeZoom: 18, maxZoom: 19, attribution: '' }).addTo(map);
+    // Cluster overlapping stone markers into a numbered marker. Small radius
+    // (~ the 48px icon) so markers only group when they genuinely overlap.
+    var clusterGroup = L.markerClusterGroup({
+      maxClusterRadius: 45,
+      showCoverageOnHover: false,
+      spiderfyOnMaxZoom: true,
+      disableClusteringAtZoom: 17,
+    });
+    map.addLayer(clusterGroup);
     // Helper to create a custom icon with image and shape
-    // Uses unique clip-path IDs to avoid SVG conflicts between markers
-    let iconIdCounter = 0;
     function createStoneIcon(imgUrl, shape, color) {
-      const uid = 'si' + (iconIdCounter++);
       let html = '';
       if (!imgUrl) {
         html = `<div style="width:48px;height:48px;border-radius:50%;border:2.5px solid ${color};background:transparent;"></div>`;
@@ -178,10 +187,20 @@ document.addEventListener('DOMContentLoaded', function() {
         html = `<div style="width:48px;height:48px;border-radius:6px;border:2.5px solid ${color};overflow:hidden;background:#f5f5f5;">
           <img src="${imgUrl}" style="width:100%;height:100%;object-fit:cover;display:block;" onerror="this.src='/static/stone.png'"/>
         </div>`;
-      } else if (shape === 'star') {
-        html = `<svg width="48" height="48" viewBox="0 0 120 120"><defs><clipPath id="${uid}"><path d="M60,5 L73,45 L115,45 L80,70 L93,110 L60,85 L27,110 L40,70 L5,45 L47,45 Z"/></clipPath></defs><rect width="120" height="120" fill="transparent"/><image href="${imgUrl}" width="120" height="120" clip-path="url(#${uid})" preserveAspectRatio="xMidYMid slice"/><path d="M60,5 L73,45 L115,45 L80,70 L93,110 L60,85 L27,110 L40,70 L5,45 L47,45 Z" fill="none" stroke="${color}" stroke-width="6"/></svg>`;
-      } else if (shape === 'triangle') {
-        html = `<svg width="48" height="48" viewBox="0 0 120 120"><defs><clipPath id="${uid}"><path d="M60,10 L110,110 L10,110 Z"/></clipPath></defs><rect width="120" height="120" fill="transparent"/><image href="${imgUrl}" width="120" height="120" clip-path="url(#${uid})" preserveAspectRatio="xMidYMid slice"/><path d="M60,10 L110,110 L10,110 Z" fill="none" stroke="${color}" stroke-width="6"/></svg>`;
+      } else if (shape === 'triangle' || shape === 'star') {
+        // Shaped via CSS clip-path on the same robust HTML structure the circle
+        // uses (solid backing + image with onerror fallback). The old inline-SVG
+        // <image> had no xmlns and no fallback, so it rendered transparent in
+        // WebKit when injected through Leaflet's DivIcon innerHTML.
+        const clip = shape === 'star'
+          ? 'polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)'
+          : 'polygon(50% 4%, 96% 96%, 4% 96%)';
+        html = `<div style="position:relative;width:48px;height:48px;">
+          <div style="position:absolute;inset:0;background:${color};-webkit-clip-path:${clip};clip-path:${clip};"></div>
+          <div style="position:absolute;inset:3px;overflow:hidden;background:#f5f5f5;-webkit-clip-path:${clip};clip-path:${clip};">
+            <img src="${imgUrl}" style="width:100%;height:100%;object-fit:cover;display:block;" onerror="this.src='/static/stone.png'"/>
+          </div>
+        </div>`;
       }
       return L.divIcon({
         html: html,
@@ -228,7 +247,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const latest = latlngs[latlngs.length - 1];
         const marker = L.marker(latest, {
           icon: createStoneIcon(stone.image || "{% static 'stone.png' %}", shape, color)
-        }).addTo(map);
+        });
+        clusterGroup.addLayer(marker);
         markerMap[stone.PK_stone] = { layer: marker, type: stoneType };
         // Leaflet popup with stone preview card
         var popupContent = '<div class="sw-popup">'
@@ -262,8 +282,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const focusStone = urlParams.get('focus');
     if (focusStone && markerMap[focusStone]) {
       const marker = markerMap[focusStone].layer;
-      map.setView(marker.getLatLng(), 10, { animate: true });
-      setTimeout(() => marker.fire('click'), 400);
+      // The marker may be inside a collapsed cluster; expand to reveal it first.
+      clusterGroup.zoomToShowLayer(marker, function() {
+        setTimeout(() => marker.fire('click'), 200);
+      });
     }
 
     // Filter functionality
@@ -275,14 +297,15 @@ document.addEventListener('DOMContentLoaded', function() {
       const showHidden = filterHidden.checked;
       const showHunted = filterHunted.checked;
 
-      // Update markerMap visibility
+      // Update markerMap visibility (add/remove from the cluster group so the
+      // numbered counts stay correct as stones are filtered).
       Object.keys(markerMap).forEach(pk => {
         const item = markerMap[pk];
         const shouldShow = (item.type === 'hidden' && showHidden) || (item.type === 'hunted' && showHunted);
         if (shouldShow) {
-          map.addLayer(item.layer);
+          clusterGroup.addLayer(item.layer);
         } else {
-          map.removeLayer(item.layer);
+          clusterGroup.removeLayer(item.layer);
         }
       });
 
