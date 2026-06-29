@@ -257,16 +257,42 @@ class StoneSealOnScanTests(BaseStoneWalkerTestCase):
         # New behavior: sealing redirects to public page
         self.assertEqual(response.status_code, 302)
 
-    def test_non_owner_can_seal_stone(self):
-        """A non-owner scanning the QR should also seal the stone"""
+    def test_non_owner_cannot_seal_stone(self):
+        """A non-owner scanning a not-yet-wandering stone must NOT seal it.
+
+        Sealing (start_wandering) is a state mutation reserved for the owner
+        scanning their own printed QR. A non-owner GET must leave it untouched.
+        """
         other_user = self.create_user('other', 'otherpass')
         stone = self.create_stone('OTHERSEAL', user=other_user, status='published')
 
         response = self.client.get(f'/stone-link/{stone.stone_number}/?key={stone.uuid}')
 
         stone.refresh_from_db()
-        self.assertEqual(stone.status, 'wandering')
+        self.assertEqual(stone.status, 'published')  # unchanged
         self.assertEqual(response.status_code, 302)
+
+    def test_anonymous_get_does_not_seal_stone(self):
+        """An unauthenticated GET (e.g. link-preview crawler) must never seal a stone."""
+        self.client.logout()
+        stone = self.create_stone('CRAWLER', status='published')
+
+        response = self.client.get(f'/stone-link/{stone.stone_number}/?key={stone.uuid}')
+
+        stone.refresh_from_db()
+        self.assertEqual(stone.status, 'published')  # unchanged
+        self.assertEqual(response.status_code, 302)  # redirected to login
+        self.assertIn('/log', response.url.lower() if response.url else '')
+
+    def test_anonymous_finder_redirected_to_login(self):
+        """Anonymous scan of a wandering stone redirects to login, preserving next."""
+        self.client.logout()
+        stone = self.create_stone('WANDER2', status='wandering')
+
+        response = self.client.get(f'/stone-link/{stone.stone_number}/?key={stone.uuid}')
+
+        self.assertEqual(response.status_code, 302)
+        self.assertIn('next=', response.url)
 
     def test_owner_scans_published_stone(self):
         """Owner scanning their own published stone should seal it"""

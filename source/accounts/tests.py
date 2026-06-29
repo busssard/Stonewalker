@@ -32,7 +32,40 @@ class AccountsAuthTests(TestCase):
             'password': 'TestPassword123',
         })
         self.assertEqual(response.status_code, 302)  # Should redirect after login
-        self.assertTrue('_auth_user_id' in self.client.session) 
+        self.assertTrue('_auth_user_id' in self.client.session)
+
+    def test_signup_preserves_next_through_activation(self):
+        """A QR claim link (?next=) survives signup -> email activation -> login.
+
+        Regression for the new-user claim funnel: scanning an unclaimed stone
+        sends an anonymous user to login/signup with ?next=<claim url>; that
+        destination must not be dropped along the way.
+        """
+        claim_next = '/my-stones/'
+        response = self.client.post(
+            reverse('accounts:sign_up') + f'?next={claim_next}',
+            {
+                'username': 'claimer',
+                'email': 'claimer@example.com',
+                'password1': 'TestPassword123',
+                'password2': 'TestPassword123',
+                'accept_terms': 'on',
+            },
+        )
+        self.assertEqual(response.status_code, 302)
+
+        # The pending destination is stashed for the post-activation hop.
+        self.assertEqual(self.client.session.get('post_activation_redirect'), claim_next)
+
+        # Activating the account forwards to login carrying the next param.
+        user = User.objects.get(username='claimer')
+        activation = Activation.objects.get(user=user)
+        activate_response = self.client.get(
+            reverse('accounts:activate', args=[activation.code])
+        )
+        self.assertEqual(activate_response.status_code, 302)
+        self.assertIn('next=', activate_response.url)
+        self.assertIn('my-stones', activate_response.url)
 
 class ProfileManagementTests(TestCase):
     def setUp(self):

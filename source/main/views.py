@@ -538,22 +538,35 @@ class StoneLinkView(View):
                     login_url='accounts:log_in'
                 )
 
-        # Draft/published → seal stone, redirect to public page (strips key)
+        # Draft/published → seal stone (start its journey).
+        # Sealing mutates state, so it must never be triggered by an anonymous GET
+        # (e.g. a chat-app link-preview crawler) or by anyone other than the owner.
         if stone.status in ('draft', 'published'):
+            from django.contrib.auth.views import redirect_to_login
+            if not request.user.is_authenticated:
+                return redirect_to_login(next=request.get_full_path(), login_url='accounts:log_in')
+            if stone.FK_user_id != request.user.id:
+                messages.info(request, "This stone hasn't started its journey yet.")
+                return redirect('stonewalker_start')
             stone.start_wandering()
-            if request.user.is_authenticated:
-                StoneScanAttempt.record_scan_attempt(stone, request.user, request)
+            StoneScanAttempt.record_scan_attempt(stone, request.user, request)
             messages.success(request, 'Stone sealed!')
             return redirect('stone_link', stone_number=stone.stone_number)
 
         # Wandering stone
+        # Anonymous finders must log in first so their photo/comment/location
+        # aren't lost to a login bounce when they submit the find form.
+        if not request.user.is_authenticated:
+            from django.contrib.auth.views import redirect_to_login
+            messages.info(request, 'Log in or sign up to record where you found this stone.')
+            return redirect_to_login(next=request.get_full_path(), login_url='accounts:log_in')
+
         # Check if already scanned this week → redirect to public page (strips key)
-        if request.user.is_authenticated and not StoneScanAttempt.can_scan_again(stone, request.user):
+        if not StoneScanAttempt.can_scan_again(stone, request.user):
             return redirect('stone_link', stone_number=stone.stone_number)
 
-        # If user is authenticated, record scan attempt
-        if request.user.is_authenticated:
-            StoneScanAttempt.record_scan_attempt(stone, request.user, request)
+        # Record scan attempt
+        StoneScanAttempt.record_scan_attempt(stone, request.user, request)
 
         # First scan → show stone_found form (key stays in URL for POST)
         is_first_stone = False

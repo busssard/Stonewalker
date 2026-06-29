@@ -12,6 +12,7 @@ from django.utils.translation import gettext as _
 from django.utils import timezone
 from django.conf import settings
 from django.urls import reverse
+from django.db import transaction
 import re
 import logging
 
@@ -187,47 +188,53 @@ class ClaimStoneView(LoginRequiredMixin, View):
                 'description': description,
             })
 
-        # Claim the stone
+        # Claim the stone.
+        # The PK change is done as delete-then-create, so it MUST be atomic and
+        # row-locked: a crash mid-operation would otherwise leave the printed QR
+        # pointing at a deleted row (permanently bricked), and two concurrent
+        # submits (double-tap on mobile) could both pass the can_be_claimed check.
         old_pk = stone.PK_stone  # Store old PK before changing
 
-        # We need to handle the PK change carefully - create new stone and delete old
         try:
-            # Update the stone fields
-            stone.FK_user = request.user
-            stone.status = 'draft'
-            stone.claimed_at = timezone.now()
-            stone.description = description[:500] if description else ''
-            if image:
-                stone.image = image
+            with transaction.atomic():
+                # Re-fetch under a row lock and re-validate to close the TOCTOU race.
+                stone = Stone.objects.select_for_update().get(pk=old_pk)
+                if not stone.can_be_claimed():
+                    messages.error(request, _('This stone has already been claimed.'))
+                    return redirect('stone_link', stone_number=stone.stone_number)
 
-            # Handle PK change by deleting old and creating with new PK
-            if old_pk != stone_name:
-                # Get all the values we need
-                stone_data = {
-                    'uuid': stone.uuid,
-                    'description': stone.description,
-                    'FK_user': stone.FK_user,
-                    'FK_pack': stone.FK_pack,
-                    'image': stone.image,
-                    'color': stone.color,
-                    'shape': stone.shape,
-                    'distance_km': stone.distance_km,
-                    'stone_type': stone.stone_type,
-                    'status': 'draft',
-                    'qr_code_url': stone.qr_code_url,
-                    'claimed_at': timezone.now(),
-                    'stone_number': stone.stone_number,
-                }
+                description_value = description[:500] if description else ''
 
-                # Delete the old stone
-                Stone.objects.filter(PK_stone=old_pk).delete()
+                # Handle PK change by deleting old and creating with new PK
+                if old_pk != stone_name:
+                    stone_data = {
+                        'uuid': stone.uuid,
+                        'description': description_value,
+                        'FK_user': request.user,
+                        'FK_pack': stone.FK_pack,
+                        'image': image if image else stone.image,
+                        'color': stone.color,
+                        'shape': stone.shape,
+                        'distance_km': stone.distance_km,
+                        'stone_type': stone.stone_type,
+                        'status': 'draft',
+                        'qr_code_url': stone.qr_code_url,
+                        'claimed_at': timezone.now(),
+                        'stone_number': stone.stone_number,
+                    }
+                    Stone.objects.filter(PK_stone=old_pk).delete()
+                    stone = Stone.objects.create(PK_stone=stone_name, **stone_data)
+                else:
+                    stone.FK_user = request.user
+                    stone.status = 'draft'
+                    stone.claimed_at = timezone.now()
+                    stone.description = description_value
+                    if image:
+                        stone.image = image
+                    stone.save()
 
-                # Create with new PK
-                stone = Stone.objects.create(PK_stone=stone_name, **stone_data)
-            else:
-                stone.save()
-
-            # Regenerate QR code with new name
+            # Regenerate QR code with new name (outside the transaction; recoverable
+            # via get_qr_url() if it transiently fails, so it must not roll back the claim).
             QRCodeService.generate_qr_for_stone(stone, request)
 
             messages.success(
@@ -495,6 +502,17 @@ class DownloadPackPDFView(LoginRequiredMixin, View):
 
         # Import here to avoid circular import
         from .pdf_service import PDFService
+
+        # On ephemeral hosting (e.g. Render) the file is lost on redeploy while the
+        # DB flag stays true. Regenerate from the pack's stones if it's missing.
+        if not PDFService.pdf_exists(pack):
+            stones = list(pack.stones.all().order_by('stone_number'))
+            if stones:
+                try:
+                    PDFService.generate_pack_pdf(pack, stones)
+                except Exception as e:
+                    logger.error(f"Failed to regenerate PDF for pack {pack.id}: {e}")
+
         response = PDFService.get_download_response(pack)
 
         if response:

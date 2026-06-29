@@ -16,7 +16,7 @@
       <button class="avant-btn w-full mt-1-2 bg-accent text-white fs-1-13 letter-spacing-0-03">{% trans 'Log in' %}</button>
     </form>
     <div class="text-center mt-1-5 fs-0-98 text-muted">
-      {% trans "Don't have an account?" %} <a href="{% url 'accounts:sign_up' %}" class="text-accent underline">{% trans 'Sign up' %}</a>
+      {% trans "Don't have an account?" %} <a href="{% url 'accounts:sign_up' %}{% if request.GET.next %}?next={{ request.GET.next|urlencode }}{% endif %}" class="text-accent underline">{% trans 'Sign up' %}</a>
     </div>
     <hr class="mt-2 mb-1-2">
     <ul class="pl-1-2" style="margin-top:1.2rem; color:#222; text-align:center;">

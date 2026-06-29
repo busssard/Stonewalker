@@ -70,7 +70,8 @@
         <input type="number" name="latitude" id="id_latitude" step="any" placeholder="Latitude" class="avant-input flex-1" required>
         <input type="number" name="longitude" id="id_longitude" step="any" placeholder="Longitude" class="avant-input flex-1" required>
       </div>
-      
+      <p id="found-location-hint" class="fs-0-9 text-muted mt-0-3 mb-0">{% trans 'Tap the map or drag the pin to set where you found it.' %}</p>
+
       <div id="found-location-map" class="w-full h-260 border-radius-12 mb-1 mt-0-5"></div>
       
       <!-- New Location for Hunted Stones -->
@@ -102,34 +103,42 @@ document.addEventListener('DOMContentLoaded', function() {
     attribution: '© OpenStreetMap'
   }).addTo(foundMap);
   
+  // Marker starts at the default view but the form fields stay EMPTY until the
+  // user actually picks a location — otherwise a denied geolocation prompt would
+  // silently submit a bogus point off West Africa (20, 0).
   var foundMarker = L.marker([20, 0], {draggable: true}).addTo(foundMap);
-  
+  var foundHint = document.getElementById('found-location-hint');
+
   function setFoundLatLng(lat, lng) {
     foundMarker.setLatLng([lat, lng]);
     document.getElementById('id_latitude').value = lat;
     document.getElementById('id_longitude').value = lng;
+    if (foundHint) { foundHint.classList.remove('text-error'); }
   }
-  
+
   foundMarker.on('dragend', function(e) {
     var pos = foundMarker.getLatLng();
     setFoundLatLng(pos.lat, pos.lng);
   });
-  
+
   foundMap.on('click', function(e) {
     setFoundLatLng(e.latlng.lat, e.latlng.lng);
   });
-  
-  // Try to get user location for found location
+
+  // Try to get user location for found location. If denied/unavailable, prompt
+  // the user to set it manually rather than leaving the required fields empty.
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(function(pos) {
       setFoundLatLng(pos.coords.latitude, pos.coords.longitude);
       foundMap.setView([pos.coords.latitude, pos.coords.longitude], 13);
+    }, function() {
+      if (foundHint) {
+        foundHint.classList.add('text-error');
+        foundHint.textContent = "{% trans 'We could not get your location. Tap the map or drag the pin to set where you found the stone.' %}";
+      }
     });
   }
-  
-  // Set initial values for found location
-  setFoundLatLng(20, 0);
-  
+
   // Initialize new location map for hunted stones if it exists
   var newLocationMap = document.getElementById('new-location-map');
   if (newLocationMap) {
@@ -155,9 +164,7 @@ document.addEventListener('DOMContentLoaded', function() {
     newMap.on('click', function(e) {
       setNewLatLng(e.latlng.lat, e.latlng.lng);
     });
-    
-    // Set initial values for new location
-    setNewLatLng(20, 0);
+    // New-location fields also start empty — the user must choose a real spot.
   }
 });
 

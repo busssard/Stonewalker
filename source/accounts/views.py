@@ -24,6 +24,7 @@ from django.conf import settings
 from django.http import JsonResponse, HttpResponseBadRequest
 from django.contrib.auth.models import User
 import re
+import urllib.parse
 
 from .utils import (
     send_activation_email, send_reset_password_email, send_forgotten_username_email, send_activation_change_email,
@@ -99,6 +100,16 @@ class SignUpView(GuestOnlyView, FormView):
     template_name = 'accounts/sign_up.html'
     form_class = SignUpForm
 
+    def _get_safe_next(self):
+        """Return the post-signup redirect target if it is safe, else None."""
+        request = self.request
+        redirect_to = request.POST.get(REDIRECT_FIELD_NAME, request.GET.get(REDIRECT_FIELD_NAME))
+        if redirect_to and is_safe_url(
+            redirect_to, allowed_hosts=request.get_host(), require_https=request.is_secure()
+        ):
+            return redirect_to
+        return None
+
     def form_valid(self, form):
         request = self.request
         user = form.save(commit=False)
@@ -124,6 +135,12 @@ class SignUpView(GuestOnlyView, FormView):
         if settings.DISABLE_USERNAME:
             user.username = f'user_{user.id}'
             user.save()
+
+        # Preserve any post-auth redirect (e.g. a QR claim/scan link) across the
+        # signup -> email activation -> login hop via the session.
+        next_url = self._get_safe_next()
+        if next_url:
+            request.session['post_activation_redirect'] = next_url
 
         if settings.ENABLE_USER_ACTIVATION:
             code = get_random_string(20)
@@ -162,6 +179,11 @@ class SignUpView(GuestOnlyView, FormView):
 
             messages.success(request, _('You are successfully signed up!'))
 
+            # Account is active and logged in immediately; honour the redirect now.
+            if next_url:
+                request.session.pop('post_activation_redirect', None)
+                return redirect(next_url)
+
         return redirect('index')
 
 
@@ -190,6 +212,13 @@ class ActivateView(View):
         grant_early_premium(user)
 
         messages.success(request, _('You have successfully activated your account!'))
+
+        # Carry any pending post-signup destination (e.g. a QR claim link) to login.
+        next_url = request.session.pop('post_activation_redirect', None)
+        if next_url and is_safe_url(
+            next_url, allowed_hosts=request.get_host(), require_https=request.is_secure()
+        ):
+            return redirect(f"{reverse('accounts:log_in')}?{REDIRECT_FIELD_NAME}={urllib.parse.quote(next_url)}")
 
         return redirect('accounts:log_in')
 
