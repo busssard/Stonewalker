@@ -96,7 +96,7 @@
   --card-bg: #1e2a3a;
   --border-color: #2d3a4a;
   --accent-green: #66BB6A;
-  --header-bg: #0f1923;
+  --header-bg: #16213e;
   --shadow-color: rgba(0,0,0,0.3);
   --input-bg: #1e2a3a;
   --input-border: #3d4a5a;
@@ -5494,8 +5494,9 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
      Without this, short pages (e.g. Change Language) show a white stripe at
      the bottom because their content doesn't fill the remaining space.
      Leave room for the slim footer so the map page doesn't overflow by its
-     height in dark mode. */
-  min-height: calc(100vh - var(--header-height) - var(--footer-height));
+     height in dark mode. The -2px matches the .h-map-wrapper buffer so dark
+     ends up exactly as tall as light (which has no scroll). */
+  min-height: calc(100vh - var(--header-height) - var(--footer-height) - 2px);
 }
 
 /* ===== Premium Supporter Styles ===== */
@@ -6171,8 +6172,8 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
   flex-wrap: nowrap;
   gap: 0.55rem;
   padding: 0 0.8rem;
-  background: #fff;
-  border-top: 1px solid var(--color-primary-light);
+  background: var(--body-bg);
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
   font-family: var(--font-main);
   font-size: 0.68rem;
   letter-spacing: 0.02em;
@@ -6195,8 +6196,7 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
   opacity: 0.75;
 }
 [data-theme="dark"] .site-footer {
-  background: #14213d;
-  border-top-color: rgba(255, 255, 255, 0.12);
+  border-top-color: rgba(255, 255, 255, 0.10);
 }
 
 /* ===== Marker cluster (themed; adapts to light/dark) ===== */
