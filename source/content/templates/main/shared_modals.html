@@ -507,12 +507,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (huntedLocationMapElement && !huntedLocationMapInstance) {
       // Initialize map when hunted stone type is selected
       huntedLocationMapInstance = L.map('hunted-location-map').setView([20, 0], 3);
-      L.tileLayer('https://tiles.stadiamaps.com/tiles/stamen_watercolor/{z}/{x}/{y}.jpg{% if stadia_api_key %}?api_key={{ stadia_api_key }}{% endif %}', {
-        maxNativeZoom: 16, maxZoom: 19, noWrap: true,
-        attribution: '© Stadia Maps © Stamen Design © OpenStreetMap'
-      }).addTo(huntedLocationMapInstance);
-      // Faint place-name labels on top of the watercolor base (it has none).
-      L.tileLayer('https://tiles.stadiamaps.com/tiles/stamen_terrain_labels/{z}/{x}/{y}.png{% if stadia_api_key %}?api_key={{ stadia_api_key }}{% endif %}', { opacity: 0.5, maxNativeZoom: 18, maxZoom: 19, noWrap: true, attribution: '' }).addTo(huntedLocationMapInstance);
+      L.tileLayer('https://tiles.stadiamaps.com/tiles/osm_bright/{z}/{x}/{y}.png{% if stadia_api_key %}?api_key={{ stadia_api_key }}{% endif %}', { maxZoom: 20, noWrap: true, attribution: '© Stadia Maps © OpenStreetMap' }).addTo(huntedLocationMapInstance);
       
       huntedLocationMarker = L.marker([20, 0], {draggable: true}).addTo(huntedLocationMapInstance);
       
