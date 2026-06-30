@@ -78,7 +78,7 @@
   --card-bg: #ffffff;
   --border-color: #ECECEC;
   --accent-green: #4CAF50;
-  --header-bg: #ffffff;
+  --header-bg: #FFF0D8;
   --shadow-color: rgba(0,0,0,0.1);
   --input-bg: #ffffff;
   --input-border: #E2E8F0;
@@ -470,7 +470,7 @@ body {
 /* Prevent scrolling on startpage: leave room for the slim footer so the
    page is exactly one viewport tall (no accidental scroll when zooming). */
 .h-map-wrapper {
-  height: calc(100vh - var(--header-height) - var(--footer-height));
+  height: calc(100vh - var(--header-height) - var(--footer-height) - 2px);
   overflow: hidden;
   padding: 1.2rem 2vw 1rem 2vw;
   box-sizing: border-box;
@@ -508,7 +508,7 @@ body.startpage {
 }
 .header {
     width: 100%;
-    background-color: #ffffff;
+    background-color: var(--header-bg);
     color: #333;
     text-align: center;
     padding: 1rem;
@@ -826,7 +826,7 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
   padding: 0 1.5rem;
   display: flex;
   align-items: center;
-  background: rgba(255, 255, 255, 0.85);
+  background: var(--header-bg);
 
 
   color: var(--color-text-main);
@@ -6162,6 +6162,7 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
    --footer-height tall so it never adds a page scrollbar. */
 .site-footer {
   height: var(--footer-height);
+  box-sizing: border-box;
   display: flex;
   align-items: center;
   justify-content: center;
