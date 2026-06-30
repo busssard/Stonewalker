@@ -5492,8 +5492,10 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
   color: var(--text-primary);
   /* Ensures the dark background fills the entire viewport below the header.
      Without this, short pages (e.g. Change Language) show a white stripe at
-     the bottom because their content doesn't fill the remaining space. */
-  min-height: calc(100vh - var(--header-height));
+     the bottom because their content doesn't fill the remaining space.
+     Leave room for the slim footer so the map page doesn't overflow by its
+     height in dark mode. */
+  min-height: calc(100vh - var(--header-height) - var(--footer-height));
 }
 
 /* ===== Premium Supporter Styles ===== */
