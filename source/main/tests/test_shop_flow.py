@@ -44,6 +44,52 @@ class UnconfirmedEmailGateTests(BaseStoneWalkerTestCase):
         self.assertEqual(QRPack.objects.count(), 0)
 
 
+class DynamicPricingTests(BaseStoneWalkerTestCase):
+    """Task 15A: 30 free unclaimed codes, $0.50/code beyond, premium unlimited."""
+
+    def _give_unclaimed(self, user, n):
+        pack = QRPack.objects.create(
+            FK_user=user, pack_type='paid_30pack',
+            status='fulfilled', price_cents=0, fulfilled_at=timezone.now(),
+        )
+        for i in range(n):
+            Stone.objects.create(PK_stone=f'U{user.id}-{i}', FK_pack=pack, FK_user=None, status='unclaimed')
+
+    def _make_premium(self, user):
+        from accounts.models import Subscription
+        Subscription.objects.create(user=user, plan='lifetime', status='active')
+
+    def test_pack_free_within_allowance(self):
+        self.assertTrue(Stone.pack_is_free_for_user(self.user, 30))   # 0 + 30 <= 30
+        self._give_unclaimed(self.user, 1)
+        self.assertFalse(Stone.pack_is_free_for_user(self.user, 30))  # 1 + 30 > 30
+        self.assertTrue(Stone.pack_is_free_for_user(self.user, 29))   # 1 + 29 == 30
+
+    def test_remaining_allowance(self):
+        self.assertEqual(Stone.remaining_free_allowance(self.user), 30)
+        self._give_unclaimed(self.user, 10)
+        self.assertEqual(Stone.remaining_free_allowance(self.user), 20)
+
+    def test_premium_unlimited_free(self):
+        self._give_unclaimed(self.user, 40)
+        self._make_premium(self.user)
+        self.assertTrue(Stone.pack_is_free_for_user(self.user, 30))
+        self.assertIsNone(Stone.remaining_free_allowance(self.user))
+
+    def test_checkout_free_within_allowance(self):
+        resp = self.client.post(reverse('checkout', args=['paid_3pack']))  # 0 + 3 <= 30
+        self.assertEqual(resp.status_code, 302)
+        self.assertEqual(
+            Stone.objects.filter(FK_pack__FK_user=self.user, status='unclaimed').count(), 3)
+
+    def test_checkout_paid_beyond_allowance(self):
+        self._give_unclaimed(self.user, 29)  # 29 + 3 > 30 -> paid path
+        resp = self.client.post(reverse('checkout', args=['paid_3pack']))
+        self.assertEqual(resp.status_code, 302)
+        # Paid branch taken (Stripe not configured in tests) -> no free 3-pack minted
+        self.assertFalse(QRPack.objects.filter(FK_user=self.user, pack_type='paid_3pack').exists())
+
+
 class CreateNewStoneRouterTests(BaseStoneWalkerTestCase):
     """Test the CreateNewStoneView smart router"""
 
@@ -79,9 +125,14 @@ class CreateNewStoneRouterTests(BaseStoneWalkerTestCase):
             QRPack.objects.filter(FK_user=self.user, pack_type='free_single').count(), 2
         )
 
-    @override_settings(SHOP_VISIBLE_USER_THRESHOLD=0)
-    def test_no_unclaimed_stones_redirects_to_shop_after_threshold(self):
-        """User with no unclaimed stones goes to shop after threshold"""
+    def test_at_free_allowance_redirects_to_shop(self):
+        """A user who has used their 30 free codes is sent to the shop to buy more."""
+        pack = QRPack.objects.create(
+            FK_user=self.user, pack_type='paid_30pack',
+            status='fulfilled', price_cents=0, fulfilled_at=timezone.now(),
+        )
+        for i in range(Stone.FREE_UNCLAIMED_CAP):
+            Stone.objects.create(PK_stone=f'ALLOW{i}', FK_pack=pack, FK_user=None, status='unclaimed')
         response = self.client.get(reverse('create_stone'))
         self.assertRedirects(response, reverse('shop'))
 
@@ -166,14 +217,22 @@ class ShopDevModeTests(BaseStoneWalkerTestCase):
         self.assertContains(response, 'Get Free')
 
     @override_settings(DEBUG=False, SHOP_VISIBLE_USER_THRESHOLD=0)
-    def test_prod_mode_free_single_disabled_after_claim(self):
-        """In production, free_single should be disabled after claiming"""
-        QRPack.objects.create(
-            FK_user=self.user, pack_type='free_single',
+    @override_settings(DEBUG=False)
+    def test_shop_price_display_is_dynamic(self):
+        """A pack shows Free within the allowance and its price once it would exceed it."""
+        resp = self.client.get(reverse('shop'))
+        prods = {p['id']: p for p in resp.context['products']}
+        self.assertEqual(prods['paid_3pack']['price_display'], 'Free')  # 0 + 3 <= 30
+        # Fill the free allowance
+        pack = QRPack.objects.create(
+            FK_user=self.user, pack_type='paid_30pack',
             status='fulfilled', price_cents=0, fulfilled_at=timezone.now(),
         )
-        response = self.client.get(reverse('shop'))
-        self.assertContains(response, 'Claimed')
+        for i in range(Stone.FREE_UNCLAIMED_CAP):
+            Stone.objects.create(PK_stone=f'D{i}', FK_pack=pack, FK_user=None, status='unclaimed')
+        resp = self.client.get(reverse('shop'))
+        prods = {p['id']: p for p in resp.context['products']}
+        self.assertNotEqual(prods['paid_3pack']['price_display'], 'Free')  # now priced
 
     @override_settings(DEBUG=True, SHOP_VISIBLE_USER_THRESHOLD=0)
     def test_dev_mode_checkout_allows_multiple_free(self):
@@ -189,18 +248,12 @@ class ShopDevModeTests(BaseStoneWalkerTestCase):
         self.assertIn(response.status_code, [200, 302])
         self.assertEqual(QRPack.objects.filter(FK_user=self.user, pack_type='free_single').count(), 2)
 
-    @override_settings(DEBUG=False, SHOP_VISIBLE_USER_THRESHOLD=0)
-    def test_prod_mode_checkout_blocks_second_free(self):
-        """In production, second free_single checkout should be blocked"""
-        # First checkout
+    @override_settings(DEBUG=False)
+    def test_prod_mode_multiple_free_within_allowance(self):
+        """In production, repeated free singles are allowed while within the allowance."""
         self.client.post(reverse('checkout', kwargs={'product_id': 'free_single'}))
-        self.assertEqual(QRPack.objects.filter(FK_user=self.user, pack_type='free_single').count(), 1)
-
-        # Second checkout should be blocked
-        response = self.client.post(reverse('checkout', kwargs={'product_id': 'free_single'}))
-        self.assertRedirects(response, reverse('shop'))
-        # Still only 1 pack
-        self.assertEqual(QRPack.objects.filter(FK_user=self.user, pack_type='free_single').count(), 1)
+        self.client.post(reverse('checkout', kwargs={'product_id': 'free_single'}))
+        self.assertEqual(QRPack.objects.filter(FK_user=self.user, pack_type='free_single').count(), 2)
 
 
 class ShopFlowEndToEndTests(BaseStoneWalkerTestCase):
@@ -221,25 +274,16 @@ class ShopFlowEndToEndTests(BaseStoneWalkerTestCase):
         response = self.client.get(reverse('create_stone'))
         self.assertRedirects(response, reverse('my_stones'))
 
-    @override_settings(SHOP_VISIBLE_USER_THRESHOLD=0)
-    def test_full_flow_after_threshold_to_shop(self):
-        """After threshold: create-stone → shop → checkout → create-stone → my-stones"""
-        # Step 1: No unclaimed QR, after threshold → shop
+    def test_full_flow_at_allowance_to_shop(self):
+        """Once the free allowance is used up, create-stone routes to the shop."""
+        pack = QRPack.objects.create(
+            FK_user=self.user, pack_type='paid_30pack',
+            status='fulfilled', price_cents=0, fulfilled_at=timezone.now(),
+        )
+        for i in range(Stone.FREE_UNCLAIMED_CAP):
+            Stone.objects.create(PK_stone=f'FL{i}', FK_pack=pack, FK_user=None, status='unclaimed')
         response = self.client.get(reverse('create_stone'))
         self.assertRedirects(response, reverse('shop'))
-
-        # Step 2: Checkout free single
-        response = self.client.post(reverse('checkout', kwargs={'product_id': 'free_single'}))
-        self.assertIn(response.status_code, [200, 302])
-
-        # Verify pack and unclaimed stone were created
-        pack = QRPack.objects.get(FK_user=self.user, pack_type='free_single')
-        unclaimed = pack.stones.filter(status='unclaimed').first()
-        self.assertIsNotNone(unclaimed)
-
-        # Step 3: Now create-stone should redirect to my-stones (unclaimed exists)
-        response = self.client.get(reverse('create_stone'))
-        self.assertRedirects(response, reverse('my_stones'))
 
     def test_stonewalker_page_has_create_stone_link(self):
         """The stonewalker start page should link to create-stone route"""

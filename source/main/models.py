@@ -218,44 +218,53 @@ class Stone(models.Model):
         draft_count = cls.objects.filter(FK_user=user, status='draft').count()
         return draft_count == 0
 
-    # --- QR Code Limiting (Pre-Launch Growth Control) ---
-    # Before reaching SHOP_VISIBLE_USER_THRESHOLD users, each non-premium user
-    # can only have 1 unclaimed QR at a time. This prevents hoarding during the
-    # early growth phase when every QR is free. After the threshold, the shop opens
-    # and the limit is lifted (users pay for additional QRs).
+    # --- QR free allowance + dynamic pricing ---
+    # Non-premium users may hold up to FREE_UNCLAIMED_CAP unclaimed codes for
+    # free. Beyond that they pay per code (a soft line — no hard block). Premium
+    # supporters have no cap and never pay. Ownership of an unclaimed code is via
+    # its pack (FK_pack.FK_user), since unclaimed stones have FK_user=None.
+    FREE_UNCLAIMED_CAP = 30
+    PRICE_PER_CODE_CENTS = 50  # $0.50 per QR code beyond the free allowance
+
+    @classmethod
+    def unclaimed_count(cls, user):
+        """Number of unclaimed codes a user currently holds (across their packs)."""
+        return cls.objects.filter(FK_pack__FK_user=user, status='unclaimed').count()
 
     @classmethod
     def user_has_unclaimed_qr(cls, user):
-        """Check if user has any unclaimed QR codes (stones in 'unclaimed' status from their packs).
-        Looks at packs owned by the user, not stones owned by the user, because
-        unclaimed stones have FK_user=None (no owner yet)."""
-        return cls.objects.filter(
-            FK_pack__FK_user=user,
-            status='unclaimed',
-        ).exists()
+        """Whether the user holds any unclaimed QR codes (via their packs)."""
+        return cls.objects.filter(FK_pack__FK_user=user, status='unclaimed').exists()
 
     @classmethod
-    def user_can_get_new_qr(cls, user):
-        """Check if user can acquire a new QR code.
-        Enforced in CheckoutView and FreeQRView. Skipped in dev mode (DEBUG=True)
-        to allow repeated testing without hitting the limit."""
-        from django.contrib.auth.models import User as UserModel
-        threshold = getattr(settings, 'SHOP_VISIBLE_USER_THRESHOLD', 1000)
-        user_count = UserModel.objects.count()
-
-        # After threshold, no QR limit — the shop is open and users pay
-        if user_count >= threshold:
-            return True
-
-        # Premium users (including lifetime early supporters) bypass the limit
+    def _user_is_premium(cls, user):
         try:
-            if user.profile.is_premium:
-                return True
+            return bool(user.profile.is_premium)
         except Exception:
-            pass
+            return False
 
-        # Before threshold: only 1 unclaimed QR at a time per non-premium user
-        return not cls.user_has_unclaimed_qr(user)
+    @classmethod
+    def remaining_free_allowance(cls, user):
+        """Free unclaimed codes still available, or None if unlimited (premium)."""
+        if cls._user_is_premium(user):
+            return None
+        return max(0, cls.FREE_UNCLAIMED_CAP - cls.unclaimed_count(user))
+
+    @classmethod
+    def pack_is_free_for_user(cls, user, pack_size=1):
+        """The dynamic-pricing decision. A pack is free if the user is premium,
+        or if it fits within the free allowance (current unclaimed + pack_size
+        <= FREE_UNCLAIMED_CAP). Otherwise the whole pack costs its listed price."""
+        if cls._user_is_premium(user):
+            return True
+        return cls.unclaimed_count(user) + pack_size <= cls.FREE_UNCLAIMED_CAP
+
+    @classmethod
+    def user_can_get_new_qr(cls, user, pack_size=1):
+        """True when the user can get this pack FOR FREE (within allowance or
+        premium). Non-premium users beyond the allowance are not blocked — they
+        pay — so callers use this to choose the free vs paid path, not to gate."""
+        return cls.pack_is_free_for_user(user, pack_size)
     
     @classmethod
     def get_user_draft_stone(cls, user):

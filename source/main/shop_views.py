@@ -50,43 +50,30 @@ class CreateNewStoneView(LoginRequiredMixin, View):
         guard = _require_confirmed_email(request)
         if guard:
             return guard
-        from django.contrib.auth.models import User as UserModel
-        # Check for unclaimed QRs from user's packs
-        unclaimed = Stone.objects.filter(
-            FK_pack__FK_user=request.user,
+
+        # Within the free allowance (or premium) → mint a free code directly.
+        # Beyond it → send them to the shop to buy more.
+        if not Stone.pack_is_free_for_user(request.user, 1):
+            messages.info(request, _('You have used your free QR allowance. Visit the shop to get more codes.'))
+            return redirect('shop')
+
+        pack = QRPack.objects.create(
+            FK_user=request.user,
+            pack_type='free_single',
+            status='fulfilled',
+            price_cents=0,
+            fulfilled_at=timezone.now(),
+        )
+        temp_name = f'UNCLAIMED-{uuid_lib.uuid4().hex[:8].upper()}'
+        stone = Stone.objects.create(
+            PK_stone=temp_name,
+            FK_pack=pack,
+            FK_user=None,
             status='unclaimed',
-        ).first()
-
-        if unclaimed:
-            messages.info(request, _('You have unclaimed QR codes. Claim them before creating a new stone.'))
-            return redirect('my_stones')
-
-        # No unclaimed QRs — check if before or after threshold
-        threshold = getattr(settings, 'SHOP_VISIBLE_USER_THRESHOLD', 1000)
-        user_count = UserModel.objects.count()
-
-        if user_count < threshold:
-            # Early phase: create a free QR directly
-            pack = QRPack.objects.create(
-                FK_user=request.user,
-                pack_type='free_single',
-                status='fulfilled',
-                price_cents=0,
-                fulfilled_at=timezone.now(),
-            )
-            temp_name = f'UNCLAIMED-{uuid_lib.uuid4().hex[:8].upper()}'
-            stone = Stone.objects.create(
-                PK_stone=temp_name,
-                FK_pack=pack,
-                FK_user=None,
-                status='unclaimed',
-            )
-            QRCodeService.generate_qr_for_stone(stone, request)
-            messages.success(request, _('A new QR code has been created! Claim it to name your stone.'))
-            return redirect('my_stones')
-
-        # After threshold: go to shop
-        return redirect('shop')
+        )
+        QRCodeService.generate_qr_for_stone(stone, request)
+        messages.success(request, _('A new QR code has been created! Claim it to name your stone.'))
+        return redirect('my_stones')
 
 
 class ClaimStoneView(LoginRequiredMixin, View):
@@ -316,15 +303,24 @@ class ShopView(TemplateView):
                 enhanced['disabled'] = False
                 enhanced['disabled_reason'] = None
 
-            # Format price display
-            if enhanced.get('is_free'):
+            # Dynamic price display: a QR pack is free while it fits within the
+            # user's free allowance (or they're premium), otherwise its listed
+            # price. Subscriptions keep their fixed price.
+            pack_size = enhanced.get('pack_size', 1) or 1
+            is_subscription = enhanced.get('is_subscription')
+            if not is_subscription and self.request.user.is_authenticated:
+                free_for_user = Stone.pack_is_free_for_user(self.request.user, pack_size)
+            else:
+                free_for_user = bool(enhanced.get('is_free'))
+            enhanced['is_free'] = free_for_user
+
+            if free_for_user:
                 enhanced['price_display'] = _('Free')
             else:
                 enhanced['price_display'] = format_price(enhanced.get('price_cents', 0))
 
-            # Calculate per-unit price for multi-packs
-            pack_size = enhanced.get('pack_size', 1)
-            if pack_size > 1 and not enhanced.get('is_free'):
+            # Per-unit price for multi-packs
+            if pack_size > 1 and not free_for_user and not is_subscription:
                 per_unit_cents = enhanced.get('price_cents', 0) // pack_size
                 enhanced['price_per_unit'] = format_price(per_unit_cents)
             else:
@@ -333,6 +329,8 @@ class ShopView(TemplateView):
             enhanced_products.append(enhanced)
 
         context['products'] = enhanced_products
+        if self.request.user.is_authenticated:
+            context['free_allowance_remaining'] = Stone.remaining_free_allowance(self.request.user)
         context['categories'] = categories
         context['stripe_public_key'] = getattr(settings, 'STRIPE_PUBLIC_KEY', '')
         context['dev_mode'] = dev_mode
@@ -367,17 +365,9 @@ class CheckoutView(LoginRequiredMixin, View):
 
         dev_mode = getattr(settings, 'DEBUG', False)
 
-        # QR limit gate: only applies to free products. Paid packs can always be
-        # purchased regardless of unclaimed stones. Before SHOP_VISIBLE_USER_THRESHOLD
-        # users, free QR hoarding is prevented by limiting to 1 unclaimed at a time.
-        # Skipped in dev mode so developers can test checkout flows.
-        if product.get('is_free') and not dev_mode and not Stone.user_can_get_new_qr(request.user):
-            messages.error(request, _('You already have an unclaimed QR code. Claim your existing stone before getting a new one.'))
-            return redirect('shop')
-
-        # Check user limits (skipped in dev mode for free_single)
+        # Per-product cap (rarely used now; QR allowance is handled below).
         limit = product.get('limit_per_user')
-        if limit and not (dev_mode and product_id == 'free_single'):
+        if limit:
             user_count = QRPack.objects.filter(
                 FK_user=request.user,
                 pack_type=product_id,
@@ -387,8 +377,12 @@ class CheckoutView(LoginRequiredMixin, View):
                 messages.error(request, _('You have already claimed this product.'))
                 return redirect('shop')
 
-        # Free products - fulfill immediately
-        if product.get('is_free'):
+        # Dynamic pricing (server-side; never trust the client): a QR pack is free
+        # while it fits the user's free allowance or they're premium, otherwise it
+        # costs its listed price. Subscriptions are always paid.
+        pack_size = product.get('pack_size', 1) or 1
+        is_subscription = product.get('is_subscription')
+        if not is_subscription and Stone.pack_is_free_for_user(request.user, pack_size):
             return self._handle_free_product(request, product)
 
         # Paid products - create Stripe session
@@ -465,19 +459,9 @@ class FreeQRView(LoginRequiredMixin, View):
         guard = _require_confirmed_email(request)
         if guard:
             return guard
-        # Check unclaimed QR limit (before 1000 users, max 1 unclaimed at a time)
-        if not Stone.user_can_get_new_qr(request.user):
-            messages.error(request, _('You already have an unclaimed QR code. Claim your existing stone before getting a new one.'))
-            return redirect('create_stone')
-
-        # Check if user already claimed free QR (dev mode allows repeats via CheckoutView)
-        existing_free = QRPack.objects.filter(
-            FK_user=request.user,
-            pack_type='free_single'
-        ).exists()
-
-        if existing_free:
-            messages.error(request, _('You have already claimed your free QR code.'))
+        # Free only within the user's allowance; beyond it, send them to the shop.
+        if not Stone.pack_is_free_for_user(request.user, 1):
+            messages.info(request, _('You have used your free QR allowance. Visit the shop to get more.'))
             return redirect('shop')
 
         # Create pack and unclaimed stone
