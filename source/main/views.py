@@ -98,7 +98,8 @@ class StoneWalkerStartPageView(TemplateView):
         ).prefetch_related(
             Prefetch(
                 'moves',
-                queryset=StoneMove.objects.order_by('timestamp').select_related(
+                # Public map: only confirmed finds (held email-first finds stay hidden).
+                queryset=StoneMove.objects.filter(is_confirmed=True).order_by('timestamp').select_related(
                     'FK_user', 'FK_user__profile'
                 ),
             ),
@@ -459,7 +460,7 @@ class StoneLinkView(View):
     def _render_public_page(self, request, stone):
         """Render the public stone page (same as StoneShareView)."""
         stone = Stone.objects.select_related('FK_user', 'FK_user__profile').get(pk=stone.pk)
-        moves = list(stone.moves.order_by('timestamp').all())
+        moves = list(stone.moves.filter(is_confirmed=True).order_by('timestamp').all())
         num_moves = len(moves)
         distance = round(stone.distance_km, 1)
         owner = stone.FK_user
@@ -565,25 +566,16 @@ class StoneLinkView(View):
             messages.success(request, 'Stone sealed!')
             return redirect('stone_link', stone_number=stone.stone_number)
 
-        # Wandering stone
-        # Anonymous finders must log in first so their photo/comment/location
-        # aren't lost to a login bounce when they submit the find form.
-        if not request.user.is_authenticated:
-            from django.contrib.auth.views import redirect_to_login
-            messages.info(request, 'Log in or sign up to record where you found this stone.')
-            return redirect_to_login(next=request.get_full_path(), login_url='accounts:log_in')
-
-        # Check if already scanned this week → redirect to public page (strips key)
-        if not StoneScanAttempt.can_scan_again(stone, request.user):
-            return redirect('stone_link', stone_number=stone.stone_number)
-
-        # Record scan attempt
-        StoneScanAttempt.record_scan_attempt(stone, request.user, request)
-
-        # First scan → show stone_found form (key stays in URL for POST)
+        # Wandering stone — show the find form. Anonymous finders get an email
+        # field (email-first signup): they can record the find now; it's held
+        # until they confirm their email.
         is_first_stone = False
         is_owner = False
         if request.user.is_authenticated:
+            # Check if already scanned this week → redirect to public page (strips key)
+            if not StoneScanAttempt.can_scan_again(stone, request.user):
+                return redirect('stone_link', stone_number=stone.stone_number)
+            StoneScanAttempt.record_scan_attempt(stone, request.user, request)
             user_stone_count = StoneMove.objects.filter(FK_user=request.user).count()
             is_first_stone = user_stone_count == 0
             is_owner = stone.FK_user == request.user
@@ -604,7 +596,60 @@ class StoneLinkView(View):
 
         return response
 
-    @method_decorator(login_required)
+    def _resolve_anonymous_finder(self, request, stone):
+        """Resolve (or create) the account for an email-first anonymous find.
+
+        Returns (user, redirect_or_None). On any validation problem or when the
+        email already belongs to a real account, returns (None, <redirect>).
+        """
+        from django.core.validators import validate_email
+        from django.core.exceptions import ValidationError as DjangoValidationError
+        from django.contrib.auth import login
+        from django.contrib.auth.views import redirect_to_login
+        from django.utils.crypto import get_random_string
+        from accounts.models import EmailAddressState, TermsAcceptance, is_email_confirmed
+
+        back = redirect('stone_link', stone_number=stone.stone_number)
+        email = request.POST.get('finder_email', '').strip().lower()
+        try:
+            validate_email(email)
+        except DjangoValidationError:
+            messages.error(request, 'Please enter a valid email address to record your find.')
+            return None, back
+        if not request.POST.get('accept_terms'):
+            messages.error(request, 'Please accept the Terms of Use to record your find.')
+            return None, back
+
+        existing = User.objects.filter(email__iexact=email).first()
+        if existing and is_email_confirmed(existing):
+            # Real account already exists — don't create a duplicate; log them in.
+            next_url = f'{reverse("stone_link", kwargs={"stone_number": stone.stone_number})}?key={stone.uuid}'
+            messages.info(request, 'That email already has a StoneWalker account. Please log in to record your find.')
+            return None, redirect_to_login(next=next_url, login_url='accounts:log_in')
+
+        if existing:
+            user = existing  # reuse an earlier unconfirmed provisional account
+        else:
+            user = User.objects.create(username=get_random_string(12), email=email, is_active=True)
+            user.set_unusable_password()
+            user.save()
+            user.username = f'user_{user.id}'
+            user.save(update_fields=['username'])
+            EmailAddressState.objects.get_or_create(user=user, defaults={'email': email, 'is_confirmed': False})
+            TermsAcceptance.objects.get_or_create(user=user)
+
+        login(request, user)  # soft session so they can browse My Stones now
+        return user, None
+
+    def _send_find_confirmation(self, request, user, stone):
+        from django.contrib.auth.tokens import default_token_generator
+        from django.utils.http import urlsafe_base64_encode
+        from django.utils.encoding import force_bytes
+        from accounts.utils import send_find_confirmation_email
+        uid = urlsafe_base64_encode(force_bytes(user.pk))
+        token = default_token_generator.make_token(user)
+        send_find_confirmation_email(request, user.email, token, uid, stone.PK_stone)
+
     def post(self, request, stone_number):
         # Look up stone by stone_number, validate UUID from hidden form field
         stone_uuid = request.POST.get('stone_uuid', '')
@@ -617,8 +662,17 @@ class StoneLinkView(View):
             messages.error(request, 'Invalid stone link.')
             return redirect('stonewalker_start')
 
-        # Check one-week blackout period
-        if not StoneScanAttempt.can_scan_again(stone, request.user):
+        # Resolve finder: logged-in user, or an email-first provisional account.
+        anonymous = not request.user.is_authenticated
+        if anonymous:
+            user, bounce = self._resolve_anonymous_finder(request, stone)
+            if bounce is not None:
+                return bounce
+        else:
+            user = request.user
+
+        # Check one-week blackout period (per finder)
+        if not StoneScanAttempt.can_scan_again(stone, user):
             messages.error(request, 'You have already scanned this stone in the last week. Please wait before scanning again.')
             return redirect('stonewalker_start')
 
@@ -655,21 +709,24 @@ class StoneLinkView(View):
 
         try:
             # Record the scan attempt
-            StoneScanAttempt.record_scan_attempt(stone, request.user, request)
+            StoneScanAttempt.record_scan_attempt(stone, user, request)
 
-            # Create the stone move
+            # Create the stone move. Anonymous (email-first) finds are held
+            # (is_confirmed=False) until the finder confirms their email.
             stone_move = StoneMove.objects.create(
                 FK_stone=stone,
-                FK_user=request.user,
+                FK_user=user,
                 image=image,
                 comment=comment,
                 latitude=lat,
-                longitude=lng
+                longitude=lng,
+                is_confirmed=not anonymous,
             )
 
-            # Update stone distance
-            stone.distance_km = calculate_stone_distance(stone)
-            stone.save()
+            # Update stone distance (only confirmed finds count; skip for held)
+            if not anonymous:
+                stone.distance_km = calculate_stone_distance(stone)
+                stone.save()
 
             # For hunted stones, store the new location for next week
             if stone.stone_type == 'hunted' and new_latitude and new_longitude:
@@ -679,12 +736,17 @@ class StoneLinkView(View):
                     request.session[f'new_location_{stone.uuid}'] = {
                         'latitude': new_lat,
                         'longitude': new_lng,
-                        'user_id': request.user.id,
+                        'user_id': user.id,
                         'timestamp': timezone.now().isoformat()
                     }
                 except ValueError:
                     messages.error(request, 'Please provide valid coordinates for the new location.')
                     return redirect('stone_link', stone_number=stone.stone_number)
+
+            if anonymous:
+                self._send_find_confirmation(request, user, stone)
+                messages.success(request, 'Find recorded! Check your email to confirm it and put it on the map.')
+                return redirect('my_stones')
 
             messages.success(request, 'Your stone find has been recorded!')
             return redirect(f'/stonewalker/?focus={stone.PK_stone}')
@@ -890,7 +952,7 @@ class StoneShareView(View):
             Stone.objects.select_related('FK_user', 'FK_user__profile'),
             PK_stone=pk,
         )
-        moves = list(stone.moves.order_by('timestamp').all())
+        moves = list(stone.moves.filter(is_confirmed=True).order_by('timestamp').all())
         num_moves = len(moves)
         distance = round(stone.distance_km, 1)
         owner = stone.FK_user

@@ -57,7 +57,20 @@
     <form class="stone-found-form flex-column gap-0-7" method="post" enctype="multipart/form-data" autocomplete="off">
       {% csrf_token %}
       <input type="hidden" name="stone_uuid" value="{{ stone_uuid }}">
-      
+
+      {% if not user.is_authenticated %}
+      <div class="bg-blue p-2 border-radius-8 mb-1">
+        <label class="avant-label" for="id_finder_email">{% trans 'Your email' %}</label>
+        <input type="email" name="finder_email" id="id_finder_email" class="avant-input" required
+               placeholder="{% trans 'you@example.com' %}">
+        <p class="fs-0-85 text-muted mt-0-3 mb-0-7">{% trans 'No password needed now — record your find, then confirm via email to put it on the map.' %}</p>
+        <label class="flex items-center gap-0-5 fs-0-9">
+          <input type="checkbox" name="accept_terms" required>
+          <span>{% blocktrans %}I accept the <a href="/terms/" target="_blank" class="text-accent underline">Terms of Use</a>{% endblocktrans %}</span>
+        </label>
+      </div>
+      {% endif %}
+
       <label class="avant-label" for="id_comment">{% trans 'Comment (optional)' %}</label>
       <textarea name="comment" id="id_comment" rows="4" maxlength="500" class="avant-input" placeholder="{% trans 'Tell us about your stone adventure...' %}"></textarea>
       

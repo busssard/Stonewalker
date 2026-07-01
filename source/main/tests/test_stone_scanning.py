@@ -284,15 +284,15 @@ class StoneSealOnScanTests(BaseStoneWalkerTestCase):
         self.assertEqual(response.status_code, 302)  # redirected to login
         self.assertIn('/log', response.url.lower() if response.url else '')
 
-    def test_anonymous_finder_redirected_to_login(self):
-        """Anonymous scan of a wandering stone redirects to login, preserving next."""
+    def test_anonymous_finder_sees_email_form(self):
+        """Anonymous scan of a wandering stone shows the find form with an email field."""
         self.client.logout()
         stone = self.create_stone('WANDER2', status='wandering')
 
         response = self.client.get(f'/stone-link/{stone.stone_number}/?key={stone.uuid}')
 
-        self.assertEqual(response.status_code, 302)
-        self.assertIn('next=', response.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'name="finder_email"')
 
     def test_owner_scans_published_stone(self):
         """Owner scanning their own published stone should seal it"""
@@ -313,3 +313,62 @@ class StoneSealOnScanTests(BaseStoneWalkerTestCase):
         self.assertEqual(stone.status, 'wandering')  # Still wandering
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Stone Found')
+
+
+class DeferredFindTests(BaseStoneWalkerTestCase):
+    """Phase 2: anonymous email-first find creates a held submission + provisional user."""
+
+    def test_anonymous_find_creates_pending_move_and_user(self):
+        from django.contrib.auth.models import User
+        from accounts.models import is_email_confirmed
+        self.client.logout()
+        stone = self.create_stone('HELDONE', status='wandering')
+
+        resp = self.client.post(f'/stone-link/{stone.stone_number}/', {
+            'stone_uuid': str(stone.uuid),
+            'finder_email': 'newfinder@example.com',
+            'accept_terms': 'on',
+            'comment': 'found on a walk',
+            'latitude': '48.2', 'longitude': '16.3',
+        })
+        self.assertEqual(resp.status_code, 302)  # -> my_stones
+
+        user = User.objects.get(email='newfinder@example.com')
+        self.assertTrue(user.is_active)
+        self.assertFalse(user.has_usable_password())
+        self.assertFalse(is_email_confirmed(user))
+        move = StoneMove.objects.get(FK_stone=stone, FK_user=user)
+        self.assertFalse(move.is_confirmed)  # held
+        # soft-logged-in
+        self.assertEqual(str(self.client.session.get('_auth_user_id')), str(user.id))
+
+    def test_pending_find_hidden_from_public_map(self):
+        from django.contrib.auth.models import User
+        self.client.logout()
+        stone = self.create_stone('HELDMAP', status='wandering')
+        self.client.post(f'/stone-link/{stone.stone_number}/', {
+            'stone_uuid': str(stone.uuid), 'finder_email': 'hidden@example.com',
+            'accept_terms': 'on', 'comment': 'x', 'latitude': '1.0', 'longitude': '2.0',
+        })
+        # public map JSON must not include this stone's held find location
+        self.client.logout()
+        resp = self.client.get('/stonewalker/')
+        self.assertNotContains(resp, 'hidden@example.com')  # sanity: no email leak
+        # the stone has no confirmed moves, so it should not be a marker
+        stone.refresh_from_db()
+        confirmed = stone.moves.filter(is_confirmed=True).count()
+        self.assertEqual(confirmed, 0)
+
+    def test_existing_confirmed_email_redirected_to_login(self):
+        self.client.logout()
+        stone = self.create_stone('HELDDUP', status='wandering')
+        # self.user already exists (confirmed by default / legacy = confirmed)
+        resp = self.client.post(f'/stone-link/{stone.stone_number}/', {
+            'stone_uuid': str(stone.uuid),
+            'finder_email': self.user.email,
+            'accept_terms': 'on', 'comment': 'x', 'latitude': '1.0', 'longitude': '2.0',
+        })
+        self.assertEqual(resp.status_code, 302)
+        self.assertIn('/log', resp.url.lower())
+        # no move created for the existing account via this path
+        self.assertFalse(StoneMove.objects.filter(FK_stone=stone).exists())
