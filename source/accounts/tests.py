@@ -1079,17 +1079,22 @@ class QRCodeLimitTests(TestCase):
         from main.models import Stone
         self.assertTrue(Stone.user_can_get_new_qr(self.user))
 
-    def test_user_cannot_get_new_qr_with_unclaimed(self):
-        """User with an unclaimed QR cannot get another (before threshold)."""
+    def test_user_free_eligibility_at_cap(self):
+        """A non-premium user can get free codes up to the 30 cap, not beyond.
+
+        (Under the free-allowance model, holding a few unclaimed codes no longer
+        blocks getting more for free — only reaching the cap does.)"""
         from main.models import Stone, QRPack
         pack = QRPack.objects.create(
-            FK_user=self.user, pack_type='free_single',
+            FK_user=self.user, pack_type='paid_30pack',
             status='fulfilled', price_cents=0,
         )
-        Stone.objects.create(
-            PK_stone='UNCLAIMED-TEST1',
-            FK_pack=pack, FK_user=None, status='unclaimed',
-        )
+        # One unclaimed: still free-eligible (1 + 1 <= 30)
+        Stone.objects.create(PK_stone='CAP-A', FK_pack=pack, FK_user=None, status='unclaimed')
+        self.assertTrue(Stone.user_can_get_new_qr(self.user))
+        # Fill to the cap: no longer free-eligible
+        for i in range(Stone.FREE_UNCLAIMED_CAP - 1):
+            Stone.objects.create(PK_stone=f'CAP{i}', FK_pack=pack, FK_user=None, status='unclaimed')
         self.assertFalse(Stone.user_can_get_new_qr(self.user))
 
     def test_user_can_get_new_qr_after_claiming(self):
