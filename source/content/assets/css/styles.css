@@ -5737,6 +5737,13 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
   color: var(--text-secondary) !important;
 }
 
+/* .bg-gray is a light panel (#eee) used for Cancel buttons and info boxes;
+   in dark mode .text-dark flips to light, so the panel must go dark too or the
+   text is unreadable (light-on-light). */
+[data-theme="dark"] .bg-gray {
+  background: #2a3646 !important;
+}
+
 [data-theme="dark"] .avant-about-list {
   color: var(--text-primary);
 }
