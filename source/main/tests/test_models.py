@@ -61,6 +61,9 @@ class StoneModelTests(BaseStoneWalkerTestCase):
 
     def test_can_download_qr_logic(self):
         """Test QR download permission logic"""
+        unclaimed = self.create_stone('UNCL', status='unclaimed')
+        self.assertTrue(unclaimed.can_download_qr())  # owner can download before claiming
+
         draft = self.create_stone(status='draft')
         self.assertTrue(draft.can_download_qr())
 

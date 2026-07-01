@@ -27,6 +27,13 @@
     <div class="floating-pack-stones">
       {% for stone in pack.stones.all %}{% if stone.stone_number %}
       {% if stone.status == 'unclaimed' %}
+      <a href="{% url 'download_stone_qr' stone.stone_number %}" class="floating-stone-btn" title="{% trans 'Download QR code (no claim needed)' %}">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="7 10 12 15 17 10"/>
+          <line x1="12" y1="15" x2="12" y2="3"/>
+        </svg>
+      </a>
       <a href="{% url 'claim_stone' stone_number=stone.stone_number %}?key={{ stone.uuid }}" class="floating-stone-btn" title="{% trans 'Claim Stone' %}">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <rect x="3" y="3" width="18" height="18" rx="2"/>

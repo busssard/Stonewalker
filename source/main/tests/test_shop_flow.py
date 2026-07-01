@@ -14,7 +14,29 @@ from django.urls import reverse
 from django.utils import timezone
 
 from ..models import Stone, QRPack
-from .base import BaseStoneWalkerTestCase
+from .base import BaseStoneWalkerTestCase, BaseQRTestCase
+
+
+class UnclaimedDownloadTests(BaseQRTestCase):
+    """Task 15C: owner can download an unclaimed code's QR without claiming it."""
+
+    def _pack_stone(self, owner, name='DLUNCL'):
+        pack = QRPack.objects.create(
+            FK_user=owner, pack_type='free_single',
+            status='fulfilled', price_cents=0, fulfilled_at=timezone.now(),
+        )
+        return Stone.objects.create(PK_stone=name, FK_pack=pack, FK_user=None, status='unclaimed')
+
+    def test_owner_downloads_unclaimed_qr(self):
+        stone = self._pack_stone(self.user)
+        resp = self.client.get(reverse('download_stone_qr', args=[stone.stone_number]))
+        self.assertEqual(resp.status_code, 200)  # a download, not a redirect
+
+    def test_non_owner_cannot_download_unclaimed_qr(self):
+        other = self.create_user('other', 'pw', 'other@example.com')
+        stone = self._pack_stone(other, name='NOTMINE')
+        resp = self.client.get(reverse('download_stone_qr', args=[stone.stone_number]))
+        self.assertEqual(resp.status_code, 302)  # blocked -> redirect
 
 
 class UnconfirmedEmailGateTests(BaseStoneWalkerTestCase):

@@ -178,8 +178,10 @@ class Stone(models.Model):
         return False
 
     def can_download_qr(self):
-        """QR code download is only available for draft/published stones"""
-        return self.status in ('draft', 'published')
+        """QR download is available for unclaimed (owned via pack) and
+        draft/published stones — but not once wandering (already sealed).
+        Lets an owner download a bought code's QR without claiming it."""
+        return self.status in ('unclaimed', 'draft', 'published')
 
     def can_download_certificate(self):
         """Certificate download is only available for wandering stones"""
