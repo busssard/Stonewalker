@@ -4,6 +4,12 @@
 {% load l10n %}
 
 {% block content %}
+{% if not email_confirmed %}
+<div class="bg-orange p-2 border-radius-8 mb-2 text-center">
+  <strong>{% trans 'Confirm your email to unlock everything.' %}</strong>
+  <p class="mb-0 fs-0-95">{% trans 'We sent you a confirmation link. Click it to set your password, put your find on the map, and get QR codes.' %}</p>
+</div>
+{% endif %}
 {% if user_packs %}
 <details class="my-stones-packs" open>
   <summary class="my-stones-packs-summary">
@@ -101,7 +107,11 @@
 </div>
 {% if not has_unclaimed %}
 <div class="new-qr-button-bar">
+  {% if email_confirmed %}
   <a href="{% url 'create_stone' %}" class="avant-btn new-qr-btn">{% trans 'Create New Stone' %}</a>
+  {% else %}
+  <span class="avant-btn new-qr-btn opacity-0-6" title="{% trans 'Confirm your email first' %}" aria-disabled="true">{% trans 'Create New Stone' %}</span>
+  {% endif %}
 </div>
 {% endif %}
 <!-- Gallery modal placeholder -->

@@ -38,6 +38,7 @@ def premium_status(request):
     """
     is_premium = False
     is_early = False
+    email_confirmed = True  # anonymous/logged-out templates don't need the gate
 
     if request.user.is_authenticated:
         try:
@@ -45,10 +46,12 @@ def premium_status(request):
         except Exception:
             pass
 
-        from accounts.models import is_early_user
+        from accounts.models import is_early_user, is_email_confirmed
         is_early = is_early_user(request.user)
+        email_confirmed = is_email_confirmed(request.user)
 
     return {
         'is_premium_user': is_premium,
         'is_early_user': is_early,
+        'email_confirmed': email_confirmed,
     }

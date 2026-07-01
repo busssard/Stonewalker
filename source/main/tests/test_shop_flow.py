@@ -17,6 +17,33 @@ from ..models import Stone, QRPack
 from .base import BaseStoneWalkerTestCase
 
 
+class UnconfirmedEmailGateTests(BaseStoneWalkerTestCase):
+    """Phase 3: an email-unconfirmed (email-first) account cannot acquire/claim QRs."""
+
+    def _login_unconfirmed(self):
+        from django.contrib.auth.models import User
+        from accounts.models import EmailAddressState
+        u = User.objects.create(username='prov', email='prov@example.com', is_active=True)
+        u.set_unusable_password(); u.save()
+        EmailAddressState.objects.create(user=u, email='prov@example.com', is_confirmed=False)
+        self.client.force_login(u)
+        return u
+
+    def test_unconfirmed_blocked_from_free_qr(self):
+        self._login_unconfirmed()
+        resp = self.client.get(reverse('free_qr'))
+        self.assertEqual(resp.status_code, 302)
+        self.assertIn('my-stones', resp.url)
+        self.assertEqual(QRPack.objects.count(), 0)  # no QR minted
+
+    def test_unconfirmed_blocked_from_create_stone(self):
+        self._login_unconfirmed()
+        resp = self.client.get(reverse('create_stone'))
+        self.assertEqual(resp.status_code, 302)
+        self.assertIn('my-stones', resp.url)
+        self.assertEqual(QRPack.objects.count(), 0)
+
+
 class CreateNewStoneRouterTests(BaseStoneWalkerTestCase):
     """Test the CreateNewStoneView smart router"""
 

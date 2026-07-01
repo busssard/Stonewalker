@@ -23,6 +23,17 @@ from .shop_utils import get_enabled_products, get_product_config, get_categories
 logger = logging.getLogger(__name__)
 
 
+def _require_confirmed_email(request):
+    """Gate QR acquisition/claiming behind email confirmation. Returns a redirect
+    response for unconfirmed (email-first) accounts, or None if allowed."""
+    from accounts.models import is_email_confirmed
+    if not is_email_confirmed(request.user):
+        messages.info(request, _(
+            'Please confirm your email to get a QR code — check your inbox for the confirmation link.'))
+        return redirect('my_stones')
+    return None
+
+
 class CreateNewStoneView(LoginRequiredMixin, View):
     """Smart router: checks for unclaimed QR codes and directs user accordingly.
 
@@ -36,6 +47,9 @@ class CreateNewStoneView(LoginRequiredMixin, View):
     """
 
     def get(self, request):
+        guard = _require_confirmed_email(request)
+        if guard:
+            return guard
         from django.contrib.auth.models import User as UserModel
         # Check for unclaimed QRs from user's packs
         unclaimed = Stone.objects.filter(
@@ -81,6 +95,9 @@ class ClaimStoneView(LoginRequiredMixin, View):
 
     def get(self, request, stone_number):
         """Show the claim stone form"""
+        guard = _require_confirmed_email(request)
+        if guard:
+            return guard
         try:
             stone = Stone.objects.get(stone_number=stone_number)
         except Stone.DoesNotExist:
@@ -111,6 +128,9 @@ class ClaimStoneView(LoginRequiredMixin, View):
 
     def post(self, request, stone_number):
         """Process the claim stone form"""
+        guard = _require_confirmed_email(request)
+        if guard:
+            return guard
         try:
             stone = Stone.objects.get(stone_number=stone_number)
         except Stone.DoesNotExist:
@@ -332,6 +352,9 @@ class CheckoutView(LoginRequiredMixin, View):
     """Handle checkout for a product"""
 
     def post(self, request, product_id):
+        guard = _require_confirmed_email(request)
+        if guard:
+            return guard
         product = get_product_config(product_id)
 
         if not product:
@@ -439,6 +462,9 @@ class FreeQRView(LoginRequiredMixin, View):
     """Generate a free single QR code (legacy endpoint)"""
 
     def get(self, request):
+        guard = _require_confirmed_email(request)
+        if guard:
+            return guard
         # Check unclaimed QR limit (before 1000 users, max 1 unclaimed at a time)
         if not Stone.user_can_get_new_qr(request.user):
             messages.error(request, _('You already have an unclaimed QR code. Claim your existing stone before getting a new one.'))
