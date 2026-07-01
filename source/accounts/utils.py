@@ -53,6 +53,19 @@ def send_activation_change_email(request, email, code):
     return send_mail(email, 'change_email', context)
 
 
+def send_find_confirmation_email(request, email, token, uid, stone_name=None):
+    """Send the email-first (deferred signup) confirmation link. The link lands
+    on ConfirmAccountView where the finder sets a password, which confirms their
+    email and releases their held find onto the map."""
+    context = {
+        'subject': _('Confirm your StoneWalker find'),
+        'uri': request.build_absolute_uri(
+            reverse('accounts:confirm_account', kwargs={'uidb64': uid, 'token': token})),
+        'stone_name': stone_name,
+    }
+    return send_mail(email, 'confirm_find', context)
+
+
 def send_reset_password_email(request, email, token, uid):
     context = {
         'subject': _('Restore password'),

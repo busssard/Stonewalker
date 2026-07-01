@@ -1,0 +1,20 @@
+{% load i18n %}
+
+========================================
+STONEWALKER
+========================================
+
+{% trans 'Confirm your find' %}
+
+{% if stone_name %}{% blocktrans %}Thanks for recording your find of "{{ stone_name }}"!{% endblocktrans %}{% else %}{% trans 'Thanks for recording your stone find!' %}{% endif %}
+
+{% trans 'Set a password to confirm your email. Your find then goes live on the map and your StoneWalker account is ready.' %}
+
+{{ uri }}
+
+{% trans 'If you did not submit a stone find, you can safely ignore this email.' %}
+
+----------------------------------------
+StoneWalker
+{% trans 'Track painted stones around the world' %}
+========================================

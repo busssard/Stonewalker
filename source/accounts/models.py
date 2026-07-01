@@ -53,6 +53,22 @@ def grant_early_premium(user):
     return sub
 
 
+def is_email_confirmed(user):
+    """Whether the user's email is confirmed.
+
+    Used to gate money/QR actions for email-first (deferred signup) accounts.
+    Anonymous users are not confirmed. Legacy users that predate the
+    EmailAddressState row are treated as confirmed so they aren't locked out.
+    """
+    if not getattr(user, 'is_authenticated', False):
+        return False
+    try:
+        state = user.email_state
+    except EmailAddressState.DoesNotExist:
+        return True  # legacy account without a state row = treat as confirmed
+    return bool(state and state.is_confirmed)
+
+
 class Activation(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)

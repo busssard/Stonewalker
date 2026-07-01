@@ -5,7 +5,7 @@ from .views import (
     LogInView, ResendActivationCodeView, RemindUsernameView, SignUpView, ActivateView, LogOutView,
     ChangeProfileView, ChangeEmailActivateView, ResendEmailActivationView, CancelEmailChangeView,
     RestorePasswordView, RestorePasswordDoneView, RestorePasswordConfirmView, LogOutConfirmView,
-    DiscourseSSOView, check_username,
+    DiscourseSSOView, check_username, ConfirmAccountView,
 )
 
 app_name = 'accounts'
@@ -23,6 +23,8 @@ urlpatterns = [
     path('restore/password/', RestorePasswordView.as_view(), name='restore_password'),
     path('restore/password/done/', RestorePasswordDoneView.as_view(), name='restore_password_done'),
     path('restore/<uidb64>/<token>/', RestorePasswordConfirmView.as_view(), name='restore_password_confirm'),
+
+    path('confirm/<uidb64>/<token>/', ConfirmAccountView.as_view(), name='confirm_account'),
 
     path('remind/username/', RemindUsernameView.as_view(), name='remind_username'),
 

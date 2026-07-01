@@ -1,0 +1,28 @@
+{% extends 'layouts/default/page.html' %}
+{% load bootstrap4 %}
+{% load i18n %}
+
+{% block title %}{% trans 'Confirm your account' %} - StoneWalker{% endblock %}
+
+{% block content %}
+<div class="avant-section avant-bg-left flex-center min-h-70vh overflow-auto">
+  <div class="avant-card max-w-480 m-2-auto">
+    <div class="avant-header text-center mb-1-2">{% trans 'Confirm your account' %}</div>
+
+    {% if validlink %}
+      <p class="text-center text-muted mb-1-2">
+        {% trans 'Set a password to confirm your email and finish setting up your StoneWalker account.' %}
+      </p>
+      <form method="post" class="auth-form">
+        {% csrf_token %}
+        {% bootstrap_form form %}
+        <button class="avant-btn w-full mt-1 bg-accent text-white">{% trans 'Confirm and continue' %}</button>
+      </form>
+    {% else %}
+      <div class="text-center text-error">
+        {% trans 'This confirmation link is invalid or has already been used. Please request a new one.' %}
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

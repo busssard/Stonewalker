@@ -270,6 +270,10 @@ class StoneMove(models.Model):
     latitude = models.FloatField()
     longitude = models.FloatField()
     timestamp = models.DateTimeField(auto_now_add=True)
+    # False while a find submitted by an unconfirmed (email-first) finder is on
+    # hold. Pending moves are hidden from the public map and excluded from
+    # distance until the finder confirms their email. Existing rows default True.
+    is_confirmed = models.BooleanField(default=True)
 
     def __str__(self):
         return f"Move for {self.FK_stone.PK_stone} at {self.timestamp}"
@@ -323,7 +327,9 @@ class StoneScanAttempt(models.Model):
         return attempt
 
 def calculate_stone_distance(stone):
-    moves = list(stone.moves.order_by('timestamp').all())
+    # Only confirmed moves count — a pending (unconfirmed) find must not inflate
+    # distance before the finder confirms their email.
+    moves = list(stone.moves.filter(is_confirmed=True).order_by('timestamp').all())
     total_distance = 0.0
     for i in range(1, len(moves)):
         lat1, lon1 = moves[i-1].latitude, moves[i-1].longitude
@@ -336,6 +342,22 @@ def calculate_stone_distance(stone):
             c = 2 * atan2(sqrt(a), sqrt(1-a))
             total_distance += R * c
     return round(total_distance, 1)
+
+
+def confirm_pending_finds(user):
+    """Release a user's held (email-first) finds once they confirm their email:
+    flip their pending moves to confirmed and recompute each affected stone's
+    distance. Returns the number of finds released. Idempotent."""
+    pending = list(
+        StoneMove.objects.filter(FK_user=user, is_confirmed=False).select_related('FK_stone')
+    )
+    if not pending:
+        return 0
+    StoneMove.objects.filter(FK_user=user, is_confirmed=False).update(is_confirmed=True)
+    for stone in {m.FK_stone for m in pending}:
+        stone.distance_km = calculate_stone_distance(stone)
+        stone.save(update_fields=['distance_km'])
+    return len(pending)
 
 class Command(BaseCommand):
     help = 'Remove image from first StoneMove if it matches the Stone image (retroactive fix for hunted stones)'

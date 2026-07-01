@@ -8,7 +8,7 @@ from django.contrib.auth.views import (
 )
 from django.views.generic.base import TemplateView
 from django.shortcuts import get_object_or_404, redirect
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.utils.crypto import get_random_string
 from django.utils.decorators import method_decorator
 from django.utils.http import url_has_allowed_host_and_scheme as is_safe_url
@@ -314,6 +314,44 @@ class RestorePasswordConfirmView(BasePasswordResetConfirmView):
 
 class RestorePasswordDoneView(BasePasswordResetDoneView):
     template_name = 'accounts/restore_password_done.html'
+
+
+class ConfirmAccountView(BasePasswordResetConfirmView):
+    """Email-first (deferred signup) confirmation landing.
+
+    A finder who submitted with just an email gets a link here. Setting a
+    password on this page also confirms their email, activates the account,
+    releases their held finds onto the map, and grants early-user premium.
+    Reuses the password-reset token machinery (uidb64/token)."""
+    template_name = 'accounts/confirm_account.html'
+    post_reset_login = True
+    success_url = reverse_lazy('my_stones')
+
+    def form_valid(self, form):
+        response = super().form_valid(form)  # sets password + logs the user in
+        user = self.user
+        from .models import EmailAddressState, grant_early_premium
+
+        EmailAddressState.objects.update_or_create(
+            user=user, defaults={'email': user.email, 'is_confirmed': True}
+        )
+        if not user.is_active:
+            user.is_active = True
+            user.save(update_fields=['is_active'])
+
+        # Release any finds this user submitted while unconfirmed.
+        from main.models import confirm_pending_finds
+        released = confirm_pending_finds(user)
+
+        grant_early_premium(user)
+
+        if released:
+            messages.success(self.request, _(
+                'Your email is confirmed and your find is now live on the map. Welcome to StoneWalker!'))
+        else:
+            messages.success(self.request, _(
+                'Your email is confirmed and your password is set. Welcome to StoneWalker!'))
+        return response
 
 
 class LogOutConfirmView(LoginRequiredMixin, TemplateView):

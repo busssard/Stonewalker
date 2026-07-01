@@ -4,9 +4,66 @@ from django.contrib.auth.models import User, AnonymousUser
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.utils import timezone
 from django.http import HttpResponse
-from accounts.models import EmailAddressState, Activation, Subscription
+from accounts.models import EmailAddressState, Activation, Subscription, is_email_confirmed
 from datetime import timedelta
 import re
+
+
+class DeferredSignupPhase1Tests(TestCase):
+    """Phase 1: confirm-account (set-password) view releases held finds."""
+
+    def _make_provisional_user(self, email='finder@example.com'):
+        u = User.objects.create(username='user_temp', email=email, is_active=True)
+        u.set_unusable_password()
+        u.save()
+        u.username = f'user_{u.id}'
+        u.save()
+        EmailAddressState.objects.create(user=u, email=email, is_confirmed=False)
+        return u
+
+    def test_is_email_confirmed_helper(self):
+        from django.contrib.auth.models import AnonymousUser
+        self.assertFalse(is_email_confirmed(AnonymousUser()))
+        u = self._make_provisional_user()
+        self.assertFalse(is_email_confirmed(u))          # unconfirmed
+        legacy = User.objects.create_user('legacy', 'l@example.com', 'x')  # no email_state
+        self.assertTrue(is_email_confirmed(legacy))       # legacy = confirmed
+        u.email_state.is_confirmed = True
+        u.email_state.save()
+        u = User.objects.get(pk=u.pk)
+        self.assertTrue(is_email_confirmed(u))
+
+    def test_confirm_account_sets_password_and_releases_finds(self):
+        from django.utils.http import urlsafe_base64_encode
+        from django.utils.encoding import force_bytes
+        from django.contrib.auth.tokens import default_token_generator
+        from main.models import Stone, StoneMove
+
+        u = self._make_provisional_user()
+        stone = Stone.objects.create(PK_stone='WANDERER', status='wandering')
+        move = StoneMove.objects.create(
+            FK_stone=stone, FK_user=u, latitude=40.0, longitude=-74.0,
+            comment='found it', is_confirmed=False,
+        )
+
+        uid = urlsafe_base64_encode(force_bytes(u.pk))
+        token = default_token_generator.make_token(u)
+        url = reverse('accounts:confirm_account', kwargs={'uidb64': uid, 'token': token})
+
+        # Django's reset-confirm flow: GET redirects to the set-password URL.
+        resp = self.client.get(url)
+        self.assertEqual(resp.status_code, 302)
+        resp = self.client.post(resp.url, {
+            'new_password1': 'FreshPass12345', 'new_password2': 'FreshPass12345',
+        })
+        self.assertEqual(resp.status_code, 302)
+
+        u.refresh_from_db()
+        move.refresh_from_db()
+        self.assertTrue(u.has_usable_password())
+        self.assertTrue(u.email_state.is_confirmed)      # email confirmed
+        self.assertTrue(move.is_confirmed)               # find released
+        self.assertTrue(is_email_confirmed(u))
 
 class AccountsAuthTests(TestCase):
     def test_signup_and_login(self):
