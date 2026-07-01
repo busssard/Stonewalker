@@ -44,6 +44,54 @@ class UnconfirmedEmailGateTests(BaseStoneWalkerTestCase):
         self.assertEqual(QRPack.objects.count(), 0)
 
 
+class ClaimNotificationTests(BaseStoneWalkerTestCase):
+    """Task 15B: email the pack owner when another user claims their code."""
+
+    def _owned_unclaimed_stone(self, owner, name='OWNEDQR'):
+        pack = QRPack.objects.create(
+            FK_user=owner, pack_type='free_single',
+            status='fulfilled', price_cents=0, fulfilled_at=timezone.now(),
+        )
+        return Stone.objects.create(PK_stone=name, FK_pack=pack, FK_user=None, status='unclaimed')
+
+    def test_owner_emailed_when_other_user_claims(self):
+        from django.core import mail
+        owner = self.create_user('teacher', 'pw', 'teacher@example.com')
+        stone = self._owned_unclaimed_stone(owner)
+        mail.outbox = []
+        resp = self.client.post(reverse('claim_stone', kwargs={'stone_number': stone.stone_number}), {
+            'stone_uuid': str(stone.uuid), 'stone_name': 'STUDENT1',
+            'accept_terms': 'on', 'description': 'my find',
+        })
+        self.assertEqual(resp.status_code, 302)  # claimed -> stone_edit
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertIn('teacher@example.com', mail.outbox[0].to)
+        self.assertIn(self.user.username, mail.outbox[0].subject)
+
+    def test_self_claim_sends_no_email(self):
+        from django.core import mail
+        stone = self._owned_unclaimed_stone(self.user)  # owner == claimer
+        mail.outbox = []
+        self.client.post(reverse('claim_stone', kwargs={'stone_number': stone.stone_number}), {
+            'stone_uuid': str(stone.uuid), 'stone_name': 'MINE1',
+            'accept_terms': 'on', 'description': 'x',
+        })
+        self.assertEqual(len(mail.outbox), 0)
+
+    def test_owner_opt_out_suppresses_email(self):
+        from django.core import mail
+        from accounts.models import NotificationPreference
+        owner = self.create_user('optout', 'pw', 'optout@example.com')
+        NotificationPreference.objects.create(user=owner, code_claimed=False)
+        stone = self._owned_unclaimed_stone(owner)
+        mail.outbox = []
+        self.client.post(reverse('claim_stone', kwargs={'stone_number': stone.stone_number}), {
+            'stone_uuid': str(stone.uuid), 'stone_name': 'STUDENT2',
+            'accept_terms': 'on', 'description': 'x',
+        })
+        self.assertEqual(len(mail.outbox), 0)
+
+
 class DynamicPricingTests(BaseStoneWalkerTestCase):
     """Task 15A: 30 free unclaimed codes, $0.50/code beyond, premium unlimited."""
 

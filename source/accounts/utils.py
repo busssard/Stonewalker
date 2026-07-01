@@ -53,6 +53,17 @@ def send_activation_change_email(request, email, code):
     return send_mail(email, 'change_email', context)
 
 
+def send_code_claimed_email(owner_email, claimer_username, stone):
+    """Notify a pack owner that another user claimed one of their QR codes
+    (e.g. a teacher whose student claimed a handed-out code)."""
+    context = {
+        'subject': _('%(user)s claimed one of your codes') % {'user': claimer_username},
+        'claimer_username': claimer_username,
+        'stone': stone,
+    }
+    return send_mail(owner_email, 'code_claimed', context)
+
+
 def send_find_confirmation_email(request, email, token, uid, stone_name=None):
     """Send the email-first (deferred signup) confirmation link. The link lands
     on ConfirmAccountView where the finder sets a password, which confirms their

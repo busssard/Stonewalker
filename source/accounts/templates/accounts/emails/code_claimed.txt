@@ -1,0 +1,10 @@
+{% load i18n %}{% blocktrans with claimer=claimer_username %}{{ claimer }} claimed one of your codes!{% endblocktrans %}
+
+{% blocktrans with claimer=claimer_username stone_name=stone.PK_stone %}User {{ claimer }} just claimed one of the QR codes you handed out and named it "{{ stone_name }}".{% endblocktrans %}
+
+{% trans 'You can see your codes and stones in My Stones on StoneWalker.' %}
+
+{% trans 'You can manage your notification preferences in your profile settings.' %}
+
+---
+StoneWalker - {% trans 'Track painted stones around the world' %}

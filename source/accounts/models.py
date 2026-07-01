@@ -164,6 +164,7 @@ class NotificationPreference(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='notification_prefs')
     stone_scanned = models.BooleanField(default=True)
     stone_moved = models.BooleanField(default=True)
+    code_claimed = models.BooleanField(default=True)
     weekly_digest = models.BooleanField(default=False)
 
     def __str__(self):

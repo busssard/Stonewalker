@@ -113,6 +113,25 @@ class ClaimStoneView(LoginRequiredMixin, View):
             'needs_terms': needs_terms,
         })
 
+    def _notify_owner_of_claim(self, request, stone):
+        """Email the pack owner when a DIFFERENT user claims their code."""
+        pack = stone.FK_pack
+        owner = pack.FK_user if pack else None
+        # Skip if no owner, the owner has no email, or they claimed their own code.
+        if not owner or not owner.email or owner == request.user:
+            return
+        try:
+            prefs = owner.notification_prefs
+        except Exception:
+            prefs = None
+        if prefs and not prefs.code_claimed:
+            return
+        try:
+            from accounts.utils import send_code_claimed_email
+            send_code_claimed_email(owner.email, request.user.username, stone)
+        except Exception as e:
+            logger.error(f"Failed to send code-claimed email to {owner.email}: {e}")
+
     def post(self, request, stone_number):
         """Process the claim stone form"""
         guard = _require_confirmed_email(request)
@@ -243,6 +262,11 @@ class ClaimStoneView(LoginRequiredMixin, View):
             # Regenerate QR code with new name (outside the transaction; recoverable
             # via get_qr_url() if it transiently fails, so it must not roll back the claim).
             QRCodeService.generate_qr_for_stone(stone, request)
+
+            # Notify the original owner when someone else claims their code
+            # (e.g. a teacher whose student claimed a handed-out code). Never let
+            # a notification failure affect the claim.
+            self._notify_owner_of_claim(request, stone)
 
             messages.success(
                 request,
