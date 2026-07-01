@@ -630,6 +630,18 @@ class StoneLinkView(View):
         if existing:
             user = existing  # reuse an earlier unconfirmed provisional account
         else:
+            # Lenient per-IP backstop against bot floods. Set high enough that a
+            # classroom finding stones from one school network won't hit it; the
+            # real anti-fraud gate is that held finds stay hidden until confirmed.
+            ip = (request.META.get('HTTP_X_FORWARDED_FOR', '').split(',')[0].strip()
+                  or request.META.get('REMOTE_ADDR') or '')
+            limit = getattr(settings, 'ANONYMOUS_FIND_IP_HOURLY_LIMIT', 100)
+            if ip:
+                hour_ago = timezone.now() - timedelta(hours=1)
+                recent = StoneScanAttempt.objects.filter(ip_address=ip, scan_time__gte=hour_ago).count()
+                if recent >= limit:
+                    messages.error(request, 'Too many submissions from your network right now. Please try again later.')
+                    return None, back
             user = User.objects.create(username=get_random_string(12), email=email, is_active=True)
             user.set_unusable_password()
             user.save()

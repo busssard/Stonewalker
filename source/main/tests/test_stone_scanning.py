@@ -372,3 +372,45 @@ class DeferredFindTests(BaseStoneWalkerTestCase):
         self.assertIn('/log', resp.url.lower())
         # no move created for the existing account via this path
         self.assertFalse(StoneMove.objects.filter(FK_stone=stone).exists())
+
+    def test_ip_throttle_backstop(self):
+        from django.test import override_settings
+        from django.contrib.auth.models import User
+        self.client.logout()
+        s1 = self.create_stone('THR1', status='wandering')
+        s2 = self.create_stone('THR2', status='wandering')
+        common = {'accept_terms': 'on', 'comment': 'x', 'latitude': '1.0', 'longitude': '2.0'}
+        with override_settings(ANONYMOUS_FIND_IP_HOURLY_LIMIT=1):
+            self.client.post(f'/stone-link/{s1.stone_number}/',
+                             {**common, 'stone_uuid': str(s1.uuid), 'finder_email': 'a@example.com'})
+            self.client.post(f'/stone-link/{s2.stone_number}/',
+                             {**common, 'stone_uuid': str(s2.uuid), 'finder_email': 'b@example.com'})
+        self.assertTrue(User.objects.filter(email='a@example.com').exists())
+        self.assertFalse(User.objects.filter(email='b@example.com').exists())  # throttled
+
+    def test_cleanup_removes_stale_provisional_only(self):
+        from django.core.management import call_command
+        from django.contrib.auth.models import User
+        from accounts.models import EmailAddressState
+
+        def provisional(name, days_old, confirmed=False, usable=False):
+            u = User.objects.create(username=name, email=f'{name}@example.com', is_active=True)
+            if usable:
+                u.set_password('pw12345')
+            else:
+                u.set_unusable_password()
+            u.save()
+            User.objects.filter(pk=u.pk).update(
+                date_joined=timezone.now() - timedelta(days=days_old))
+            EmailAddressState.objects.create(user=u, email=u.email, is_confirmed=confirmed)
+            return u
+
+        stale = provisional('stale', 30)            # old, unconfirmed, passwordless -> delete
+        recent = provisional('recent', 1)           # too new -> keep
+        pending_signup = provisional('signup', 30, usable=True)  # has password -> keep
+
+        call_command('cleanup_unconfirmed', '--days', '14')
+
+        self.assertFalse(User.objects.filter(pk=stale.pk).exists())
+        self.assertTrue(User.objects.filter(pk=recent.pk).exists())
+        self.assertTrue(User.objects.filter(pk=pending_signup.pk).exists())
