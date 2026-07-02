@@ -66,6 +66,31 @@ class UnconfirmedEmailGateTests(BaseStoneWalkerTestCase):
         self.assertEqual(QRPack.objects.count(), 0)
 
 
+class PdfLabelSizeTests(BaseQRTestCase):
+    """Pack PDF prints fixed 30x35mm QR labels, paginated."""
+
+    def test_label_size_constants(self):
+        from reportlab.lib.units import mm
+        from main.pdf_service import PDFService
+        self.assertEqual(PDFService.LABEL_W, 30 * mm)
+        self.assertEqual(PDFService.LABEL_H, 35 * mm)
+
+    def test_pack_pdf_generates(self):
+        import os
+        from main.pdf_service import PDFService
+        pack = QRPack.objects.create(
+            FK_user=self.user, pack_type='paid_30pack',
+            status='fulfilled', price_cents=0, fulfilled_at=timezone.now(),
+        )
+        stones = [
+            Stone.objects.create(PK_stone=f'PDF{i}', FK_pack=pack, FK_user=None, status='unclaimed')
+            for i in range(12)
+        ]
+        path = PDFService.generate_pack_pdf(pack, stones)
+        self.assertTrue(os.path.exists(path))
+        self.assertGreater(os.path.getsize(path), 1000)
+
+
 class ClaimNotificationTests(BaseStoneWalkerTestCase):
     """Task 15B: email the pack owner when another user claims their code."""
 

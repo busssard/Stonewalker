@@ -23,9 +23,11 @@ class PDFService:
     # A4 page dimensions in points (1 point = 1/72 inch)
     PAGE_WIDTH, PAGE_HEIGHT = A4  # 595.27 x 841.89 points
 
-    # Grid layout: 2 columns x 5 rows = 10 QR codes
-    COLS = 2
-    ROWS = 5
+    # Fixed label size: each QR label (QR + link + stone number) prints at
+    # 30mm wide x 35mm tall. As many as fit are tiled per A4 page, paginating
+    # across pages for larger packs.
+    LABEL_W = 30 * mm
+    LABEL_H = 35 * mm
 
     # Margins (in mm, converted to points)
     MARGIN_TOP = 22 * mm
@@ -52,24 +54,33 @@ class PDFService:
         Returns:
             str: Path to the generated PDF file
         """
-        # Calculate cell dimensions
+        # Fixed 30x35mm labels tiled across the usable area.
         usable_width = cls.PAGE_WIDTH - cls.MARGIN_LEFT - cls.MARGIN_RIGHT
         usable_height = cls.PAGE_HEIGHT - cls.MARGIN_TOP - cls.MARGIN_BOTTOM
-        cell_width = usable_width / cls.COLS
-        cell_height = usable_height / cls.ROWS
+        cols = max(1, int(usable_width // cls.LABEL_W))
+        rows = max(1, int(usable_height // cls.LABEL_H))
+        per_page = cols * rows
+        # Centre the grid horizontally within the usable width.
+        x_offset = cls.MARGIN_LEFT + (usable_width - cols * cls.LABEL_W) / 2
 
         # Create PDF buffer
         buffer = BytesIO()
         c = canvas.Canvas(buffer, pagesize=A4)
-
-        # Add header
         cls._add_header(c)
 
-        # Add QR codes in grid
-        for idx, stone in enumerate(stones[:10]):  # Max 10 per page
-            row = idx // cls.COLS
-            col = idx % cls.COLS
-            cls._add_qr_cell(c, stone, row, col, idx + 1, cell_width, cell_height)
+        for idx, stone in enumerate(stones):
+            # New page when the current one is full.
+            if idx > 0 and idx % per_page == 0:
+                cls._add_footer(c)
+                c.showPage()
+                cls._add_header(c)
+
+            pos = idx % per_page
+            row = pos // cols
+            col = pos % cols
+            x = x_offset + (col * cls.LABEL_W)
+            y = cls.PAGE_HEIGHT - cls.MARGIN_TOP - ((row + 1) * cls.LABEL_H)
+            cls._add_qr_cell(c, stone, x, y, cls.LABEL_W, cls.LABEL_H)
 
         # Add footer
         cls._add_footer(c)
@@ -103,70 +114,48 @@ class PDFService:
         c.line(cls.MARGIN_LEFT, line_y, cls.PAGE_WIDTH - cls.MARGIN_RIGHT, line_y)
 
     @classmethod
-    def _add_qr_cell(cls, c, stone, row, col, number, cell_width, cell_height):
+    def _add_qr_cell(cls, c, stone, x, y, cell_width, cell_height):
         """
-        Add a single QR code cell using the same enhanced QR image
-        as the single-stone download (via QRCodeService).
+        Add a single 30x35mm QR label at (x, y) using the same enhanced QR image
+        as the single-stone download (QR + link + stone number).
         """
         from .qr_service import QRCodeService
 
-        # Calculate cell position (from top-left)
-        x = cls.MARGIN_LEFT + (col * cell_width)
-        y = cls.PAGE_HEIGHT - cls.MARGIN_TOP - ((row + 1) * cell_height)
-
-        # Draw light dashed border for cutting guide
+        # Light dashed cut border around the label.
         c.saveState()
-        c.setDash(3, 5)
+        c.setDash(2, 3)
         c.setStrokeColor(cls.COLOR_CUT_LINE)
         c.setLineWidth(0.4)
         c.rect(x, y, cell_width, cell_height)
         c.restoreState()
 
-        # Scissors icon hint at top-left corner
-        c.setFillColor(cls.COLOR_CUT_LINE)
-        c.setFont("Helvetica", 7)
-        c.drawString(x + 1.5 * mm, y + cell_height - 4 * mm, "- - -")
+        # Small padding so the print isn't flush against the cut line.
+        pad = 1.2 * mm
+        avail_w = cell_width - (2 * pad)
+        avail_h = cell_height - (2 * pad)
 
-        # Generate the enhanced QR image (same as single download)
         result = QRCodeService.generate_enhanced_qr_for_download(stone)
-
         if result['success']:
             try:
                 qr_img = ImageReader(BytesIO(result['image_data']))
-
-                # The enhanced image is 200x250 (3:4-ish with branding text).
-                # Fit it within the cell with padding.
-                side_padding = 6 * mm
-                top_padding = 5 * mm
-                bottom_padding = 3 * mm
-                available_width = cell_width - (2 * side_padding)
-                available_height = cell_height - top_padding - bottom_padding
-
-                # Get the actual image aspect ratio (width:height)
+                # Preserve aspect ratio so the QR stays square/scannable.
                 img_width, img_height = qr_img.getSize()
                 aspect = img_width / img_height
-
-                # Scale to fit within available space, preserving aspect ratio
-                if available_width / available_height > aspect:
-                    # Height-constrained
-                    draw_height = available_height
+                if avail_w / avail_h > aspect:
+                    draw_height = avail_h
                     draw_width = draw_height * aspect
                 else:
-                    # Width-constrained
-                    draw_width = available_width
+                    draw_width = avail_w
                     draw_height = draw_width / aspect
-
-                # Center within cell
                 qr_x = x + (cell_width - draw_width) / 2
-                qr_y = y + bottom_padding + (available_height - draw_height) / 2
-
+                qr_y = y + (cell_height - draw_height) / 2
                 c.drawImage(qr_img, qr_x, qr_y, width=draw_width, height=draw_height)
+                return
             except Exception as e:
                 logger.warning(f"Could not render enhanced QR for {stone.PK_stone}: {e}")
-                cls._draw_qr_placeholder(c, x + 6 * mm, y + 3 * mm, cell_width - 12 * mm)
         else:
             logger.warning(f"Failed to generate enhanced QR for {stone.PK_stone}: {result.get('error')}")
-            cls._draw_qr_placeholder(c, x + 6 * mm, y + 3 * mm, cell_width - 12 * mm)
+        cls._draw_qr_placeholder(c, x + pad, y + pad, min(avail_w, avail_h))
 
     @classmethod
     def _draw_qr_placeholder(cls, c, x, y, size):
