@@ -230,8 +230,8 @@ class PDFService:
         # Text strip beneath the QR: the link, then the stone number.
         cx = content_x + cls.LABEL_W / 2
         c.setFillColor(cls.COLOR_BLACK)
-        c.setFont("Helvetica", 5)
-        c.drawCentredString(cx, content_y + 2.9 * mm, f"stonewalker.org/stone-link/{stone.stone_number}")
+        c.setFont("Helvetica", 5.5)
+        c.drawCentredString(cx, content_y + 2.9 * mm, "STONEWALKER.org")
         c.setFont("Helvetica-Bold", 6)
         c.drawCentredString(cx, content_y + 0.8 * mm, f"Stone #{stone.stone_number}")
 
