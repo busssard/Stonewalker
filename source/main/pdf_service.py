@@ -227,13 +227,13 @@ class PDFService:
             logger.warning(f"Could not render QR for {stone.PK_stone}: {e}")
             cls._draw_qr_placeholder(c, qr_x, qr_y, qr_side)
 
-        # Text strip beneath the QR: the link, then the stone number.
+        # Text strip beneath the QR: the link (prominent), then just the number.
         cx = content_x + cls.LABEL_W / 2
         c.setFillColor(cls.COLOR_BLACK)
+        c.setFont("Helvetica-Bold", 8)
+        c.drawCentredString(cx, content_y + 2.75 * mm, "STONEWALKER.org")
         c.setFont("Helvetica", 5.5)
-        c.drawCentredString(cx, content_y + 2.9 * mm, "STONEWALKER.org")
-        c.setFont("Helvetica-Bold", 6)
-        c.drawCentredString(cx, content_y + 0.8 * mm, f"Stone #{stone.stone_number}")
+        c.drawCentredString(cx, content_y + 0.55 * mm, f"#{stone.stone_number}")
 
     @classmethod
     def _draw_qr_placeholder(cls, c, x, y, size):
