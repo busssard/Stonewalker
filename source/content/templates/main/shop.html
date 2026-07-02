@@ -6,7 +6,11 @@
 <div class="avant-section avant-bg-left flex-center min-h-60vh">
   <div class="avant-card max-w-800 m-2-auto">
     <div class="avant-card-title mb-0-5 fs-2-1 text-center">{% trans 'StoneWalker Shop' %}</div>
-    <p class="text-center text-muted mb-2">{% trans 'Everything starts with a QR code' %}</p>
+    <p class="text-center text-muted mb-0-5">{% trans 'Everything starts with a QR code' %}</p>
+    <p class="text-center text-muted fs-0-9 mb-1">{% trans 'Non-premium accounts can hold up to 30 unclaimed (unpublished) QR codes at a time — premium supporters have no limit.' %}</p>
+    {% if request.user.is_authenticated and free_allowance_remaining is not None %}
+    <p class="text-center fs-0-9 mb-2"><strong>{% blocktrans %}You have {{ free_allowance_remaining }} free code(s) left.{% endblocktrans %}</strong></p>
+    {% endif %}
 
     {% if dev_mode %}
     <div class="dev-mode-banner text-center mb-2 p-1 border-radius-8 shop-dev-banner">
@@ -219,7 +223,7 @@
         <span class="floating-pack-count">{{ pack.stones.count }} {% trans 'QR codes' %}</span>
       </div>
       <div class="floating-pack-stones">
-        {% for stone in pack.stones.all %}
+        {% for stone in pack.stones.all %}{% if stone.stone_number %}
         <a href="{% url 'download_stone_qr' stone.stone_number %}" class="floating-stone-btn" title="{% if stone.status == 'unclaimed' %}{% trans 'Download QR Code' %}{% else %}{{ stone.PK_stone }}{% endif %}">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <rect x="3" y="3" width="18" height="18" rx="2"/>
@@ -227,7 +231,7 @@
           </svg>
           {% if stone.status != 'unclaimed' %}<span class="floating-stone-name">{{ stone.PK_stone }}</span>{% endif %}
         </a>
-        {% endfor %}
+        {% endif %}{% endfor %}
       </div>
       {% if pack.pdf_generated %}
       <a href="{% url 'download_pack_pdf' pack.id %}" class="floating-pdf-btn" title="{% trans 'Download all QR codes as one printable PDF' %}">
