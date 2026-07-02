@@ -172,14 +172,14 @@ class StoneFoundTemplateTests(BaseStoneWalkerTestCase):
         self.assertContains(response, 'Stone Found')
         self.assertContains(response, stone.PK_stone)
 
-    def test_stone_sealed_via_link(self):
-        """Test that scanning a draft/published stone seals it and redirects"""
+    def test_scan_shows_seal_confirm_not_auto_seal(self):
+        """Scanning a draft/published stone shows a confirm page, doesn't auto-seal."""
         stone = self.create_stone(status='published')
 
         response = self.client.get(f'/stone-link/{stone.stone_number}/?key={stone.uuid}')
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 200)
         stone.refresh_from_db()
-        self.assertEqual(stone.status, 'wandering')
+        self.assertEqual(stone.status, 'published')  # unchanged until confirmed
 
     def test_first_stone_detection(self):
         """Test first stone detection logic for wandering stones"""

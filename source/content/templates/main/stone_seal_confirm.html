@@ -1,0 +1,44 @@
+{% extends 'layouts/default/page.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Seal your stone" %} - {{ stone.PK_stone }}{% endblock %}
+
+{% block content %}
+<div class="avant-section avant-bg-right flex-center min-h-70vh overflow-auto">
+  <div class="avant-card max-w-600 m-2-5-auto">
+    <div class="avant-header text-center mb-1-2">{% trans "Ready to send it off?" %}</div>
+
+    {% if stone.image %}
+    <div class="text-center mb-1-5">
+      <img src="{{ stone.image.url }}" alt="{{ stone.PK_stone }}" style="max-width: 100%; max-height: 240px; border-radius: 12px; object-fit: cover;">
+    </div>
+    {% endif %}
+
+    <div class="bg-gray p-2 border-radius-8 mb-2">
+      <p class="stone-found-info-line"><strong>{% trans "Name:" %}</strong> {{ stone.PK_stone }}</p>
+      <p class="stone-found-info-line"><strong>{% trans "Description:" %}</strong> {{ stone.description|default:"—" }}</p>
+    </div>
+
+    <div class="bg-orange p-2 border-radius-8 mb-2">
+      <p class="stone-found-info-line">
+        {% trans "Sealing starts your stone's journey and makes it public on the map. You won't be able to edit its photo or description afterwards." %}
+      </p>
+    </div>
+
+    {% if stone.can_be_edited %}
+    <div class="text-center mb-1">
+      <a href="{% url 'stone_edit' stone.PK_stone %}" class="avant-btn bg-accent text-white w-full">{% trans "Add photo / edit first" %}</a>
+    </div>
+    {% endif %}
+
+    <form method="post" action="{% url 'stone_send_off' stone.PK_stone %}">
+      {% csrf_token %}
+      <button type="submit" name="action" value="seal" class="avant-btn w-full mt-0-5">{% trans "Seal & start its journey" %}</button>
+    </form>
+
+    <div class="text-center mt-1-5">
+      <a href="{% url 'my_stones' %}" class="fs-0-95 text-accent underline">{% trans "Not yet — back to My Stones" %}</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

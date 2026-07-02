@@ -335,40 +335,35 @@ class StoneWorkflowTests(BaseStoneWalkerTestCase):
         self.assertFalse(stone.can_be_edited())
         self.assertTrue(stone.can_start_wandering())
 
-    def test_scan_seals_published_stone(self):
-        """Test that scanning a published stone's QR seals it (starts wandering)"""
+    def test_scan_published_shows_confirm_not_seal(self):
+        """Scanning a published stone shows the confirm page; it doesn't auto-seal."""
         stone = self.create_stone(status='published')
 
         response = self.client.get(f'/stone-link/{stone.stone_number}/?key={stone.uuid}')
 
         stone.refresh_from_db()
-        self.assertEqual(stone.status, 'wandering')
-        self.assertIsNotNone(stone.wandering_at)
-        # Sealing now redirects to public page with success message
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(stone.status, 'published')  # unchanged until confirmed
+        self.assertEqual(response.status_code, 200)
 
-    def test_scan_seals_draft_stone(self):
-        """Test that scanning a draft stone's QR seals it directly"""
+    def test_scan_draft_shows_confirm_not_seal(self):
+        """Scanning a draft stone shows a confirm page instead of auto-sealing."""
         stone = self.create_stone(status='draft')
 
         response = self.client.get(f'/stone-link/{stone.stone_number}/?key={stone.uuid}')
 
         stone.refresh_from_db()
-        self.assertEqual(stone.status, 'wandering')
-        # Sealing now redirects to public page
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(stone.status, 'draft')  # not sealed by the scan
+        self.assertEqual(response.status_code, 200)
 
-    def test_send_off_deprecated(self):
-        """Test that send-off endpoint returns info message"""
+    def test_send_off_seals_on_post(self):
+        """The send-off POST (seal confirmation) transitions the stone to wandering."""
         stone = self.create_stone(status='published')
 
         response = self.client.post(f'/stone/{stone.PK_stone}/send-off/')
 
-        # Should redirect with info message
         self.assertEqual(response.status_code, 302)
-        # Stone should NOT have changed status
         stone.refresh_from_db()
-        self.assertEqual(stone.status, 'published')
+        self.assertEqual(stone.status, 'wandering')
 
 
 class LanguageSwitchTests(BaseStoneWalkerTestCase):

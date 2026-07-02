@@ -442,11 +442,25 @@ class StoneCertificateView(View):
 
 
 class StoneSendOffView(View):
-    """Deprecated: stones are now sealed via QR scan, not a button"""
+    """Seal a stone (start its journey). Reached from the scan confirm page's
+    'Seal & start journey' button (a POST), so sealing is intentional and never
+    happens on a bare GET/scan."""
     @method_decorator(login_required)
     def post(self, request, pk):
-        messages.info(request, 'Stones are now sealed by scanning the QR code. Print your QR code and scan it to start your stone\'s journey!')
-        return redirect('stone_edit', pk=pk)
+        try:
+            stone = Stone.objects.get(PK_stone=pk, FK_user=request.user)
+        except Stone.DoesNotExist:
+            messages.error(request, 'Stone not found or you do not have permission to access it.')
+            return redirect('stonewalker_start')
+
+        if not stone.can_start_wandering():
+            messages.info(request, "This stone can't be sealed right now.")
+            return redirect('stone_edit', pk=pk)
+
+        stone.start_wandering()
+        StoneScanAttempt.record_scan_attempt(stone, request.user, request)
+        messages.success(request, 'Your stone is sealed and its journey has begun!')
+        return redirect('stone_link', stone_number=stone.stone_number)
 
 
 class StoneLinkView(View):
@@ -551,9 +565,10 @@ class StoneLinkView(View):
                     login_url='accounts:log_in'
                 )
 
-        # Draft/published → seal stone (start its journey).
-        # Sealing mutates state, so it must never be triggered by an anonymous GET
-        # (e.g. a chat-app link-preview crawler) or by anyone other than the owner.
+        # Draft/published → show a confirm/finish page instead of auto-sealing.
+        # Scanning must NOT instantly seal: the owner needs a chance to add a
+        # photo/description and edit first, then seal intentionally (a POST to
+        # stone_send_off). Sealing on GET would also let crawlers seal.
         if stone.status in ('draft', 'published'):
             from django.contrib.auth.views import redirect_to_login
             if not request.user.is_authenticated:
@@ -561,10 +576,10 @@ class StoneLinkView(View):
             if stone.FK_user_id != request.user.id:
                 messages.info(request, "This stone hasn't started its journey yet.")
                 return redirect('stonewalker_start')
-            stone.start_wandering()
-            StoneScanAttempt.record_scan_attempt(stone, request.user, request)
-            messages.success(request, 'Stone sealed!')
-            return redirect('stone_link', stone_number=stone.stone_number)
+            return render(request, 'main/stone_seal_confirm.html', {
+                'stone': stone,
+                'stone_uuid': str(stone.uuid),
+            })
 
         # Wandering stone — show the find form. Anonymous finders get an email
         # field (email-first signup): they can record the find now; it's held

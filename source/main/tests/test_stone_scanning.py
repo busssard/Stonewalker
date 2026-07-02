@@ -236,25 +236,41 @@ class CheckStoneUUIDTests(BaseStoneWalkerTestCase):
 class StoneSealOnScanTests(BaseStoneWalkerTestCase):
     """Test scan-based stone sealing (QR scan transitions stone to wandering)"""
 
-    def test_scan_seals_published_stone(self):
-        """Scanning a published stone's QR should seal it to wandering and redirect"""
-        stone = self.create_stone('SEALME', status='published')
-        response = self.client.get(f'/stone-link/{stone.stone_number}/?key={stone.uuid}')
-
-        stone.refresh_from_db()
-        self.assertEqual(stone.status, 'wandering')
-        self.assertIsNotNone(stone.wandering_at)
-        # New behavior: sealing redirects to public page with success message
-        self.assertEqual(response.status_code, 302)
-
-    def test_scan_seals_draft_stone(self):
-        """Scanning a draft stone's QR should seal it directly and redirect"""
+    def test_scan_draft_shows_confirm_not_seal(self):
+        """Scanning a draft stone must NOT auto-seal — it shows a confirm page."""
         stone = self.create_stone('DRAFTSL', status='draft')
         response = self.client.get(f'/stone-link/{stone.stone_number}/?key={stone.uuid}')
 
         stone.refresh_from_db()
+        self.assertEqual(stone.status, 'draft')  # NOT sealed by the scan
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Seal')
+
+    def test_scan_published_shows_confirm_not_seal(self):
+        """Scanning a published stone shows the confirm page, doesn't auto-seal."""
+        stone = self.create_stone('SEALME', status='published')
+        response = self.client.get(f'/stone-link/{stone.stone_number}/?key={stone.uuid}')
+
+        stone.refresh_from_db()
+        self.assertEqual(stone.status, 'published')  # unchanged
+        self.assertEqual(response.status_code, 200)
+
+    def test_send_off_post_seals_stone(self):
+        """Posting the seal confirmation (send-off) transitions the stone to wandering."""
+        stone = self.create_stone('SENDOFF', status='draft')
+        response = self.client.post(f'/stone/{stone.PK_stone}/send-off/')
+        stone.refresh_from_db()
         self.assertEqual(stone.status, 'wandering')
-        # New behavior: sealing redirects to public page
+        self.assertIsNotNone(stone.wandering_at)
+        self.assertEqual(response.status_code, 302)
+
+    def test_send_off_non_owner_cannot_seal(self):
+        """A non-owner cannot seal via the send-off POST."""
+        other = self.create_user('other2', 'pw')
+        stone = self.create_stone('NOTYOURS', user=other, status='draft')
+        response = self.client.post(f'/stone/{stone.PK_stone}/send-off/')
+        stone.refresh_from_db()
+        self.assertEqual(stone.status, 'draft')  # unchanged
         self.assertEqual(response.status_code, 302)
 
     def test_non_owner_cannot_seal_stone(self):
@@ -294,14 +310,14 @@ class StoneSealOnScanTests(BaseStoneWalkerTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'name="finder_email"')
 
-    def test_owner_scans_published_stone(self):
-        """Owner scanning their own published stone should seal it"""
+    def test_owner_scans_published_stone_sees_confirm(self):
+        """Owner scanning their own published stone sees the confirm page (no auto-seal)."""
         stone = self.create_stone('OWNSEAL', status='published')
         response = self.client.get(f'/stone-link/{stone.stone_number}/?key={stone.uuid}')
 
         stone.refresh_from_db()
-        self.assertEqual(stone.status, 'wandering')
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(stone.status, 'published')  # unchanged
+        self.assertEqual(response.status_code, 200)
 
     def test_wandering_stone_shows_found_page(self):
         """Scanning a wandering stone should show the stone_found page, not seal again"""
