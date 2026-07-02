@@ -1101,6 +1101,8 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
   position: relative;
   max-width: 520px;
   width: 95vw;
+  max-height: 90vh;
+  overflow-y: auto;
   margin: auto;
   background: rgba(255, 255, 255, 0.98);
 
@@ -3530,11 +3532,14 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
     padding: 1.5rem 1rem;
     width: 95vw;
     max-width: 95vw;
-    max-height: 95vh;
+    max-height: 92vh;
+    overflow-y: auto;
     border-radius: var(--radius-md);
   }
   .profile-modal-content {
     width: 95vw;
+    max-height: 92vh;
+    overflow-y: auto;
     padding: 1.5rem 1rem;
   }
   .profile-modal-close {
@@ -6320,4 +6325,20 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
 [data-theme="dark"] .avant-btn-disabled {
   background-color: #3a3f47 !important;
   color: #b8bec9 !important;
+}
+
+/* ===== Dark-mode: white logos + brighter text ===== */
+/* All StoneWalker logo images are dark artwork; invert them to white on dark
+   backgrounds (previously only the header logo was handled, so auth/logout
+   logos showed dark-on-dark). */
+[data-theme="dark"] img[alt="StoneWalker Logo"] {
+  filter: brightness(0) invert(1) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.5));
+}
+/* Accent links/text are navy (#002DB7) — too dark on a dark background. Use a
+   light blue so links like "Cancel and return home" are readable. */
+[data-theme="dark"] .text-accent {
+  color: #9db8f2 !important;
+}
+[data-theme="dark"] .text-muted {
+  color: #9aa4b2 !important;
 }
