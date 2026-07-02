@@ -6296,3 +6296,28 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
   .floating-pdf-btn { width: 100%; justify-content: center; }
   .new-qr-btn { width: 100%; }
 }
+
+/* ===== Dark-mode readability for light utility surfaces =====
+   These light backgrounds (cards, info boxes, and any button using them) had no
+   dark override, so in dark mode text flipped light and became unreadable on a
+   light surface. Turn them into dark surfaces with light text. */
+[data-theme="dark"] .bg-white {
+  background: var(--color-bg-card) !important;
+  color: var(--text-primary);
+}
+[data-theme="dark"] .bg-blue {
+  background: #1f2c3f !important;
+  color: var(--text-primary);
+}
+[data-theme="dark"] .bg-orange {
+  background: #33291c !important;
+  color: var(--text-primary);
+}
+[data-theme="dark"] .bg-accent-light {
+  background: #2a3646 !important;
+  color: var(--text-primary);
+}
+[data-theme="dark"] .avant-btn-disabled {
+  background-color: #3a3f47 !important;
+  color: #b8bec9 !important;
+}
