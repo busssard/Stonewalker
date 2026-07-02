@@ -530,22 +530,21 @@ class DownloadPackPDFView(LoginRequiredMixin, View):
             messages.error(request, _('Pack not found.'))
             return redirect('shop')
 
-        if not pack.pdf_generated:
-            messages.error(request, _('PDF not yet generated.'))
-            return redirect('shop')
-
         # Import here to avoid circular import
         from .pdf_service import PDFService
 
-        # On ephemeral hosting (e.g. Render) the file is lost on redeploy while the
-        # DB flag stays true. Regenerate from the pack's stones if it's missing.
-        if not PDFService.pdf_exists(pack):
-            stones = list(pack.stones.all().order_by('stone_number'))
-            if stones:
-                try:
-                    PDFService.generate_pack_pdf(pack, stones)
-                except Exception as e:
-                    logger.error(f"Failed to regenerate PDF for pack {pack.id}: {e}")
+        # Always (re)generate on download so the PDF reflects the current label
+        # layout — older packs bought before a layout change get the new format,
+        # and it also covers ephemeral hosting where the file is lost on redeploy.
+        stones = list(pack.stones.all().order_by('stone_number'))
+        if stones:
+            try:
+                PDFService.generate_pack_pdf(pack, stones)
+                if not pack.pdf_generated:
+                    pack.pdf_generated = True
+                    pack.save(update_fields=['pdf_generated'])
+            except Exception as e:
+                logger.error(f"Failed to (re)generate PDF for pack {pack.id}: {e}")
 
         response = PDFService.get_download_response(pack)
 

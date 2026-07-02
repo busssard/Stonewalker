@@ -90,6 +90,20 @@ class PdfLabelSizeTests(BaseQRTestCase):
         self.assertTrue(os.path.exists(path))
         self.assertGreater(os.path.getsize(path), 1000)
 
+    def test_download_regenerates_pdf_for_current_layout(self):
+        """Downloading always regenerates, so old packs get the current layout."""
+        pack = QRPack.objects.create(
+            FK_user=self.user, pack_type='paid_3pack',
+            status='fulfilled', price_cents=0, fulfilled_at=timezone.now(),
+            pdf_generated=False,  # never generated (or stale) — download must still work
+        )
+        for i in range(3):
+            Stone.objects.create(PK_stone=f'RG{i}', FK_pack=pack, FK_user=None, status='unclaimed')
+        resp = self.client.get(reverse('download_pack_pdf', args=[pack.id]))
+        self.assertEqual(resp.status_code, 200)
+        pack.refresh_from_db()
+        self.assertTrue(pack.pdf_generated)
+
 
 class ClaimNotificationTests(BaseStoneWalkerTestCase):
     """Task 15B: email the pack owner when another user claims their code."""
