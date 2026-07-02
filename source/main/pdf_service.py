@@ -180,7 +180,7 @@ class PDFService:
         c.setFont("Helvetica-Oblique", 8)
         c.drawCentredString(
             cls.PAGE_WIDTH / 2, text_bottom - 8.5 * mm,
-            "Weatherproofing: epoxy, clear nail polish, or varnish.")
+            "Weatherproofing: outdoor PVA glue, clear nail polish, or varnish.")
 
         # Thin separator line above the label grid.
         line_y = cls.PAGE_HEIGHT - cls.MARGIN_TOP + 2 * mm
