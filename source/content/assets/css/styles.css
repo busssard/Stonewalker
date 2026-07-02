@@ -6235,3 +6235,64 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
 [data-theme="dark"] .marker-cluster-large div {
   background: var(--color-primary-light);
 }
+
+/* ===== My Stones — action buttons + phone usability rework ===== */
+.stone-list-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.4rem;
+}
+.stone-list-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  min-height: 34px;
+  padding: 0.3rem 0.6rem;
+  border-radius: 8px;
+  background: var(--color-bg-right);
+  border: 1px solid var(--border-color);
+  color: var(--color-text-main);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+  line-height: 1;
+}
+.stone-list-action:hover {
+  background: var(--color-primary-light);
+  color: var(--color-text-main);
+}
+[data-theme="dark"] .stone-list-action {
+  background: #2a3646;
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+/* Phone: let My Stones scroll naturally and give real, tappable controls. */
+@media (max-width: 600px) {
+  .my-stones-split {
+    height: auto !important;
+    overflow: visible !important;
+  }
+  .my-stones-left,
+  .my-stones-right {
+    max-height: none !important;
+    overflow-y: visible !important;
+    flex: 1 1 auto !important;
+  }
+  .stone-list-title-row { flex-wrap: wrap !important; }
+  .stone-list-title { max-width: none !important; }
+  .stone-list-meta-row { flex-wrap: wrap !important; overflow: visible !important; }
+  .stone-list-actions { margin-top: 0.5rem; }
+  .stone-list-action {
+    min-height: 44px;
+    padding: 0.5rem 0.9rem;
+    font-size: 0.95rem;
+  }
+  .my-stones-packs-title { font-size: 1.2rem; }
+  .my-stones-packs-summary { padding: 0.8rem 1rem; }
+  .my-stones-packs-body { padding: 0 1rem 1rem; }
+  .floating-stone-btn { min-width: 44px !important; height: 44px !important; }
+  .floating-pdf-btn { width: 100%; justify-content: center; }
+  .new-qr-btn { width: 100%; }
+}
