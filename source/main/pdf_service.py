@@ -113,13 +113,17 @@ class PDFService:
         c.setLineWidth(0.5)
         c.line(cls.MARGIN_LEFT, line_y, cls.PAGE_WIDTH - cls.MARGIN_RIGHT, line_y)
 
+    # Height of the text strip beneath the QR (the "5mm" under a 30x30 QR).
+    TEXT_STRIP = 5 * mm
+
     @classmethod
     def _add_qr_cell(cls, c, stone, x, y, cell_width, cell_height):
         """
-        Add a single 30x35mm QR label at (x, y) using the same enhanced QR image
-        as the single-stone download (QR + link + stone number).
+        Draw a 30x35mm label: a 30x30mm QR square on top, and the link + stone
+        number in the 5mm strip beneath it.
         """
-        from .qr_service import QRCodeService
+        import qrcode
+        from qrcode.constants import ERROR_CORRECT_H
 
         # Light dashed cut border around the label.
         c.saveState()
@@ -129,33 +133,33 @@ class PDFService:
         c.rect(x, y, cell_width, cell_height)
         c.restoreState()
 
-        # Small padding so the print isn't flush against the cut line.
-        pad = 1.2 * mm
-        avail_w = cell_width - (2 * pad)
-        avail_h = cell_height - (2 * pad)
+        qr_area = cell_height - cls.TEXT_STRIP  # 30mm for a 30x35 cell
+        qr_side = min(cell_width, qr_area)       # 30mm square
 
-        result = QRCodeService.generate_enhanced_qr_for_download(stone)
-        if result['success']:
-            try:
-                qr_img = ImageReader(BytesIO(result['image_data']))
-                # Preserve aspect ratio so the QR stays square/scannable.
-                img_width, img_height = qr_img.getSize()
-                aspect = img_width / img_height
-                if avail_w / avail_h > aspect:
-                    draw_height = avail_h
-                    draw_width = draw_height * aspect
-                else:
-                    draw_width = avail_w
-                    draw_height = draw_width / aspect
-                qr_x = x + (cell_width - draw_width) / 2
-                qr_y = y + (cell_height - draw_height) / 2
-                c.drawImage(qr_img, qr_x, qr_y, width=draw_width, height=draw_height)
-                return
-            except Exception as e:
-                logger.warning(f"Could not render enhanced QR for {stone.PK_stone}: {e}")
-        else:
-            logger.warning(f"Failed to generate enhanced QR for {stone.PK_stone}: {result.get('error')}")
-        cls._draw_qr_placeholder(c, x + pad, y + pad, min(avail_w, avail_h))
+        # Build a plain, high-error-correction QR (its own quiet-zone border
+        # keeps it scannable even flush to the cut line).
+        try:
+            qr = qrcode.QRCode(error_correction=ERROR_CORRECT_H, box_size=10, border=2)
+            qr.add_data(stone.get_qr_url())
+            qr.make(fit=True)
+            img = qr.make_image(fill_color='black', back_color='white')
+            buf = BytesIO()
+            img.save(buf, format='PNG')
+            buf.seek(0)
+            qr_x = x + (cell_width - qr_side) / 2
+            qr_y = y + cls.TEXT_STRIP + (qr_area - qr_side) / 2
+            c.drawImage(ImageReader(buf), qr_x, qr_y, width=qr_side, height=qr_side)
+        except Exception as e:
+            logger.warning(f"Could not render QR for {stone.PK_stone}: {e}")
+            cls._draw_qr_placeholder(c, x + 1 * mm, y + cls.TEXT_STRIP, qr_area - 2 * mm)
+
+        # Text strip beneath the QR: the link, then the stone number.
+        cx = x + cell_width / 2
+        c.setFillColor(cls.COLOR_BLACK)
+        c.setFont("Helvetica", 5)
+        c.drawCentredString(cx, y + 2.9 * mm, f"stonewalker.org/stone-link/{stone.stone_number}")
+        c.setFont("Helvetica-Bold", 6)
+        c.drawCentredString(cx, y + 0.8 * mm, f"Stone #{stone.stone_number}")
 
     @classmethod
     def _draw_qr_placeholder(cls, c, x, y, size):
