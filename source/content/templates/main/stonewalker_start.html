@@ -79,10 +79,6 @@
     <img src="{% static 'hold_stone.png' %}" alt="" aria-hidden="true" />
     <span>{% trans 'Create New Stone' %}</span>
   </button>
-  <button id="scan-stone-fab" title="{% trans 'I found a stone' %}" aria-label="{% trans 'Scan a stone QR code' %}" class="avant-btn floating-action-btn secondary">
-    <img id="scan-stone-icon" src="{% static 'found_stone.png' %}" alt="" aria-hidden="true" />
-    <span id="scan-stone-text">{% trans 'Scan a Stone' %}</span>
-  </button>
 </div>
 
 
@@ -112,33 +108,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Navigate to shop flow (smart router: unclaimed QR -> claim, else -> shop)
     addStoneFab.addEventListener('click', function() {
       window.location.href = '{% url "create_stone" %}';
-    });
-  }
-
-  // Scan button hover: change border, text, and icon color
-  const scanBtn = document.getElementById('scan-stone-fab');
-  const scanText = document.getElementById('scan-stone-text');
-  const scanIcon = document.getElementById('scan-stone-icon');
-  if (scanBtn && scanText && scanIcon) {
-    const scanDefaultColor = '#ff9800';
-    const scanOriginalFilter = scanIcon.style.filter;
-    scanBtn.addEventListener('mouseenter', function() {
-      const color = pickRandomColor();
-      scanBtn.style.borderColor = color;
-      scanText.style.color = color;
-      scanIcon.style.filter = `drop-shadow(0 0 0 ${color}) brightness(0) saturate(100%) sepia(1) hue-rotate(0deg)`;
-    });
-    scanBtn.addEventListener('mouseleave', function() {
-      scanBtn.style.borderColor = scanDefaultColor;
-      scanText.style.color = scanDefaultColor;
-      scanIcon.style.filter = scanOriginalFilter;
-    });
-    
-    // Add click handler to open scan modal
-    scanBtn.addEventListener('click', function() {
-      if (window.openSharedScanStoneModal) {
-        window.openSharedScanStoneModal();
-      }
     });
   }
 });

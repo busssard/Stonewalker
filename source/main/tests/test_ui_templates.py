@@ -21,7 +21,8 @@ class MainPageTests(BaseAnonymousTestCase):
         response = self.client.get('/stonewalker/')
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Create New Stone')
-        self.assertContains(response, 'Scan a Stone')
+        # The "Scan a Stone" button was removed — people scan via their camera.
+        self.assertNotContains(response, 'scan-stone-fab')
 
 
 class WelcomeModalTests(BaseAnonymousTestCase):
@@ -150,7 +151,8 @@ class ResponsiveDesignTests(BaseStoneWalkerTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'floating-action-bar')
         self.assertContains(response, 'add-stone-fab')
-        self.assertContains(response, 'scan-stone-fab')
+        # The scan FAB was removed — scanning happens via the phone camera.
+        self.assertNotContains(response, 'scan-stone-fab')
     
     def test_map_container_present(self):
         """Test that map container is present"""
