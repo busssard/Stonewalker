@@ -29,10 +29,20 @@
     <div class="text-center mb-1">
       <a href="{% url 'stone_edit' stone.PK_stone %}" class="avant-btn bg-accent text-white w-full">{% trans "Add photo / edit first" %}</a>
     </div>
+    {% elif stone.can_last_minute_edit %}
+    <div class="text-center mb-1">
+      <a href="{% url 'stone_edit' stone.PK_stone %}?key={{ stone_uuid }}" class="avant-btn bg-accent text-white w-full">{% trans "Add photo / edit first" %}</a>
+    </div>
     {% endif %}
 
     <form method="post" action="{% url 'stone_send_off' stone.PK_stone %}">
       {% csrf_token %}
+      {% if not stone.image %}
+      <label class="flex-row gap-0-5 mb-1" style="align-items: flex-start; cursor: pointer;">
+        <input type="checkbox" name="confirm_no_image" value="1" required style="margin-top: 0.25rem;">
+        <span class="fs-0-9">{% trans "My stone has no picture — I really want to let it roam without one." %}</span>
+      </label>
+      {% endif %}
       <button type="submit" name="action" value="seal" class="avant-btn w-full mt-0-5">{% trans "Seal & start its journey" %}</button>
     </form>
 

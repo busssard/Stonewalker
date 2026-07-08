@@ -18,7 +18,11 @@
       {% endfor %}
     {% endif %}
 
-    {% if stone.status == 'draft' %}
+    {% if last_minute %}
+      <div class="bg-orange p-2 border-radius-8 mb-2">
+        <p class="claim-info-text">{% trans "Last-minute changes: nobody has scanned your stone yet, so you can still update it. As soon as someone else scans it, it's locked for good." %}</p>
+      </div>
+    {% elif stone.status == 'draft' %}
       <div class="bg-blue p-2 border-radius-8 mb-2">
         <p class="claim-info-text">{% trans "This stone is in draft mode. You can edit it and publish when ready." %}</p>
       </div>
@@ -34,6 +38,7 @@
 
     <form class="flex-column gap-0-7" method="post" enctype="multipart/form-data">
       {% csrf_token %}
+      {% if last_minute %}<input type="hidden" name="key" value="{{ stone.uuid }}">{% endif %}
 
       <label class="avant-label" for="stone-name">{% trans "Stone Name" %}</label>
       <input type="text" class="avant-input" id="stone-name" value="{{ stone.PK_stone }}" readonly>
@@ -41,7 +46,7 @@
 
       <label class="avant-label mt-1" for="description">{% trans "Description" %}</label>
       <textarea class="avant-input" id="description" name="description" rows="4"
-                {% if not stone.can_be_edited %}readonly{% endif %}
+                {% if not editable %}readonly{% endif %}
                 maxlength="500"
                 placeholder="{% trans 'Describe your stone...' %}">{{ stone.description }}</textarea>
       <small class="text-muted">{% trans "Maximum 500 characters" %}</small>
@@ -53,17 +58,17 @@
         </div>
       {% endif %}
       <input type="file" class="avant-input" id="image" name="image" accept="image/*"
-             {% if not stone.can_be_edited %}disabled{% endif %}>
+             {% if not editable %}disabled{% endif %}>
       <div id="image-validation-msg" class="js-hidden"></div>
       <small class="text-muted">{% trans "Upload a new image to replace the current one" %}</small>
 
       <label class="avant-label mt-1" for="color">{% trans "Stone Color" %}</label>
       <input type="color" class="avant-input stone-color-input" id="color" name="color" value="{{ stone.color }}"
-             {% if not stone.can_be_edited %}disabled{% endif %}>
+             {% if not editable %}disabled{% endif %}>
 
       <div class="mt-0-5">
         <span class="avant-label">{% trans "Stone Type" %}</span>
-        {% if stone.can_be_edited %}
+        {% if editable %}
         <div class="stone-type-toggle mt-0-3">
           <button type="button" class="stone-type-toggle-btn{% if stone.stone_type == 'hidden' %} active{% endif %}" data-value="hidden">{% trans "Hidden" %}</button>
           <button type="button" class="stone-type-toggle-btn{% if stone.stone_type == 'hunted' %} active{% endif %}" data-value="hunted">{% trans "Hunted" %}</button>
@@ -80,6 +85,10 @@
       <div class="stone-edit-actions mt-2">
         <button type="submit" name="action" value="save" class="avant-btn bg-muted">{% trans "Save Draft" %}</button>
         <button type="submit" name="action" value="publish" class="avant-btn bg-accent text-white">{% trans "Publish Stone" %}</button>
+      </div>
+      {% elif last_minute %}
+      <div class="stone-edit-actions mt-2">
+        <button type="submit" name="action" value="save" class="avant-btn bg-accent text-white">{% trans "Save Changes" %}</button>
       </div>
       {% endif %}
     </form>

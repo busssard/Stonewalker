@@ -341,19 +341,39 @@ def check_stone_uuid(request, uuid):
 class StoneEditView(LoginRequiredMixin, TemplateView):
     template_name = 'main/stone_edit.html'
     
+    @staticmethod
+    def _last_minute_unlocked(request, stone):
+        """Last-minute editing (published/sent-off, nobody else scanned yet) is
+        unlocked only via the QR link's key — never by URL alone."""
+        key = request.GET.get('key') or request.POST.get('key')
+        if not key:
+            return False
+        try:
+            if uuid_lib.UUID(key) != stone.uuid:
+                return False
+        except ValueError:
+            return False
+        return stone.can_last_minute_edit()
+
     def get(self, request, pk):
         try:
             stone = Stone.objects.get(PK_stone=pk, FK_user=request.user)
+            last_minute = self._last_minute_unlocked(request, stone)
             # Allow viewing the edit page for all owned stones (template handles readonly)
-            return render(request, self.template_name, {'stone': stone})
+            return render(request, self.template_name, {
+                'stone': stone,
+                'last_minute': last_minute,
+                'editable': stone.can_be_edited() or last_minute,
+            })
         except Stone.DoesNotExist:
             messages.error(request, 'Stone not found or you do not have permission to edit it.')
             return redirect('stonewalker_start')
-    
+
     def post(self, request, pk):
         try:
             stone = Stone.objects.get(PK_stone=pk, FK_user=request.user)
-            if not stone.can_be_edited():
+            last_minute = self._last_minute_unlocked(request, stone)
+            if not (stone.can_be_edited() or last_minute):
                 messages.error(request, f'Stone "{stone.PK_stone}" cannot be edited because it has been {stone.status}.')
                 return redirect('stonewalker_start')
             
@@ -381,6 +401,8 @@ class StoneEditView(LoginRequiredMixin, TemplateView):
             if action == 'save':
                 stone.save()
                 messages.success(request, f'Stone "{stone.PK_stone}" updated successfully!')
+                if last_minute:
+                    return redirect(f'/stone/{pk}/edit/?key={stone.uuid}')
                 return redirect(f'/stone/{pk}/edit/')
             elif action == 'publish':
                 if stone.publish():
@@ -456,6 +478,11 @@ class StoneSendOffView(View):
         if not stone.can_start_wandering():
             messages.info(request, "This stone can't be sealed right now.")
             return redirect('stone_edit', pk=pk)
+
+        # Sealing without a picture must be a conscious choice.
+        if not stone.image and not request.POST.get('confirm_no_image'):
+            messages.error(request, "Your stone has no picture. Please confirm you want to let it roam without one.")
+            return redirect(f'/stone-link/{stone.stone_number}/?key={stone.uuid}')
 
         stone.start_wandering()
         StoneScanAttempt.record_scan_attempt(stone, request.user, request)
@@ -587,6 +614,12 @@ class StoneLinkView(View):
         is_first_stone = False
         is_owner = False
         if request.user.is_authenticated:
+            # Owner scanning their own sent-off stone that nobody else has
+            # scanned yet → last-minute edit window (must be checked before the
+            # scan blackout, which the seal scan-attempt already triggered).
+            if stone.FK_user_id == request.user.id and stone.can_last_minute_edit():
+                messages.info(request, "Nobody has found your stone yet — you can still make last-minute changes.")
+                return redirect(f'/stone/{stone.PK_stone}/edit/?key={stone.uuid}')
             # Check if already scanned this week → redirect to public page (strips key)
             if not StoneScanAttempt.can_scan_again(stone, request.user):
                 return redirect('stone_link', stone_number=stone.stone_number)

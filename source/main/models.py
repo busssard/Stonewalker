@@ -157,6 +157,19 @@ class Stone(models.Model):
         """Check if stone can be edited (only drafts can be edited)"""
         return self.status == 'draft'
 
+    def can_last_minute_edit(self):
+        """Owner may still edit a published/sent-off stone — but only until
+        anyone else scans or finds it. Reached via the QR link (key) only,
+        so this alone must not unlock the regular edit page."""
+        if self.status not in ('published', 'wandering'):
+            return False
+        # Any find (even an unconfirmed anonymous one) counts as scanned.
+        if self.moves.exclude(FK_user_id=self.FK_user_id).exists():
+            return False
+        if self.scan_attempts.exclude(FK_user_id=self.FK_user_id).exists():
+            return False
+        return True
+
     def can_be_published(self):
         """Check if stone can be published"""
         return self.status == 'draft'

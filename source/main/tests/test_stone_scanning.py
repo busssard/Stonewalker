@@ -130,7 +130,8 @@ class StoneLinkTests(BaseStoneWalkerTestCase):
 
     def test_stone_link_view_loads(self):
         """Test that stone-link view loads correctly for wandering stones with key"""
-        stone = self.create_stone(status='wandering')
+        maker = self.create_user('linkmaker', 'pw')
+        stone = self.create_stone(user=maker, status='wandering')
 
         response = self.client.get(f'/stone-link/{stone.stone_number}/?key={stone.uuid}')
         self.assertEqual(response.status_code, 200)
@@ -143,7 +144,8 @@ class StoneLinkTests(BaseStoneWalkerTestCase):
 
     def test_stone_link_scan_attempt_recording(self):
         """Test that stone-link records scan attempts"""
-        stone = self.create_stone(status='wandering')
+        maker = self.create_user('scanmaker', 'pw')
+        stone = self.create_stone(user=maker, status='wandering')
 
         # Visit stone-link page with key
         response = self.client.get(f'/stone-link/{stone.stone_number}/?key={stone.uuid}')
@@ -258,11 +260,20 @@ class StoneSealOnScanTests(BaseStoneWalkerTestCase):
     def test_send_off_post_seals_stone(self):
         """Posting the seal confirmation (send-off) transitions the stone to wandering."""
         stone = self.create_stone('SENDOFF', status='draft')
-        response = self.client.post(f'/stone/{stone.PK_stone}/send-off/')
+        response = self.client.post(f'/stone/{stone.PK_stone}/send-off/', {'confirm_no_image': '1'})
         stone.refresh_from_db()
         self.assertEqual(stone.status, 'wandering')
         self.assertIsNotNone(stone.wandering_at)
         self.assertEqual(response.status_code, 302)
+
+    def test_send_off_without_image_requires_confirmation(self):
+        """Sealing a pictureless stone without the explicit confirmation is refused."""
+        stone = self.create_stone('NOIMG', status='draft')
+        response = self.client.post(f'/stone/{stone.PK_stone}/send-off/')
+        stone.refresh_from_db()
+        self.assertEqual(stone.status, 'draft')  # not sealed
+        self.assertEqual(response.status_code, 302)
+        self.assertIn(f'key={stone.uuid}', response.url)  # bounced back to confirm page
 
     def test_send_off_non_owner_cannot_seal(self):
         """A non-owner cannot seal via the send-off POST."""
@@ -320,15 +331,79 @@ class StoneSealOnScanTests(BaseStoneWalkerTestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_wandering_stone_shows_found_page(self):
-        """Scanning a wandering stone should show the stone_found page, not seal again"""
+        """Scanning a wandering stone (already found by someone else) shows the
+        stone_found page, not seal again."""
+        finder = self.create_user('earlyfinder', 'pw')
         stone = self.create_stone('WANDERER', status='wandering')
-        self.create_stone_move(stone=stone)
+        self.create_stone_move(stone=stone, user=finder)
         response = self.client.get(f'/stone-link/{stone.stone_number}/?key={stone.uuid}')
 
         stone.refresh_from_db()
         self.assertEqual(stone.status, 'wandering')  # Still wandering
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Stone Found')
+
+
+class LastMinuteEditTests(BaseStoneWalkerTestCase):
+    """Owner can still edit a sent-off stone via its QR link until anyone else
+    scans or finds it."""
+
+    def test_can_last_minute_edit_states(self):
+        draft = self.create_stone('LMDRAFT', status='draft')
+        self.assertFalse(draft.can_last_minute_edit())
+
+        published = self.create_stone('LMPUB', status='published')
+        self.assertTrue(published.can_last_minute_edit())
+
+        wandering = self.create_stone('LMWANDER', status='wandering')
+        self.assertTrue(wandering.can_last_minute_edit())
+
+        # A find by another user locks it for good.
+        finder = self.create_user('lmfinder', 'pw')
+        found = self.create_stone('LMFOUND', status='wandering')
+        self.create_stone_move(stone=found, user=finder)
+        self.assertFalse(found.can_last_minute_edit())
+
+    def test_owner_scan_of_unfound_wandering_stone_redirects_to_edit(self):
+        stone = self.create_stone('LMSCAN', status='wandering')
+        response = self.client.get(f'/stone-link/{stone.stone_number}/?key={stone.uuid}')
+        self.assertEqual(response.status_code, 302)
+        self.assertIn(f'/stone/{stone.PK_stone}/edit/', response.url)
+        self.assertIn(f'key={stone.uuid}', response.url)
+
+    def test_owner_can_save_last_minute_changes_with_key(self):
+        stone = self.create_stone('LMEDIT', status='wandering')
+        response = self.client.post(f'/stone/{stone.PK_stone}/edit/', {
+            'action': 'save',
+            'description': 'last minute description',
+            'key': str(stone.uuid),
+        })
+        self.assertEqual(response.status_code, 302)
+        stone.refresh_from_db()
+        self.assertEqual(stone.description, 'last minute description')
+
+    def test_edit_without_key_stays_locked_for_wandering_stone(self):
+        stone = self.create_stone('LMNOKEY', status='wandering', description='original')
+        response = self.client.post(f'/stone/{stone.PK_stone}/edit/', {
+            'action': 'save',
+            'description': 'sneaky change',
+        })
+        self.assertEqual(response.status_code, 302)
+        stone.refresh_from_db()
+        self.assertEqual(stone.description, 'original')
+
+    def test_edit_with_key_locked_after_someone_else_scans(self):
+        finder = self.create_user('lmlocker', 'pw')
+        stone = self.create_stone('LMLOCKED', status='wandering', description='original')
+        self.create_stone_move(stone=stone, user=finder)
+        response = self.client.post(f'/stone/{stone.PK_stone}/edit/', {
+            'action': 'save',
+            'description': 'too late',
+            'key': str(stone.uuid),
+        })
+        self.assertEqual(response.status_code, 302)
+        stone.refresh_from_db()
+        self.assertEqual(stone.description, 'original')
 
 
 class DeferredFindTests(BaseStoneWalkerTestCase):

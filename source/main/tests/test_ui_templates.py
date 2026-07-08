@@ -167,7 +167,8 @@ class StoneFoundTemplateTests(BaseStoneWalkerTestCase):
     
     def test_stone_found_page_via_link(self):
         """Test stone found page loads via stone-link for wandering stones"""
-        stone = self.create_stone(status='wandering')
+        maker = self.create_user('foundmaker', 'pw')
+        stone = self.create_stone(user=maker, status='wandering')
 
         response = self.client.get(f'/stone-link/{stone.stone_number}/?key={stone.uuid}')
         self.assertEqual(response.status_code, 200)
@@ -186,7 +187,8 @@ class StoneFoundTemplateTests(BaseStoneWalkerTestCase):
     def test_first_stone_detection(self):
         """Test first stone detection logic for wandering stones"""
         # User has no previous moves, so this should be their first
-        stone = self.create_stone(status='wandering')
+        maker = self.create_user('firstmaker', 'pw')
+        stone = self.create_stone(user=maker, status='wandering')
 
         response = self.client.get(f'/stone-link/{stone.stone_number}/?key={stone.uuid}')
         self.assertEqual(response.status_code, 200)

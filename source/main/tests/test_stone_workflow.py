@@ -92,17 +92,19 @@ class StoneUUIDConsistencyTests(BaseStoneWalkerTestCase):
 
     def test_stone_link_works_with_stone_number(self):
         """The stone-link URL using the stone's number and key should find the stone"""
-        stone = self.create_stone('LINK_TEST', status='wandering')
+        maker = self.create_user('linkmaker2', 'pw')
+        stone = self.create_stone('LINK_TEST', user=maker, status='wandering')
         self.create_stone_move(stone=stone)
         response = self.client.get(f'/stone-link/{stone.stone_number}/?key={stone.uuid}')
         self.assertEqual(response.status_code, 200)
 
     def test_stone_link_with_custom_uuid(self):
         """A stone created with a specific UUID should be reachable via stone_number and key"""
+        maker = self.create_user('uuidmaker', 'pw')
         custom_uuid = uuid_lib.uuid4()
         stone = Stone.objects.create(
             PK_stone='CUSTOM_UUID',
-            FK_user=self.user,
+            FK_user=maker,
             uuid=custom_uuid,
             status='wandering',
         )
@@ -359,7 +361,7 @@ class StoneWorkflowTests(BaseStoneWalkerTestCase):
         """The send-off POST (seal confirmation) transitions the stone to wandering."""
         stone = self.create_stone(status='published')
 
-        response = self.client.post(f'/stone/{stone.PK_stone}/send-off/')
+        response = self.client.post(f'/stone/{stone.PK_stone}/send-off/', {'confirm_no_image': '1'})
 
         self.assertEqual(response.status_code, 302)
         stone.refresh_from_db()
