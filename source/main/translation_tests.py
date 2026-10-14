@@ -1,8 +1,9 @@
 import os
+from django.utils.translation import to_locale
 import re
 from django.test import TestCase, Client
 from django.urls import reverse
-from django.utils.translation import activate, gettext as _
+from django.utils.translation import activate, deactivate, gettext as _
 from django.conf import settings
 import polib
 
@@ -17,7 +18,7 @@ class TranslationQualityAssuranceTests(TestCase):
     def test_po_files_have_proper_headers(self):
         """Test that all PO files have proper headers with charset specification"""
         for lang_code, lang_name in settings.LANGUAGES:
-            po_file_path = os.path.join(self.locale_path, lang_code, 'LC_MESSAGES', 'django.po')
+            po_file_path = os.path.join(self.locale_path, to_locale(lang_code), 'LC_MESSAGES', 'django.po')
             if os.path.exists(po_file_path):
                 with open(po_file_path, 'r', encoding='utf-8') as f:
                     content = f.read()
@@ -31,7 +32,7 @@ class TranslationQualityAssuranceTests(TestCase):
     def test_po_files_no_empty_msgstr(self):
         """Test that PO files don't have empty msgstr entries (except for header)"""
         for lang_code, lang_name in settings.LANGUAGES:
-            po_file_path = os.path.join(self.locale_path, lang_code, 'LC_MESSAGES', 'django.po')
+            po_file_path = os.path.join(self.locale_path, to_locale(lang_code), 'LC_MESSAGES', 'django.po')
             if os.path.exists(po_file_path):
                 try:
                     po = polib.pofile(po_file_path)
@@ -48,7 +49,7 @@ class TranslationQualityAssuranceTests(TestCase):
     def test_po_files_no_duplicate_msgids(self):
         """Test that PO files don't have duplicate msgid entries"""
         for lang_code, lang_name in settings.LANGUAGES:
-            po_file_path = os.path.join(self.locale_path, lang_code, 'LC_MESSAGES', 'django.po')
+            po_file_path = os.path.join(self.locale_path, to_locale(lang_code), 'LC_MESSAGES', 'django.po')
             if os.path.exists(po_file_path):
                 try:
                     po = polib.pofile(po_file_path)
@@ -62,7 +63,7 @@ class TranslationQualityAssuranceTests(TestCase):
     def test_po_files_compile_successfully(self):
         """Test that all PO files can be compiled without errors"""
         for lang_code, lang_name in settings.LANGUAGES:
-            po_file_path = os.path.join(self.locale_path, lang_code, 'LC_MESSAGES', 'django.po')
+            po_file_path = os.path.join(self.locale_path, to_locale(lang_code), 'LC_MESSAGES', 'django.po')
             if os.path.exists(po_file_path):
                 try:
                     po = polib.pofile(po_file_path)
@@ -74,6 +75,10 @@ class TranslationQualityAssuranceTests(TestCase):
 
 class TranslationFunctionalityTests(TestCase):
     """Tests to verify that translations actually work in the application"""
+
+    def tearDown(self):
+        # activate() is thread-global; don't leak German into later tests.
+        deactivate()
     
     def setUp(self):
         self.client = Client()
@@ -158,6 +163,10 @@ class TranslationFunctionalityTests(TestCase):
 
 class TranslationCoverageTests(TestCase):
     """Tests to ensure all important strings are translated"""
+
+    def tearDown(self):
+        # activate() is thread-global; don't leak German into later tests.
+        deactivate()
     
     def test_critical_strings_are_translated(self):
         """Test that critical user-facing strings are translated in all languages"""

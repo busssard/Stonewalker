@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-14 18:19+0000\n"
+"POT-Creation-Date: 2026-09-26 13:39+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: EN <en@li.org>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: accounts/forms.py:21 accounts/templates/accounts/sign_up.html:76
+#: accounts/forms.py:21 accounts/templates/accounts/sign_up.html:77
 msgid "Password"
 msgstr "Secret Code"
 
@@ -30,9 +30,10 @@ msgstr "Don't forget me!"
 msgid "You entered an invalid password."
 msgstr "Oops! That secret code isn't right. Try again!"
 
-#: accounts/forms.py:42 accounts/forms.py:201 accounts/forms.py:239
+#: accounts/forms.py:42 accounts/forms.py:210 accounts/forms.py:248
 #: accounts/templates/accounts/profile/change_profile.html:50
-#: accounts/templates/accounts/sign_up.html:29
+#: accounts/templates/accounts/profile/change_profile_form.html:45
+#: accounts/templates/accounts/sign_up.html:30
 msgid "Username"
 msgstr "Your Cool Name"
 
@@ -44,22 +45,25 @@ msgstr "Hmm, that name doesn't look right. Pick another awesome one!"
 msgid "This account is not active."
 msgstr "Your account is sleeping! Check your email to wake-make it up."
 
-#: accounts/forms.py:66 accounts/forms.py:122 accounts/forms.py:167
-#: accounts/forms.py:215 accounts/forms.py:240
+#: accounts/forms.py:66 accounts/forms.py:122 accounts/forms.py:176
+#: accounts/forms.py:224 accounts/forms.py:251
 #: accounts/templates/accounts/profile/change_profile.html:58
-#: accounts/templates/accounts/sign_up.html:67
+#: accounts/templates/accounts/profile/change_profile_form.html:56
+#: accounts/templates/accounts/sign_up.html:68
+#: content/templates/main/impressum.html:47
+#: content/templates/main/privacy.html:30
 msgid "Email"
 msgstr "Email Address"
 
-#: accounts/forms.py:73 accounts/forms.py:174
+#: accounts/forms.py:73 accounts/forms.py:183
 msgid "You entered an invalid email address."
 msgstr "That email looks wonky! Double-check it for us."
 
-#: accounts/forms.py:92 accounts/forms.py:141
+#: accounts/forms.py:92 accounts/forms.py:150
 msgid "Email or Username"
 msgstr "Email or Your Cool Name"
 
-#: accounts/forms.py:99 accounts/forms.py:148
+#: accounts/forms.py:99 accounts/forms.py:157
 msgid "You entered an invalid email address or username."
 msgstr "Hmm, we can't find that email or name. Try again!"
 
@@ -67,142 +71,313 @@ msgstr "Hmm, we can't find that email or name. Try again!"
 msgid "Required. Enter an existing email address."
 msgstr "We need your real email address here!"
 
-#: accounts/forms.py:127 accounts/forms.py:210 accounts/forms.py:267
-#: accounts/templates/accounts/profile/change_profile.html:263
-#: accounts/templates/accounts/sign_up.html:36
+#: accounts/forms.py:124 accounts/templates/accounts/terms.html:54
+msgid "I accept the Terms of Use"
+msgstr "I accept the Terms of Use"
+
+#: accounts/forms.py:126
+msgid "You must accept the Terms of Use to create an account."
+msgstr "You must accept the Terms of Use to create an account."
+
+#: accounts/forms.py:132 accounts/forms.py:219 accounts/forms.py:303
+#: accounts/templates/accounts/profile/change_profile.html:272
+#: accounts/templates/accounts/profile/change_profile_form.html:52
+#: accounts/templates/accounts/sign_up.html:37
 msgid "This username is already taken."
 msgstr "Someone beat you to that name! Pick another awesome one."
 
-#: accounts/forms.py:135
+#: accounts/forms.py:144
 msgid "You can not use this email address."
 msgstr "Sorry, that email won't work. Try a different one!"
 
-#: accounts/forms.py:151 accounts/forms.py:177
+#: accounts/forms.py:160 accounts/forms.py:186
 msgid "This account has already been activated."
 msgstr "Good news! Your account is already ready to go!"
 
-#: accounts/forms.py:155 accounts/forms.py:181
+#: accounts/forms.py:164 accounts/forms.py:190
 msgid "Activation code not found."
 msgstr "We can't find that magic code. Double-check it!"
 
-#: accounts/forms.py:159 accounts/forms.py:185
+#: accounts/forms.py:168 accounts/forms.py:194
 msgid ""
 "Activation code has already been sent. You can request a new code in 24 "
 "hours."
 msgstr ""
+"Activation code has already been sent. You can request a new code in 24 "
+"hours."
 
-#: accounts/forms.py:206 accounts/forms.py:263
-#: accounts/templates/accounts/profile/change_profile.html:242
-#: accounts/templates/accounts/profile/change_profile.html:267
-#: accounts/templates/accounts/sign_up.html:37
+#: accounts/forms.py:215 accounts/forms.py:299
+#: accounts/templates/accounts/profile/change_profile.html:251
+#: accounts/templates/accounts/profile/change_profile.html:276
+#: accounts/templates/accounts/sign_up.html:38
 msgid "Username cannot be empty."
 msgstr "You gotta pick a name! It can't be empty."
 
-#: accounts/forms.py:208 accounts/forms.py:265
+#: accounts/forms.py:217 accounts/forms.py:301
 msgid "Username cannot contain whitespace."
 msgstr "No spaces in your name, please! Make it one cool word."
 
-#: accounts/forms.py:225
+#: accounts/forms.py:234
 msgid "Please enter another email."
 msgstr "Try a different email address!"
 
-#: accounts/forms.py:229
+#: accounts/forms.py:238
 msgid "You can not use this mail."
 msgstr "That email won't work. Got another one?"
 
-#: accounts/forms.py:241
+#: accounts/forms.py:252
 #: accounts/templates/accounts/profile/change_profile.html:27
-#: content/templates/layouts/default/page.html:193
+#: accounts/templates/accounts/profile/change_profile_form.html:24
+#: content/templates/layouts/default/page.html:202
 msgid "Profile picture"
 msgstr "Your Awesome Picture"
 
-#: accounts/forms.py:242
-#: accounts/templates/accounts/profile/change_profile.html:65
+#: accounts/forms.py:253
+#: accounts/templates/accounts/profile/change_profile.html:66
+#: accounts/templates/accounts/profile/change_profile_form.html:64
+msgid "Current password"
+msgstr "Current password"
+
+#: accounts/forms.py:254
+#: accounts/templates/accounts/profile/change_profile.html:74
+#: accounts/templates/accounts/profile/change_profile_form.html:72
 msgid "New password"
 msgstr "New Secret Code"
 
-#: accounts/forms.py:243
-#: accounts/templates/accounts/profile/change_profile.html:74
+#: accounts/forms.py:255
+#: accounts/templates/accounts/profile/change_profile.html:83
+#: accounts/templates/accounts/profile/change_profile_form.html:76
 msgid "Confirm new password"
 msgstr "Type Your Secret Code Again"
 
 #: accounts/forms.py:257
-msgid "Image file is too large. Maximum size is 5 MB."
-msgstr ""
+msgid "Facebook URL"
+msgstr "Facebook URL"
 
-#: accounts/forms.py:283
+#: accounts/forms.py:258
+msgid "Instagram"
+msgstr "Instagram"
+
+#: accounts/forms.py:259
+msgid "Twitter / X"
+msgstr "Twitter / X"
+
+#: accounts/forms.py:260
+msgid "Mastodon"
+msgstr "Mastodon"
+
+#: accounts/forms.py:261
+msgid "TikTok"
+msgstr "TikTok"
+
+#: accounts/forms.py:263
+msgid "Notify when my stone is scanned"
+msgstr "Notify when my stone is scanned"
+
+#: accounts/forms.py:264
+msgid "Notify when my stone moves"
+msgstr "Notify when my stone moves"
+
+#: accounts/forms.py:265
+msgid "Weekly digest email"
+msgstr "Weekly digest email"
+
+#: accounts/forms.py:293
+msgid "Image file is too large. Maximum size is 5 MB."
+msgstr "Image file is too large. Maximum size is 5 MB."
+
+#: accounts/forms.py:322
 msgid ""
 "You have made too many email change attempts. Please wait 15 minutes and try "
 "again."
 msgstr ""
+"You have made too many email change attempts. Please wait 15 minutes and try "
+"again."
 
-#: accounts/forms.py:289 accounts/views.py:363
+#: accounts/forms.py:328 accounts/views.py:458
 msgid "This email address is already in use by another account."
 msgstr "Someone else is already using that email. Pick a different one!"
 
-#: accounts/forms.py:298
+#: accounts/forms.py:341
+msgid ""
+"Please confirm your email address before setting a password: use the link we "
+"emailed you, or resend it below."
+msgstr ""
+"Please confirm your email address before setting a password: use the link we "
+"emailed you, or resend it below."
+
+#: accounts/forms.py:345
+msgid "Your current password is incorrect."
+msgstr "Your current password is incorrect."
+
+#: accounts/forms.py:347
 msgid "Passwords do not match."
 msgstr ""
 "Your secret codes don't match! Make sure you type the same thing twice."
 
+#: accounts/templates/accounts/confirm_account.html:5
+#: accounts/templates/accounts/confirm_account.html:10
+msgid "Confirm your account"
+msgstr "Confirm your account"
+
+#: accounts/templates/accounts/confirm_account.html:14
+msgid ""
+"Set a password to confirm your email and finish setting up your StoneWalker "
+"account."
+msgstr ""
+"Set a password to confirm your email and finish setting up your StoneWalker "
+"account."
+
+#: accounts/templates/accounts/confirm_account.html:19
+msgid "Confirm and continue"
+msgstr "Confirm and continue"
+
+#: accounts/templates/accounts/confirm_account.html:23
+msgid ""
+"This confirmation link is invalid or has already been used. Please request a "
+"new one."
+msgstr ""
+"This confirmation link is invalid or has already been used. Please request a "
+"new one."
+
 #: accounts/templates/accounts/emails/activate_profile.html:28
 #: accounts/templates/accounts/emails/activate_profile.txt:7
-#, fuzzy
-#| msgid "Edit Profile"
 msgid "Activate Your Profile"
-msgstr "Edit Profile"
+msgstr "Activate Your Profile"
 
-#: accounts/templates/accounts/emails/activate_profile.html:31
+#: accounts/templates/accounts/emails/activate_profile.html:32
 #: accounts/templates/accounts/emails/activate_profile.txt:9
+#, python-format
+msgid "You are member number %(number)s of StoneWalker!"
+msgstr "You are member number %(number)s of StoneWalker!"
+
+#: accounts/templates/accounts/emails/activate_profile.html:36
+#: accounts/templates/accounts/emails/activate_profile.txt:11
+msgid ""
+"As an early supporter, you will receive lifetime premium access once you "
+"activate your account!"
+msgstr ""
+"As an early supporter, you will receive lifetime premium access once you "
+"activate your account!"
+
+#: accounts/templates/accounts/emails/activate_profile.html:42
+#: accounts/templates/accounts/emails/activate_profile.txt:13
 msgid "To activate your profile, please follow this link:"
 msgstr "Click this magic link to activate your account:"
 
-#: accounts/templates/accounts/emails/activate_profile.html:37
-#, fuzzy
-#| msgid "Edit Profile"
+#: accounts/templates/accounts/emails/activate_profile.html:48
 msgid "Activate Profile"
-msgstr "Edit Profile"
+msgstr "Activate Profile"
 
-#: accounts/templates/accounts/emails/activate_profile.html:43
+#: accounts/templates/accounts/emails/activate_profile.html:54
 #: accounts/templates/accounts/emails/change_email.html:43
+#: accounts/templates/accounts/emails/confirm_find.html:42
 #: accounts/templates/accounts/emails/restore_password_email.html:47
 msgid ""
 "If the button above does not work, copy and paste this link into your "
 "browser:"
 msgstr ""
+"If the button above does not work, copy and paste this link into your "
+"browser:"
 
-#: accounts/templates/accounts/emails/activate_profile.html:55
-#: accounts/templates/accounts/emails/activate_profile.txt:15
+#: accounts/templates/accounts/emails/activate_profile.html:66
+#: accounts/templates/accounts/emails/activate_profile.txt:19
 #: accounts/templates/accounts/emails/change_email.html:55
 #: accounts/templates/accounts/emails/change_email.txt:15
+#: accounts/templates/accounts/emails/code_claimed.html:40
+#: accounts/templates/accounts/emails/code_claimed.txt:10
+#: accounts/templates/accounts/emails/confirm_find.html:56
+#: accounts/templates/accounts/emails/confirm_find.txt:19
 #: accounts/templates/accounts/emails/forgotten_username.html:52
 #: accounts/templates/accounts/emails/forgotten_username.txt:17
 #: accounts/templates/accounts/emails/restore_password_email.html:63
 #: accounts/templates/accounts/emails/restore_password_email.txt:19
-#, fuzzy
-#| msgid "Track the journey of painted stones around the world"
+#: accounts/templates/accounts/emails/stone_moved.html:47
+#: accounts/templates/accounts/emails/stone_moved.txt:10
+#: accounts/templates/accounts/emails/stone_scanned.html:54
+#: accounts/templates/accounts/emails/stone_scanned.txt:12
 msgid "Track painted stones around the world"
-msgstr "Track the journey of painted stones around the world"
+msgstr "Track painted stones around the world"
 
 #: accounts/templates/accounts/emails/change_email.html:28
 #: accounts/templates/accounts/emails/change_email.html:37
 #: accounts/templates/accounts/emails/change_email.txt:7
-#, fuzzy
-#| msgid "Confirm this action:"
 msgid "Confirm Email Change"
-msgstr "Confirm this action:"
+msgstr "Confirm Email Change"
 
 #: accounts/templates/accounts/emails/change_email.html:31
 #: accounts/templates/accounts/emails/change_email.txt:9
 msgid "To change your current email address, please follow the link:"
 msgstr "Click here to change your email address:"
 
+#: accounts/templates/accounts/emails/code_claimed.html:24
+#: accounts/templates/accounts/emails/code_claimed.txt:1
+#, python-format
+msgid "%(claimer)s claimed one of your codes!"
+msgstr "%(claimer)s claimed one of your codes!"
+
+#: accounts/templates/accounts/emails/code_claimed.html:27
+#: accounts/templates/accounts/emails/code_claimed.txt:3
+#, python-format
+msgid ""
+"User %(claimer)s just claimed one of the QR codes you handed out and named it"
+" \"%(stone_name)s\"."
+msgstr ""
+"User %(claimer)s just claimed one of the QR codes you handed out and named it"
+" \"%(stone_name)s\"."
+
+#: accounts/templates/accounts/emails/code_claimed.html:30
+#: accounts/templates/accounts/emails/code_claimed.txt:5
+msgid "You can see your codes and stones in My Stones on StoneWalker."
+msgstr "You can see your codes and stones in My Stones on StoneWalker."
+
+#: accounts/templates/accounts/emails/code_claimed.html:33
+#: accounts/templates/accounts/emails/code_claimed.txt:7
+#: accounts/templates/accounts/emails/stone_moved.html:38
+#: accounts/templates/accounts/emails/stone_moved.txt:7
+#: accounts/templates/accounts/emails/stone_scanned.html:45
+#: accounts/templates/accounts/emails/stone_scanned.txt:9
+msgid "You can manage your notification preferences in your profile settings."
+msgstr "You can manage your notification preferences in your profile settings."
+
+#: accounts/templates/accounts/emails/confirm_find.html:24
+#: accounts/templates/accounts/emails/confirm_find.txt:7
+msgid "Confirm your find"
+msgstr "Confirm your find"
+
+#: accounts/templates/accounts/emails/confirm_find.html:27
+#: accounts/templates/accounts/emails/confirm_find.txt:9
+#, python-format
+msgid "Thanks for recording your find of \"%(stone_name)s\"!"
+msgstr "Thanks for recording your find of \"%(stone_name)s\"!"
+
+#: accounts/templates/accounts/emails/confirm_find.html:27
+#: accounts/templates/accounts/emails/confirm_find.txt:9
+msgid "Thanks for recording your stone find!"
+msgstr "Thanks for recording your stone find!"
+
+#: accounts/templates/accounts/emails/confirm_find.html:30
+#: accounts/templates/accounts/emails/confirm_find.txt:11
+msgid ""
+"Set a password to confirm your email. Your find then goes live on the map and"
+" your StoneWalker account is ready."
+msgstr ""
+"Set a password to confirm your email. Your find then goes live on the map and"
+" your StoneWalker account is ready."
+
+#: accounts/templates/accounts/emails/confirm_find.html:36
+msgid "Confirm & set password"
+msgstr "Confirm & set password"
+
+#: accounts/templates/accounts/emails/confirm_find.html:49
+#: accounts/templates/accounts/emails/confirm_find.txt:15
+msgid "If you did not submit a stone find, you can safely ignore this email."
+msgstr "If you did not submit a stone find, you can safely ignore this email."
+
 #: accounts/templates/accounts/emails/forgotten_username.html:28
 #: accounts/templates/accounts/emails/forgotten_username.txt:7
-#, fuzzy
-#| msgid "Your username"
 msgid "Your Username"
-msgstr "Your username"
+msgstr "Your Username"
 
 #: accounts/templates/accounts/emails/forgotten_username.html:31
 #: accounts/templates/accounts/emails/forgotten_username.txt:9
@@ -214,13 +389,12 @@ msgstr "Your cool name is:"
 msgid ""
 "If you did not request this information, you can safely ignore this email."
 msgstr ""
+"If you did not request this information, you can safely ignore this email."
 
 #: accounts/templates/accounts/emails/restore_password_email.html:28
 #: accounts/templates/accounts/emails/restore_password_email.txt:7
-#, fuzzy
-#| msgid "Password"
 msgid "Password Reset"
-msgstr "Secret Code"
+msgstr "Password Reset"
 
 #: accounts/templates/accounts/emails/restore_password_email.html:31
 #: accounts/templates/accounts/emails/restore_password_email.txt:9
@@ -228,6 +402,8 @@ msgid ""
 "You received this email because you requested a password reset for your user "
 "account."
 msgstr ""
+"You received this email because you requested a password reset for your user "
+"account."
 
 #: accounts/templates/accounts/emails/restore_password_email.html:35
 #: accounts/templates/accounts/emails/restore_password_email.txt:11
@@ -235,45 +411,85 @@ msgid "Please, go to the following page and choose a new password:"
 msgstr "Click here and pick a brand new secret code:"
 
 #: accounts/templates/accounts/emails/restore_password_email.html:41
-#, fuzzy
-#| msgid "Restore password"
 msgid "Reset Password"
-msgstr "Restore password"
+msgstr "Reset Password"
 
 #: accounts/templates/accounts/emails/restore_password_email.html:54
 #: accounts/templates/accounts/emails/restore_password_email.txt:15
 msgid ""
 "If you did not request this password reset, you can safely ignore this email."
 msgstr ""
+"If you did not request this password reset, you can safely ignore this email."
+
+#: accounts/templates/accounts/emails/stone_moved.html:27
+#: accounts/templates/accounts/emails/stone_moved.txt:1
+msgid "Your stone moved!"
+msgstr "Your stone moved!"
+
+#: accounts/templates/accounts/emails/stone_moved.html:30
+#: accounts/templates/accounts/emails/stone_moved.txt:3
+#, python-format
+msgid "Your stone \"%(stone_name)s\" was moved by %(mover_name)s."
+msgstr "Your stone \"%(stone_name)s\" was moved by %(mover_name)s."
+
+#: accounts/templates/accounts/emails/stone_moved.html:34
+#: accounts/templates/accounts/emails/stone_moved.txt:5
+#, python-format
+msgid "Total distance traveled: %(distance)s km."
+msgstr "Total distance traveled: %(distance)s km."
+
+#: accounts/templates/accounts/emails/stone_scanned.html:28
+#: accounts/templates/accounts/emails/stone_scanned.txt:1
+msgid "Your stone was scanned!"
+msgstr "Your stone was scanned!"
+
+#: accounts/templates/accounts/emails/stone_scanned.html:31
+#: accounts/templates/accounts/emails/stone_scanned.txt:3
+#, python-format
+msgid ""
+"Someone found your stone \"%(stone_name)s\"! User %(mover_name)s just scanned"
+" it."
+msgstr ""
+"Someone found your stone \"%(stone_name)s\"! User %(mover_name)s just scanned"
+" it."
+
+#: accounts/templates/accounts/emails/stone_scanned.html:36
+#: accounts/templates/accounts/emails/stone_scanned.txt:5
+msgid "Their comment:"
+msgstr "Their comment:"
+
+#: accounts/templates/accounts/emails/stone_scanned.html:41
+#: accounts/templates/accounts/emails/stone_scanned.txt:7
+#, python-format
+msgid "Your stone has now traveled %(distance)s km!"
+msgstr "Your stone has now traveled %(distance)s km!"
 
 #: accounts/templates/accounts/log_in.html:7
 #: accounts/templates/accounts/sign_up.html:10
-#: content/templates/layouts/default/page.html:218
-#: content/templates/main/my_stones.html:56
-#: content/templates/main/shared_modals.html:204
-#: content/templates/main/shared_modals.html:261
-#: content/templates/main/shared_modals.html:301
-#, fuzzy
-#| msgid "close"
+#: content/templates/layouts/default/page.html:227
+#: content/templates/main/claim_stone.html:108
+#: content/templates/main/my_stones.html:127
+#: content/templates/main/shared_modals.html:206
+#: content/templates/main/shared_modals.html:231
+#: content/templates/main/shared_modals.html:271
 msgid "Close"
-msgstr "close"
+msgstr "Close"
 
 #: accounts/templates/accounts/log_in.html:10
 #: accounts/templates/accounts/log_in.html:16
 #: accounts/templates/accounts/remind_username.html:23
 #: accounts/templates/accounts/resend_activation_code.html:23
 #: accounts/templates/accounts/restore_password.html:23
-#: accounts/templates/accounts/sign_up.html:103
+#: accounts/templates/accounts/sign_up.html:114
 #: content/templates/layouts/default/nav_links.html:17
 #: content/templates/layouts/default/nav_links.html:22
-#: content/templates/layouts/default/page.html:198
-#: content/templates/main/shop.html:132
+#: content/templates/main/shop.html:130
 msgid "Log in"
 msgstr "Log in"
 
 #: accounts/templates/accounts/log_in.html:11
 msgid "Welcome back! Log in to continue your journey."
-msgstr ""
+msgstr "Welcome back! Log in to continue your journey."
 
 #: accounts/templates/accounts/log_in.html:19
 msgid "Don't have an account?"
@@ -292,6 +508,10 @@ msgstr "Can't remember your secret code?"
 #: accounts/templates/accounts/log_in.html:24
 msgid "Forgot your username?"
 msgstr "Forgot your cool name?"
+
+#: accounts/templates/accounts/log_in.html:25
+msgid "Did not get the activation email?"
+msgstr "Did not get the activation email?"
 
 #: accounts/templates/accounts/log_out.html:11
 msgid "Logged out"
@@ -312,7 +532,7 @@ msgstr "Go Back to Stone Adventures"
 #: accounts/templates/accounts/log_out_confirm.html:11
 #: accounts/templates/accounts/log_out_confirm.html:16
 #: content/templates/layouts/default/nav_links.html:15
-#: content/templates/layouts/default/page.html:188
+#: content/templates/layouts/default/page.html:197
 msgid "Log out"
 msgstr "Log out"
 
@@ -325,159 +545,163 @@ msgid "Cancel and return home"
 msgstr "Never mind, take me home!"
 
 #: accounts/templates/accounts/profile/change_profile.html:19
-#, fuzzy
-#| msgid "Profile picture"
+#: accounts/templates/accounts/profile/change_profile_form.html:16
 msgid "Upload profile picture"
-msgstr "Your Awesome Picture"
+msgstr "Upload profile picture"
 
 #: accounts/templates/accounts/profile/change_profile.html:23
+#: accounts/templates/accounts/profile/change_profile_form.html:20
 msgid "Upload Pic"
-msgstr ""
+msgstr "Upload Pic"
 
 #: accounts/templates/accounts/profile/change_profile.html:33
-#, fuzzy
-#| msgid "Profile picture"
+#: accounts/templates/accounts/profile/change_profile_form.html:30
 msgid "Clear picture"
-msgstr "Your Awesome Picture"
+msgstr "Clear picture"
 
 #: accounts/templates/accounts/profile/change_profile.html:33
-#, fuzzy
-#| msgid "Profile picture"
+#: accounts/templates/accounts/profile/change_profile_form.html:30
 msgid "Delete profile picture"
-msgstr "Your Awesome Picture"
+msgstr "Delete profile picture"
 
 #: accounts/templates/accounts/profile/change_profile.html:36
-#, fuzzy
-#| msgid "Delete"
+#: accounts/templates/accounts/profile/change_profile_form.html:33
 msgid "Delete Pic"
-msgstr "Delete"
+msgstr "Delete Pic"
 
 #: accounts/templates/accounts/profile/change_profile.html:42
-#, fuzzy
-#| msgid "Cancel"
+#: accounts/templates/accounts/profile/change_profile_form.html:38
 msgid "Cancel preview"
-msgstr "Never Mind"
+msgstr "Cancel preview"
 
 #: accounts/templates/accounts/profile/change_profile.html:42
+#: accounts/templates/accounts/profile/change_profile_form.html:38
 msgid "Cancel image preview"
-msgstr ""
+msgstr "Cancel image preview"
 
-#: accounts/templates/accounts/profile/change_profile.html:66
+#: accounts/templates/accounts/profile/change_profile.html:67
+#: accounts/templates/accounts/profile/change_profile_form.html:65
+msgid "Only needed to change your password"
+msgstr "Only needed to change your password"
+
 #: accounts/templates/accounts/profile/change_profile.html:75
+#: accounts/templates/accounts/profile/change_profile.html:84
+#: accounts/templates/accounts/profile/change_profile_form.html:73
+#: accounts/templates/accounts/profile/change_profile_form.html:77
 msgid "Leave blank to keep current"
-msgstr ""
-
-#: accounts/templates/accounts/profile/change_profile.html:68
-#: accounts/templates/accounts/sign_up.html:79
-msgid "At least 8 characters"
-msgstr ""
-
-#: accounts/templates/accounts/profile/change_profile.html:69
-#: accounts/templates/accounts/sign_up.html:80
-msgid "Can't be entirely numeric"
-msgstr ""
-
-#: accounts/templates/accounts/profile/change_profile.html:70
-#: accounts/templates/accounts/sign_up.html:81
-msgid "Not a commonly used password"
-msgstr ""
-
-#: accounts/templates/accounts/profile/change_profile.html:71
-#: accounts/templates/accounts/sign_up.html:82
-msgid "Can't be too similar to your personal info"
-msgstr ""
+msgstr "Leave blank to keep current"
 
 #: accounts/templates/accounts/profile/change_profile.html:77
-#: accounts/templates/accounts/sign_up.html:92
-#, fuzzy
-#| msgid "Passwords do not match."
-msgid "Passwords match"
-msgstr ""
-"Your secret codes don't match! Make sure you type the same thing twice."
+#: accounts/templates/accounts/sign_up.html:80
+msgid "At least 8 characters"
+msgstr "At least 8 characters"
 
 #: accounts/templates/accounts/profile/change_profile.html:78
-#: accounts/templates/accounts/sign_up.html:93
-#, fuzzy
-#| msgid "Passwords do not match."
-msgid "Passwords do not match"
-msgstr ""
-"Your secret codes don't match! Make sure you type the same thing twice."
+#: accounts/templates/accounts/sign_up.html:81
+msgid "Can't be entirely numeric"
+msgstr "Can't be entirely numeric"
 
-#: accounts/templates/accounts/profile/change_profile.html:81
+#: accounts/templates/accounts/profile/change_profile.html:79
+#: accounts/templates/accounts/sign_up.html:82
+msgid "Not a commonly used password"
+msgstr "Not a commonly used password"
+
+#: accounts/templates/accounts/profile/change_profile.html:80
+#: accounts/templates/accounts/sign_up.html:83
+msgid "Can't be too similar to your personal info"
+msgstr "Can't be too similar to your personal info"
+
+#: accounts/templates/accounts/profile/change_profile.html:86
+#: accounts/templates/accounts/sign_up.html:93
+msgid "Passwords match"
+msgstr "Passwords match"
+
+#: accounts/templates/accounts/profile/change_profile.html:87
+#: accounts/templates/accounts/sign_up.html:94
+msgid "Passwords do not match"
+msgstr "Passwords do not match"
+
+#: accounts/templates/accounts/profile/change_profile.html:90
+#: accounts/templates/accounts/profile/change_profile_form.html:80
 msgid "Save profile"
 msgstr "Save My Awesome Profile"
 
-#: accounts/templates/accounts/profile/change_profile.html:82
-#: content/templates/main/claim_stone.html:75
+#: accounts/templates/accounts/profile/change_profile.html:91
+#: accounts/templates/accounts/profile/change_profile_form.html:81
+#: content/templates/main/claim_stone.html:79
 #: content/templates/main/new_add_stone_modal.html:103
 #: content/templates/main/shared_modals.html:79
-#: content/templates/main/shared_modals.html:251
+#: content/templates/main/shared_modals.html:222
+#: content/templates/main/stone_edit.html:123
 msgid "Cancel"
 msgstr "Never Mind"
 
-#: accounts/templates/accounts/profile/change_profile.html:87
+#: accounts/templates/accounts/profile/change_profile.html:96
+#: accounts/templates/accounts/profile/change_profile_form.html:86
 msgid "Your email address is not confirmed."
-msgstr ""
+msgstr "Your email address is not confirmed."
 
-#: accounts/templates/accounts/profile/change_profile.html:88
+#: accounts/templates/accounts/profile/change_profile.html:97
 msgid ""
 "Please check your inbox and click the confirmation link. If you do not "
 "confirm soon, your email will be reset."
 msgstr ""
+"Please check your inbox and click the confirmation link. If you do not "
+"confirm soon, your email will be reset."
 
-#: accounts/templates/accounts/profile/change_profile.html:91
-#, fuzzy
-#| msgid "Resend an activation code"
+#: accounts/templates/accounts/profile/change_profile.html:100
 msgid "Resend activation code"
-msgstr "Resend an activation code"
+msgstr "Resend activation code"
 
-#: accounts/templates/accounts/profile/change_profile.html:95
-#, fuzzy
-#| msgid "Change email"
+#: accounts/templates/accounts/profile/change_profile.html:104
 msgid "Cancel email change"
-msgstr "Change email"
+msgstr "Cancel email change"
 
-#: accounts/templates/accounts/profile/change_profile.html:171
-#, fuzzy
-#| msgid "Please enter another email."
+#: accounts/templates/accounts/profile/change_profile.html:180
 msgid "Please select an image file."
-msgstr "Try a different email address!"
+msgstr "Please select an image file."
 
-#: accounts/templates/accounts/profile/change_profile.html:178
+#: accounts/templates/accounts/profile/change_profile.html:187
 msgid "Image is too large (max 5MB). Please choose a smaller image."
-msgstr ""
+msgstr "Image is too large (max 5MB). Please choose a smaller image."
 
-#: accounts/templates/accounts/profile/change_profile.html:189
+#: accounts/templates/accounts/profile/change_profile.html:198
 msgid "Image resized to fit 800x800px."
-msgstr ""
+msgstr "Image resized to fit 800x800px."
 
-#: accounts/templates/accounts/profile/change_profile.html:217
+#: accounts/templates/accounts/profile/change_profile.html:226
 msgid "Could not read the image. Please try a different file."
-msgstr ""
+msgstr "Could not read the image. Please try a different file."
 
-#: accounts/templates/accounts/profile/change_profile.html:248
-#, fuzzy
-#| msgid "Forgot your username?"
+#: accounts/templates/accounts/profile/change_profile.html:257
 msgid "You can change your username"
-msgstr "Forgot your cool name?"
+msgstr "You can change your username"
 
-#: accounts/templates/accounts/profile/change_profile.html:258
-#: accounts/templates/accounts/sign_up.html:38
-#, fuzzy
-#| msgid "Null characters are not allowed."
+#: accounts/templates/accounts/profile/change_profile.html:267
+#: accounts/templates/accounts/sign_up.html:39
 msgid "No spaces allowed."
-msgstr "Null characters are not allowed."
+msgstr "No spaces allowed."
 
-#: accounts/templates/accounts/profile/change_profile.html:271
+#: accounts/templates/accounts/profile/change_profile.html:280
 msgid "Not available."
-msgstr ""
+msgstr "Not available."
 
-#: accounts/templates/accounts/profile/change_profile.html:278
-#: accounts/templates/accounts/sign_up.html:35
-#, fuzzy
-#| msgid "This username is already taken."
+#: accounts/templates/accounts/profile/change_profile.html:287
+#: accounts/templates/accounts/profile/change_profile_form.html:53
+#: accounts/templates/accounts/sign_up.html:36
 msgid "This username is available!"
-msgstr "Someone beat you to that name! Pick another awesome one."
+msgstr "This username is available!"
+
+#: accounts/templates/accounts/profile/change_profile_form.html:5
+#: content/templates/layouts/default/nav_links.html:14
+#: content/templates/layouts/default/page.html:201
+#: content/templates/layouts/default/page.html:225
+msgid "Edit Profile"
+msgstr "Edit Profile"
+
+#: accounts/templates/accounts/profile/change_profile_form.html:87
+msgid "Please check your inbox and click the confirmation link."
+msgstr "Please check your inbox and click the confirmation link."
 
 #: accounts/templates/accounts/remind_username.html:8
 msgid "Remind a username"
@@ -498,7 +722,7 @@ msgstr "Resend an activation code"
 #: accounts/templates/accounts/restore_password.html:8
 #: accounts/templates/accounts/restore_password_confirm.html:8
 #: accounts/templates/accounts/restore_password_done.html:7
-#: accounts/utils.py:46
+#: accounts/utils.py:82
 msgid "Restore password"
 msgstr "Restore password"
 
@@ -507,6 +731,8 @@ msgid ""
 "Please enter your new password twice so we can verify you typed it in "
 "correctly."
 msgstr ""
+"Please enter your new password twice so we can verify you typed it in "
+"correctly."
 
 #: accounts/templates/accounts/restore_password_confirm.html:21
 #: content/templates/main/change_language.html:32
@@ -518,12 +744,16 @@ msgid ""
 "The password reset link was invalid, possibly because it has already been "
 "used. Please request a new password reset."
 msgstr ""
+"The password reset link was invalid, possibly because it has already been "
+"used. Please request a new password reset."
 
 #: accounts/templates/accounts/restore_password_done.html:10
 msgid ""
 "We've emailed you instructions for setting your password, if an account "
 "exists with the email you entered."
 msgstr ""
+"We've emailed you instructions for setting your password, if an account "
+"exists with the email you entered."
 
 #: accounts/templates/accounts/restore_password_done.html:11
 msgid "You should receive them shortly."
@@ -534,153 +764,336 @@ msgid ""
 "If you don't receive an email, please make sure you've entered the address "
 "you signed up with, and check your spam folder."
 msgstr ""
+"If you don't receive an email, please make sure you've entered the address "
+"you signed up with, and check your spam folder."
 
 #: accounts/templates/accounts/sign_up.html:14
 msgid "Create an account"
 msgstr "Create an account"
 
 #: accounts/templates/accounts/sign_up.html:15
-#, fuzzy
-#| msgid "Track the journey of painted stones around the world"
 msgid ""
 "Join the journey! Track, share, and discover painted stones around the world."
-msgstr "Track the journey of painted stones around the world"
+msgstr ""
+"Join the journey! Track, share, and discover painted stones around the world."
 
-#: accounts/templates/accounts/sign_up.html:48
+#: accounts/templates/accounts/sign_up.html:49
 msgid "First name"
 msgstr "First name"
 
-#: accounts/templates/accounts/sign_up.html:58
+#: accounts/templates/accounts/sign_up.html:59
 msgid "Last name"
 msgstr "Last name"
 
-#: accounts/templates/accounts/sign_up.html:89
-#, fuzzy
-#| msgid "Confirm new password"
+#: accounts/templates/accounts/sign_up.html:90
 msgid "Confirm password"
-msgstr "Type Your Secret Code Again"
+msgstr "Confirm password"
 
-#: accounts/templates/accounts/sign_up.html:99
+#: accounts/templates/accounts/sign_up.html:103
+#: content/templates/main/claim_stone.html:71
+msgid "I accept the"
+msgstr "I accept the"
+
+#: accounts/templates/accounts/sign_up.html:103
+#: accounts/templates/accounts/terms.html:5
+#: accounts/templates/accounts/terms.html:9
+#: content/templates/layouts/default/page.html:249
+#: content/templates/main/claim_stone.html:71
+#: content/templates/main/claim_stone.html:89
+msgid "Terms of Use"
+msgstr "Terms of Use"
+
+#: accounts/templates/accounts/sign_up.html:110
 msgid "Create"
 msgstr "Create"
 
-#: accounts/templates/accounts/sign_up.html:103
+#: accounts/templates/accounts/sign_up.html:114
 msgid "Already have an account?"
 msgstr "Already have an account?"
 
-#: accounts/utils.py:28
+#: accounts/templates/accounts/terms.html:10
+#: content/templates/main/claim_stone.html:90
+msgid "Last updated: February 2026"
+msgstr "Last updated: February 2026"
+
+#: accounts/templates/accounts/terms.html:12
+#: content/templates/main/claim_stone.html:92
+msgid "Stone Ownership"
+msgstr "Stone Ownership"
+
+#: accounts/templates/accounts/terms.html:14
+#: content/templates/main/claim_stone.html:93
+msgid ""
+"By creating a stone on StoneWalker, you confirm that you are the original "
+"creator of the painted stone. You must not attach QR codes to stones you did "
+"not paint yourself. Each QR code should be placed on a stone that you "
+"personally created and decorated."
+msgstr ""
+"By creating a stone on StoneWalker, you confirm that you are the original "
+"creator of the painted stone. You must not attach QR codes to stones you did "
+"not paint yourself. Each QR code should be placed on a stone that you "
+"personally created and decorated."
+
+#: accounts/templates/accounts/terms.html:17
+#: content/templates/main/claim_stone.html:94
+msgid "Content and Photos"
+msgstr "Content and Photos"
+
+#: accounts/templates/accounts/terms.html:19
+#: content/templates/main/claim_stone.html:95
+msgid ""
+"Photos uploaded to StoneWalker (stone images, scan photos) may be used by "
+"StoneWalker for promotional purposes and to improve our services, including "
+"AI-based features such as image recognition and recommendation systems. By "
+"uploading images, you grant StoneWalker a non-exclusive license to use these "
+"images."
+msgstr ""
+"Photos uploaded to StoneWalker (stone images, scan photos) may be used by "
+"StoneWalker for promotional purposes and to improve our services, including "
+"AI-based features such as image recognition and recommendation systems. By "
+"uploading images, you grant StoneWalker a non-exclusive license to use these "
+"images."
+
+#: accounts/templates/accounts/terms.html:22
+#: content/templates/main/claim_stone.html:96
+msgid "Age Requirement"
+msgstr "Age Requirement"
+
+#: accounts/templates/accounts/terms.html:24
+#: content/templates/main/claim_stone.html:97
+msgid ""
+"You must be at least 13 years old to create an account and use StoneWalker. "
+"If you are under 18, you should have permission from a parent or guardian."
+msgstr ""
+"You must be at least 13 years old to create an account and use StoneWalker. "
+"If you are under 18, you should have permission from a parent or guardian."
+
+#: accounts/templates/accounts/terms.html:27
+#: content/templates/main/claim_stone.html:98
+msgid "Content Guidelines"
+msgstr "Content Guidelines"
+
+#: accounts/templates/accounts/terms.html:29
+#: content/templates/main/claim_stone.html:99
+msgid ""
+"Stones and their descriptions must not contain offensive, hateful, violent, "
+"or inappropriate content. StoneWalker reserves the right to remove any "
+"content that violates these guidelines. Please keep the community friendly, "
+"welcoming, and suitable for all ages."
+msgstr ""
+"Stones and their descriptions must not contain offensive, hateful, violent, "
+"or inappropriate content. StoneWalker reserves the right to remove any "
+"content that violates these guidelines. Please keep the community friendly, "
+"welcoming, and suitable for all ages."
+
+#: accounts/templates/accounts/terms.html:32
+#: content/templates/main/claim_stone.html:100
+msgid "Stone Placement"
+msgstr "Stone Placement"
+
+#: accounts/templates/accounts/terms.html:34
+#: content/templates/main/claim_stone.html:101
+msgid ""
+"When hiding stones, please be respectful of public and private property. Do "
+"not place stones in dangerous, restricted, or environmentally sensitive "
+"areas. You are responsible for ensuring your stone placements are safe and "
+"legal."
+msgstr ""
+"When hiding stones, please be respectful of public and private property. Do "
+"not place stones in dangerous, restricted, or environmentally sensitive "
+"areas. You are responsible for ensuring your stone placements are safe and "
+"legal."
+
+#: accounts/templates/accounts/terms.html:37
+#: content/templates/main/claim_stone.html:102
+msgid "Privacy and Data"
+msgstr "Privacy and Data"
+
+#: accounts/templates/accounts/terms.html:39
+#: content/templates/main/claim_stone.html:103
+msgid ""
+"StoneWalker collects location data when you scan or hide stones. This data is"
+" used to track stone journeys and is displayed publicly on the map. Your "
+"email address is used for account management and optional notifications only."
+msgstr ""
+"StoneWalker collects location data when you scan or hide stones. This data is"
+" used to track stone journeys and is displayed publicly on the map. Your "
+"email address is used for account management and optional notifications only."
+
+#: accounts/templates/accounts/terms.html:42
+#: content/templates/main/claim_stone.html:104
+msgid "Account Termination"
+msgstr "Account Termination"
+
+#: accounts/templates/accounts/terms.html:44
+#: content/templates/main/claim_stone.html:105
+msgid ""
+"StoneWalker reserves the right to suspend or terminate accounts that violate "
+"these terms. You may delete your account at any time by contacting support."
+msgstr ""
+"StoneWalker reserves the right to suspend or terminate accounts that violate "
+"these terms. You may delete your account at any time by contacting support."
+
+#: accounts/templates/accounts/terms.html:56
+msgid "Accept and Continue"
+msgstr "Accept and Continue"
+
+#: accounts/templates/accounts/terms.html:61
+msgid "Back to StoneWalker"
+msgstr "Back to StoneWalker"
+
+#: accounts/utils.py:34
 msgid "Profile activation"
 msgstr "Profile activation"
 
-#: accounts/utils.py:37
+#: accounts/utils.py:49
 msgid "Change email"
 msgstr "Change email"
 
-#: accounts/utils.py:56
+#: accounts/utils.py:60
+#, python-format
+msgid "%(user)s claimed one of your codes"
+msgstr "%(user)s claimed one of your codes"
+
+#: accounts/utils.py:72
+msgid "Confirm your StoneWalker find"
+msgstr "Confirm your StoneWalker find"
+
+#: accounts/utils.py:92
 msgid "Your username"
 msgstr "Your username"
 
-#: accounts/views.py:143
+#: accounts/views.py:165
 msgid ""
 "You are signed up. To activate the account, follow the link sent to the mail."
 msgstr ""
+"You are signed up. To activate the account, follow the link sent to the mail."
 
-#: accounts/views.py:152 accounts/views.py:227 accounts/views.py:399
-#: accounts/views.py:507
+#: accounts/views.py:174 accounts/views.py:265 accounts/views.py:506
+#: accounts/views.py:637
 msgid "Failed to send activation email. Please try again or contact support."
-msgstr ""
+msgstr "Failed to send activation email. Please try again or contact support."
 
-#: accounts/views.py:160
+#: accounts/views.py:182
 msgid "You are successfully signed up!"
 msgstr "You are successfully signed up!"
 
-#: accounts/views.py:186
+#: accounts/views.py:217
 msgid "You have successfully activated your account!"
 msgstr "You have successfully activated your account!"
 
-#: accounts/views.py:223
+#: accounts/views.py:261
 msgid "A new activation code has been sent to your email address."
 msgstr "A new activation code has been sent to your email address."
 
-#: accounts/views.py:263
+#: accounts/views.py:301
 msgid "Your username has been successfully sent to your email."
 msgstr "Your username has been successfully sent to your email."
 
-#: accounts/views.py:275
+#: accounts/views.py:325
 msgid "Your password has been set. You may go ahead and log in now."
 msgstr "Your password has been set. You may go ahead and log in now."
 
+#: accounts/views.py:365
+msgid ""
+"Your email is confirmed and your find is now live on the map. Welcome to "
+"StoneWalker!"
+msgstr ""
+"Your email is confirmed and your find is now live on the map. Welcome to "
+"StoneWalker!"
+
 #: accounts/views.py:368
+msgid ""
+"Your email is confirmed and your password is set. Welcome to StoneWalker!"
+msgstr ""
+"Your email is confirmed and your password is set. Welcome to StoneWalker!"
+
+#: accounts/views.py:450
+msgid "Please confirm your current email address before changing it."
+msgstr "Please confirm your current email address before changing it."
+
+#: accounts/views.py:463
 msgid ""
 "You have reached the maximum number of email change attempts. Please try "
 "again later."
 msgstr ""
+"You have reached the maximum number of email change attempts. Please try "
+"again later."
 
-#: accounts/views.py:393
+#: accounts/views.py:497
 msgid "To complete the change of email address, click on the link sent to it."
 msgstr "To complete the change of email address, click on the link sent to it."
 
-#: accounts/views.py:405
+#: accounts/views.py:512
 msgid "Email successfully changed."
 msgstr "Email successfully changed."
 
-#: accounts/views.py:445
+#: accounts/views.py:568
 msgid "Your password was changed."
 msgstr "Your password was changed."
 
-#: accounts/views.py:447
+#: accounts/views.py:570
 msgid "Profile data has been successfully updated."
 msgstr "Profile data has been successfully updated."
 
-#: accounts/views.py:473
+#: accounts/views.py:592
+msgid "This email confirmation link is no longer valid."
+msgstr "This email confirmation link is no longer valid."
+
+#: accounts/views.py:604
 msgid "You have successfully changed your email!"
 msgstr "You have successfully changed your email!"
 
-#: accounts/views.py:485
+#: accounts/views.py:615
 msgid "No pending email confirmation to resend."
 msgstr "No pending email confirmation to resend."
 
-#: accounts/views.py:503
+#: accounts/views.py:633
 msgid "A new activation link has been sent to your email address."
 msgstr "A new activation link has been sent to your email address."
 
-#: accounts/views.py:526
+#: accounts/views.py:656
 msgid "Email change cancelled and reverted."
 msgstr "Email change cancelled and reverted."
 
-#: accounts/views.py:528
+#: accounts/views.py:658
 msgid "No pending email change to cancel."
 msgstr "No pending email change to cancel."
 
-#: app/conf/development/settings.py:155 app/conf/production/settings.py:140
+#: accounts/views.py:747
+msgid "Thank you for accepting the Terms of Use."
+msgstr "Thank you for accepting the Terms of Use."
+
+#: app/conf/development/settings.py:158 app/conf/production/settings.py:143
 msgid "English"
 msgstr "English"
 
-#: app/conf/development/settings.py:156 app/conf/production/settings.py:141
+#: app/conf/development/settings.py:159 app/conf/production/settings.py:144
 msgid "Russian"
 msgstr "Russian"
 
-#: app/conf/development/settings.py:157 app/conf/production/settings.py:142
+#: app/conf/development/settings.py:160 app/conf/production/settings.py:145
 msgid "Simplified Chinese"
 msgstr "Simplified Chinese"
 
-#: app/conf/development/settings.py:158 app/conf/production/settings.py:143
+#: app/conf/development/settings.py:161 app/conf/production/settings.py:146
 msgid "French"
 msgstr "French"
 
-#: app/conf/development/settings.py:159 app/conf/production/settings.py:144
+#: app/conf/development/settings.py:162 app/conf/production/settings.py:147
 msgid "Spanish"
 msgstr "Spanish"
 
-#: app/conf/development/settings.py:160 app/conf/production/settings.py:145
+#: app/conf/development/settings.py:163 app/conf/production/settings.py:148
 msgid "German"
 msgstr "German"
 
-#: app/conf/development/settings.py:161 app/conf/production/settings.py:146
+#: app/conf/development/settings.py:164 app/conf/production/settings.py:149
 msgid "Italian"
 msgstr "Italian"
 
 #: content/templates/layouts/default/nav_links.html:5
+#: content/templates/layouts/default/page.html:243
 msgid "About"
 msgstr "About"
 
@@ -699,40 +1112,50 @@ msgid "Change language"
 msgstr "Change language"
 
 #: content/templates/layouts/default/nav_links.html:13
-#: content/templates/layouts/default/page.html:186
-#: content/templates/main/checkout_success.html:99
-#: content/templates/main/stone_edit.html:151
+#: content/templates/layouts/default/page.html:196
+#: content/templates/main/checkout_success.html:106
 msgid "My Stones"
 msgstr "My Stones"
-
-#: content/templates/layouts/default/nav_links.html:14
-#: content/templates/layouts/default/page.html:187
-#: content/templates/layouts/default/page.html:216
-msgid "Edit Profile"
-msgstr "Edit Profile"
 
 #: content/templates/layouts/default/page.html:15
 msgid ""
 "Paint a stone, attach a QR code, hide it in the world, and watch it travel. "
 "StoneWalker tracks your painted stones on a global map."
 msgstr ""
+"Paint a stone, attach a QR code, hide it in the world, and watch it travel. "
+"StoneWalker tracks your painted stones on a global map."
 
 #: content/templates/layouts/default/page.html:20
 #: content/templates/layouts/default/page.html:28
 msgid ""
-"Paint a stone, attach a QR code, hide it in the world, and watch it travel "
-"on a global map."
+"Paint a stone, attach a QR code, hide it in the world, and watch it travel on"
+" a global map."
 msgstr ""
+"Paint a stone, attach a QR code, hide it in the world, and watch it travel on"
+" a global map."
 
-#: content/templates/layouts/default/page.html:192
-#, fuzzy
-#| msgid "Profile picture"
-msgid "Profile menu"
-msgstr "Your Awesome Picture"
+#: content/templates/layouts/default/page.html:206
+msgid "Toggle dark mode"
+msgstr "Toggle dark mode"
 
-#: content/templates/layouts/default/page.html:202
+#: content/templates/layouts/default/page.html:211
 msgid "Toggle navigation menu"
-msgstr ""
+msgstr "Toggle navigation menu"
+
+#: content/templates/layouts/default/page.html:242
+msgid "Legal"
+msgstr "Legal"
+
+#: content/templates/layouts/default/page.html:245
+#: content/templates/main/about.html:92 content/templates/main/impressum.html:5
+#: content/templates/main/impressum.html:10
+msgid "Impressum"
+msgstr "Impressum"
+
+#: content/templates/layouts/default/page.html:247
+#: content/templates/main/privacy.html:5 content/templates/main/privacy.html:10
+msgid "Privacy Policy"
+msgstr "Privacy Policy"
 
 #: content/templates/main/about.html:7
 msgid "About StoneWalker"
@@ -740,11 +1163,15 @@ msgstr "About StoneWalker"
 
 #: content/templates/main/about.html:14
 msgid ""
-"StoneWalker is a unique platform that combines the joy of geocaching with "
-"the beauty of collaborative art. Our mission is to create a global community "
-"of stone travelers who paint, hide, and track beautiful stones as they "
-"journey around the world."
+"StoneWalker is a unique platform that combines the joy of geocaching with the"
+" beauty of collaborative art. Our mission is to create a global community of "
+"stone travelers who paint, hide, and track beautiful stones as they journey "
+"around the world."
 msgstr ""
+"StoneWalker is a unique platform that combines the joy of geocaching with the"
+" beauty of collaborative art. Our mission is to create a global community of "
+"stone travelers who paint, hide, and track beautiful stones as they journey "
+"around the world."
 
 #: content/templates/main/about.html:20
 msgid "Did you know:"
@@ -756,6 +1183,9 @@ msgid ""
 "years old. This shows that humans have always been drawn to creating art in "
 "unexpected places."
 msgstr ""
+"One of the oldest known cave paintings, found in Indonesia, is over 45,000 "
+"years old. This shows that humans have always been drawn to creating art in "
+"unexpected places."
 
 #: content/templates/main/about.html:24
 msgid "Read more about this discovery →"
@@ -771,7 +1201,7 @@ msgstr "Pick up a brush and paint a stone."
 
 #: content/templates/main/about.html:39
 msgid "Click the \"Create a Stone\" button and follow the instructions."
-msgstr ""
+msgstr "Click the \"Create a Stone\" button and follow the instructions."
 
 #: content/templates/main/about.html:43
 msgid "Glue the custom QR code on the back of the stone."
@@ -790,10 +1220,8 @@ msgid "Use non-toxic, weather-resistant paint, like acrylic."
 msgstr "Use non-toxic, weather-resistant paint, like acrylic."
 
 #: content/templates/main/about.html:56 content/templates/main/about.html:58
-#, fuzzy
-#| msgid "Don\\\\\\\\"
 msgid "Don\\"
-msgstr "Don\\\\\\\\"
+msgstr "Don\\"
 
 #: content/templates/main/about.html:57
 msgid "Be kind and respectful to other community members!"
@@ -803,32 +1231,39 @@ msgstr "Be kind and respectful to other community members!"
 msgid ""
 "You never know where it might go, or who it might inspire along the way!"
 msgstr ""
+"You never know where it might go, or who it might inspire along the way!"
 
 #: content/templates/main/about.html:65
 msgid "Our Mission"
-msgstr ""
+msgstr "Our Mission"
 
 #: content/templates/main/about.html:66
 msgid ""
 "StoneWalker is open source and community-driven. We believe that creative "
 "expression should be free and accessible to everyone."
 msgstr ""
+"StoneWalker is open source and community-driven. We believe that creative "
+"expression should be free and accessible to everyone."
 
 #: content/templates/main/about.html:67
 msgid ""
-"No ads, no data selling, no paywalls on the core experience. Every stone "
-"page and every journey map is free to view, forever."
+"No ads, no data selling, no paywalls on the core experience. Every stone page"
+" and every journey map is free to view, forever."
 msgstr ""
+"No ads, no data selling, no paywalls on the core experience. Every stone page"
+" and every journey map is free to view, forever."
 
 #: content/templates/main/about.html:68
 msgid ""
 "We sustain the project through QR code packs and optional premium features, "
 "not through exploiting your attention."
 msgstr ""
+"We sustain the project through QR code packs and optional premium features, "
+"not through exploiting your attention."
 
 #: content/templates/main/about.html:73
 msgid "Join the Movement"
-msgstr ""
+msgstr "Join the Movement"
 
 #: content/templates/main/about.html:74
 msgid ""
@@ -836,197 +1271,274 @@ msgid ""
 "discovered. Whether you are an artist, a hiker, a teacher, or just someone "
 "who loves a good adventure, there is a place for you here."
 msgstr ""
+"Thousands of painted stones are waiting to be created, hidden, and "
+"discovered. Whether you are an artist, a hiker, a teacher, or just someone "
+"who loves a good adventure, there is a place for you here."
 
-#: content/templates/main/about.html:78
+#: content/templates/main/about.html:81 content/templates/main/about.html:83
 msgid "Get Your First QR Code"
-msgstr ""
+msgstr "Get Your First QR Code"
 
-#: content/templates/main/about.html:79
+#: content/templates/main/about.html:85
 msgid "Start Your Journey"
 msgstr "Start Your Journey"
+
+#: content/templates/main/about.html:87 content/templates/main/shop.html:191
+msgid "Support Us"
+msgstr "Support Us"
 
 #: content/templates/main/change_language.html:20
 msgid "Select your preferred language"
 msgstr "Select your preferred language"
 
 #: content/templates/main/checkout_success.html:15
-#, fuzzy
-#| msgid "You are a guest."
 msgid "You are all set!"
-msgstr "You are a guest."
+msgstr "You are all set!"
 
 #: content/templates/main/checkout_success.html:18
 msgid "Your QR codes are ready."
-msgstr ""
+msgstr "Your QR codes are ready."
 
 #: content/templates/main/checkout_success.html:19
 msgid "Download, print, and attach them to your painted stones."
-msgstr ""
+msgstr "Download, print, and attach them to your painted stones."
 
 #: content/templates/main/checkout_success.html:24
 msgid "Your Pack"
-msgstr ""
+msgstr "Your Pack"
 
 #: content/templates/main/checkout_success.html:28
 msgid "Pack Type"
-msgstr ""
+msgstr "Pack Type"
 
 #: content/templates/main/checkout_success.html:32
 msgid "Status"
-msgstr ""
+msgstr "Status"
 
 #: content/templates/main/checkout_success.html:36
 msgid "QR Codes"
-msgstr ""
+msgstr "QR Codes"
 
 #: content/templates/main/checkout_success.html:50
-#: content/templates/main/shop.html:232
+#: content/templates/main/my_stones.html:61
+#: content/templates/main/shop.html:237
 msgid "Download PDF"
-msgstr ""
+msgstr "Download PDF"
 
 #: content/templates/main/checkout_success.html:52
 msgid "Print this PDF and cut out each QR code for your stones."
-msgstr ""
+msgstr "Print this PDF and cut out each QR code for your stones."
 
-#: content/templates/main/checkout_success.html:56
+#: content/templates/main/checkout_success.html:57
+#: content/templates/main/shared_modals.html:174
+#: content/templates/main/shared_modals.html:261
+#: content/templates/main/shop.html:221
+msgid "Download QR Code"
+msgstr "Download QR Code"
+
+#: content/templates/main/checkout_success.html:59
+msgid ""
+"You can also find your new code in My Stones, where you can claim and name "
+"it."
+msgstr ""
+"You can also find your new code in My Stones, where you can claim and name "
+"it."
+
+#: content/templates/main/checkout_success.html:63
 msgid ""
 "Your payment is being processed. Please wait a moment and refresh this page."
 msgstr ""
+"Your payment is being processed. Please wait a moment and refresh this page."
 
-#: content/templates/main/checkout_success.html:57
+#: content/templates/main/checkout_success.html:64
 msgid "Refresh"
-msgstr ""
+msgstr "Refresh"
 
-#: content/templates/main/checkout_success.html:63
+#: content/templates/main/checkout_success.html:70
 msgid "What to do next"
-msgstr ""
-
-#: content/templates/main/checkout_success.html:68
-msgid "Print"
-msgstr ""
-
-#: content/templates/main/checkout_success.html:69
-msgid "Download and print your QR code(s) on regular paper."
-msgstr ""
+msgstr "What to do next"
 
 #: content/templates/main/checkout_success.html:75
-msgid "Paint & Attach"
-msgstr ""
+msgid "Print"
+msgstr "Print"
 
 #: content/templates/main/checkout_success.html:76
-msgid "Paint a stone, then attach the QR code with clear tape or varnish."
-msgstr ""
+msgid "Download and print your QR code(s) on regular paper."
+msgstr "Download and print your QR code(s) on regular paper."
 
 #: content/templates/main/checkout_success.html:82
-msgid "Hide"
-msgstr ""
+msgid "Paint & Attach"
+msgstr "Paint & Attach"
 
 #: content/templates/main/checkout_success.html:83
-msgid "Leave your stone somewhere fun for someone to discover."
-msgstr ""
+msgid "Paint a stone, then attach the QR code with clear tape or varnish."
+msgstr "Paint a stone, then attach the QR code with clear tape or varnish."
 
 #: content/templates/main/checkout_success.html:89
-msgid "Track"
-msgstr ""
+msgid "Hide"
+msgstr "Hide"
 
 #: content/templates/main/checkout_success.html:90
-msgid "When someone scans the QR code, the stone appears on the world map."
-msgstr ""
+msgid "Leave your stone somewhere fun for someone to discover."
+msgstr "Leave your stone somewhere fun for someone to discover."
+
+#: content/templates/main/checkout_success.html:96
+msgid "Track"
+msgstr "Track"
 
 #: content/templates/main/checkout_success.html:97
-msgid "Back to Shop"
-msgstr ""
+msgid "When someone scans the QR code, the stone appears on the world map."
+msgstr "When someone scans the QR code, the stone appears on the world map."
 
-#: content/templates/main/checkout_success.html:101
+#: content/templates/main/checkout_success.html:104
+msgid "Back to Shop"
+msgstr "Back to Shop"
+
+#: content/templates/main/checkout_success.html:108
 msgid "Home"
 msgstr "Home"
 
 #: content/templates/main/claim_stone.html:8
-#, fuzzy
-#| msgid "Start Your Journey"
 msgid "Name Your Stone"
-msgstr "Start Your Journey"
+msgstr "Name Your Stone"
 
-#: content/templates/main/claim_stone.html:21
-#: content/templates/main/shared_modals.html:259
-#: content/templates/main/shared_modals.html:262
-#: content/templates/main/stone_edit.html:98
+#: content/templates/main/claim_stone.html:17
+#: content/templates/main/shared_modals.html:229
+#: content/templates/main/shared_modals.html:232
+#: content/templates/main/stone_edit.html:97
+#: content/templates/main/stone_edit.html:99
 msgid "QR Code"
-msgstr ""
+msgstr "QR Code"
 
-#: content/templates/main/claim_stone.html:26
+#: content/templates/main/claim_stone.html:22
 msgid "Name It"
-msgstr ""
+msgstr "Name It"
 
-#: content/templates/main/claim_stone.html:31
-#: content/templates/main/shop.html:54
+#: content/templates/main/claim_stone.html:27
+#: content/templates/main/shop.html:52
 msgid "Paint & Hide"
-msgstr ""
+msgstr "Paint & Hide"
 
-#: content/templates/main/claim_stone.html:38
-#, fuzzy
-#| msgid "This username is already taken."
+#: content/templates/main/claim_stone.html:34
 msgid "This stone is ready to be yours!"
-msgstr "Someone beat you to that name! Pick another awesome one."
+msgstr "This stone is ready to be yours!"
 
-#: content/templates/main/claim_stone.html:39
+#: content/templates/main/claim_stone.html:35
 msgid ""
 "Give it a unique name. After claiming, you can paint your stone, attach the "
 "QR code, and hide it for someone to find. Every time it gets scanned, you "
 "will see its journey on the map."
 msgstr ""
+"Give it a unique name. After claiming, you can paint your stone, attach the "
+"QR code, and hide it for someone to find. Every time it gets scanned, you "
+"will see its journey on the map."
 
-#: content/templates/main/claim_stone.html:45
+#: content/templates/main/claim_stone.html:42
 #: content/templates/main/new_add_stone_modal.html:29
 #: content/templates/main/shared_modals.html:19
-#: content/templates/main/stone_edit.html:41
-#: content/templates/main/stone_scan.html:23
+#: content/templates/main/stone_edit.html:39
 msgid "Stone Name"
 msgstr "Stone Name"
 
-#: content/templates/main/claim_stone.html:51
+#: content/templates/main/claim_stone.html:48
 msgid "e.g., Rocky, Luna, Star..."
-msgstr ""
+msgstr "e.g., Rocky, Luna, Star..."
 
-#: content/templates/main/claim_stone.html:54
-msgid "No spaces allowed"
-msgstr ""
+#: content/templates/main/claim_stone.html:51
+msgid "Letters, numbers, - and _ only"
+msgstr "Letters, numbers, - and _ only"
 
-#: content/templates/main/claim_stone.html:56
+#: content/templates/main/claim_stone.html:53
 msgid "Max 10 characters, no spaces. This will be your stone\\"
-msgstr ""
+msgstr "Max 10 characters, no spaces. This will be your stone\\"
 
-#: content/templates/main/claim_stone.html:58
-#, fuzzy
-#| msgid "Photo (optional)"
+#: content/templates/main/claim_stone.html:55
 msgid "Description (optional)"
-msgstr "Photo (optional)"
+msgstr "Description (optional)"
 
-#: content/templates/main/claim_stone.html:64
-#, fuzzy
-#| msgid "Tell us about your stone adventure..."
+#: content/templates/main/claim_stone.html:61
 msgid "Tell the world about your stone..."
-msgstr "Tell us about your stone adventure..."
+msgstr "Tell the world about your stone..."
+
+#: content/templates/main/claim_stone.html:63
+msgid "Stone Photo (optional)"
+msgstr "Stone Photo (optional)"
 
 #: content/templates/main/claim_stone.html:66
-#, fuzzy
-#| msgid "Photo (optional)"
-msgid "Stone Photo (optional)"
-msgstr "Photo (optional)"
-
-#: content/templates/main/claim_stone.html:69
 msgid "You can add a photo now or later after painting your stone."
-msgstr ""
+msgstr "You can add a photo now or later after painting your stone."
 
-#: content/templates/main/claim_stone.html:71
-#, fuzzy
-#| msgid "My Stones"
+#: content/templates/main/claim_stone.html:75
 msgid "Claim My Stone"
-msgstr "My Stones"
+msgstr "Claim My Stone"
+
+#: content/templates/main/create_stone_confirm.html:5
+#: content/templates/main/create_stone_confirm.html:11
+#: content/templates/main/my_stones.html:118
+#: content/templates/main/my_stones.html:120
+#: content/templates/main/stonewalker_start.html:81
+msgid "Create New Stone"
+msgstr "Create New Stone"
+
+#: content/templates/main/create_stone_confirm.html:12
+msgid ""
+"Get your free QR code. Then name your stone, paint it, attach the code and "
+"hide it for someone to find."
+msgstr ""
+"Get your free QR code. Then name your stone, paint it, attach the code and "
+"hide it for someone to find."
+
+#: content/templates/main/create_stone_confirm.html:15
+msgid "Get my free QR code"
+msgstr "Get my free QR code"
+
+#: content/templates/main/create_stone_confirm.html:18
+msgid "Not now — go to My Stones"
+msgstr "Not now — go to My Stones"
 
 #: content/templates/main/forum.html:8
 msgid "The StoneWalker forum is coming soon. Stay tuned!"
 msgstr "The StoneWalker forum is coming soon. Stay tuned!"
+
+#: content/templates/main/impressum.html:19
+msgid "Responsible for the content of this website"
+msgstr "Responsible for the content of this website"
+
+#: content/templates/main/impressum.html:30
+msgid "UID"
+msgstr "UID"
+
+#: content/templates/main/impressum.html:39
+msgid "Contact"
+msgstr "Contact"
+
+#: content/templates/main/impressum.html:55
+msgid "Project"
+msgstr "Project"
+
+#: content/templates/main/impressum.html:59
+msgid "Source Code"
+msgstr "Source Code"
+
+#: content/templates/main/impressum.html:65
+msgid "AI Disclaimer"
+msgstr "AI Disclaimer"
+
+#: content/templates/main/impressum.html:75
+msgid "Disclaimer"
+msgstr "Disclaimer"
+
+#: content/templates/main/impressum.html:78
+msgid "Liability for content"
+msgstr "Liability for content"
+
+#: content/templates/main/impressum.html:82
+msgid "Liability for links"
+msgstr "Liability for links"
+
+#: content/templates/main/impressum.html:86
+msgid "Copyright"
+msgstr "Copyright"
 
 #: content/templates/main/index.html:7
 msgid "Welcome to StoneWalker"
@@ -1041,6 +1553,8 @@ msgid ""
 "Join our community of stone travelers and discover amazing stories from "
 "around the globe."
 msgstr ""
+"Join our community of stone travelers and discover amazing stories from "
+"around the globe."
 
 #: content/templates/main/index.html:11
 msgid "Start Exploring"
@@ -1050,64 +1564,100 @@ msgstr "Start Exploring"
 msgid "Learn More"
 msgstr "Learn More"
 
+#: content/templates/main/my_stones.html:9
+msgid "Confirm your email to unlock everything."
+msgstr "Confirm your email to unlock everything."
+
 #: content/templates/main/my_stones.html:10
+msgid ""
+"We sent you a confirmation link. Click it to set your password, put your find"
+" on the map, and get QR codes."
+msgstr ""
+"We sent you a confirmation link. Click it to set your password, put your find"
+" on the map, and get QR codes."
+
+#: content/templates/main/my_stones.html:16
+msgid "Your QR Packs"
+msgstr "Your QR Packs"
+
+#: content/templates/main/my_stones.html:25
+#: content/templates/main/shop.html:217
+msgid "QR codes"
+msgstr "QR codes"
+
+#: content/templates/main/my_stones.html:30
+msgid "Download QR code (no claim needed)"
+msgstr "Download QR code (no claim needed)"
+
+#: content/templates/main/my_stones.html:37
+msgid "Claim Stone"
+msgstr "Claim Stone"
+
+#: content/templates/main/my_stones.html:55
+#: content/templates/main/shop.html:231
+msgid "Download all QR codes as one printable PDF"
+msgstr "Download all QR codes as one printable PDF"
+
+#: content/templates/main/my_stones.html:72
 msgid "My CREATIONS"
 msgstr "My CREATIONS"
 
-#: content/templates/main/my_stones.html:12
-#: content/templates/main/my_stones.html:34
+#: content/templates/main/my_stones.html:74
+#: content/templates/main/my_stones.html:96
 msgid "Sort by:"
 msgstr "Sort by:"
 
-#: content/templates/main/my_stones.html:14
-#: content/templates/main/my_stones.html:36
+#: content/templates/main/my_stones.html:76
+#: content/templates/main/my_stones.html:98
 msgid "Distance traveled (min)"
 msgstr "Distance traveled (min)"
 
-#: content/templates/main/my_stones.html:15
-#: content/templates/main/my_stones.html:37
+#: content/templates/main/my_stones.html:77
+#: content/templates/main/my_stones.html:99
 msgid "Distance traveled (max)"
 msgstr "Distance traveled (max)"
 
-#: content/templates/main/my_stones.html:16
-#: content/templates/main/my_stones.html:38
+#: content/templates/main/my_stones.html:78
+#: content/templates/main/my_stones.html:100
 msgid "Number of moves (min)"
 msgstr "Number of moves (min)"
 
-#: content/templates/main/my_stones.html:17
-#: content/templates/main/my_stones.html:39
+#: content/templates/main/my_stones.html:79
+#: content/templates/main/my_stones.html:101
 msgid "Number of moves (max)"
 msgstr "Number of moves (max)"
 
-#: content/templates/main/my_stones.html:18
-#: content/templates/main/my_stones.html:40
+#: content/templates/main/my_stones.html:80
+#: content/templates/main/my_stones.html:102
 msgid "Youngest"
 msgstr "Youngest"
 
-#: content/templates/main/my_stones.html:19
-#: content/templates/main/my_stones.html:41
+#: content/templates/main/my_stones.html:81
+#: content/templates/main/my_stones.html:103
 msgid "Oldest"
 msgstr "Oldest"
 
-#: content/templates/main/my_stones.html:25
-#: content/templates/main/my_stones.html:47
+#: content/templates/main/my_stones.html:87
+#: content/templates/main/my_stones.html:109
 msgid "Previous page"
 msgstr "Previous page"
 
-#: content/templates/main/my_stones.html:27
-#: content/templates/main/my_stones.html:49
+#: content/templates/main/my_stones.html:89
+#: content/templates/main/my_stones.html:111
 msgid "Next page"
 msgstr "Next page"
 
-#: content/templates/main/my_stones.html:32
+#: content/templates/main/my_stones.html:94
 msgid "MY INTERACTIONS"
 msgstr "MY INTERACTIONS"
 
-#: content/templates/main/my_stones.html:54
-#, fuzzy
-#| msgid "Stone Name"
+#: content/templates/main/my_stones.html:120
+msgid "Confirm your email first"
+msgstr "Confirm your email first"
+
+#: content/templates/main/my_stones.html:125
 msgid "Stone details"
-msgstr "Stone Name"
+msgstr "Stone details"
 
 #: content/templates/main/new_add_stone_modal.html:5
 #: content/templates/main/new_add_stone_modal.html:12
@@ -1117,50 +1667,48 @@ msgstr "Add New Stone"
 
 #: content/templates/main/new_add_stone_modal.html:41
 #: content/templates/main/shared_modals.html:27
-#: content/templates/main/stone_edit.html:74
+#: content/templates/main/stone_edit.html:66
 msgid "Stone Type"
 msgstr "Stone Type"
 
 #: content/templates/main/new_add_stone_modal.html:46
 #: content/templates/main/shared_modals.html:31
-#, fuzzy
-#| msgid "Forbidden"
+#: content/templates/main/stone_edit.html:69
+#: content/templates/main/stonewalker_start.html:66
 msgid "Hidden"
-msgstr "Forbidden"
+msgstr "Hidden"
 
 #: content/templates/main/new_add_stone_modal.html:47
 #: content/templates/main/shared_modals.html:32
 msgid "No known location"
-msgstr ""
+msgstr "No known location"
 
 #: content/templates/main/new_add_stone_modal.html:52
 #: content/templates/main/shared_modals.html:36
+#: content/templates/main/stone_edit.html:70
+#: content/templates/main/stonewalker_start.html:68
 msgid "Hunted"
-msgstr ""
+msgstr "Hunted"
 
 #: content/templates/main/new_add_stone_modal.html:53
 #: content/templates/main/shared_modals.html:37
-#, fuzzy
-#| msgid "Profile activation"
 msgid "Placed at location"
-msgstr "Profile activation"
+msgstr "Placed at location"
 
 #: content/templates/main/new_add_stone_modal.html:65
 #: content/templates/main/shared_modals.html:50
-#, fuzzy
-#| msgid "Syndication"
 msgid "Stone Location"
-msgstr "Syndication"
+msgstr "Stone Location"
 
 #: content/templates/main/new_add_stone_modal.html:69
 #: content/templates/main/shared_modals.html:53
-#: content/templates/main/stone_scan.html:33
+#: content/templates/main/stone_seal_confirm.html:48
 msgid "Latitude"
 msgstr "Latitude"
 
 #: content/templates/main/new_add_stone_modal.html:71
 #: content/templates/main/shared_modals.html:54
-#: content/templates/main/stone_scan.html:36
+#: content/templates/main/stone_seal_confirm.html:49
 msgid "Longitude"
 msgstr "Longitude"
 
@@ -1171,25 +1719,25 @@ msgstr "Picture"
 
 #: content/templates/main/new_add_stone_modal.html:85
 #: content/templates/main/shared_modals.html:69
-#: content/templates/main/stone_edit.html:47
+#: content/templates/main/stone_edit.html:43
 msgid "Description"
 msgstr "Description"
 
 #: content/templates/main/new_add_stone_modal.html:114
 msgid "Your Stone QR Code"
-msgstr ""
+msgstr "Your Stone QR Code"
 
 #: content/templates/main/new_add_stone_modal.html:115
 msgid "Here is your stone QR code with readable URL"
-msgstr ""
+msgstr "Here is your stone QR code with readable URL"
 
 #: content/templates/main/new_add_stone_modal.html:132
 msgid "Download Stone Label"
-msgstr ""
+msgstr "Download Stone Label"
 
 #: content/templates/main/new_add_stone_modal.html:135
 msgid "Compact QR label (2-5cm) perfect for placing on stones!"
-msgstr ""
+msgstr "Compact QR label (2-5cm) perfect for placing on stones!"
 
 #: content/templates/main/new_add_stone_modal.html:142
 #: content/templates/main/shared_modals.html:181
@@ -1198,627 +1746,1027 @@ msgid "Back"
 msgstr "Back"
 
 #: content/templates/main/new_add_stone_modal.html:145
-#, fuzzy
-#| msgid "Create New Stone"
 msgid "Create Stone"
-msgstr "Create New Stone"
+msgstr "Create Stone"
+
+#: content/templates/main/premium.html:8
+msgid "Premium Supporter"
+msgstr "Premium Supporter"
+
+#: content/templates/main/premium.html:9
+msgid "Support StoneWalker and unlock exclusive features"
+msgstr "Support StoneWalker and unlock exclusive features"
+
+#: content/templates/main/premium.html:16
+msgid "As an early supporter, you have lifetime premium!"
+msgstr "As an early supporter, you have lifetime premium!"
+
+#: content/templates/main/premium.html:17
+msgid ""
+"Thank you for being one of the first members of StoneWalker. You have all "
+"premium features for free, forever."
+msgstr ""
+"Thank you for being one of the first members of StoneWalker. You have all "
+"premium features for free, forever."
+
+#: content/templates/main/premium.html:22
+msgid "You are a Premium Supporter!"
+msgstr "You are a Premium Supporter!"
+
+#: content/templates/main/premium.html:23
+msgid "Thank you for supporting StoneWalker."
+msgstr "Thank you for supporting StoneWalker."
+
+#: content/templates/main/premium.html:24
+#: content/templates/main/premium_manage.html:8
+msgid "Manage Subscription"
+msgstr "Manage Subscription"
+
+#: content/templates/main/premium.html:30
+msgid "What You Get"
+msgstr "What You Get"
+
+#: content/templates/main/premium.html:38
+msgid "Journey Analytics"
+msgstr "Journey Analytics"
+
+#: content/templates/main/premium.html:39
+msgid ""
+"See detailed stats on how far your stones have traveled, with maps and "
+"charts."
+msgstr ""
+"See detailed stats on how far your stones have traveled, with maps and "
+"charts."
+
+#: content/templates/main/premium.html:47
+msgid "Premium Badge"
+msgstr "Premium Badge"
+
+#: content/templates/main/premium.html:48
+msgid ""
+"A special badge on your profile and share pages showing your supporter "
+"status."
+msgstr ""
+"A special badge on your profile and share pages showing your supporter "
+"status."
+
+#: content/templates/main/premium.html:56
+msgid "Unlimited Drafts"
+msgstr "Unlimited Drafts"
+
+#: content/templates/main/premium.html:57
+msgid "Create as many draft stones as you want — no limits on your creativity."
+msgstr ""
+"Create as many draft stones as you want — no limits on your creativity."
+
+#: content/templates/main/premium.html:65
+msgid "Priority Support"
+msgstr "Priority Support"
+
+#: content/templates/main/premium.html:66
+msgid "Get faster responses and priority help from the StoneWalker team."
+msgstr "Get faster responses and priority help from the StoneWalker team."
+
+#: content/templates/main/premium.html:74
+msgid "Early Access"
+msgstr "Early Access"
+
+#: content/templates/main/premium.html:75
+msgid "Be the first to try new features before they go live for everyone."
+msgstr "Be the first to try new features before they go live for everyone."
+
+#: content/templates/main/premium.html:83
+msgid "Choose Your Plan"
+msgstr "Choose Your Plan"
+
+#: content/templates/main/premium.html:87
+msgid "Monthly"
+msgstr "Monthly"
+
+#: content/templates/main/premium.html:90
+msgid "month"
+msgstr "month"
+
+#: content/templates/main/premium.html:92
+msgid "Cancel anytime"
+msgstr "Cancel anytime"
+
+#: content/templates/main/premium.html:97
+msgid "Subscribe Monthly"
+msgstr "Subscribe Monthly"
+
+#: content/templates/main/premium.html:100
+#: content/templates/main/premium.html:122
+msgid "Log in to Subscribe"
+msgstr "Log in to Subscribe"
+
+#: content/templates/main/premium.html:107
+msgid "Best Value"
+msgstr "Best Value"
+
+#: content/templates/main/premium.html:108
+msgid "Yearly"
+msgstr "Yearly"
+
+#: content/templates/main/premium.html:111
+msgid "year"
+msgstr "year"
+
+#: content/templates/main/premium.html:113
+#, python-format
+msgid "Save 37%% vs monthly"
+msgstr "Save 37%% vs monthly"
+
+#: content/templates/main/premium.html:114
+msgid "Just $2.50/month"
+msgstr "Just $2.50/month"
+
+#: content/templates/main/premium.html:119
+msgid "Subscribe Yearly"
+msgstr "Subscribe Yearly"
+
+#: content/templates/main/premium.html:132
+msgid "Questions?"
+msgstr "Questions?"
+
+#: content/templates/main/premium.html:134
+msgid "Can I cancel anytime?"
+msgstr "Can I cancel anytime?"
+
+#: content/templates/main/premium.html:135
+msgid ""
+"Yes! You can cancel your subscription at any time. You will keep premium "
+"access until the end of your current billing period."
+msgstr ""
+"Yes! You can cancel your subscription at any time. You will keep premium "
+"access until the end of your current billing period."
+
+#: content/templates/main/premium.html:138
+msgid "What happens to my stones if I cancel?"
+msgstr "What happens to my stones if I cancel?"
+
+#: content/templates/main/premium.html:139
+msgid ""
+"Nothing changes. All your stones, journeys, and data remain safe. You just "
+"lose access to premium-only features like analytics."
+msgstr ""
+"Nothing changes. All your stones, journeys, and data remain safe. You just "
+"lose access to premium-only features like analytics."
+
+#: content/templates/main/premium.html:142
+msgid "Can I switch between monthly and yearly?"
+msgstr "Can I switch between monthly and yearly?"
+
+#: content/templates/main/premium.html:143
+msgid ""
+"Yes, you can change your plan at any time through the billing portal. Changes"
+" take effect at your next billing date."
+msgstr ""
+"Yes, you can change your plan at any time through the billing portal. Changes"
+" take effect at your next billing date."
+
+#: content/templates/main/premium_manage.html:16
+msgid "Active"
+msgstr "Active"
+
+#: content/templates/main/premium_manage.html:18
+msgid "Canceled"
+msgstr "Canceled"
+
+#: content/templates/main/premium_manage.html:20
+msgid "Past Due"
+msgstr "Past Due"
+
+#: content/templates/main/premium_manage.html:28
+msgid "Plan"
+msgstr "Plan"
+
+#: content/templates/main/premium_manage.html:35
+msgid "Access until"
+msgstr "Access until"
+
+#: content/templates/main/premium_manage.html:37
+msgid "Next billing date"
+msgstr "Next billing date"
+
+#: content/templates/main/premium_manage.html:45
+msgid ""
+"Your subscription has been canceled but you still have access until the end "
+"of the current period."
+msgstr ""
+"Your subscription has been canceled but you still have access until the end "
+"of the current period."
+
+#: content/templates/main/premium_manage.html:55
+msgid "Open Billing Portal"
+msgstr "Open Billing Portal"
+
+#: content/templates/main/premium_manage.html:59
+msgid "Update payment method, change plan, view invoices, or cancel"
+msgstr "Update payment method, change plan, view invoices, or cancel"
+
+#: content/templates/main/premium_manage.html:66
+msgid "You do not have an active subscription."
+msgstr "You do not have an active subscription."
+
+#: content/templates/main/premium_manage.html:67
+msgid "Become a Premium Supporter"
+msgstr "Become a Premium Supporter"
+
+#: content/templates/main/premium_manage.html:72
+msgid "Back to Home"
+msgstr "Back to Home"
 
 #: content/templates/main/shared_modals.html:63
 msgid "Reset"
-msgstr ""
+msgstr "Reset"
 
 #: content/templates/main/shared_modals.html:70
 msgid "Say something about your stone (max 500 chars)"
 msgstr "Say something about your stone (max 500 chars)"
 
 #: content/templates/main/shared_modals.html:87
-#, fuzzy
-#| msgid "Return to StoneWalker Home"
 msgid "StoneWalker Code"
-msgstr "Go Back to Stone Adventures"
+msgstr "StoneWalker Code"
 
 #: content/templates/main/shared_modals.html:88
 msgid "Choose how to get your stone code"
-msgstr ""
+msgstr "Choose how to get your stone code"
 
 #: content/templates/main/shared_modals.html:96
 msgid "I have a StoneWalker code already"
-msgstr ""
+msgstr "I have a StoneWalker code already"
 
 #: content/templates/main/shared_modals.html:97
 msgid "Scan or enter existing code"
-msgstr ""
+msgstr "Scan or enter existing code"
 
 #: content/templates/main/shared_modals.html:101
-#, fuzzy
-#| msgid "Return to StoneWalker Home"
 msgid "I need a new StoneWalker code"
-msgstr "Go Back to Stone Adventures"
+msgstr "I need a new StoneWalker code"
 
 #: content/templates/main/shared_modals.html:102
-#, fuzzy
-#| msgid "Create New Stone"
 msgid "Generate new code"
-msgstr "Create New Stone"
+msgstr "Generate new code"
 
 #: content/templates/main/shared_modals.html:110
-#, fuzzy
-#| msgid "Return to StoneWalker Home"
 msgid "Enter Your StoneWalker Code"
-msgstr "Go Back to Stone Adventures"
+msgstr "Enter Your StoneWalker Code"
 
 #: content/templates/main/shared_modals.html:111
 msgid "Scan QR code or enter UUID manually"
-msgstr ""
+msgstr "Scan QR code or enter UUID manually"
 
 #: content/templates/main/shared_modals.html:125
-#: content/templates/main/shared_modals.html:228
 msgid "Or enter UUID manually"
-msgstr ""
+msgstr "Or enter UUID manually"
 
 #: content/templates/main/shared_modals.html:132
-#: content/templates/main/shared_modals.html:235
-#, fuzzy
-#| msgid "Confirm this action:"
 msgid "Code Information"
-msgstr "Confirm this action:"
+msgstr "Code Information"
 
 #: content/templates/main/shared_modals.html:133
 #: content/templates/main/shared_modals.html:167
-#: content/templates/main/shared_modals.html:236
-#: content/templates/main/shared_modals.html:284
+#: content/templates/main/shared_modals.html:254
 msgid "UUID:"
-msgstr ""
+msgstr "UUID:"
 
 #: content/templates/main/shared_modals.html:134
-#: content/templates/main/shared_modals.html:237
+#: content/templates/main/stone_sealed.html:24
 msgid "Status:"
-msgstr ""
+msgstr "Status:"
 
 #: content/templates/main/shared_modals.html:141
 msgid "New StoneWalker Code Generated"
-msgstr ""
+msgstr "New StoneWalker Code Generated"
 
 #: content/templates/main/shared_modals.html:142
 msgid "Download and print this code for your stone"
-msgstr ""
+msgstr "Download and print this code for your stone"
 
 #: content/templates/main/shared_modals.html:165
-#: content/templates/main/shared_modals.html:282
+#: content/templates/main/shared_modals.html:252
 msgid "QR Code Information"
-msgstr ""
+msgstr "QR Code Information"
 
 #: content/templates/main/shared_modals.html:166
-#: content/templates/main/shared_modals.html:283
-#, fuzzy
-#| msgid "Stone Name"
+#: content/templates/main/shared_modals.html:253
 msgid "Stone Name:"
-msgstr "Stone Name"
+msgstr "Stone Name:"
 
 #: content/templates/main/shared_modals.html:168
-#: content/templates/main/shared_modals.html:285
+#: content/templates/main/shared_modals.html:255
 msgid "Scan URL:"
-msgstr ""
-
-#: content/templates/main/shared_modals.html:174
-#: content/templates/main/shared_modals.html:291
-#: content/templates/main/shop.html:216
-#: content/templates/main/stone_edit.html:103
-msgid "Download QR Code"
-msgstr ""
+msgstr "Scan URL:"
 
 #: content/templates/main/shared_modals.html:182
-#, fuzzy
-#| msgid "Scan Stone"
 msgid "Save Stone"
-msgstr "Scan Stone"
+msgstr "Save Stone"
 
 #: content/templates/main/shared_modals.html:192
 msgid "Save"
 msgstr "Save"
 
-#: content/templates/main/shared_modals.html:202
-#: content/templates/main/shared_modals.html:205
-msgid "Scan Stone"
-msgstr "Scan Stone"
+#: content/templates/main/shared_modals.html:204
+#: content/templates/main/shared_modals.html:207
+msgid "Found a stone?"
+msgstr "Found a stone?"
 
-#: content/templates/main/shared_modals.html:209
-#, fuzzy
-#| msgid "Stone Name"
-msgid "Stone Name or UUID"
-msgstr "Stone Name"
+#: content/templates/main/shared_modals.html:210
+msgid "Point your camera at the QR code on the stone."
+msgstr "Point your camera at the QR code on the stone."
 
-#: content/templates/main/shared_modals.html:216
-#, fuzzy
-#| msgid "Scan a Stone"
-msgid "Scan QR Code"
-msgstr "Scan a Stone"
+#: content/templates/main/shared_modals.html:214
+msgid "QR Code Scanner"
+msgstr "QR Code Scanner"
 
-#: content/templates/main/shared_modals.html:242
-#: content/templates/main/stone_found.html:18
-msgid "Stone Information"
+#: content/templates/main/shared_modals.html:215
+msgid "Allow camera access when your browser asks."
+msgstr "Allow camera access when your browser asks."
+
+#: content/templates/main/shared_modals.html:219
+msgid ""
+"Camera not working? Open your phone's camera app and point it at the QR code "
+"— it opens the same page."
 msgstr ""
+"Camera not working? Open your phone's camera app and point it at the QR code "
+"— it opens the same page."
 
-#: content/templates/main/shared_modals.html:243
-#: content/templates/main/stone_found.html:19
-msgid "Name:"
-msgstr ""
-
-#: content/templates/main/shared_modals.html:244
-#: content/templates/main/stone_found.html:20
-msgid "Type:"
-msgstr ""
-
-#: content/templates/main/shared_modals.html:245
-#: content/templates/main/stone_found.html:21
-#, fuzzy
-#| msgid "Description"
-msgid "Description:"
-msgstr "Description"
-
-#: content/templates/main/shared_modals.html:246
-#: content/templates/main/stone_found.html:22
-#, fuzzy
-#| msgid "Create"
-msgid "Created by:"
-msgstr "Create"
-
-#: content/templates/main/shared_modals.html:252
-#, fuzzy
-#| msgid "I found a stone"
-msgid "Found This Stone"
-msgstr "I found a stone"
-
-#: content/templates/main/shared_modals.html:299
+#: content/templates/main/shared_modals.html:269
 msgid "Welcome"
-msgstr ""
+msgstr "Welcome"
 
-#: content/templates/main/shared_modals.html:302
-#: content/templates/main/stone_found.html:28
+#: content/templates/main/shared_modals.html:272
+#: content/templates/main/stone_found.html:31
 msgid "Welcome to StoneWalker!"
 msgstr "Welcome to StoneWalker!"
 
-#: content/templates/main/shared_modals.html:304
+#: content/templates/main/shared_modals.html:274
 msgid "You are a guest."
 msgstr "You are a guest."
 
-#: content/templates/main/shared_modals.html:305
+#: content/templates/main/shared_modals.html:275
 msgid ""
 "Sign up to start creating, finding, and sharing stones around the world!"
 msgstr ""
+"Sign up to start creating, finding, and sharing stones around the world!"
 
-#: content/templates/main/shared_modals.html:308
-#, fuzzy
-#| msgid "Create an account"
+#: content/templates/main/shared_modals.html:278
 msgid "Create an Account"
-msgstr "Create an account"
+msgstr "Create an Account"
 
-#: content/templates/main/shared_modals.html:309
+#: content/templates/main/shared_modals.html:279
 msgid "Log In"
 msgstr "Log In"
 
+#: content/templates/main/shared_modals.html:736
+msgid "That is not a StoneWalker QR code. Try again."
+msgstr "That is not a StoneWalker QR code. Try again."
+
+#: content/templates/main/shared_modals.html:745
+msgid "Congratulations!"
+msgstr "Congratulations!"
+
+#: content/templates/main/shared_modals.html:746
+msgid "You found a StoneWalker stone!"
+msgstr "You found a StoneWalker stone!"
+
+#: content/templates/main/shared_modals.html:747
+msgid "Opening the stone page..."
+msgstr "Opening the stone page..."
+
 #: content/templates/main/shop.html:8
-#, fuzzy
-#| msgid "About StoneWalker"
 msgid "StoneWalker Shop"
-msgstr "About StoneWalker"
+msgstr "StoneWalker Shop"
 
 #: content/templates/main/shop.html:9
 msgid "Everything starts with a QR code"
-msgstr ""
+msgstr "Everything starts with a QR code"
 
-#: content/templates/main/shop.html:13
+#: content/templates/main/shop.html:10
+msgid ""
+"Non-premium accounts can hold up to 30 unclaimed (unpublished) QR codes at a "
+"time — premium supporters have no limit."
+msgstr ""
+"Non-premium accounts can hold up to 30 unclaimed (unpublished) QR codes at a "
+"time — premium supporters have no limit."
+
+#: content/templates/main/shop.html:12
+#, python-format
+msgid "You have %(free_allowance_remaining)s free code(s) left."
+msgstr "You have %(free_allowance_remaining)s free code(s) left."
+
+#: content/templates/main/shop.html:17
 msgid "Local dev sale, single QR codes are free today"
-msgstr ""
+msgstr "Local dev sale, single QR codes are free today"
 
-#: content/templates/main/shop.html:27
-#, fuzzy
-#| msgid "How it works:"
+#: content/templates/main/shop.html:25
 msgid "How It Works"
-msgstr "How it works:"
+msgstr "How It Works"
 
-#: content/templates/main/shop.html:37
+#: content/templates/main/shop.html:35
 msgid "Get a QR Code"
-msgstr ""
+msgstr "Get a QR Code"
 
-#: content/templates/main/shop.html:38
+#: content/templates/main/shop.html:36
 msgid ""
 "Grab a free QR code or a pack. Each code is unique and links to your stone."
 msgstr ""
+"Grab a free QR code or a pack. Each code is unique and links to your stone."
 
-#: content/templates/main/shop.html:55
+#: content/templates/main/shop.html:53
 msgid ""
 "Print the QR code, attach it to your painted stone, and hide it somewhere "
 "fun."
 msgstr ""
+"Print the QR code, attach it to your painted stone, and hide it somewhere "
+"fun."
 
-#: content/templates/main/shop.html:72
+#: content/templates/main/shop.html:70
 msgid "Watch It Travel"
-msgstr ""
+msgstr "Watch It Travel"
 
-#: content/templates/main/shop.html:73
+#: content/templates/main/shop.html:71
 msgid ""
 "When someone finds and scans your stone, you see its journey on the map."
 msgstr ""
+"When someone finds and scans your stone, you see its journey on the map."
 
-#: content/templates/main/shop.html:79
+#: content/templates/main/shop.html:77
 msgid "Choose Your Pack"
-msgstr ""
+msgstr "Choose Your Pack"
 
-#: content/templates/main/shop.html:84
+#: content/templates/main/shop.html:82
 msgid "Start Here"
-msgstr ""
+msgstr "Start Here"
 
-#: content/templates/main/shop.html:107
+#: content/templates/main/shop.html:105
 #, python-format
 msgid "%(size)s QR codes included"
-msgstr ""
+msgstr "%(size)s QR codes included"
+
+#: content/templates/main/shop.html:108
+msgid "No payment needed. Just click and your QR downloads instantly."
+msgstr "No payment needed. Just click and your QR downloads instantly."
 
 #: content/templates/main/shop.html:110
-msgid "No payment needed. Just click and your QR downloads instantly."
-msgstr ""
-
-#: content/templates/main/shop.html:112
 msgid "You will receive a printable PDF with all QR codes ready to cut out."
-msgstr ""
+msgstr "You will receive a printable PDF with all QR codes ready to cut out."
 
-#: content/templates/main/shop.html:122
+#: content/templates/main/shop.html:120
 #, python-format
 msgid "%(per_unit)s each"
-msgstr ""
+msgstr "%(per_unit)s each"
 
-#: content/templates/main/shop.html:128
+#: content/templates/main/shop.html:126
 msgid "Claimed"
-msgstr ""
+msgstr "Claimed"
 
-#: content/templates/main/shop.html:138
+#: content/templates/main/shop.html:136
 msgid "Get Free QR"
-msgstr ""
+msgstr "Get Free QR"
 
-#: content/templates/main/shop.html:138
+#: content/templates/main/shop.html:136
 msgid "Buy Now"
-msgstr ""
+msgstr "Buy Now"
 
-#: content/templates/main/shop.html:146
+#: content/templates/main/shop.html:144
 msgid "No products available at this time."
-msgstr ""
+msgstr "No products available at this time."
 
-#: content/templates/main/shop.html:153
+#: content/templates/main/shop.html:151
 msgid "What do I get when I buy a QR code?"
-msgstr ""
+msgstr "What do I get when I buy a QR code?"
 
-#: content/templates/main/shop.html:154
+#: content/templates/main/shop.html:152
 msgid ""
 "You get a unique, printable QR code image. Print it out, seal it with clear "
 "tape or varnish, and attach it to any painted stone. When someone finds and "
 "scans it, the stone appears on our world map and you get notified."
 msgstr ""
+"You get a unique, printable QR code image. Print it out, seal it with clear "
+"tape or varnish, and attach it to any painted stone. When someone finds and "
+"scans it, the stone appears on our world map and you get notified."
 
-#: content/templates/main/shop.html:157
+#: content/templates/main/shop.html:155
 msgid "What is the 3-Pack for?"
-msgstr ""
+msgstr "What is the 3-Pack for?"
 
-#: content/templates/main/shop.html:158
+#: content/templates/main/shop.html:156
 msgid ""
 "The Starter 3-Pack is great for painting with friends, creating a themed "
 "stone trail, or giving stones as gifts. Each QR code is unique and links to "
 "its own stone page."
 msgstr ""
+"The Starter 3-Pack is great for painting with friends, creating a themed "
+"stone trail, or giving stones as gifts. Each QR code is unique and links to "
+"its own stone page."
 
-#: content/templates/main/shop.html:161
+#: content/templates/main/shop.html:159
 msgid "What is the 10-Pack for?"
-msgstr ""
+msgstr "What is the 10-Pack for?"
 
-#: content/templates/main/shop.html:162
+#: content/templates/main/shop.html:160
 msgid ""
-"The 10-Pack is perfect for classrooms, scout groups, birthday parties, or "
-"any group activity. You receive a single PDF page with 10 QR codes ready to "
-"cut out and distribute."
+"The 10-Pack is perfect for classrooms, scout groups, birthday parties, or any"
+" group activity. You receive a single PDF page with 10 QR codes ready to cut "
+"out and distribute."
 msgstr ""
+"The 10-Pack is perfect for classrooms, scout groups, birthday parties, or any"
+" group activity. You receive a single PDF page with 10 QR codes ready to cut "
+"out and distribute."
 
-#: content/templates/main/shop.html:165
+#: content/templates/main/shop.html:163
 msgid "What is the Classroom 30-Pack for?"
-msgstr ""
+msgstr "What is the Classroom 30-Pack for?"
 
-#: content/templates/main/shop.html:166
+#: content/templates/main/shop.html:164
 msgid ""
 "The 30-Pack is designed for teachers, scout leaders, and event organizers. "
 "You get 30 QR codes on printable PDF sheets, ready to cut out and distribute "
 "to a whole class or group."
 msgstr ""
+"The 30-Pack is designed for teachers, scout leaders, and event organizers. "
+"You get 30 QR codes on printable PDF sheets, ready to cut out and distribute "
+"to a whole class or group."
 
-#: content/templates/main/shop.html:169
+#: content/templates/main/shop.html:167
 msgid "How do I attach the QR code to my stone?"
-msgstr ""
+msgstr "How do I attach the QR code to my stone?"
 
-#: content/templates/main/shop.html:170
+#: content/templates/main/shop.html:168
 msgid ""
-"Print the QR code, cut it out, and glue it to the back of your painted "
-"stone. For outdoor durability, seal it with clear packing tape, spray "
-"varnish, or a coat of Mod Podge. This protects it from rain and sun."
+"Print the QR code, cut it out, and glue it to the back of your painted stone."
+" For outdoor durability, seal it with clear packing tape, spray varnish, or a"
+" coat of Mod Podge. This protects it from rain and sun."
 msgstr ""
+"Print the QR code, cut it out, and glue it to the back of your painted stone."
+" For outdoor durability, seal it with clear packing tape, spray varnish, or a"
+" coat of Mod Podge. This protects it from rain and sun."
 
-#: content/templates/main/shop.html:173
+#: content/templates/main/shop.html:171
 msgid "What happens when someone scans my stone?"
-msgstr ""
+msgstr "What happens when someone scans my stone?"
 
-#: content/templates/main/shop.html:174
+#: content/templates/main/shop.html:172
 msgid "They see your stone\\"
-msgstr ""
+msgstr "They see your stone\\"
 
-#: content/templates/main/shop.html:177
+#: content/templates/main/shop.html:175
 msgid "Can I buy QR codes as a gift?"
-msgstr ""
+msgstr "Can I buy QR codes as a gift?"
 
-#: content/templates/main/shop.html:178
+#: content/templates/main/shop.html:176
 msgid ""
-"Yes! QR codes are not tied to your account until someone claims them. You "
-"can print them out and give them to anyone to use with their own painted "
-"stones."
+"Yes! QR codes are not tied to your account until someone claims them. You can"
+" print them out and give them to anyone to use with their own painted stones."
 msgstr ""
+"Yes! QR codes are not tied to your account until someone claims them. You can"
+" print them out and give them to anyone to use with their own painted stones."
 
-#: content/templates/main/shop.html:181
+#: content/templates/main/shop.html:179
 msgid "What if my stone gets lost?"
-msgstr ""
+msgstr "What if my stone gets lost?"
 
-#: content/templates/main/shop.html:182
+#: content/templates/main/shop.html:180
 msgid "That is part of the adventure! Your stone\\"
-msgstr ""
+msgstr "That is part of the adventure! Your stone\\"
 
-#: content/templates/main/shop.html:185
+#: content/templates/main/shop.html:183
 msgid "Can I re-download my QR codes later?"
-msgstr ""
+msgstr "Can I re-download my QR codes later?"
 
-#: content/templates/main/shop.html:186
+#: content/templates/main/shop.html:184
 msgid ""
-"Yes! All your purchases appear in the \"Your Purchases\" bar at the bottom "
-"of this page. You can re-download them anytime."
+"Yes! All your purchases appear in the \"Your Purchases\" bar at the bottom of"
+" this page. You can re-download them anytime."
 msgstr ""
+"Yes! All your purchases appear in the \"Your Purchases\" bar at the bottom of"
+" this page. You can re-download them anytime."
 
-#: content/templates/main/shop.html:201
-#, fuzzy
-#| msgid "Your username"
+#: content/templates/main/shop.html:190
+msgid "Love what we do? Help us keep StoneWalker running."
+msgstr "Love what we do? Help us keep StoneWalker running."
+
+#: content/templates/main/shop.html:206
 msgid "Your Purchases"
-msgstr "Your username"
+msgstr "Your Purchases"
 
-#: content/templates/main/shop.html:204
+#: content/templates/main/shop.html:209
 msgid "Click to download your QR codes"
-msgstr ""
-
-#: content/templates/main/shop.html:212
-msgid "QR codes"
-msgstr ""
-
-#: content/templates/main/shop.html:226
-msgid "Download all QR codes as one printable PDF"
-msgstr ""
+msgstr "Click to download your QR codes"
 
 #: content/templates/main/stone_edit.html:4
-#: content/templates/main/stone_edit.html:12
-#, fuzzy
-#| msgid "Edit Profile"
+#: content/templates/main/stone_edit.html:9
 msgid "Edit Stone"
-msgstr "Edit Profile"
+msgstr "Edit Stone"
+
+#: content/templates/main/stone_edit.html:19
+msgid ""
+"Last-minute changes: nobody has scanned your stone yet, so you can still "
+"update it. As soon as someone else scans it, it's locked for good."
+msgstr ""
+"Last-minute changes: nobody has scanned your stone yet, so you can still "
+"update it. As soon as someone else scans it, it's locked for good."
 
 #: content/templates/main/stone_edit.html:23
 msgid "This stone is in draft mode. You can edit it and publish when ready."
-msgstr ""
+msgstr "This stone is in draft mode. You can edit it and publish when ready."
 
-#: content/templates/main/stone_edit.html:28
+#: content/templates/main/stone_edit.html:27
 msgid ""
-"This stone is published and visible on the map. You can no longer edit it, "
-"but you can send it off to finalize it."
+"This stone is published and visible on the map. Scan the QR code to seal it "
+"and start its journey."
 msgstr ""
+"This stone is published and visible on the map. Scan the QR code to seal it "
+"and start its journey."
 
-#: content/templates/main/stone_edit.html:33
+#: content/templates/main/stone_edit.html:31
 msgid ""
-"This stone has been sent off and is finalized. No further changes can be "
-"made."
+"This stone is wandering! It has been sealed and is on its journey. No further"
+" changes can be made."
 msgstr ""
+"This stone is wandering! It has been sealed and is on its journey. No further"
+" changes can be made."
 
-#: content/templates/main/stone_edit.html:43
+#: content/templates/main/stone_edit.html:41
 msgid "Stone name cannot be changed after creation."
-msgstr ""
+msgstr "Stone name cannot be changed after creation."
+
+#: content/templates/main/stone_edit.html:47
+msgid "Describe your stone..."
+msgstr "Describe your stone..."
+
+#: content/templates/main/stone_edit.html:48
+msgid "Maximum 500 characters"
+msgstr "Maximum 500 characters"
 
 #: content/templates/main/stone_edit.html:50
-msgid "Describe your stone..."
-msgstr ""
-
-#: content/templates/main/stone_edit.html:51
-msgid "Maximum 500 characters"
-msgstr ""
-
-#: content/templates/main/stone_edit.html:55
-#, fuzzy
-#| msgid "Stone Name"
 msgid "Stone Image"
-msgstr "Stone Name"
+msgstr "Stone Image"
 
-#: content/templates/main/stone_edit.html:64
+#: content/templates/main/stone_edit.html:59
 msgid "Upload a new image to replace the current one"
-msgstr ""
+msgstr "Upload a new image to replace the current one"
 
-#: content/templates/main/stone_edit.html:68
-#, fuzzy
-#| msgid "Marker Color"
+#: content/templates/main/stone_edit.html:61
 msgid "Stone Color"
-msgstr "Marker Color"
+msgstr "Stone Color"
 
-#: content/templates/main/stone_edit.html:79
-msgid "Stone type cannot be changed after creation."
-msgstr ""
-
-#: content/templates/main/stone_edit.html:86
-#, fuzzy
-#| msgid "Save profile"
+#: content/templates/main/stone_edit.html:82
 msgid "Save Draft"
-msgstr "Save My Awesome Profile"
+msgstr "Save Draft"
 
-#: content/templates/main/stone_edit.html:89
+#: content/templates/main/stone_edit.html:83
 msgid "Publish Stone"
-msgstr ""
+msgstr "Publish Stone"
 
-#: content/templates/main/stone_edit.html:99
-msgid ""
-"Your stone has a persistent QR code that will always lead to the stone page."
-msgstr ""
+#: content/templates/main/stone_edit.html:87
+msgid "Save Changes"
+msgstr "Save Changes"
 
-#: content/templates/main/stone_edit.html:108
+#: content/templates/main/stone_edit.html:94
+#: content/templates/main/stone_sealed.html:29
+msgid "Downloads"
+msgstr "Downloads"
+
+#: content/templates/main/stone_edit.html:102
+#: content/templates/main/stone_edit.html:104
+msgid "Certificate"
+msgstr "Certificate"
+
+#: content/templates/main/stone_edit.html:109
 msgid "QR URL:"
-msgstr ""
+msgstr "QR URL:"
 
 #: content/templates/main/stone_edit.html:117
-msgid "Stone Certificate"
-msgstr ""
+msgid "Seal Your Stone"
+msgstr "Seal Your Stone"
 
 #: content/templates/main/stone_edit.html:118
-msgid "Download a printable certificate of creation for your stone."
-msgstr ""
-
-#: content/templates/main/stone_edit.html:122
-msgid "Download Certificate"
-msgstr ""
-
-#: content/templates/main/stone_edit.html:131
-#: content/templates/main/stone_edit.html:138
-#, fuzzy
-#| msgid "Scan a Stone"
-msgid "Send Off Stone"
-msgstr "Scan a Stone"
-
-#: content/templates/main/stone_edit.html:132
 msgid ""
-"Once you send off your stone, it becomes finalized and ready for its "
-"journey. This action cannot be undone."
+"Print your QR code, attach it to your stone, and scan it to seal the stone "
+"and start its journey!"
 msgstr ""
-
-#: content/templates/main/stone_edit.html:137
-msgid ""
-"Are you sure you want to send off this stone? This action cannot be undone."
-msgstr ""
-
-#: content/templates/main/stone_edit.html:148
-msgid "Back to Map"
-msgstr ""
+"Print your QR code, attach it to your stone, and scan it to seal the stone "
+"and start its journey!"
 
 #: content/templates/main/stone_found.html:8
 msgid "Stone Found!"
-msgstr ""
+msgstr "Stone Found!"
 
-#: content/templates/main/stone_found.html:29
-msgid "This is your first stone! Here\\"
-msgstr ""
+#: content/templates/main/stone_found.html:12
+#: content/templates/main/stone_sealed.html:22
+msgid "Stone Information"
+msgstr "Stone Information"
 
-#: content/templates/main/stone_found.html:31
-msgid "You found a stone that someone else placed"
-msgstr ""
+#: content/templates/main/stone_found.html:13
+#: content/templates/main/stone_seal_confirm.html:18
+#: content/templates/main/stone_sealed.html:23
+msgid "Name:"
+msgstr "Name:"
+
+#: content/templates/main/stone_found.html:14
+msgid "Type:"
+msgstr "Type:"
+
+#: content/templates/main/stone_found.html:15
+#: content/templates/main/stone_seal_confirm.html:19
+msgid "Description:"
+msgstr "Description:"
+
+#: content/templates/main/stone_found.html:16
+msgid "Created by:"
+msgstr "Created by:"
+
+#: content/templates/main/stone_found.html:22
+msgid "This is your stone!"
+msgstr "This is your stone!"
+
+#: content/templates/main/stone_found.html:23
+msgid "You own this stone. You can manage it from your stone edit page."
+msgstr "You own this stone. You can manage it from your stone edit page."
+
+#: content/templates/main/stone_found.html:24
+msgid "Manage Stone"
+msgstr "Manage Stone"
 
 #: content/templates/main/stone_found.html:32
-msgid "Now you need to tell us where you found it"
-msgstr ""
-
-#: content/templates/main/stone_found.html:33
-msgid "If it\\"
-msgstr ""
+msgid "This is your first stone! Here\\"
+msgstr "This is your first stone! Here\\"
 
 #: content/templates/main/stone_found.html:34
-#, fuzzy
-#| msgid "Track the journey of painted stones around the world"
+msgid "You found a stone that someone else placed"
+msgstr "You found a stone that someone else placed"
+
+#: content/templates/main/stone_found.html:35
+msgid "Now you need to tell us where you found it"
+msgstr "Now you need to tell us where you found it"
+
+#: content/templates/main/stone_found.html:36
+msgid "If it\\"
+msgstr "If it\\"
+
+#: content/templates/main/stone_found.html:37
 msgid "This creates a trail of stone movements around the world!"
-msgstr "Track the journey of painted stones around the world"
+msgstr "This creates a trail of stone movements around the world!"
 
-#: content/templates/main/stone_found.html:42
+#: content/templates/main/stone_found.html:45
 msgid "Hunted Stone Found!"
-msgstr ""
+msgstr "Hunted Stone Found!"
 
-#: content/templates/main/stone_found.html:43
-msgid ""
-"Congratulations! Many others were probably looking for this stone. You\\"
-msgstr ""
+#: content/templates/main/stone_found.html:46
+msgid "Congratulations! Many others were probably looking for this stone. You\\"
+msgstr "Congratulations! Many others were probably looking for this stone. You\\"
 
-#: content/templates/main/stone_found.html:44
+#: content/templates/main/stone_found.html:47
 msgid "Next week, you\\"
-msgstr ""
+msgstr "Next week, you\\"
 
-#: content/templates/main/stone_found.html:52
-#: content/templates/main/stone_scan.html:26
+#: content/templates/main/stone_found.html:57
+msgid "Your email"
+msgstr "Your email"
+
+#: content/templates/main/stone_found.html:59
+msgid "you@example.com"
+msgstr "you@example.com"
+
+#: content/templates/main/stone_found.html:60
+msgid ""
+"No password needed now — record your find, then confirm via email to put it "
+"on the map."
+msgstr ""
+"No password needed now — record your find, then confirm via email to put it "
+"on the map."
+
+#: content/templates/main/stone_found.html:63
+msgid ""
+"I accept the <a href=\"/terms/\" target=\"_blank\" class=\"text-accent "
+"underline\">Terms of Use</a>"
+msgstr ""
+"I accept the <a href=\"/terms/\" target=\"_blank\" class=\"text-accent "
+"underline\">Terms of Use</a>"
+
+#: content/templates/main/stone_found.html:68
 msgid "Comment (optional)"
 msgstr "Comment (optional)"
 
-#: content/templates/main/stone_found.html:53
-#: content/templates/main/stone_scan.html:27
+#: content/templates/main/stone_found.html:69
 msgid "Tell us about your stone adventure..."
 msgstr "Tell us about your stone adventure..."
 
-#: content/templates/main/stone_found.html:55
-#: content/templates/main/stone_scan.html:29
+#: content/templates/main/stone_found.html:71
 msgid "Photo (optional)"
 msgstr "Photo (optional)"
 
-#: content/templates/main/stone_found.html:59
+#: content/templates/main/stone_found.html:75
 msgid "Where did you find this stone?"
-msgstr ""
-
-#: content/templates/main/stone_found.html:70
-msgid "Where will you place this stone next week?"
-msgstr ""
-
-#: content/templates/main/stone_found.html:71
-msgid "Choose a new location where others can find it."
-msgstr ""
+msgstr "Where did you find this stone?"
 
 #: content/templates/main/stone_found.html:80
-#, fuzzy
-#| msgid "Submit Scan"
+msgid "Tap the map or drag the pin to set where you found it."
+msgstr "Tap the map or drag the pin to set where you found it."
+
+#: content/templates/main/stone_found.html:87
+msgid "Where will you place this stone next week?"
+msgstr "Where will you place this stone next week?"
+
+#: content/templates/main/stone_found.html:88
+msgid "Choose a new location where others can find it."
+msgstr "Choose a new location where others can find it."
+
+#: content/templates/main/stone_found.html:97
 msgid "Submit Find"
-msgstr "Submit Scan"
+msgstr "Submit Find"
 
-#: content/templates/main/stone_scan.html:8
-#: content/templates/main/stonewalker_start.html:75
-msgid "Scan a Stone"
-msgstr "Scan a Stone"
+#: content/templates/main/stone_found.html:141
+msgid ""
+"We could not get your location. Tap the map or drag the pin to set where you "
+"found the stone."
+msgstr ""
+"We could not get your location. Tap the map or drag the pin to set where you "
+"found the stone."
 
-#: content/templates/main/stone_scan.html:41
-msgid "Submit Scan"
-msgstr "Submit Scan"
+#: content/templates/main/stone_seal_confirm.html:4
+msgid "Seal your stone"
+msgstr "Seal your stone"
+
+#: content/templates/main/stone_seal_confirm.html:9
+msgid "Ready to send it off?"
+msgstr "Ready to send it off?"
+
+#: content/templates/main/stone_seal_confirm.html:25
+msgid ""
+"Sealing starts your stone's journey. As a hunted stone, its hiding spot goes "
+"on the map right away for everyone to search. You won't be able to edit its "
+"photo or description afterwards."
+msgstr ""
+"Sealing starts your stone's journey. As a hunted stone, its hiding spot goes "
+"on the map right away for everyone to search. You won't be able to edit its "
+"photo or description afterwards."
+
+#: content/templates/main/stone_seal_confirm.html:27
+msgid ""
+"Sealing starts your stone's journey. Its hiding spot stays secret — the stone"
+" appears on the map once someone finds it. You won't be able to edit its "
+"photo or description afterwards."
+msgstr ""
+"Sealing starts your stone's journey. Its hiding spot stays secret — the stone"
+" appears on the map once someone finds it. You won't be able to edit its "
+"photo or description afterwards."
+
+#: content/templates/main/stone_seal_confirm.html:34
+#: content/templates/main/stone_seal_confirm.html:38
+msgid "Add photo / edit first"
+msgstr "Add photo / edit first"
+
+#: content/templates/main/stone_seal_confirm.html:45
+msgid "Where are you hiding it?"
+msgstr "Where are you hiding it?"
+
+#: content/templates/main/stone_seal_confirm.html:45
+msgid "Where are you hiding it? (kept secret until someone finds it)"
+msgstr "Where are you hiding it? (kept secret until someone finds it)"
+
+#: content/templates/main/stone_seal_confirm.html:51
+msgid "Tap the map or drag the pin to set the hiding spot."
+msgstr "Tap the map or drag the pin to set the hiding spot."
+
+#: content/templates/main/stone_seal_confirm.html:57
+msgid "My stone has no picture — I really want to let it roam without one."
+msgstr "My stone has no picture — I really want to let it roam without one."
+
+#: content/templates/main/stone_seal_confirm.html:60
+msgid "Seal & start its journey"
+msgstr "Seal & start its journey"
+
+#: content/templates/main/stone_seal_confirm.html:64
+msgid "Not yet — back to My Stones"
+msgstr "Not yet — back to My Stones"
+
+#: content/templates/main/stone_seal_confirm.html:93
+msgid ""
+"We could not get your location. Tap the map or drag the pin to set the hiding"
+" spot."
+msgstr ""
+"We could not get your location. Tap the map or drag the pin to set the hiding"
+" spot."
+
+#: content/templates/main/stone_sealed.html:4
+#: content/templates/main/stone_sealed.html:9
+msgid "Stone Sealed!"
+msgstr "Stone Sealed!"
+
+#: content/templates/main/stone_sealed.html:12
+msgid ""
+"This stone has been sealed and is now wandering! Its journey has officially "
+"begun."
+msgstr ""
+"This stone has been sealed and is now wandering! Its journey has officially "
+"begun."
+
+#: content/templates/main/stone_sealed.html:17
+msgid ""
+"Note: This stone was in draft mode and has been automatically published and "
+"sealed."
+msgstr ""
+"Note: This stone was in draft mode and has been automatically published and "
+"sealed."
+
+#: content/templates/main/stone_sealed.html:24
+msgid "Wandering"
+msgstr "Wandering"
+
+#: content/templates/main/stone_sealed.html:31
+msgid "Download Certificate"
+msgstr "Download Certificate"
+
+#: content/templates/main/stone_sealed.html:37
+msgid "View Map"
+msgstr "View Map"
+
+#: content/templates/main/stone_share.html:27
+msgid "on StoneWalker"
+msgstr "on StoneWalker"
+
+#: content/templates/main/stone_share.html:34
+msgid "km traveled"
+msgstr "km traveled"
+
+#: content/templates/main/stone_share.html:38
+msgid "scans"
+msgstr "scans"
+
+#: content/templates/main/stone_share.html:49
+msgid "Journey Map"
+msgstr "Journey Map"
+
+#: content/templates/main/stone_share.html:60
+msgid "Stone creator"
+msgstr "Stone creator"
+
+#: content/templates/main/stone_share.html:87
+msgid "Share this journey"
+msgstr "Share this journey"
+
+#: content/templates/main/stone_share.html:96
+msgid "Explore more stones on StoneWalker"
+msgstr "Explore more stones on StoneWalker"
+
+#: content/templates/main/stonewalker_start.html:64
+msgid "All"
+msgstr "All"
+
+#: content/templates/main/stonewalker_start.html:66
+msgid ""
+"Only show stones where only the last found spot is known, not where it moved "
+"next"
+msgstr ""
+"Only show stones where only the last found spot is known, not where it moved "
+"next"
+
+#: content/templates/main/stonewalker_start.html:66
+#: content/templates/main/stonewalker_start.html:68
+msgid "Info"
+msgstr "Info"
 
 #: content/templates/main/stonewalker_start.html:68
-#, fuzzy
-#| msgid "One-to-one relationship"
-msgid "Stone actions"
-msgstr "One-to-one relationship"
+msgid ""
+"Only show stones with a known location that everyone tries to find first"
+msgstr ""
+"Only show stones with a known location that everyone tries to find first"
 
-#: content/templates/main/stonewalker_start.html:69
+#: content/templates/main/stonewalker_start.html:78
+msgid "Stone actions"
+msgstr "Stone actions"
+
+#: content/templates/main/stonewalker_start.html:79
 msgid "Add new stone"
 msgstr "Add new stone"
 
-#: content/templates/main/stonewalker_start.html:69
-#, fuzzy
-#| msgid "Create New Stone"
+#: content/templates/main/stonewalker_start.html:79
 msgid "Create a new stone"
-msgstr "Create New Stone"
+msgstr "Create a new stone"
 
-#: content/templates/main/stonewalker_start.html:71
-msgid "Create New Stone"
-msgstr "Create New Stone"
-
-#: content/templates/main/stonewalker_start.html:73
+#: content/templates/main/stonewalker_start.html:83
 msgid "I found a stone"
 msgstr "I found a stone"
 
-#: content/templates/main/stonewalker_start.html:73
-#, fuzzy
-#| msgid "Scan a Stone"
-msgid "Scan a stone QR code"
-msgstr "Scan a Stone"
+#: content/templates/main/stonewalker_start.html:83
+msgid "I found a stone — scan its QR code"
+msgstr "I found a stone — scan its QR code"
+
+#: content/templates/main/stonewalker_start.html:85
+msgid "Found a Stone"
+msgstr "Found a Stone"
 
 #: main/certificate_service.py:89
 msgid "Certificate of Creation"
-msgstr ""
+msgstr "Certificate of Creation"
 
 #: main/certificate_service.py:136
 msgid "This certifies that"
-msgstr ""
+msgstr "This certifies that"
 
 #: main/certificate_service.py:139
 msgid "Unknown"
@@ -1826,163 +2774,225 @@ msgstr "Unknown"
 
 #: main/certificate_service.py:146
 msgid "is the creator of"
-msgstr ""
+msgstr "is the creator of"
 
 #: main/certificate_service.py:180
 #, python-format
 msgid "Journey started on %(date)s"
-msgstr ""
+msgstr "Journey started on %(date)s"
 
 #: main/certificate_service.py:187
-#, fuzzy, python-format
-#| msgid "Field of type: %(field_type)s"
+#, python-format
 msgid "Type: %(type)s"
-msgstr "Field of type: %(field_type)s"
+msgstr "Type: %(type)s"
 
 #: main/certificate_service.py:259
-#, fuzzy
-#| msgid "Track the journey of painted stones around the world"
 msgid "Track your painted stone's journey around the world"
-msgstr "Track the journey of painted stones around the world"
+msgstr "Track your painted stone's journey around the world"
 
-#: main/shop_views.py:53 main/shop_views.py:71 main/shop_views.py:432
-#, fuzzy
-#| msgid "Activation code not found."
-msgid "Stone not found."
-msgstr "We can't find that magic code. Double-check it!"
+#: main/premium_views.py:29 main/premium_views.py:41
+msgid "This feature requires a Premium Supporter subscription."
+msgstr "This feature requires a Premium Supporter subscription."
 
-#: main/shop_views.py:57 main/shop_views.py:75
-#, fuzzy
-#| msgid "This account has already been activated."
-msgid "This stone has already been claimed."
-msgstr "Good news! Your account is already ready to go!"
+#: main/premium_views.py:96
+msgid "Invalid plan selected."
+msgstr "Invalid plan selected."
 
-#: main/shop_views.py:101
-#, fuzzy
-#| msgid "Please enter another email."
-msgid "Please enter a name for your stone."
-msgstr "Try a different email address!"
+#: main/premium_views.py:103
+msgid "You already have an active subscription. Manage it below."
+msgstr "You already have an active subscription. Manage it below."
 
-#: main/shop_views.py:103
-msgid "Stone name must be 10 characters or less."
+#: main/premium_views.py:110 main/shop_views.py:435
+msgid "Payment system is not configured. Please contact support."
+msgstr "Payment system is not configured. Please contact support."
+
+#: main/premium_views.py:125
+msgid "Payment system is not fully configured. Please contact support."
+msgstr "Payment system is not fully configured. Please contact support."
+
+#: main/premium_views.py:129
+msgid "Payment error. Please try again."
+msgstr "Payment error. Please try again."
+
+#: main/premium_views.py:163
+msgid "No active subscription found."
+msgstr "No active subscription found."
+
+#: main/premium_views.py:167
+msgid "Could not open billing portal. Please try again."
+msgstr "Could not open billing portal. Please try again."
+
+#: main/shop_views.py:31
+msgid ""
+"Please confirm your email to get a QR code — check your inbox for the "
+"confirmation link."
 msgstr ""
+"Please confirm your email to get a QR code — check your inbox for the "
+"confirmation link."
 
-#: main/shop_views.py:105
-#, fuzzy
-#| msgid "Username cannot contain whitespace."
-msgid "Stone name cannot contain spaces."
-msgstr "No spaces in your name, please! Make it one cool word."
+#: main/shop_views.py:53 main/shop_views.py:65
+msgid "You have used your free QR allowance. Visit the shop to get more codes."
+msgstr ""
+"You have used your free QR allowance. Visit the shop to get more codes."
 
-#: main/shop_views.py:107
-#, fuzzy
-#| msgid "This username is already taken."
+#: main/shop_views.py:83
+msgid "A new QR code has been created! Claim it to name your stone."
+msgstr "A new QR code has been created! Claim it to name your stone."
+
+#: main/shop_views.py:99 main/shop_views.py:151 main/shop_views.py:587
+msgid "Stone not found."
+msgstr "Stone not found."
+
+#: main/shop_views.py:109 main/shop_views.py:161
+msgid "Invalid claim link."
+msgstr "Invalid claim link."
+
+#: main/shop_views.py:113 main/shop_views.py:165 main/shop_views.py:237
+msgid "This stone has already been claimed."
+msgstr "This stone has already been claimed."
+
+#: main/shop_views.py:172
+msgid "You must accept the Terms of Use before creating a stone."
+msgstr "You must accept the Terms of Use before creating a stone."
+
+#: main/shop_views.py:213
 msgid "This stone name is already taken. Please choose another."
-msgstr "Someone beat you to that name! Pick another awesome one."
+msgstr "This stone name is already taken. Please choose another."
 
-#: main/shop_views.py:163
+#: main/shop_views.py:281
 #, python-format
 msgid ""
 "Congratulations! You claimed \"%(name)s\"! You can now edit and personalize "
 "your stone."
 msgstr ""
+"Congratulations! You claimed \"%(name)s\"! You can now edit and personalize "
+"your stone."
 
-#: main/shop_views.py:169
+#: main/shop_views.py:287
 msgid "An error occurred while claiming the stone. Please try again."
-msgstr ""
+msgstr "An error occurred while claiming the stone. Please try again."
 
-#: main/shop_views.py:211
+#: main/shop_views.py:333
 msgid "You have already claimed this product"
-msgstr ""
+msgstr "You have already claimed this product"
 
-#: main/shop_views.py:222
+#: main/shop_views.py:354
 msgid "Free"
-msgstr ""
+msgstr "Free"
 
-#: main/shop_views.py:259
+#: main/shop_views.py:395
 msgid "Product not found."
-msgstr ""
+msgstr "Product not found."
 
-#: main/shop_views.py:263
-#, fuzzy
-#| msgid "This account is not active."
+#: main/shop_views.py:399
 msgid "This product is not available."
-msgstr "Your account is sleeping! Check your email to wake-make it up."
+msgstr "This product is not available."
 
-#: main/shop_views.py:277
+#: main/shop_views.py:418
 msgid "You have already claimed this product."
-msgstr ""
+msgstr "You have already claimed this product."
 
-#: main/shop_views.py:290
-msgid "Payment system is not configured. Please contact support."
-msgstr ""
-
-#: main/shop_views.py:303
+#: main/shop_views.py:448
 msgid "Payment system error. Please try again."
-msgstr ""
+msgstr "Payment system error. Please try again."
 
-#: main/shop_views.py:335 main/shop_views.py:390
+#: main/shop_views.py:480 main/shop_views.py:536
 msgid ""
 "Your free QR code has been generated! Print it and attach it to your stone."
 msgstr ""
+"Your free QR code has been generated! Print it and attach it to your stone."
 
-#: main/shop_views.py:344
+#: main/shop_views.py:489
 msgid "Your QR codes are ready for download!"
-msgstr ""
+msgstr "Your QR codes are ready for download!"
 
-#: main/shop_views.py:347 main/shop_views.py:445
+#: main/shop_views.py:492 main/shop_views.py:608
 msgid "Failed to generate QR code."
-msgstr ""
+msgstr "Failed to generate QR code."
 
-#: main/shop_views.py:362
-msgid "You have already claimed your free QR code."
-msgstr ""
+#: main/shop_views.py:508
+msgid "You have used your free QR allowance. Visit the shop to get more."
+msgstr "You have used your free QR allowance. Visit the shop to get more."
 
-#: main/shop_views.py:393
+#: main/shop_views.py:539
 msgid "Failed to generate QR code. Please try again."
-msgstr ""
+msgstr "Failed to generate QR code. Please try again."
 
-#: main/shop_views.py:404
-#, fuzzy
-#| msgid "Activation code not found."
+#: main/shop_views.py:550
 msgid "Pack not found."
-msgstr "We can't find that magic code. Double-check it!"
+msgstr "Pack not found."
 
-#: main/shop_views.py:408
-msgid "PDF not yet generated."
-msgstr ""
-
-#: main/shop_views.py:420
+#: main/shop_views.py:576
 msgid "PDF file not found."
-msgstr ""
+msgstr "PDF file not found."
 
-#: main/shop_views.py:437
+#: main/shop_views.py:595
 msgid "You do not have access to this QR code."
-msgstr ""
+msgstr "You do not have access to this QR code."
 
-#: main/shop_views.py:457
+#: main/shop_views.py:600
+msgid ""
+"This stone is already wandering. QR code download is no longer available."
+msgstr ""
+"This stone is already wandering. QR code download is no longer available."
+
+#: main/shop_views.py:620
 msgid "Invalid checkout session."
-msgstr ""
+msgstr "Invalid checkout session."
 
-#: main/shop_views.py:463
-#, fuzzy
-#| msgid "Activation code not found."
+#: main/shop_views.py:626
 msgid "Order not found."
-msgstr "We can't find that magic code. Double-check it!"
+msgstr "Order not found."
 
-#: main/shop_views.py:471
+#: main/shop_views.py:639
 msgid "Payment processing. Please refresh in a moment."
-msgstr ""
+msgstr "Payment processing. Please refresh in a moment."
 
 #: main/validators.py:28
 msgid ""
 "Comments cannot contain contact information (emails, websites, or phone "
 "numbers)."
 msgstr ""
+"Comments cannot contain contact information (emails, websites, or phone "
+"numbers)."
 
-#: content/templates/main/stonewalker_start.html
-msgid "Filter:"
-msgstr "Filter:"
+#: main/validators.py:58
+msgid "Please enter a name for your stone."
+msgstr "Please enter a name for your stone."
 
-#: content/templates/main/stonewalker_start.html
-msgid "All"
-msgstr "All"
+#: main/validators.py:60
+msgid "Stone name cannot contain spaces."
+msgstr "Stone name cannot contain spaces."
+
+#: main/validators.py:62
+msgid "Stone name must be 10 characters or less."
+msgstr "Stone name must be 10 characters or less."
+
+#: main/validators.py:65
+msgid "Stone name can only contain letters, numbers, hyphens and underscores."
+msgstr "Stone name can only contain letters, numbers, hyphens and underscores."
+
+#: main/views.py:50
+msgid "Hiding spot"
+msgstr "Hiding spot"
+
+#, fuzzy
+#~ msgid "Profile menu"
+#~ msgstr "Your Awesome Picture"
+
+#~ msgid "Scan Stone"
+#~ msgstr "Scan Stone"
+
+#, fuzzy
+#~ msgid "Stone Name or UUID"
+#~ msgstr "Stone Name"
+
+#, fuzzy
+#~ msgid "Send Off Stone"
+#~ msgstr "Scan a Stone"
+
+#~ msgid "Submit Scan"
+#~ msgstr "Submit Scan"
+
+#~ msgid "Filter:"
+#~ msgstr "Filter:"
