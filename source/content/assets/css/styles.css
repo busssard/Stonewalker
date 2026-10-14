@@ -284,6 +284,13 @@
 
 }
 
+/* Inputs sharing a flex row (e.g. latitude/longitude) must be allowed to
+   shrink below their intrinsic width, or they overflow on phones. */
+.flex > .avant-input.flex-1 {
+  min-width: 0;
+  width: 100%;
+}
+
 .avant-input:focus, .avant-select:focus {
   border-color: var(--color-primary);
   box-shadow: 0 0 0 4px rgba(209, 90, 22, 0.15);
@@ -1337,7 +1344,8 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
 .map-filter-overlay {
   position: absolute;
   top: 0.7rem;
-  left: 0.7rem;
+  /* top-right on phones: top-left is Leaflet's zoom control */
+  right: 0.7rem;
   z-index: 1000;
   display: flex;
   align-items: center;
@@ -1371,6 +1379,7 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
     top: auto;
     bottom: 1rem;
     left: 1rem;
+    right: auto;
     gap: 0.5rem;
     padding: 0.4rem 0.8rem;
   }
@@ -6209,6 +6218,13 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
 }
 [data-theme="dark"] .site-footer {
   border-top-color: rgba(255, 255, 255, 0.10);
+}
+/* Phones: the single nowrap row is clipped at both ends (centered + overflow
+   hidden), worse in longer languages. Tighten and drop the copyright. */
+@media (max-width: 480px) {
+  .site-footer { gap: 0.35rem; padding: 0 0.4rem; font-size: 0.64rem; letter-spacing: 0; }
+  .site-footer-copy,
+  .site-footer-sep:nth-last-child(2) { display: none; }
 }
 
 /* ===== Marker cluster (themed; adapts to light/dark) ===== */
