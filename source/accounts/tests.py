@@ -183,6 +183,7 @@ class ProfileManagementTests(TestCase):
             'username': 'profileuser',
             'email': 'profile@example.com',
             'profile_picture': '',
+            'current_password': 'TestPassword123',
             'password1': 'NewPassword123',
             'password2': 'NewPassword123',
         }, follow=True)

@@ -135,8 +135,12 @@ class SignUpForm(UserCreationForm):
     def clean_email(self):
         email = self.cleaned_data['email']
 
-        user = User.objects.filter(email__iexact=email).exists()
-        if user:
+        from accounts.models import EmailAddressState
+
+        # Also reject an address pending confirmation on another account
+        # (EmailAddressState.email is unique, so creating it would crash).
+        if User.objects.filter(email__iexact=email).exists() or \
+                EmailAddressState.objects.filter(email__iexact=email).exists():
             raise ValidationError(_('You can not use this email address.'))
 
         return email
@@ -242,8 +246,11 @@ class RemindUsernameForm(EmailForm):
 
 class CombinedProfileForm(forms.Form):
     username = forms.CharField(label=_('Username'), max_length=150, required=True)
-    email = forms.EmailField(label=_('Email'), required=True)
+    # Not required: the input is readonly while an address awaits confirmation,
+    # and a missing value just means "keep the current email" (see clean_email).
+    email = forms.EmailField(label=_('Email'), required=False)
     profile_picture = forms.ImageField(label=_('Profile picture'), required=False)
+    current_password = forms.CharField(label=_('Current password'), strip=False, widget=forms.PasswordInput(attrs={'autocomplete': 'current-password'}), required=False)
     password1 = forms.CharField(label=_('New password'), widget=forms.PasswordInput(attrs={'autocomplete': 'new-password'}), required=False)
     password2 = forms.CharField(label=_('Confirm new password'), widget=forms.PasswordInput(attrs={'autocomplete': 'new-password'}), required=False)
     # Social media fields
@@ -298,9 +305,12 @@ class CombinedProfileForm(forms.Form):
 
     def clean_email(self):
         email = self.cleaned_data['email']
-        if email == self.user.email:
-            return email
+        if not email or email == self.user.email:
+            return self.user.email
         from accounts.models import EmailAddressState, EmailChangeAttempt
+        # Re-submitting the address already awaiting confirmation is not a new change
+        if EmailAddressState.objects.filter(user=self.user, email=email, is_confirmed=False).exists():
+            return email
         from django.utils import timezone
         from datetime import timedelta
         # Rate limit: max 3 attempts per 15 minutes
@@ -323,6 +333,16 @@ class CombinedProfileForm(forms.Form):
         password1 = cleaned_data.get('password1')
         password2 = cleaned_data.get('password2')
         if password1 or password2:
+            from accounts.models import is_current_email_verified
+            # Email-first finders get a soft session before proving they own the
+            # address; setting a password here would let them squat it.
+            if not is_current_email_verified(self.user):
+                raise ValidationError(_(
+                    'Please confirm your email address before setting a password: '
+                    'use the link we emailed you, or resend it below.'))
+            if self.user.has_usable_password() and \
+                    not self.user.check_password(cleaned_data.get('current_password') or ''):
+                self.add_error('current_password', _('Your current password is incorrect.'))
             if password1 != password2:
                 raise ValidationError(_('Passwords do not match.'))
             try:

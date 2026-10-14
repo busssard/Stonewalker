@@ -84,6 +84,13 @@ def generate_discourse_payload(user, nonce: str, secret: str, request=None) -> s
         'name': user.get_full_name() or user.username,
     }
 
+    # Don't vouch for an address the user hasn't verified: Discourse then sends
+    # its own activation email before the account can be used.
+    from .models import is_current_email_verified
+
+    if not is_current_email_verified(user):
+        user_data['require_activation'] = 'true'
+
     # Add avatar URL if user has a profile picture
     if hasattr(user, 'profile') and user.profile.profile_picture:
         if request:

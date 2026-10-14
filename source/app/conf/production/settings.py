@@ -54,6 +54,7 @@ TEMPLATES = [
             'context_processors': [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
+                'django.template.context_processors.i18n',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'app.context_processors.shop_visibility',
@@ -132,7 +133,7 @@ LOGIN_URL = 'accounts:log_in'
 USE_REMEMBER_ME = False
 
 RESTORE_PASSWORD_VIA_EMAIL_OR_USERNAME = True
-EMAIL_ACTIVATION_AFTER_CHANGING = True
+ENABLE_ACTIVATION_AFTER_EMAIL_CHANGE = True
 
 MESSAGE_STORAGE = 'django.contrib.messages.storage.cookie.CookieStorage'
 

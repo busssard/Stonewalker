@@ -69,6 +69,18 @@ def is_email_confirmed(user):
     return bool(state and state.is_confirmed)
 
 
+def is_current_email_verified(user):
+    """Whether user.email itself has been verified.
+
+    Differs from is_email_confirmed() during a pending email change: the state
+    row then holds the new (unconfirmed) address while user.email still holds
+    the old, confirmed one (kept in state.old_email)."""
+    if is_email_confirmed(user):
+        return True
+    old_email = user.email_state.old_email
+    return bool(old_email) and old_email.lower() == (user.email or '').lower()
+
+
 class Activation(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)

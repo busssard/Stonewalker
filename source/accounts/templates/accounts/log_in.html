@@ -22,6 +22,7 @@
     <ul class="pl-1-2" style="margin-top:1.2rem; color:#222; text-align:center;">
       <li><a href="{% url 'accounts:restore_password' %}" style="color:#3fa7ff; font-weight:500;">{% trans 'Forgot your password?' %}</a></li>
       <li><a href="{% url 'accounts:remind_username' %}" style="color:#3fa7ff; font-weight:500;">{% trans 'Forgot your username?' %}</a></li>
+      <li><a href="{% url 'accounts:resend_activation_code' %}" style="color:#3fa7ff; font-weight:500;">{% trans 'Did not get the activation email?' %}</a></li>
     </ul>
   </div>
 </div>
@@ -40,7 +41,9 @@
       }
     });
     document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape') {
+      // Escape inside a field usually dismisses autofill; don't leave the page then
+      var tag = document.activeElement && document.activeElement.tagName;
+      if (e.key === 'Escape' && tag !== 'INPUT' && tag !== 'TEXTAREA' && tag !== 'SELECT') {
         closeModal();
       }
     });

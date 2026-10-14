@@ -56,11 +56,20 @@
     </div>
     <div class="mb-2">
       <label for="id_email" class="font-serif fs-1-1 text-dark">{% trans 'Email' %}</label>
-      <input type="email" name="email" id="id_email" maxlength="254" required class="form-control fs-1-08 border-radius-7 border-1-5 p-0-7 border-gray" value="{{ form.email.value|default:user.email }}" {% if user.email_state and not user.email_state.is_confirmed %}disabled{% endif %} autocomplete="email">
+      <input type="email" name="email" id="id_email" maxlength="254" required class="form-control fs-1-08 border-radius-7 border-1-5 p-0-7 border-gray" value="{{ form.email.value|default:user.email }}" {% if user.email_state and not user.email_state.is_confirmed %}readonly{% endif %} autocomplete="email">
       {% for error in form.email.errors %}
         <div class="text-error fs-0-95">{{ error }}</div>
       {% endfor %}
     </div>
+    {% if user.has_usable_password %}
+    <div class="mb-2">
+      <label for="id_current_password" class="font-serif fs-1-1 text-dark">{% trans 'Current password' %}</label>
+      <input type="password" name="current_password" id="id_current_password" class="form-control fs-1-08 border-radius-7 border-1-5 p-0-7 border-gray" autocomplete="current-password" placeholder="{% trans 'Only needed to change your password' %}">
+      {% for error in form.current_password.errors %}
+        <div class="text-error fs-0-95">{{ error }}</div>
+      {% endfor %}
+    </div>
+    {% endif %}
     <div class="mb-2">
       <label for="id_password1" class="font-serif fs-1-1 text-dark">{% trans 'New password' %}</label>
       <input type="password" name="password1" id="id_password1" class="form-control fs-1-08 border-radius-7 border-1-5 p-0-7 border-gray" autocomplete="new-password" placeholder="{% trans 'Leave blank to keep current' %}">
@@ -120,7 +129,7 @@ function clearProfilePicture() {
  * Resize an image file to max dimensions using canvas.
  * Returns a Promise that resolves with a File object.
  */
-function resizeImage(file, maxDim) {
+function resizeProfileImage(file, maxDim) {
   return new Promise(function(resolve) {
     var img = new Image();
     img.onload = function() {
@@ -168,14 +177,14 @@ fileInput.addEventListener('change', function(e) {
 
   // Check file type
   if (!file.type.startsWith('image/')) {
-    showValidationMsg('{% trans "Please select an image file." %}', true);
+    showValidationMsg('{% filter escapejs %}{% trans "Please select an image file." %}{% endfilter %}', true);
     fileInput.value = '';
     return;
   }
 
   // Check file size
   if (file.size > MAX_FILE_SIZE) {
-    showValidationMsg('{% trans "Image is too large (max 5MB). Please choose a smaller image." %}', true);
+    showValidationMsg('{% filter escapejs %}{% trans "Image is too large (max 5MB). Please choose a smaller image." %}{% endfilter %}', true);
     fileInput.value = '';
     return;
   }
@@ -186,8 +195,8 @@ fileInput.addEventListener('change', function(e) {
     var w = img.naturalWidth;
     var h = img.naturalHeight;
     if (w > MAX_IMAGE_DIM || h > MAX_IMAGE_DIM) {
-      showValidationMsg('{% trans "Image resized to fit 800x800px." %}', false);
-      resizeImage(file, MAX_IMAGE_DIM).then(function(resizedFile) {
+      showValidationMsg('{% filter escapejs %}{% trans "Image resized to fit 800x800px." %}{% endfilter %}', false);
+      resizeProfileImage(file, MAX_IMAGE_DIM).then(function(resizedFile) {
         // Replace the file input with resized version via DataTransfer
         var dt = new DataTransfer();
         dt.items.add(resizedFile);
@@ -214,7 +223,7 @@ fileInput.addEventListener('change', function(e) {
     }
   };
   img.onerror = function() {
-    showValidationMsg('{% trans "Could not read the image. Please try a different file." %}', true);
+    showValidationMsg('{% filter escapejs %}{% trans "Could not read the image. Please try a different file." %}{% endfilter %}', true);
     fileInput.value = '';
   };
   img.src = URL.createObjectURL(file);
@@ -239,13 +248,13 @@ function checkUsernameAvailability() {
   const username = usernameInput.value.trim();
   if (!username) {
     checkmark.textContent = '';
-    checkResult.textContent = '{% trans "Username cannot be empty." %}';
+    checkResult.textContent = '{% filter escapejs %}{% trans "Username cannot be empty." %}{% endfilter %}';
     checkResult.className = 'js-result-text js-result-neutral';
     return;
   }
   if (username === currentUsername) {
     checkmark.textContent = '';
-    checkResult.textContent = '{% trans "You can change your username" %}';
+    checkResult.textContent = '{% filter escapejs %}{% trans "You can change your username" %}{% endfilter %}';
     checkResult.className = 'js-result-text js-result-neutral';
     return;
   }
@@ -255,27 +264,27 @@ function checkUsernameAvailability() {
       if (data.taken) {
         if (data.reason === 'whitespace') {
           checkmark.textContent = '';
-          checkResult.textContent = '{% trans "No spaces allowed." %}';
+          checkResult.textContent = '{% filter escapejs %}{% trans "No spaces allowed." %}{% endfilter %}';
           checkResult.className = 'js-result-text js-result-invalid';
         } else if (data.reason === 'taken') {
           checkmark.textContent = '';
           checkmark.className = 'js-checkmark js-checkmark-invalid';
-          checkResult.textContent = '{% trans "This username is already taken." %}';
+          checkResult.textContent = '{% filter escapejs %}{% trans "This username is already taken." %}{% endfilter %}';
           checkResult.className = 'js-result-text js-result-invalid';
         } else if (data.reason === 'empty') {
           checkmark.textContent = '';
-          checkResult.textContent = '{% trans "Username cannot be empty." %}';
+          checkResult.textContent = '{% filter escapejs %}{% trans "Username cannot be empty." %}{% endfilter %}';
           checkResult.className = 'js-result-text js-result-neutral';
         } else {
           checkmark.textContent = '';
-          checkResult.textContent = '{% trans "Not available." %}';
+          checkResult.textContent = '{% filter escapejs %}{% trans "Not available." %}{% endfilter %}';
           checkResult.className = 'js-result-text js-result-invalid';
         }
       } else {
         checkmark.textContent = '';
         checkmark.className = 'js-checkmark js-checkmark-valid';
         checkResult.className = 'js-result-text js-result-valid';
-        checkResult.textContent = '{% trans "This username is available!" %}';
+        checkResult.textContent = '{% filter escapejs %}{% trans "This username is available!" %}{% endfilter %}';
       }
     });
 }
