@@ -14,7 +14,7 @@ This guide covers the practical steps for adding or editing translations. For th
 |----------|------|------------|
 | English | `en` | `source/content/locale/en/` |
 | Russian | `ru` | `source/content/locale/ru/` |
-| Chinese (Simplified) | `zh-hans` | `source/content/locale/zh-hans/` |
+| Chinese (Simplified) | `zh-hans` | `source/content/locale/zh_Hans/` |
 | French | `fr` | `source/content/locale/fr/` |
 | Spanish | `es` | `source/content/locale/es/` |
 | German | `de` | `source/content/locale/de/` |

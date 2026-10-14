@@ -23,7 +23,7 @@ source/content/locale/
 ├── fr/LC_MESSAGES/django.po
 ├── it/LC_MESSAGES/django.po
 ├── ru/LC_MESSAGES/django.po
-└── zh-hans/LC_MESSAGES/django.po
+└── zh_Hans/LC_MESSAGES/django.po
 ```
 
 ### Key Files
@@ -268,3 +268,7 @@ python run_tests.py --collect-only
 # Run specific test file
 python run_tests.py accounts/tests.py
 ```
+
+## Gotcha: locale folder names
+
+Locale folders use Django's locale form, not the language code: Chinese (Simplified) is language code `zh-hans` but its folder must be `source/content/locale/zh_Hans/`. Django looks the folder up with `to_locale('zh-hans')` → `zh_Hans`; a `zh-hans/` folder is silently ignored (until September 2026 the Chinese site only showed Django's built-in strings for this reason). Run `makemessages -l zh_Hans` to update it.

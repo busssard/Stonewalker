@@ -34,7 +34,7 @@ StoneWalker supports 7 languages with comprehensive quality assurance testing. F
 source/content/locale/
   en/LC_MESSAGES/django.po    -- English
   ru/LC_MESSAGES/django.po    -- Russian
-  zh-hans/LC_MESSAGES/django.po -- Chinese (Simplified)
+  zh_Hans/LC_MESSAGES/django.po -- Chinese (Simplified)
   fr/LC_MESSAGES/django.po    -- French
   es/LC_MESSAGES/django.po    -- Spanish
   de/LC_MESSAGES/django.po    -- German

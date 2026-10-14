@@ -232,7 +232,9 @@ make clean       # Clean generated files
 9. **pytest.ini section header** - Must be `[pytest]` not `[tool:pytest]` (that's the setup.cfg format)
 10. **Pre-push hook runs full suite** - Budget ~3 minutes per push; stderr from `git push` appears after the hook output
 11. **Django template comments** - `{# ... #}` comments CANNOT span multiple lines. Multi-line comments will render as visible text on the page. Use `{% comment %}...{% endcomment %}` for multi-line comments instead.
-12. **header.js has two copies** - `source/content/assets/js/header.js` and `source/content/static/js/header.js` are separate copies (not symlinked). Changes must be applied to both files.
+12. **Edit `content/assets/`, never `content/static/`** - `content/static/` is `collectstatic` output (e.g. the old "two copies of header.js" note). Only `content/assets/js/header.js` is source.
+13. **Bug hunt (Sept 2026)** - task board, findings, sitemap, process flows and pipelines live in `docs/bug-hunt/`. Read `docs/bug-hunt/tasks.md` for open items before starting bug work.
+14. **Locale folders use Django's locale form** - Chinese is `locale/zh_Hans/` (language code `zh-hans`); a `zh-hans/` folder is silently ignored.
 
 ## File Structure Key Points
 
