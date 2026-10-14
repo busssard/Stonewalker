@@ -11,8 +11,9 @@
 {% if show_welcome_modal %}
 <script>
 // Guest welcome modal — shows once per hour using localStorage.
-// Conditionally rendered by Django template if-tag.
-(function() {
+// Conditionally rendered by Django template if-tag. Runs on DOMContentLoaded
+// because shared_modals.html defines window.showWelcomeModal there.
+document.addEventListener('DOMContentLoaded', function() {
   var lastVisitKey = 'stonewalker_guest_last_visit';
   var now = Date.now();
   var lastVisit = parseInt(localStorage.getItem(lastVisitKey) || '0', 10);
@@ -48,7 +49,7 @@
       };
     }
   }
-})();
+});
 </script>
 {% endif %}
 <!-- Responsive Map Frame Wrapper -->
@@ -79,6 +80,10 @@
     <img src="{% static 'hold_stone.png' %}" alt="" aria-hidden="true" />
     <span>{% trans 'Create New Stone' %}</span>
   </button>
+  <button id="scan-stone-fab" type="button" title="{% trans 'I found a stone' %}" aria-label="{% trans 'I found a stone — scan its QR code' %}" class="avant-btn floating-action-btn secondary">
+    <img src="{% static 'found_stone.png' %}" alt="" aria-hidden="true" />
+    <span>{% trans 'Found a Stone' %}</span>
+  </button>
 </div>
 
 
@@ -107,11 +112,21 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Navigate to shop flow (smart router: unclaimed QR -> claim, else -> shop)
     addStoneFab.addEventListener('click', function() {
-      window.location.href = '{% url "create_stone" %}';
+      document.getElementById('create-stone-form').submit();
+    });
+  }
+
+  // "Found a Stone": open the shared QR scanner (works without an account).
+  const scanStoneFab = document.getElementById('scan-stone-fab');
+  if (scanStoneFab) {
+    scanStoneFab.addEventListener('click', function() {
+      if (window.openSharedScanStoneModal) window.openSharedScanStoneModal();
     });
   }
 });
 </script>
+
+<form id="create-stone-form" method="post" action="{% url 'create_stone' %}" hidden>{% csrf_token %}</form>
 
 <!-- Shared modals are now included from shared_modals.html -->
   
@@ -224,6 +239,8 @@ document.addEventListener('DOMContentLoaded', function() {
       let color = stone.color || '#4CAF50';
       let shape = stone.shape || 'circle';
       const stoneType = stone.stone_type || 'hidden';
+      // Hidden stones: journey starts at the (now revealed) hiding spot.
+      if (stone.origin) latlngs.push([stone.origin.latitude, stone.origin.longitude]);
       (stone.moves || []).forEach(function(move) {
         latlngs.push([move.latitude, move.longitude]);
       });

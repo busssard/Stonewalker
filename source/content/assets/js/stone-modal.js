@@ -1,5 +1,15 @@
 // stone-modal.js
+
+// Escape user-supplied text before interpolating it into innerHTML.
+function esc(value) {
+  return String(value == null ? '' : value)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
 export function openStoneModal(pk, color, stonesData) {
+  // color is interpolated into inline styles; only accept a hex colour.
+  if (!/^#[0-9a-fA-F]{3,8}$/.test(color || '')) color = '#4CAF50';
   // Ensure modal HTML exists
   let modal = document.getElementById('stone-gallery-modal');
   let modalBody;
@@ -76,24 +86,24 @@ export function openStoneModal(pk, color, stonesData) {
     return new Date(b.timestamp) - new Date(a.timestamp);
   });
   let html = `<div style='text-align:center;margin-bottom:1.2rem;'>
-    <span style="font-family:var(--font-title);font-size:2.1rem;font-weight:700;letter-spacing:1px;color:${color};text-shadow:0 2px 8px rgba(0,0,0,0.07);">${stone.PK_stone}</span>
-    ${stone.stone_number ? `<div style="font-size:0.85rem;color:#aaa;font-family:monospace;margin-top:0.2rem;">#${stone.stone_number}</div>` : ''}
+    <span style="font-family:var(--font-title);font-size:2.1rem;font-weight:700;letter-spacing:1px;color:${color};text-shadow:0 2px 8px rgba(0,0,0,0.07);">${esc(stone.PK_stone)}</span>
+    ${stone.stone_number ? `<div style="font-size:0.85rem;color:#aaa;font-family:monospace;margin-top:0.2rem;">#${esc(stone.stone_number)}</div>` : ''}
   </div>`;
   if (images.length) {
     html += `<div style='display:flex;align-items:center;justify-content:center;gap:0.7rem;margin-bottom:0.3rem;padding:0;'>
       <button id='img-prev' style='background:none;border:none;font-size:2.2rem;color:${color};cursor:pointer;outline:none;'>&#8592;</button>
-      <img id='main-img' src='${images[0]}' style='max-width:420px;max-height:320px;border-radius:18px;box-shadow:0 6px 32px rgba(0,0,0,0.13);border:3px solid ${color};background:#fff;transition:box-shadow 0.2s;margin:0;'/>
+      <img id='main-img' src='${esc(images[0])}' style='max-width:420px;max-height:320px;border-radius:18px;box-shadow:0 6px 32px rgba(0,0,0,0.13);border:3px solid ${color};background:#fff;transition:box-shadow 0.2s;margin:0;'/>
       <button id='img-next' style='background:none;border:none;font-size:2.2rem;color:${color};cursor:pointer;outline:none;'>&#8594;</button>
     </div>`;
     if (images.length > 1) {
       html += `<div style='display:flex;gap:0.5rem;flex-wrap:nowrap;overflow-x:auto;margin-bottom:1.2rem;padding-bottom:0.3rem;justify-content:center;'>`;
       images.forEach((img, idx) => {
-        html += `<img src='${img}' class='thumb-img' data-idx='${idx}' style='width:60px;height:48px;object-fit:cover;border-radius:8px;border:2px solid ${color};background:#fff;box-shadow:0 2px 8px rgba(0,0,0,0.07);transition:transform 0.2s,border-color 0.2s;cursor:pointer;${idx===0?'border-color:'+color+';transform:scale(1.08);':''}'/>`;
+        html += `<img src='${esc(img)}' class='thumb-img' data-idx='${idx}' style='width:60px;height:48px;object-fit:cover;border-radius:8px;border:2px solid ${color};background:#fff;box-shadow:0 2px 8px rgba(0,0,0,0.07);transition:transform 0.2s,border-color 0.2s;cursor:pointer;${idx===0?'border-color:'+color+';transform:scale(1.08);':''}'/>`;
       });
       html += `</div>`;
     }
   }
-  html += `<div style="background:linear-gradient(90deg,${color}11 0%,#fff 100%);border-radius:12px;padding:1.1rem 1.3rem;margin-bottom:1.2rem;font-size:1.13rem;font-family:var(--font-serif);box-shadow:0 2px 8px rgba(0,0,0,0.04);color:#333;">${stone.description}</div>`;
+  html += `<div style="background:linear-gradient(90deg,${color}11 0%,#fff 100%);border-radius:12px;padding:1.1rem 1.3rem;margin-bottom:1.2rem;font-size:1.13rem;font-family:var(--font-serif);box-shadow:0 2px 8px rgba(0,0,0,0.04);color:#333;">${esc(stone.description)}</div>`;
   html += `<div style='display:flex;justify-content:center;align-items:center;margin-bottom:1.2rem;font-size:1.05em;color:#888;font-family:monospace;gap:0;'>
     <div style='flex:1;min-width:120px;max-width:160px;text-align:center;padding:0 0.5em;'>
       <span style='display:block;font-size:0.97em;color:#aaa;'>Created</span>
@@ -102,7 +112,7 @@ export function openStoneModal(pk, color, stonesData) {
     <div style='width:1px;height:2.2em;background:#eee;margin:0 0.5em;'></div>
     <div style='flex:1;min-width:80px;max-width:120px;text-align:center;padding:0 0.5em;'>
       <span style='display:block;font-size:0.97em;color:#aaa;'>By</span>
-      <span style='font-weight:600;color:${color};font-family:inherit;'>${stone.username}</span>
+      <span style='font-weight:600;color:${color};font-family:inherit;'>${esc(stone.username)}</span>
     </div>
     <div style='width:1px;height:2.2em;background:#eee;margin:0 0.5em;'></div>
     <div style='flex:1;min-width:80px;max-width:120px;text-align:center;padding:0 0.5em;'>
@@ -112,7 +122,7 @@ export function openStoneModal(pk, color, stonesData) {
     <div style='width:1px;height:2.2em;background:#eee;margin:0 0.5em;'></div>
     <div style='flex:1;min-width:80px;max-width:120px;text-align:center;padding:0 0.5em;'>
       <span style='display:block;font-size:0.97em;color:#aaa;'>Distance</span>
-      <span style='font-weight:600;color:#444;'>${stone.distance_km} km</span>
+      <span style='font-weight:600;color:#444;'>${esc(stone.distance_km)} km</span>
     </div>
   </div>`;
   if (sortedMoves.length) {
@@ -120,15 +130,15 @@ export function openStoneModal(pk, color, stonesData) {
     sortedMoves.forEach(m => {
       if (m.comment && m.comment.trim()) {
         html += `<li style='margin-bottom:0.7em;list-style:none;display:flex;align-items:flex-start;gap:0.7em;'>
-          <img src='${m.user_picture}' style='width:38px;height:38px;border-radius:50%;object-fit:cover;box-shadow:0 1px 4px rgba(0,0,0,0.04);margin-top:2px;border:2px solid #eee;'/>
+          <img src='${esc(m.user_picture)}' style='width:38px;height:38px;border-radius:50%;object-fit:cover;box-shadow:0 1px 4px rgba(0,0,0,0.04);margin-top:2px;border:2px solid #eee;'/>
           <div style='flex:1;min-width:0;'>
             <div style='display:flex;align-items:baseline;gap:0.7em;'>
-              <span style='font-weight:700;font-size:1.08em;color:${color};font-family:monospace;'>${m.username}</span>
-              <span style='font-family:"Playfair Display",serif;font-size:1.08em;word-break:break-word;'>${m.comment.split('\n')[0]}</span>
+              <span style='font-weight:700;font-size:1.08em;color:${color};font-family:monospace;'>${esc(m.username)}</span>
+              <span style='font-family:"Playfair Display",serif;font-size:1.08em;word-break:break-word;'>${esc(m.comment.split('\n')[0])}</span>
             </div>
             <div style='display:flex;align-items:flex-start;gap:0.7em;'>
-              <span style='font-size:0.93em;color:#888;min-width:70px;'>${m.timestamp_display}</span>
-              <span style='font-family:"Playfair Display",serif;font-size:1.08em;word-break:break-word;'>${m.comment.split('\n').slice(1).join('<br>')}</span>
+              <span style='font-size:0.93em;color:#888;min-width:70px;'>${esc(m.timestamp_display)}</span>
+              <span style='font-family:"Playfair Display",serif;font-size:1.08em;word-break:break-word;'>${m.comment.split('\n').slice(1).map(esc).join('<br>')}</span>
             </div>
           </div>
         </li>`;

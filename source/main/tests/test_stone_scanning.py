@@ -10,119 +10,55 @@ from ..models import Stone, StoneMove, StoneScanAttempt
 from .base import BaseStoneWalkerTestCase
 
 
-class StoneScanTests(BaseStoneWalkerTestCase):
-    """Test stone scanning functionality"""
-    
-    def test_stone_scan_view_loads(self):
-        """Test that stone scan view loads correctly"""
-        response = self.client.get('/stonescan/')
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'Scan a Stone')
-    
-    def test_stone_scan_with_uuid(self):
-        """Test scanning a stone using UUID"""
-        stone = self.create_stone()
-        
-        response = self.client.get(f'/stonescan/?stone={stone.uuid}')
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, stone.PK_stone)
-    
-    def test_stone_scan_with_pk_stone(self):
-        """Test scanning a stone using PK_stone"""
-        stone = self.create_stone()
-        
-        response = self.client.get(f'/stonescan/?stone={stone.PK_stone}')
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, stone.PK_stone)
-    
-    def test_stone_scan_submission(self):
-        """Test submitting a stone scan"""
-        stone = self.create_stone()
-        
-        response = self.client.post('/stonescan/', {
-            'PK_stone': stone.PK_stone,
-            'comment': 'Found this stone!',
-            'latitude': '40.7128',
-            'longitude': '-74.0060'
-        })
-        
-        # Should redirect to map with focus on stone
-        self.assertRedirects(response, f'/stonewalker/?focus={stone.PK_stone}')
-        
-        # Check that stone move was created
-        move = StoneMove.objects.filter(FK_stone=stone, FK_user=self.user).first()
-        self.assertIsNotNone(move)
-        self.assertEqual(move.comment, 'Found this stone!')
+class StoneLinkBlackoutTests(BaseStoneWalkerTestCase):
+    """One-week blackout: a finder can record one find per stone per week.
+    It is keyed on recorded finds, not on opening the QR link."""
 
+    def setUp(self):
+        super().setUp()
+        self.maker = self.create_user('blackoutmaker', 'pw', email='bm@example.com')
+        self.stone = self.create_stone('BLACKOUT', user=self.maker, status='wandering')
 
-class StoneScanBlackoutTests(BaseStoneWalkerTestCase):
-    """Test stone scan blackout period functionality"""
-    
-    def test_scan_attempt_recorded(self):
-        """Test that scan attempts are recorded"""
-        stone = self.create_stone()
-        
-        # Make a scan
-        response = self.client.post('/stonescan/', {
-            'PK_stone': stone.PK_stone,
-            'comment': 'Test scan',
+    def _find(self, comment='found'):
+        return self.client.post(f'/stone-link/{self.stone.stone_number}/', {
+            'stone_uuid': str(self.stone.uuid),
+            'comment': comment,
             'latitude': '40.7128',
-            'longitude': '-74.0060'
+            'longitude': '-74.0060',
         })
-        
-        # Check that scan attempt was recorded
-        attempt = StoneScanAttempt.objects.filter(FK_stone=stone, FK_user=self.user).first()
-        self.assertIsNotNone(attempt)
-    
-    def test_blackout_period_prevents_rescanning(self):
-        """Test that blackout period prevents rescanning"""
-        stone = self.create_stone()
-        
-        # Create a recent scan attempt
-        StoneScanAttempt.objects.create(
-            FK_stone=stone,
-            FK_user=self.user,
-            scan_time=timezone.now() - timedelta(days=3)  # 3 days ago
-        )
-        
-        # Try to scan again
-        response = self.client.post('/stonescan/', {
-            'PK_stone': stone.PK_stone,
-            'comment': 'Another scan',
-            'latitude': '40.7128',
-            'longitude': '-74.0060'
-        })
-        
-        # Should not create new move due to blackout
-        moves = StoneMove.objects.filter(FK_stone=stone, FK_user=self.user)
-        self.assertEqual(moves.count(), 0)
-    
-    def test_can_scan_after_blackout_period(self):
-        """Test that scanning works after blackout period expires"""
-        stone = self.create_stone()
-        
-        # Create an old scan attempt (over 1 week ago)
-        StoneScanAttempt.objects.create(
-            FK_stone=stone,
-            FK_user=self.user,
-            scan_time=timezone.now() - timedelta(days=8)
-        )
-        
-        # Should be able to scan now
-        response = self.client.post('/stonescan/', {
-            'PK_stone': stone.PK_stone,
-            'comment': 'Scan after blackout',
-            'latitude': '40.7128',
-            'longitude': '-74.0060'
-        })
-        
-        # The scan view might not be fully implemented, so we test that it at least loads
-        self.assertIn(response.status_code, [200, 302])  # Accept either response
-        
-        # Only test move creation if redirect occurred
-        if response.status_code == 302:
-            move = StoneMove.objects.filter(FK_stone=stone, FK_user=self.user).first()
-            self.assertIsNotNone(move)
+
+    def test_second_find_within_week_rejected(self):
+        self._find('first')
+        self._find('second')
+        self.assertEqual(StoneMove.objects.filter(FK_stone=self.stone, FK_user=self.user).count(), 1)
+
+    def test_find_after_week_allowed(self):
+        self._find('first')
+        StoneMove.objects.filter(FK_stone=self.stone).update(timestamp=timezone.now() - timedelta(days=8))
+        self._find('second')
+        self.assertEqual(StoneMove.objects.filter(FK_stone=self.stone, FK_user=self.user).count(), 2)
+
+    def test_reopening_link_before_submitting_keeps_form(self):
+        """Reloading the scan link (e.g. GPS failed) must still show the form."""
+        url = f'/stone-link/{self.stone.stone_number}/?key={self.stone.uuid}'
+        self.client.get(url)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'main/stone_found.html')
+
+    def test_find_on_non_wandering_stone_rejected(self):
+        """Holding the key must not let anyone seal a published stone or add
+        finds to drafts."""
+        for status in ('draft', 'published'):
+            self.stone.status = status
+            self.stone.save()
+            self._find(status)
+            self.stone.refresh_from_db()
+            self.assertEqual(self.stone.status, status)
+        self.assertFalse(StoneMove.objects.filter(FK_stone=self.stone).exists())
+
+    def test_legacy_stonescan_route_removed(self):
+        self.assertEqual(self.client.get('/stonescan/').status_code, 404)
 
 
 class StoneLinkTests(BaseStoneWalkerTestCase):
@@ -173,6 +109,28 @@ class StoneLinkTests(BaseStoneWalkerTestCase):
         move = StoneMove.objects.filter(FK_stone=stone, FK_user=self.user).first()
         self.assertIsNotNone(move)
         self.assertEqual(move.comment, 'Found via QR code!')
+
+    def test_scan_then_submit_find_records_move(self):
+        """Real QR flow: finder opens the scan link (GET), then submits the
+        find form (POST). The GET must not block the POST via the blackout."""
+        maker = self.create_user('flowmaker', 'pw', email='maker@example.com')
+        stone = self.create_stone(user=maker, status='wandering')
+
+        response = self.client.get(f'/stone-link/{stone.stone_number}/?key={stone.uuid}')
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.post(f'/stone-link/{stone.stone_number}/', {
+            'stone_uuid': str(stone.uuid),
+            'comment': 'Found it in the park',
+            'latitude': '47.3769',
+            'longitude': '8.5417',
+        })
+        self.assertRedirects(response, f'/stonewalker/?focus={stone.PK_stone}')
+        self.assertTrue(StoneMove.objects.filter(FK_stone=stone, FK_user=self.user, is_confirmed=True).exists())
+
+        # And the stone now shows up on the public map
+        response = self.client.get('/stonewalker/')
+        self.assertContains(response, stone.PK_stone)
 
     def test_public_page_without_key(self):
         """GET without ?key= shows public page for wandering stones"""
@@ -505,3 +463,209 @@ class DeferredFindTests(BaseStoneWalkerTestCase):
         self.assertFalse(User.objects.filter(pk=stale.pk).exists())
         self.assertTrue(User.objects.filter(pk=recent.pk).exists())
         self.assertTrue(User.objects.filter(pk=pending_signup.pk).exists())
+
+class AnonymousFindAccountSafetyTests(BaseStoneWalkerTestCase):
+    """Typing an email into the anonymous find form must never log the
+    visitor into an existing account."""
+
+    def _anon_find(self, stone, email):
+        return self.client.post(f'/stone-link/{stone.stone_number}/', {
+            'stone_uuid': str(stone.uuid), 'finder_email': email,
+            'accept_terms': 'on', 'comment': 'x', 'latitude': '1.0', 'longitude': '2.0',
+        })
+
+    def test_existing_provisional_account_not_logged_in(self):
+        from django.contrib.auth.models import User
+        from accounts.models import EmailAddressState
+        self.client.logout()
+        victim = User.objects.create(username='provisional', email='prov@example.com')
+        victim.set_unusable_password()
+        victim.save()
+        EmailAddressState.objects.create(user=victim, email='prov@example.com', is_confirmed=False)
+        stone = self.create_stone('ANONPROV', status='wandering')
+
+        self._anon_find(stone, 'prov@example.com')
+
+        self.assertIsNone(self.client.session.get('_auth_user_id'))
+        # The find is still recorded, held, under that account
+        move = StoneMove.objects.get(FK_stone=stone, FK_user=victim)
+        self.assertFalse(move.is_confirmed)
+
+    def test_account_with_pending_email_change_not_logged_in(self):
+        from django.contrib.auth.models import User
+        from accounts.models import EmailAddressState
+        self.client.logout()
+        victim = User.objects.create_user('realuser', 'real@example.com', 'pw')
+        # Pending email change marks the state unconfirmed
+        EmailAddressState.objects.create(user=victim, email='new@example.com', is_confirmed=False, old_email='real@example.com')
+        stone = self.create_stone('ANONREAL', status='wandering')
+
+        response = self._anon_find(stone, 'real@example.com')
+
+        self.assertIsNone(self.client.session.get('_auth_user_id'))
+        self.assertIn('log-in', response.url)
+        self.assertFalse(StoneMove.objects.filter(FK_stone=stone).exists())
+
+
+class MapDataEscapingTests(BaseStoneWalkerTestCase):
+    """User text inlined into <script> JSON must not be able to close the tag."""
+
+    def test_script_breakout_escaped_on_map_and_share_page(self):
+        payload = '</script><img src=x onerror=alert(1)>'
+        maker = self.create_user('xssmaker', 'pw', email='xss@example.com')
+        stone = self.create_stone('XSSSTONE', user=maker, status='wandering', description=payload)
+        self.create_stone_move(stone=stone, comment=payload)
+
+        for url in ('/stonewalker/', f'/stone-link/{stone.stone_number}/'):
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, 200)
+            self.assertNotContains(response, payload)
+
+
+class HeldFindNotificationTests(BaseStoneWalkerTestCase):
+    """Owners hear about a find only once it is confirmed."""
+
+    def test_owner_notified_on_confirm_not_on_hold(self):
+        from django.core import mail
+        from ..models import confirm_pending_finds
+        owner = self.create_user('notifyowner', 'pw', email='owner@example.com')
+        finder = self.create_user('notifyfinder', 'pw', email='finder@example.com')
+        stone = self.create_stone('NOTIFYME', user=owner, status='wandering')
+
+        mail.outbox = []
+        self.create_stone_move(stone=stone, user=finder, is_confirmed=False)
+        self.assertFalse([m for m in mail.outbox if 'owner@example.com' in m.to])
+
+        confirm_pending_finds(finder)
+        self.assertTrue([m for m in mail.outbox if 'owner@example.com' in m.to])
+
+
+class ProvisionalFinderHoldTests(BaseStoneWalkerTestCase):
+    """Every find by a still-unconfirmed email-first account stays held,
+    not just the first one."""
+
+    def test_second_find_with_soft_session_is_held(self):
+        from django.contrib.auth.models import User
+        self.client.logout()
+        first = self.create_stone('HOLDA', status='wandering')
+        second = self.create_stone('HOLDB', status='wandering')
+        for stone in (first, second):
+            self.client.post(f'/stone-link/{stone.stone_number}/', {
+                'stone_uuid': str(stone.uuid), 'finder_email': 'soft@example.com',
+                'accept_terms': 'on', 'comment': 'x', 'latitude': '1.0', 'longitude': '2.0',
+            })
+        finder = User.objects.get(email='soft@example.com')
+        self.assertEqual(StoneMove.objects.filter(FK_user=finder).count(), 2)
+        self.assertFalse(StoneMove.objects.filter(FK_user=finder, is_confirmed=True).exists())
+
+    def test_email_pending_on_other_account_does_not_500(self):
+        from django.contrib.auth.models import User
+        from accounts.models import EmailAddressState
+        self.client.logout()
+        other = User.objects.create_user('pendingowner', 'old@example.com', 'pw')
+        EmailAddressState.objects.create(user=other, email='pending@example.com', is_confirmed=False, old_email='old@example.com')
+        stone = self.create_stone('PENDCLASH', status='wandering')
+        response = self.client.post(f'/stone-link/{stone.stone_number}/', {
+            'stone_uuid': str(stone.uuid), 'finder_email': 'pending@example.com',
+            'accept_terms': 'on', 'comment': 'x', 'latitude': '1.0', 'longitude': '2.0',
+        })
+        self.assertEqual(response.status_code, 302)
+        self.assertFalse(User.objects.filter(email='pending@example.com').exists())
+
+
+class UnreleasedStonePrivacyTests(BaseStoneWalkerTestCase):
+    """Draft stones have no public page for non-owners."""
+
+    def test_draft_hidden_from_others_visible_to_owner(self):
+        other = self.create_user('draftowner', 'pw', email='do@example.com')
+        stone = self.create_stone('SECRETDR', user=other, status='draft')
+        self.assertEqual(self.client.get(f'/stone-link/{stone.stone_number}/').status_code, 302)
+        self.assertEqual(self.client.get(f'/stone/{stone.PK_stone}/share/').status_code, 404)
+
+        own = self.create_stone('MYDRAFT', status='draft')
+        self.assertEqual(self.client.get(f'/stone/{own.PK_stone}/share/').status_code, 200)
+
+
+class HidingSpotTests(BaseStoneWalkerTestCase):
+    """Option 1c: the hiding spot is captured at seal time, kept private for
+    hidden stones until the first confirmed find, public at once for hunted."""
+
+    HIDE = {'latitude': '46.9480', 'longitude': '7.4474'}  # Bern
+
+    def _seal(self, stone, **extra):
+        data = {'confirm_no_image': '1', **extra}
+        return self.client.post(f'/stone/{stone.PK_stone}/send-off/', data)
+
+    def test_hidden_stone_spot_private_until_found(self):
+        stone = self.create_stone('HIDESPOT', status='published')
+        self._seal(stone, **self.HIDE)
+        stone.refresh_from_db()
+        self.assertEqual(stone.status, 'wandering')
+        self.assertAlmostEqual(stone.hide_latitude, 46.948)
+
+        # Not on the map, and the coordinates don't leak anywhere public
+        self.client.logout()
+        for url in ('/stonewalker/', f'/stone-link/{stone.stone_number}/', f'/stone/{stone.PK_stone}/share/'):
+            self.assertNotContains(self.client.get(url), '46.948')
+
+        # First confirmed find reveals it as the journey start
+        finder = self.create_user('spotfinder', 'pw', email='sf@example.com')
+        self.create_stone_move(stone=stone, user=finder, latitude=47.3769, longitude=8.5417)
+        response = self.client.get('/stonewalker/')
+        self.assertContains(response, '46.948')
+        self.assertContains(response, 'HIDESPOT')
+
+    def test_distance_counts_from_hiding_spot(self):
+        from ..models import calculate_stone_distance
+        stone = self.create_stone('DISTSPOT', status='published')
+        self._seal(stone, **self.HIDE)
+        stone.refresh_from_db()
+        finder = self.create_user('distfinder', 'pw', email='df@example.com')
+        self.create_stone_move(stone=stone, user=finder, latitude=47.3769, longitude=8.5417)
+        # Bern -> Zurich is ~95 km
+        self.assertTrue(90 < calculate_stone_distance(stone) < 100)
+
+    def test_seal_without_location_still_allowed_for_hidden(self):
+        stone = self.create_stone('NOSPOT', status='published')
+        self._seal(stone)
+        stone.refresh_from_db()
+        self.assertEqual(stone.status, 'wandering')
+        self.assertIsNone(stone.hide_latitude)
+
+    def test_hunted_requires_location_and_goes_public(self):
+        stone = self.create_stone('HUNTSPOT', status='published', stone_type='hunted')
+        self._seal(stone)
+        stone.refresh_from_db()
+        self.assertNotEqual(stone.status, 'wandering')
+
+        self._seal(stone, **self.HIDE)
+        stone.refresh_from_db()
+        self.assertEqual(stone.status, 'wandering')
+        self.assertTrue(stone.moves.filter(FK_user=self.user, is_confirmed=True).exists())
+        self.client.logout()
+        self.assertContains(self.client.get('/stonewalker/'), 'HUNTSPOT')
+
+    def test_invalid_coordinates_ignored(self):
+        stone = self.create_stone('BADSPOT', status='published')
+        self._seal(stone, latitude='999', longitude='abc')
+        stone.refresh_from_db()
+        self.assertEqual(stone.status, 'wandering')
+        self.assertIsNone(stone.hide_latitude)
+
+
+class ReviewRegressionTests(BaseStoneWalkerTestCase):
+    """Regressions caught in the combined-diff review."""
+
+    def test_unclaimed_stone_hidden_from_anonymous(self):
+        stone = Stone.objects.create(PK_stone='UNCLAIMED-ANON', FK_user=None, status='unclaimed')
+        self.client.logout()
+        self.assertEqual(self.client.get(f'/stone-link/{stone.stone_number}/').status_code, 302)
+        self.assertEqual(self.client.get(f'/stone/{stone.PK_stone}/share/').status_code, 404)
+
+    def test_stone_type_locked_after_sealing(self):
+        stone = self.create_stone('TYPELOCK', status='wandering', stone_type='hidden')
+        self.client.post(f'/stone/{stone.PK_stone}/edit/', {
+            'action': 'save', 'description': 'x', 'stone_type': 'hunted', 'key': str(stone.uuid),
+        })
+        stone.refresh_from_db()
+        self.assertEqual(stone.stone_type, 'hidden')

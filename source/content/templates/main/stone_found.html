@@ -7,19 +7,13 @@
   <div class="avant-card max-w-600 m-2-5-auto">
     <div class="avant-header text-center mb-1-2">🎉 {% trans 'Stone Found!' %}</div>
     
-    {% if messages %}
-      {% for message in messages %}
-        <div class="text-center mb-1 {% if message.tags == 'error' %}text-error{% else %}text-success{% endif %}">{{ message }}</div>
-      {% endfor %}
-    {% endif %}
-    
     <!-- Stone Information -->
     <div class="bg-gray p-2 border-radius-8 mb-2">
       <h4 class="stone-found-heading">{% trans 'Stone Information' %}</h4>
       <p class="stone-found-info-line"><strong>{% trans 'Name:' %}</strong> {{ stone.PK_stone }}</p>
       <p class="stone-found-info-line"><strong>{% trans 'Type:' %}</strong> {{ stone.stone_type|title }}</p>
       <p class="stone-found-info-line"><strong>{% trans 'Description:' %}</strong> {{ stone.description|default:"No description" }}</p>
-      <p class="stone-found-info-line"><strong>{% trans 'Created by:' %}</strong> {{ stone.user|default:"Unknown" }}</p>
+      <p class="stone-found-info-line"><strong>{% trans 'Created by:' %}</strong> {{ stone.FK_user.username|default:"Unknown" }}</p>
     </div>
     
     <!-- Owner Info -->
@@ -144,7 +138,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }, function() {
       if (foundHint) {
         foundHint.classList.add('text-error');
-        foundHint.textContent = "{% trans 'We could not get your location. Tap the map or drag the pin to set where you found the stone.' %}";
+        foundHint.textContent = "{% filter escapejs %}{% trans 'We could not get your location. Tap the map or drag the pin to set where you found the stone.' %}{% endfilter %}";
       }
     });
   }
@@ -176,8 +170,11 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // Image upload validation
-if (typeof setupImageUpload === 'function') {
-  setupImageUpload({ inputId: 'id_image', msgId: 'image-validation-msg' });
-}
+// image-upload.js loads after this block, so wait for DOMContentLoaded
+document.addEventListener('DOMContentLoaded', function() {
+  if (typeof setupImageUpload === 'function') {
+    setupImageUpload({ inputId: 'id_image', msgId: 'image-validation-msg' });
+  }
+});
 </script>
 {% endblock %}

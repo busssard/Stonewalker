@@ -9,7 +9,7 @@ from main.views import IndexPageView, ChangeLanguageView, ImpressumView, Privacy
 from main.views import StoneWalkerStartPageView
 from main.views import MyStonesView
 from accounts.views import TermsView
-from main.views import add_stone, StoneScanView, check_stone_name
+from main.views import add_stone, check_stone_name
 from main.views import StoneQRCodeView, StoneLinkView, StoneLinkLegacyRedirectView, check_stone_uuid, StoneEditView, StoneSendOffView, StoneCertificateView, generate_qr_code_api, download_enhanced_qr_code, StoneShareView
 
 # Shop views
@@ -44,7 +44,6 @@ urlpatterns += i18n_patterns(
     path('stonewalker/', StoneWalkerStartPageView.as_view(), name='stonewalker_start'),
     path('my-stones/', MyStonesView.as_view(), name='my_stones'),
     path('add_stone/', add_stone, name='add_stone'),
-    path('stonescan/', StoneScanView.as_view(), name='stone_scan'),
     path('forum/', TemplateView.as_view(template_name='main/forum.html'), name='forum'),
 
     # Create New Stone → smart router (unclaimed QR → claim, else → shop)
@@ -82,10 +81,6 @@ urlpatterns += i18n_patterns(
     path('stone-link/<int:stone_number>/', StoneLinkView.as_view(), name='stone_link'),
     # Legacy redirect (old QR codes with UUID in path)
     path('stone-link/<uuid:stone_uuid>/', StoneLinkLegacyRedirectView.as_view(), name='stone_link_legacy'),
-    
-    # Debug and test pages
-    path('debug/modals/', TemplateView.as_view(template_name='main/debug_modals.html'), name='debug_modals'),
-    path('qr-test/', TemplateView.as_view(template_name='main/qr_test.html'), name='qr_test'),
 
     path('language/', ChangeLanguageView.as_view(), name='change_language'),
 
@@ -95,3 +90,10 @@ urlpatterns += i18n_patterns(
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+# Developer-only pages: never routed in production.
+if settings.DEBUG:
+    urlpatterns += i18n_patterns(
+        path('debug/modals/', TemplateView.as_view(template_name='main/debug_modals.html'), name='debug_modals'),
+        path('qr-test/', TemplateView.as_view(template_name='main/qr_test.html'), name='qr_test'),
+    )

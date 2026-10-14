@@ -21,7 +21,11 @@
 
     <div class="bg-orange p-2 border-radius-8 mb-2">
       <p class="stone-found-info-line">
-        {% trans "Sealing starts your stone's journey and makes it public on the map. You won't be able to edit its photo or description afterwards." %}
+        {% if stone.stone_type == 'hunted' %}
+        {% trans "Sealing starts your stone's journey. As a hunted stone, its hiding spot goes on the map right away for everyone to search. You won't be able to edit its photo or description afterwards." %}
+        {% else %}
+        {% trans "Sealing starts your stone's journey. Its hiding spot stays secret — the stone appears on the map once someone finds it. You won't be able to edit its photo or description afterwards." %}
+        {% endif %}
       </p>
     </div>
 
@@ -37,6 +41,16 @@
 
     <form method="post" action="{% url 'stone_send_off' stone.PK_stone %}">
       {% csrf_token %}
+      <label class="avant-label" for="id_hide_latitude">
+        {% if stone.stone_type == 'hunted' %}{% trans 'Where are you hiding it?' %}{% else %}{% trans 'Where are you hiding it? (kept secret until someone finds it)' %}{% endif %}
+      </label>
+      <div class="flex gap-1">
+        <input type="number" name="latitude" id="id_hide_latitude" step="any" placeholder="{% trans 'Latitude' %}" class="avant-input flex-1"{% if stone.stone_type == 'hunted' %} required{% endif %}>
+        <input type="number" name="longitude" id="id_hide_longitude" step="any" placeholder="{% trans 'Longitude' %}" class="avant-input flex-1"{% if stone.stone_type == 'hunted' %} required{% endif %}>
+      </div>
+      <p id="hide-location-hint" class="fs-0-9 text-muted mt-0-3 mb-0">{% trans 'Tap the map or drag the pin to set the hiding spot.' %}</p>
+      <div id="hide-location-map" class="w-full h-260 border-radius-12 mb-1 mt-0-5"></div>
+
       {% if not stone.image %}
       <label class="flex-row gap-0-5 mb-1" style="align-items: flex-start; cursor: pointer;">
         <input type="checkbox" name="confirm_no_image" value="1" required style="margin-top: 0.25rem;">
@@ -51,4 +65,35 @@
     </div>
   </div>
 </div>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" crossorigin=""/>
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" crossorigin=""></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Same picker as the find page: fields stay empty until a spot is chosen,
+  // so a denied geolocation prompt never submits a bogus default point.
+  var map = L.map('hide-location-map').setView([20, 0], 3);
+  L.tileLayer('https://tiles.stadiamaps.com/tiles/osm_bright/{z}/{x}/{y}.png{% if stadia_api_key %}?api_key={{ stadia_api_key }}{% endif %}', { maxZoom: 20, noWrap: true, attribution: '© Stadia Maps © OpenStreetMap' }).addTo(map);
+  var marker = L.marker([20, 0], {draggable: true}).addTo(map);
+  var hint = document.getElementById('hide-location-hint');
+  function setLatLng(lat, lng) {
+    marker.setLatLng([lat, lng]);
+    document.getElementById('id_hide_latitude').value = lat;
+    document.getElementById('id_hide_longitude').value = lng;
+    if (hint) hint.classList.remove('text-error');
+  }
+  marker.on('dragend', function() { var p = marker.getLatLng(); setLatLng(p.lat, p.lng); });
+  map.on('click', function(e) { setLatLng(e.latlng.lat, e.latlng.lng); });
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(function(pos) {
+      setLatLng(pos.coords.latitude, pos.coords.longitude);
+      map.setView([pos.coords.latitude, pos.coords.longitude], 15);
+    }, function() {
+      if (hint) {
+        hint.classList.add('text-error');
+        hint.textContent = "{% filter escapejs %}{% trans 'We could not get your location. Tap the map or drag the pin to set the hiding spot.' %}{% endfilter %}";
+      }
+    });
+  }
+});
+</script>
 {% endblock %}

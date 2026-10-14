@@ -21,8 +21,8 @@ class MainPageTests(BaseAnonymousTestCase):
         response = self.client.get('/stonewalker/')
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Create New Stone')
-        # The "Scan a Stone" button was removed — people scan via their camera.
-        self.assertNotContains(response, 'scan-stone-fab')
+        # "Found a Stone" opens the in-page QR scanner (works logged out).
+        self.assertContains(response, 'scan-stone-fab')
 
 
 class WelcomeModalTests(BaseAnonymousTestCase):
@@ -89,10 +89,12 @@ class StoneCreationModalTests(BaseStoneWalkerTestCase):
         self.assertContains(response, 'Hidden')
         self.assertContains(response, 'Hunted')
     
-    def test_create_stone_redirects_to_shop(self):
-        """Test that create-stone entry point redirects to shop flow"""
+    def test_create_stone_get_shows_confirm(self):
+        """GET /create-stone/ (e.g. after login) shows a one-button confirm page"""
         response = self.client.get('/create-stone/')
-        self.assertEqual(response.status_code, 302)
+        self.assertIn(response.status_code, (200, 302))  # 302 → shop when beyond allowance
+        if response.status_code == 200:
+            self.assertTemplateUsed(response, 'main/create_stone_confirm.html')
 
 
 class ScanModalTests(BaseStoneWalkerTestCase):
@@ -105,11 +107,19 @@ class ScanModalTests(BaseStoneWalkerTestCase):
         self.assertContains(response, 'scan-stone-modal')
         self.assertContains(response, 'QR Code Scanner')
     
-    def test_scan_modal_includes_manual_input(self):
-        """Test that scan modal includes manual UUID input"""
+    def test_scan_modal_has_camera_app_fallback(self):
+        """No manual UUID entry (labels don't show it); point to the phone camera app instead"""
         response = self.client.get('/stonewalker/')
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'enter UUID manually')
+        self.assertNotContains(response, 'scan-manual-uuid-input')
+        self.assertContains(response, 'camera app')
+
+    def test_scan_modal_open_not_gated_by_login(self):
+        """Finders don't need an account to open the scanner"""
+        self.client.logout()
+        response = self.client.get('/stonewalker/')
+        self.assertContains(response, 'scan-stone-fab')
+        self.assertNotContains(response, "window.location.href = '/accounts/log-in/'")
     
     def test_scan_modal_congratulations_functionality(self):
         """Test scan modal congratulations functionality"""
@@ -152,7 +162,7 @@ class ResponsiveDesignTests(BaseStoneWalkerTestCase):
         self.assertContains(response, 'floating-action-bar')
         self.assertContains(response, 'add-stone-fab')
         # The scan FAB was removed — scanning happens via the phone camera.
-        self.assertNotContains(response, 'scan-stone-fab')
+        self.assertContains(response, 'scan-stone-fab')
     
     def test_map_container_present(self):
         """Test that map container is present"""

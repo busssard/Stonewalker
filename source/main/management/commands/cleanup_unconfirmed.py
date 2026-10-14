@@ -39,15 +39,15 @@ class Command(BaseCommand):
             self.stdout.write('No stale unconfirmed accounts to remove.')
             return
 
+        if options['dry_run']:
+            self.stdout.write(f'[dry-run] Would delete {len(stale)} stale unconfirmed account(s).')
+            return
+
         # Remove uploaded images for held finds before the rows cascade away.
         for user in stale:
             for move in StoneMove.objects.filter(FK_user=user):
                 if move.image:
                     move.image.delete(save=False)
-
-        if options['dry_run']:
-            self.stdout.write(f'[dry-run] Would delete {len(stale)} stale unconfirmed account(s).')
-            return
 
         ids = [u.id for u in stale]
         deleted, _ = User.objects.filter(id__in=ids).delete()

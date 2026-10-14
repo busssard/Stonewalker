@@ -2,7 +2,7 @@ from django.views.generic import TemplateView, DetailView
 from .models import Stone, StoneMove, calculate_stone_distance, StoneScanAttempt, QRPack
 import json
 from django.shortcuts import redirect, render, get_object_or_404
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 from django.contrib.auth.models import User
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
@@ -11,17 +11,71 @@ from django.contrib import messages
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.http import JsonResponse
+from django.db import transaction
 from django.db.models import Prefetch
 import re
 from math import radians, sin, cos, sqrt, atan2
 import logging
 logger = logging.getLogger(__name__)
+
+
+# json.dumps output is inlined into <script> blocks with |safe; escape the
+# characters that could close the tag or start markup (same as json_script).
+_JSON_SCRIPT_ESCAPES = {ord('<'): '\\u003C', ord('>'): '\\u003E', ord('&'): '\\u0026'}
+
+
+def _script_safe_json(data):
+    return json.dumps(data).translate(_JSON_SCRIPT_ESCAPES)
+
+
+# URL builders that keep the active language prefix (hardcoded '/stone/...'
+# paths fall back to English under prefix_default_language=False).
+def _map_focus_url(pk):
+    return f"{reverse('stonewalker_start')}?{urllib.parse.urlencode({'focus': pk})}"
+
+
+def _stone_edit_url(pk, key=None):
+    url = reverse('stone_edit', kwargs={'pk': pk})
+    return f'{url}?key={key}' if key else url
+
+
+def _prepend_journey_origin(stone, moves_data):
+    """Put a hidden stone's private hiding spot at the start of a public
+    journey — only once it has confirmed finds (moves_data non-empty)."""
+    origin = stone.journey_origin()
+    if origin and moves_data:
+        moves_data.insert(0, {
+            'latitude': origin[0], 'longitude': origin[1],
+            'timestamp': '', 'timestamp_display': '',
+            'user': gettext('Hiding spot'), 'comment': '',
+        })
+
+
+def _is_stone_owner(request, stone):
+    # Explicit: unclaimed stones (FK_user_id None) must not match anonymous
+    # visitors (user.id None).
+    return request.user.is_authenticated and stone.FK_user_id == request.user.id
+
+
+def _parse_lat_lng(lat, lng):
+    """Parse a lat/lng pair from form input; (None, None) if missing/invalid."""
+    try:
+        lat, lng = float(lat), float(lng)
+    except (TypeError, ValueError):
+        return None, None
+    if not (-90 <= lat <= 90 and -180 <= lng <= 180):
+        return None, None
+    return lat, lng
+
+
+def _stone_link_key_url(stone):
+    return f"{reverse('stone_link', kwargs={'stone_number': stone.stone_number})}?key={stone.uuid}"
 import qrcode
 from io import BytesIO
 from django.http import HttpResponse
 from datetime import timedelta
 from django.utils import timezone
-from django.utils.translation import get_language, get_language_from_request
+from django.utils.translation import get_language, get_language_from_request, gettext
 from django.conf import settings
 from django.urls import reverse
 import uuid as uuid_lib
@@ -83,12 +137,8 @@ class StoneWalkerStartPageView(TemplateView):
     template_name = 'main/stonewalker_start.html'
 
     def get_client_ip(self):
-        x_forwarded_for = self.request.META.get('HTTP_X_FORWARDED_FOR')
-        if x_forwarded_for:
-            ip = x_forwarded_for.split(',')[0]
-        else:
-            ip = self.request.META.get('REMOTE_ADDR')
-        return ip
+        from .models import client_ip
+        return client_ip(self.request)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -122,6 +172,9 @@ class StoneWalkerStartPageView(TemplateView):
             if moves:
                 # Latest move for marker
                 latest_move = moves[-1]
+                # Hidden stones: the private hiding spot becomes the start of
+                # the line once there is a confirmed find (never before).
+                origin = stone.journey_origin()
                 stones_data.append({
                     'PK_stone': stone.PK_stone,
                     'uuid': str(stone.uuid),
@@ -137,6 +190,7 @@ class StoneWalkerStartPageView(TemplateView):
                     'latest_longitude': latest_move.longitude,
                     'latest_image': latest_move.image.url if latest_move.image else '',
                     'distance_km': round(total_distance, 1),
+                    'origin': {'latitude': origin[0], 'longitude': origin[1]} if origin else None,
                     'moves': [
                         {
                             'latitude': m.latitude,
@@ -150,7 +204,7 @@ class StoneWalkerStartPageView(TemplateView):
                         } for m in moves
                     ]
                 })
-        context['stones_json'] = json.dumps(stones_data)
+        context['stones_json'] = _script_safe_json(stones_data)
         # Welcome modal logic (IP/session based)
         show_welcome_modal = False
         if not self.request.user.is_authenticated:
@@ -218,107 +272,24 @@ def add_stone(request):
     return redirect('create_stone')
 
 
-class StoneScanView(View):
-    template_name = 'main/stone_scan.html'
-
-    @method_decorator(login_required)
-    def get(self, request):
-        stone_param = request.GET.get('stone')
-        context = {}
-        if stone_param:
-            # Try to find stone by UUID first, then by PK_stone
-            stone = None
-            try:
-                # Try to parse as UUID first
-                import uuid
-                uuid_param = uuid.UUID(stone_param)
-                stone = Stone.objects.get(uuid=uuid_param)
-                context['stone_name'] = stone.PK_stone
-                context['locked'] = True  # Lock the stone name
-            except (ValueError, Stone.DoesNotExist):
-                # If not a valid UUID, try as PK_stone
-                try:
-                    stone = Stone.objects.get(PK_stone=stone_param)
-                    context['stone_name'] = stone_param
-                    context['locked'] = True  # Lock the stone name
-                except Stone.DoesNotExist:
-                    messages.error(request, 'Stone not found.')
-                    return render(request, self.template_name, context)
-            
-            # Check cooldown using new StoneScanAttempt model
-            if request.user.is_authenticated and stone:
-                if not StoneScanAttempt.can_scan_again(stone, request.user):
-                    context['locked'] = True
-                    context['lock_message'] = 'You have already scanned this stone in the last week. Please wait before scanning again.'
-        return render(request, self.template_name, context)
-
-    @method_decorator(login_required)
-    def post(self, request):
-        PK_stone = request.POST.get('PK_stone')
-        comment = request.POST.get('comment', '')
-        latitude = request.POST.get('latitude')
-        longitude = request.POST.get('longitude')
-        image = request.FILES.get('image')
-
-        # Validate comment content
-        from .validators import validate_no_contact_info
-        from django.core.exceptions import ValidationError
-        try:
-            validate_no_contact_info(comment)
-        except ValidationError as e:
-            messages.error(request, e.message)
-            return render(request, self.template_name, {'prefill_stone': PK_stone})
-
-        try:
-            stone = Stone.objects.get(PK_stone=PK_stone)
-        except Stone.DoesNotExist:
-            messages.error(request, 'Stone not found.')
-            return render(request, self.template_name)
-
-        # Check one-week blackout period
-        if not StoneScanAttempt.can_scan_again(stone, request.user):
-            messages.error(request, 'You have already scanned this stone in the last week. Please wait before scanning again.')
-            return render(request, self.template_name, {'prefill_stone': PK_stone, 'locked': True, 'lock_message': 'You have already scanned this stone in the last week. Please wait before scanning again.'})
-
-        try:
-            # Record the scan attempt
-            StoneScanAttempt.record_scan_attempt(stone, request.user, request)
-            
-            # Create the stone move
-            StoneMove.objects.create(
-                FK_stone=stone,
-                FK_user=request.user,
-                image=image,
-                comment=comment,
-                latitude=float(latitude) if latitude else None,
-                longitude=float(longitude) if longitude else None
-            )
-            # Update distance
-            stone.distance_km = calculate_stone_distance(stone)
-            stone.save()
-            messages.success(request, 'Your scan has been added!')
-            return redirect(f'/stonewalker/?focus={PK_stone}')
-        except Exception as e:
-            messages.error(request, f'Could not add scan: {str(e)}')
-        return render(request, self.template_name, {'success': True})
-
-
 def check_stone_name(request):
     PK_stone = request.GET.get('PK_stone', '').strip()
     if not PK_stone:
         # fallback for legacy 'name' param
         PK_stone = request.GET.get('name', '').strip()
+    from django.core.exceptions import ValidationError as DjangoValidationError
+    from .validators import validate_stone_name
     taken = False
     reason = None
-    if not PK_stone:
+    try:
+        validate_stone_name(PK_stone)
+    except DjangoValidationError as e:
         taken = True
-        reason = 'empty'
-    elif re.search(r'\s', PK_stone):
-        taken = True
-        reason = 'whitespace'
-    elif Stone.objects.filter(PK_stone=PK_stone).exists():
-        taken = True
-        reason = 'taken'
+        reason = e.code  # empty / too_long / whitespace / invalid_chars
+    else:
+        if Stone.objects.filter(PK_stone=PK_stone).exists():
+            taken = True
+            reason = 'taken'
     return JsonResponse({'taken': taken, 'reason': reason, 'PK_stone': PK_stone})
 
 
@@ -385,16 +356,20 @@ class StoneEditView(LoginRequiredMixin, TemplateView):
                 validate_no_contact_info(description)
             except DjangoValidationError as e:
                 messages.error(request, e.message)
-                return redirect(f'/stone/{pk}/edit/')
+                return redirect(_stone_edit_url(pk))
 
             # Update stone fields
             stone.description = description
             image = request.FILES.get('image')
             if image:
                 stone.image = image
-            stone.color = request.POST.get('color', stone.color)
+            color = request.POST.get('color', stone.color)
+            if re.fullmatch(r'#[0-9a-fA-F]{6}', color or ''):
+                stone.color = color
+            # Type is fixed once sealed: the hiding spot was stored (hidden) or
+            # published as a StoneMove (hunted) according to it.
             stone_type = request.POST.get('stone_type', stone.stone_type)
-            if stone_type in ('hidden', 'hunted'):
+            if stone_type in ('hidden', 'hunted') and stone.status != 'wandering':
                 stone.stone_type = stone_type
             
             action = request.POST.get('action')
@@ -402,26 +377,29 @@ class StoneEditView(LoginRequiredMixin, TemplateView):
                 stone.save()
                 messages.success(request, f'Stone "{stone.PK_stone}" updated successfully!')
                 if last_minute:
-                    return redirect(f'/stone/{pk}/edit/?key={stone.uuid}')
-                return redirect(f'/stone/{pk}/edit/')
+                    return redirect(_stone_edit_url(pk, stone.uuid))
+                return redirect(_stone_edit_url(pk))
             elif action == 'publish':
                 if stone.publish():
                     messages.success(request, f'Stone "{stone.PK_stone}" published successfully! It\'s now visible on the map.')
-                    return redirect(f'/stonewalker/?focus={pk}')
+                    return redirect(_map_focus_url(pk))
                 else:
                     messages.error(request, 'Could not publish stone.')
-                    return redirect(f'/stone/{pk}/edit/')
-            
+                    return redirect(_stone_edit_url(pk))
+            messages.error(request, 'Unknown action.')
+            return redirect(_stone_edit_url(pk))
+
         except Stone.DoesNotExist:
             messages.error(request, 'Stone not found or you do not have permission to edit it.')
             return redirect('stonewalker_start')
         except Exception as e:
             messages.error(request, f'Error updating stone: {str(e)}')
-            return redirect(f'/stone/{pk}/edit/')
+            return redirect(_stone_edit_url(pk))
 
 
 class StoneQRCodeView(View):
     """Download QR code for a stone"""
+    @method_decorator(login_required)
     def get(self, request, pk):
         try:
             stone = Stone.objects.get(PK_stone=pk, FK_user=request.user)
@@ -482,11 +460,27 @@ class StoneSendOffView(View):
         # Sealing without a picture must be a conscious choice.
         if not stone.image and not request.POST.get('confirm_no_image'):
             messages.error(request, "Your stone has no picture. Please confirm you want to let it roam without one.")
-            return redirect(f'/stone-link/{stone.stone_number}/?key={stone.uuid}')
+            return redirect(_stone_link_key_url(stone))
 
-        stone.start_wandering()
-        StoneScanAttempt.record_scan_attempt(stone, request.user, request)
-        messages.success(request, 'Your stone is sealed and its journey has begun!')
+        # Where it's being hidden. Hidden stones keep this private until the
+        # first confirmed find; hunted stones are meant to be searched for, so
+        # their spot goes on the map right away (hunted requires it).
+        lat, lng = _parse_lat_lng(request.POST.get('latitude'), request.POST.get('longitude'))
+        if stone.stone_type == 'hunted' and lat is None:
+            messages.error(request, 'Hunted stones need a location. Set where you are hiding it on the map.')
+            return redirect(_stone_link_key_url(stone))
+
+        with transaction.atomic():
+            stone.hide_latitude, stone.hide_longitude = lat, lng
+            stone.save(update_fields=['hide_latitude', 'hide_longitude'])
+            stone.start_wandering()
+            if stone.stone_type == 'hunted':
+                StoneMove.objects.create(FK_stone=stone, FK_user=request.user, latitude=lat, longitude=lng)
+            StoneScanAttempt.record_scan_attempt(stone, request.user, request)
+        if stone.stone_type == 'hunted':
+            messages.success(request, 'Your stone is sealed and on the map — let the hunt begin!')
+        else:
+            messages.success(request, 'Your stone is sealed! It appears on the map once someone finds it.')
         return redirect('stone_link', stone_number=stone.stone_number)
 
 
@@ -531,6 +525,7 @@ class StoneLinkView(View):
                 'user': m.FK_user.username if m.FK_user else '',
                 'comment': m.comment,
             })
+        _prepend_journey_origin(stone, moves_data)
 
         stone_image_url = ''
         if stone.image:
@@ -539,7 +534,7 @@ class StoneLinkView(View):
         context = {
             'stone': stone,
             'moves': moves,
-            'moves_json': json.dumps(moves_data),
+            'moves_json': _script_safe_json(moves_data),
             'num_moves': num_moves,
             'distance': distance,
             'owner': owner,
@@ -565,7 +560,9 @@ class StoneLinkView(View):
 
         # No key → public page (or redirect for unclaimed)
         if not key:
-            if stone.is_unclaimed():
+            # Unclaimed codes and drafts have no public page (sequential
+            # numbers would make unreleased stones enumerable); owner excepted.
+            if stone.status in ('unclaimed', 'draft') and not _is_stone_owner(request, stone):
                 return redirect('stonewalker_start')
             return self._render_public_page(request, stone)
 
@@ -619,9 +616,11 @@ class StoneLinkView(View):
             # scan blackout, which the seal scan-attempt already triggered).
             if stone.FK_user_id == request.user.id and stone.can_last_minute_edit():
                 messages.info(request, "Nobody has found your stone yet — you can still make last-minute changes.")
-                return redirect(f'/stone/{stone.PK_stone}/edit/?key={stone.uuid}')
-            # Check if already scanned this week → redirect to public page (strips key)
-            if not StoneScanAttempt.can_scan_again(stone, request.user):
+                return redirect(_stone_edit_url(stone.PK_stone, stone.uuid))
+            # Already recorded a find this week → public page (strips key).
+            # Keyed on finds, not scan attempts: opening the link records an
+            # attempt, so gating on attempts would block the form's own POST.
+            if StoneMove.found_recently(stone, request.user):
                 return redirect('stone_link', stone_number=stone.stone_number)
             StoneScanAttempt.record_scan_attempt(stone, request.user, request)
             user_stone_count = StoneMove.objects.filter(FK_user=request.user).count()
@@ -669,20 +668,32 @@ class StoneLinkView(View):
             return None, back
 
         existing = User.objects.filter(email__iexact=email).first()
-        if existing and is_email_confirmed(existing):
-            # Real account already exists — don't create a duplicate; log them in.
+        if existing and (is_email_confirmed(existing) or existing.has_usable_password()):
+            # Real account already exists (possibly with an email change
+            # pending) — don't create a duplicate and never log in on the
+            # strength of a typed email; send them to the login page.
             next_url = f'{reverse("stone_link", kwargs={"stone_number": stone.stone_number})}?key={stone.uuid}'
             messages.info(request, 'That email already has a StoneWalker account. Please log in to record your find.')
             return None, redirect_to_login(next=next_url, login_url='accounts:log_in')
 
+        if not existing and EmailAddressState.objects.filter(email__iexact=email).exists():
+            # Address is pending as a new email on another account — it's
+            # spoken for (and unique on EmailAddressState); don't create a user.
+            messages.info(request, 'That email is already linked to a StoneWalker account. Please log in to record your find.')
+            next_url = f'{reverse("stone_link", kwargs={"stone_number": stone.stone_number})}?key={stone.uuid}'
+            return None, redirect_to_login(next=next_url, login_url='accounts:log_in')
+
         if existing:
-            user = existing  # reuse an earlier unconfirmed provisional account
+            # Earlier unconfirmed provisional account: attach the held find to
+            # it, but don't log in — typing an email proves nothing. The
+            # confirmation link emailed to that address is what releases it.
+            return existing, None
         else:
             # Lenient per-IP backstop against bot floods. Set high enough that a
             # classroom finding stones from one school network won't hit it; the
             # real anti-fraud gate is that held finds stay hidden until confirmed.
-            ip = (request.META.get('HTTP_X_FORWARDED_FOR', '').split(',')[0].strip()
-                  or request.META.get('REMOTE_ADDR') or '')
+            from .models import client_ip
+            ip = client_ip(request)
             limit = getattr(settings, 'ANONYMOUS_FIND_IP_HOURLY_LIMIT', 100)
             if ip:
                 hour_ago = timezone.now() - timedelta(hours=1)
@@ -708,7 +719,7 @@ class StoneLinkView(View):
         from accounts.utils import send_find_confirmation_email
         uid = urlsafe_base64_encode(force_bytes(user.pk))
         token = default_token_generator.make_token(user)
-        send_find_confirmation_email(request, user.email, token, uid, stone.PK_stone)
+        return send_find_confirmation_email(request, user.email, token, uid, stone.PK_stone)
 
     def post(self, request, stone_number):
         # Look up stone by stone_number, validate UUID from hidden form field
@@ -722,6 +733,13 @@ class StoneLinkView(View):
             messages.error(request, 'Invalid stone link.')
             return redirect('stonewalker_start')
 
+        # Finds are only for sealed (wandering) stones — same rule as get().
+        # Sealing is the owner's deliberate POST to stone_send_off, never a
+        # side effect of someone holding the key submitting this form.
+        if stone.status != 'wandering':
+            messages.info(request, "This stone hasn't started its journey yet.")
+            return redirect('stonewalker_start')
+
         # Resolve finder: logged-in user, or an email-first provisional account.
         anonymous = not request.user.is_authenticated
         if anonymous:
@@ -731,14 +749,15 @@ class StoneLinkView(View):
         else:
             user = request.user
 
-        # Check one-week blackout period (per finder)
-        if not StoneScanAttempt.can_scan_again(stone, user):
+        # Held until email confirmation: anonymous finds, and later finds by a
+        # still-provisional account (soft session, no password, unconfirmed).
+        from accounts.models import is_email_confirmed
+        held = anonymous or (not is_email_confirmed(user) and not user.has_usable_password())
+
+        # Check one-week blackout period (per finder, based on recorded finds)
+        if StoneMove.found_recently(stone, user):
             messages.error(request, 'You have already scanned this stone in the last week. Please wait before scanning again.')
             return redirect('stonewalker_start')
-
-        # Safety check: if stone is still published when find is submitted, seal it
-        if stone.status == 'published':
-            stone.start_wandering()
 
         # Get form data
         comment = request.POST.get('comment', '')
@@ -768,23 +787,24 @@ class StoneLinkView(View):
             return redirect('stone_link', stone_number=stone.stone_number)
 
         try:
-            # Record the scan attempt
-            StoneScanAttempt.record_scan_attempt(stone, user, request)
-
-            # Create the stone move. Anonymous (email-first) finds are held
-            # (is_confirmed=False) until the finder confirms their email.
-            stone_move = StoneMove.objects.create(
-                FK_stone=stone,
-                FK_user=user,
-                image=image,
-                comment=comment,
-                latitude=lat,
-                longitude=lng,
-                is_confirmed=not anonymous,
-            )
+            # Create the stone move and record the attempt together, so a
+            # failed save can't leave the finder locked out without a find.
+            # Held finds (is_confirmed=False) stay off the map until the
+            # finder confirms their email.
+            with transaction.atomic():
+                stone_move = StoneMove.objects.create(
+                    FK_stone=stone,
+                    FK_user=user,
+                    image=image,
+                    comment=comment,
+                    latitude=lat,
+                    longitude=lng,
+                    is_confirmed=not held,
+                )
+                StoneScanAttempt.record_scan_attempt(stone, user, request)
 
             # Update stone distance (only confirmed finds count; skip for held)
-            if not anonymous:
+            if not held:
                 stone.distance_km = calculate_stone_distance(stone)
                 stone.save()
 
@@ -803,13 +823,18 @@ class StoneLinkView(View):
                     messages.error(request, 'Please provide valid coordinates for the new location.')
                     return redirect('stone_link', stone_number=stone.stone_number)
 
-            if anonymous:
-                self._send_find_confirmation(request, user, stone)
-                messages.success(request, 'Find recorded! Check your email to confirm it and put it on the map.')
-                return redirect('my_stones')
+            if held:
+                if self._send_find_confirmation(request, user, stone):
+                    messages.success(request, 'Find recorded! Check your email to confirm it and put it on the map.')
+                else:
+                    messages.warning(request, "Find recorded, but we couldn't send the confirmation email right now. "
+                                              "You can resend it later from your profile (Resend activation code).")
+                if request.user.is_authenticated:
+                    return redirect('my_stones')
+                return redirect('stone_link', stone_number=stone.stone_number)
 
             messages.success(request, 'Your stone find has been recorded!')
-            return redirect(f'/stonewalker/?focus={stone.PK_stone}')
+            return redirect(_map_focus_url(stone.PK_stone))
 
         except Exception as e:
             messages.error(request, f'Could not record stone find: {str(e)}')
@@ -1012,6 +1037,8 @@ class StoneShareView(View):
             Stone.objects.select_related('FK_user', 'FK_user__profile'),
             PK_stone=pk,
         )
+        if stone.status in ('unclaimed', 'draft') and not _is_stone_owner(request, stone):
+            raise Http404
         moves = list(stone.moves.filter(is_confirmed=True).order_by('timestamp').all())
         num_moves = len(moves)
         distance = round(stone.distance_km, 1)
@@ -1044,6 +1071,7 @@ class StoneShareView(View):
                 'user': m.FK_user.username if m.FK_user else '',
                 'comment': m.comment,
             })
+        _prepend_journey_origin(stone, moves_data)
 
         # Stone image URL for OG tag
         stone_image_url = ''
@@ -1053,7 +1081,7 @@ class StoneShareView(View):
         context = {
             'stone': stone,
             'moves': moves,
-            'moves_json': json.dumps(moves_data),
+            'moves_json': _script_safe_json(moves_data),
             'num_moves': num_moves,
             'distance': distance,
             'owner': owner,

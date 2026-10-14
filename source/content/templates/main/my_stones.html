@@ -115,7 +115,7 @@
 {% if not has_unclaimed %}
 <div class="new-qr-button-bar">
   {% if email_confirmed %}
-  <a href="{% url 'create_stone' %}" class="avant-btn new-qr-btn">{% trans 'Create New Stone' %}</a>
+  <form method="post" action="{% url 'create_stone' %}" class="display-inline-block">{% csrf_token %}<button type="submit" class="avant-btn new-qr-btn">{% trans 'Create New Stone' %}</button></form>
   {% else %}
   <span class="avant-btn new-qr-btn opacity-0-6" title="{% trans 'Confirm your email first' %}" aria-disabled="true">{% trans 'Create New Stone' %}</span>
   {% endif %}
@@ -196,6 +196,17 @@ const interactionsData = [
 ];
 {% endlocalize %}
 
+// Language-prefixed URL templates (hardcoded '/stone/...' would drop the
+// active language) and an HTML escaper for values going into innerHTML.
+const STONE_EDIT_URL = "{% url 'stone_edit' pk='__PK__' %}";
+const STONE_QR_URL = "{% url 'stone_qr' pk='__PK__' %}";
+function stoneUrl(template, pk) { return template.replace('__PK__', encodeURIComponent(pk)); }
+function escHtml(value) {
+  return String(value == null ? '' : value)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
 function renderStonesList(listId, data, page, perPage) {
   const list = document.getElementById(listId);
   list.innerHTML = '';
@@ -213,13 +224,13 @@ function renderStonesList(listId, data, page, perPage) {
     item.setAttribute('data-pk', stone.PK_stone);
     const statusColor = stone.status === 'draft' ? '#ffc107' : stone.status === 'published' ? '#28a745' : '#17a2b8';
     const statusLabel = stone.status === 'draft' ? 'Draft' : stone.status === 'published' ? 'Published' : 'Sent Off';
-    const editBtn = stone.can_be_edited ? `<a href="/stone/${stone.PK_stone}/edit/" title="Edit this stone" class="stone-list-action" onclick="event.stopPropagation()">✏️ <span>Edit</span></a>` : '';
+    const editBtn = stone.can_be_edited ? `<a href="${stoneUrl(STONE_EDIT_URL, stone.PK_stone)}" title="Edit this stone" class="stone-list-action" onclick="event.stopPropagation()">✏️ <span>Edit</span></a>` : '';
 
     item.innerHTML = `
-      <img class="stone-list-img" src="${stone.image}" alt="${stone.PK_stone}">
+      <img class="stone-list-img" src="${escHtml(stone.image)}" alt="${escHtml(stone.PK_stone)}">
       <div class="stone-list-info">
         <div class="stone-list-title-row">
-          <span class="stone-list-title">${stone.PK_stone}</span>
+          <span class="stone-list-title">${escHtml(stone.PK_stone)}</span>
           <span class="stone-list-distance">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
             ${stone.distance_km ? stone.distance_km + ' km' : '0 km'}
@@ -231,7 +242,7 @@ function renderStonesList(listId, data, page, perPage) {
           <span class="stone-status-badge" style="background-color: ${statusColor}; color: white; padding: 2px 6px; border-radius: 12px; font-size: 0.8em;">${statusLabel}</span>
         </div>
         <div class="stone-list-actions">
-          <a href="/stone/${stone.PK_stone}/qr/" target="_blank" title="Download QR code" class="stone-list-action" onclick="event.stopPropagation()">🔗 <span>QR</span></a>
+          <a href="${stoneUrl(STONE_QR_URL, stone.PK_stone)}" target="_blank" title="Download QR code" class="stone-list-action" onclick="event.stopPropagation()">🔗 <span>QR</span></a>
           ${editBtn}
         </div>
       </div>
@@ -349,10 +360,10 @@ function showSimpleModal(pk, color, data) {
   
   const html = `
     <div style='text-align:center;margin-bottom:1.2rem;'>
-      <span style="font-family:var(--font-title);font-size:2.1rem;font-weight:700;letter-spacing:1px;color:${color};text-shadow:0 2px 8px rgba(0,0,0,0.07);">${stone.PK_stone}</span>
+      <span style="font-family:var(--font-title);font-size:2.1rem;font-weight:700;letter-spacing:1px;color:${color};text-shadow:0 2px 8px rgba(0,0,0,0.07);">${escHtml(stone.PK_stone)}</span>
       ${stone.stone_number ? `<div style="font-size:0.85rem;color:#aaa;font-family:monospace;margin-top:0.2rem;">#${stone.stone_number}</div>` : ''}
     </div>
-    <div style="background:${color}11;border-radius:12px;padding:1.1rem 1.3rem;margin-bottom:1.2rem;font-size:1.13rem;font-family:var(--font-serif);box-shadow:0 2px 8px rgba(0,0,0,0.04);color:#333;">${stone.description}</div>
+    <div style="background:${color}11;border-radius:12px;padding:1.1rem 1.3rem;margin-bottom:1.2rem;font-size:1.13rem;font-family:var(--font-serif);box-shadow:0 2px 8px rgba(0,0,0,0.04);color:#333;">${escHtml(stone.description)}</div>
     <div style='display:flex;justify-content:center;align-items:center;margin-bottom:1.2rem;font-size:1.05em;color:#888;font-family:monospace;gap:0;'>
       <div style='flex:1;min-width:120px;max-width:160px;text-align:center;padding:0 0.5em;'>
         <span style='display:block;font-size:0.97em;color:#aaa;'>Created</span>

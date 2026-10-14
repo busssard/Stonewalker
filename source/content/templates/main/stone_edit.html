@@ -12,11 +12,7 @@
       <span class="stone-status-pill stone-status-{{ stone.status }}">{{ stone.get_status_display }}</span>
     </div>
 
-    {% if messages %}
-      {% for message in messages %}
-        <div class="text-center mb-1 {% if message.tags == 'error' %}text-error{% else %}text-success{% endif %}">{{ message }}</div>
-      {% endfor %}
-    {% endif %}
+    {# Flash messages are rendered once by layouts/default/page.html #}
 
     {% if last_minute %}
       <div class="bg-orange p-2 border-radius-8 mb-2">
@@ -68,7 +64,7 @@
 
       <div class="mt-0-5">
         <span class="avant-label">{% trans "Stone Type" %}</span>
-        {% if editable %}
+        {% if editable and stone.status != 'wandering' %}
         <div class="stone-type-toggle mt-0-3">
           <button type="button" class="stone-type-toggle-btn{% if stone.stone_type == 'hidden' %} active{% endif %}" data-value="hidden">{% trans "Hidden" %}</button>
           <button type="button" class="stone-type-toggle-btn{% if stone.stone_type == 'hunted' %} active{% endif %}" data-value="hunted">{% trans "Hunted" %}</button>
@@ -129,9 +125,12 @@
   </div>
 </div>
 <script>
-if (typeof setupImageUpload === 'function') {
-  setupImageUpload({ inputId: 'image', msgId: 'image-validation-msg' });
-}
+// image-upload.js loads after this block, so wait for DOMContentLoaded
+document.addEventListener('DOMContentLoaded', function() {
+  if (typeof setupImageUpload === 'function') {
+    setupImageUpload({ inputId: 'image', msgId: 'image-validation-msg' });
+  }
+});
 // Stone type toggle
 (function() {
   var btns = document.querySelectorAll('.stone-type-toggle-btn');

@@ -94,7 +94,9 @@ class StoneUUIDConsistencyTests(BaseStoneWalkerTestCase):
         """The stone-link URL using the stone's number and key should find the stone"""
         maker = self.create_user('linkmaker2', 'pw')
         stone = self.create_stone('LINK_TEST', user=maker, status='wandering')
-        self.create_stone_move(stone=stone)
+        # Someone else found it earlier (the viewer's own recent find would
+        # redirect them to the public page — one find per week).
+        self.create_stone_move(stone=stone, user=self.create_user('earlyfinder', 'pw', email='ef@example.com'))
         response = self.client.get(f'/stone-link/{stone.stone_number}/?key={stone.uuid}')
         self.assertEqual(response.status_code, 200)
 
@@ -108,7 +110,7 @@ class StoneUUIDConsistencyTests(BaseStoneWalkerTestCase):
             uuid=custom_uuid,
             status='wandering',
         )
-        self.create_stone_move(stone=stone)
+        self.create_stone_move(stone=stone, user=self.create_user('earlyfinder2', 'pw', email='ef2@example.com'))
         response = self.client.get(f'/stone-link/{stone.stone_number}/?key={custom_uuid}')
         self.assertEqual(response.status_code, 200)
 

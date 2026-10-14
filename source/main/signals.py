@@ -10,10 +10,15 @@ logger = logging.getLogger(__name__)
 
 @receiver(post_save, sender='main.StoneMove')
 def notify_stone_owner_on_move(sender, instance, created, **kwargs):
-    """Send email notification to stone owner when their stone is scanned/moved."""
-    if not created:
+    """Send email notification to stone owner when their stone is scanned/moved.
+    Held (unconfirmed email-first) finds notify later, from confirm_pending_finds."""
+    if not created or not instance.is_confirmed:
         return
+    notify_owner_of_find(instance)
 
+
+def notify_owner_of_find(instance):
+    """Email the stone owner about a (confirmed) find, respecting their prefs."""
     stone = instance.FK_stone
     mover = instance.FK_user
     owner = stone.FK_user

@@ -103,7 +103,7 @@ class MailerooEmailBackend(BaseEmailBackend):
                     method='POST',
                 )
 
-                with urllib.request.urlopen(req) as resp:
+                with urllib.request.urlopen(req, timeout=15) as resp:
                     body = json.loads(resp.read().decode('utf-8'))
                     if body.get('success'):
                         num_sent += 1

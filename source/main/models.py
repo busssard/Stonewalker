@@ -1,4 +1,4 @@
-from django.db import models
+from django.db import models, transaction, IntegrityError
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
@@ -112,18 +112,41 @@ class Stone(models.Model):
     wandering_at = models.DateTimeField(null=True, blank=True)
     claimed_at = models.DateTimeField(null=True, blank=True, help_text='When this stone was claimed by a user')
     stone_number = models.PositiveIntegerField(unique=True, null=True, blank=True, help_text='Sequential stone number, auto-assigned on creation')
+    # Where the owner hid the stone when sealing it. For hidden stones this
+    # stays private until the first confirmed find, then becomes the start of
+    # the journey (map line + distance). Hunted stones publish it at seal time
+    # as the owner's first StoneMove instead.
+    hide_latitude = models.FloatField(null=True, blank=True)
+    hide_longitude = models.FloatField(null=True, blank=True)
 
     def __str__(self):
         return f"{self.PK_stone} ({self.status})"
 
+    STONE_NUMBER_ATTEMPTS = 10
+
     def save(self, *args, **kwargs):
-        if self.stone_number is None:
+        if self.stone_number is not None:
+            super().save(*args, **kwargs)
+            return
+        # Ensure stone_number is persisted even when update_fields is used
+        if kwargs.get('update_fields') is not None:
+            kwargs['update_fields'] = list(kwargs['update_fields']) + ['stone_number']
+        # Max+1 races with concurrent inserts (e.g. webhook and success page
+        # fulfilling packs at once). Retry inside a savepoint when another
+        # writer took the number first; any other IntegrityError is re-raised.
+        for attempt in range(self.STONE_NUMBER_ATTEMPTS):
             max_num = Stone.objects.aggregate(models.Max('stone_number'))['stone_number__max']
             self.stone_number = (max_num or 0) + 1
-            # Ensure stone_number is persisted even when update_fields is used
-            if 'update_fields' in kwargs and kwargs['update_fields'] is not None:
-                kwargs['update_fields'] = list(kwargs['update_fields']) + ['stone_number']
-        super().save(*args, **kwargs)
+            try:
+                with transaction.atomic():
+                    super().save(*args, **kwargs)
+                return
+            except IntegrityError:
+                number_taken = Stone.objects.filter(
+                    stone_number=self.stone_number).exclude(pk=self.pk).exists()
+                self.stone_number = None
+                if not number_taken or attempt == self.STONE_NUMBER_ATTEMPTS - 1:
+                    raise
 
     def get_stone_number(self):
         """Get this stone's sequential number."""
@@ -156,6 +179,15 @@ class Stone(models.Model):
     def can_be_edited(self):
         """Check if stone can be edited (only drafts can be edited)"""
         return self.status == 'draft'
+
+    def journey_origin(self):
+        """(lat, lng) of the private hiding spot to prepend to the public
+        journey, or None. Only for hidden stones (hunted stones publish their
+        spot as a real StoneMove). Callers reveal it only alongside confirmed
+        finds, never on its own."""
+        if self.stone_type == 'hidden' and self.hide_latitude is not None and self.hide_longitude is not None:
+            return (self.hide_latitude, self.hide_longitude)
+        return None
 
     def can_last_minute_edit(self):
         """Owner may still edit a published/sent-off stone — but only until
@@ -302,6 +334,13 @@ class StoneMove(models.Model):
     def __str__(self):
         return f"Move for {self.FK_stone.PK_stone} at {self.timestamp}"
 
+    @classmethod
+    def found_recently(cls, stone, user):
+        """True if this user recorded a find (held or confirmed) for this stone
+        within the one-week blackout. Opening the QR link alone doesn't count."""
+        one_week_ago = timezone.now() - timedelta(weeks=1)
+        return cls.objects.filter(FK_stone=stone, FK_user=user, timestamp__gte=one_week_ago).exists()
+
 class StoneScanAttempt(models.Model):
     """Track scan attempts to enforce one-week blackout period"""
     FK_stone = models.ForeignKey(Stone, on_delete=models.CASCADE, related_name='scan_attempts')
@@ -337,7 +376,7 @@ class StoneScanAttempt(models.Model):
             FK_stone=stone,
             FK_user=user,
             defaults={
-                'ip_address': request.META.get('REMOTE_ADDR') if request else None,
+                'ip_address': client_ip(request),
                 'user_agent': request.META.get('HTTP_USER_AGENT', '') if request else '',
             }
         )
@@ -345,19 +384,38 @@ class StoneScanAttempt(models.Model):
             # Update existing record with new scan time
             attempt.scan_time = timezone.now()
             if request:
-                attempt.ip_address = request.META.get('REMOTE_ADDR')
+                attempt.ip_address = client_ip(request)
                 attempt.user_agent = request.META.get('HTTP_USER_AGENT', '')
             attempt.save()
         return attempt
+
+def client_ip(request):
+    """Best-effort client IP. nginx sets X-Real-IP to the real peer address
+    (clients can't spoof it, unlike the first X-Forwarded-For entry); fall
+    back to REMOTE_ADDR for direct/dev access. Returns None if not a valid IP."""
+    import ipaddress
+    if request is None:
+        return None
+    for candidate in (request.META.get('HTTP_X_REAL_IP'), request.META.get('REMOTE_ADDR')):
+        try:
+            return str(ipaddress.ip_address((candidate or '').strip()))
+        except ValueError:
+            continue
+    return None
+
 
 def calculate_stone_distance(stone):
     # Only confirmed moves count — a pending (unconfirmed) find must not inflate
     # distance before the finder confirms their email.
     moves = list(stone.moves.filter(is_confirmed=True).order_by('timestamp').all())
+    points = [(m.latitude, m.longitude) for m in moves]
+    origin = stone.journey_origin()
+    if origin and points:
+        points.insert(0, origin)  # hiding spot counts once someone found it
     total_distance = 0.0
-    for i in range(1, len(moves)):
-        lat1, lon1 = moves[i-1].latitude, moves[i-1].longitude
-        lat2, lon2 = moves[i].latitude, moves[i].longitude
+    for i in range(1, len(points)):
+        lat1, lon1 = points[i-1]
+        lat2, lon2 = points[i]
         if None not in (lat1, lon1, lat2, lon2):
             R = 6371
             dlat = radians(lat2 - lat1)
@@ -381,6 +439,11 @@ def confirm_pending_finds(user):
     for stone in {m.FK_stone for m in pending}:
         stone.distance_km = calculate_stone_distance(stone)
         stone.save(update_fields=['distance_km'])
+    # Owners weren't notified while the finds were held; do it now.
+    from .signals import notify_owner_of_find
+    for move in pending:
+        move.is_confirmed = True
+        notify_owner_of_find(move)
     return len(pending)
 
 class Command(BaseCommand):
