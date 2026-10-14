@@ -18,13 +18,7 @@
     </div>
     {% endif %}
 
-    {% if messages %}
-      {% for message in messages %}
-        <div class="text-center mb-1 p-1 border-radius-8 {% if message.tags == 'error' %}bg-error-light text-error{% elif message.tags == 'success' %}bg-success-light text-success{% else %}bg-info-light text-info{% endif %}">
-          {{ message }}
-        </div>
-      {% endfor %}
-    {% endif %}
+    {# Flash messages are rendered once by layouts/default/page.html #}
 
     <!-- How It Works - 3-step visual flow -->
     <div class="how-it-works mb-2">

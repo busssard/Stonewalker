@@ -7,11 +7,7 @@
   <div class="avant-card max-w-600 m-2-5-auto">
     <div class="avant-header text-center mb-1-2">{% trans 'Name Your Stone' %}</div>
 
-    {% if messages %}
-      {% for message in messages %}
-        <div class="text-center mb-1 {% if message.tags == 'error' %}text-error{% else %}text-success{% endif %}">{{ message }}</div>
-      {% endfor %}
-    {% endif %}
+    {# Flash messages are rendered once by layouts/default/page.html #}
 
     <!-- Context: Where You Are in the Process -->
     <div class="claim-progress mb-2">
@@ -51,8 +47,8 @@
              class="avant-input"
              placeholder="{% trans 'e.g., Rocky, Luna, Star...' %}"
              value="{{ stone_name|default:'' }}"
-             pattern="[^\s]+"
-             title="{% trans 'No spaces allowed' %}"
+             pattern="[A-Za-z0-9_-]+"
+             title="{% trans 'Letters, numbers, - and _ only' %}"
              required>
       <small class="text-muted">{% trans 'Max 10 characters, no spaces. This will be your stone\'s unique identifier.' %}</small>
 
@@ -116,8 +112,11 @@
 {% endif %}
 
 <script>
-if (typeof setupImageUpload === 'function') {
-  setupImageUpload({ inputId: 'id_image', msgId: 'image-validation-msg' });
-}
+// image-upload.js loads after this block, so wait for DOMContentLoaded
+document.addEventListener('DOMContentLoaded', function() {
+  if (typeof setupImageUpload === 'function') {
+    setupImageUpload({ inputId: 'id_image', msgId: 'image-validation-msg' });
+  }
+});
 </script>
 {% endblock %}

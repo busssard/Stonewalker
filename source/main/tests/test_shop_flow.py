@@ -53,14 +53,14 @@ class UnconfirmedEmailGateTests(BaseStoneWalkerTestCase):
 
     def test_unconfirmed_blocked_from_free_qr(self):
         self._login_unconfirmed()
-        resp = self.client.get(reverse('free_qr'))
+        resp = self.client.post(reverse('free_qr'))
         self.assertEqual(resp.status_code, 302)
         self.assertIn('my-stones', resp.url)
         self.assertEqual(QRPack.objects.count(), 0)  # no QR minted
 
     def test_unconfirmed_blocked_from_create_stone(self):
         self._login_unconfirmed()
-        resp = self.client.get(reverse('create_stone'))
+        resp = self.client.post(reverse('create_stone'))
         self.assertEqual(resp.status_code, 302)
         self.assertIn('my-stones', resp.url)
         self.assertEqual(QRPack.objects.count(), 0)
@@ -204,7 +204,7 @@ class CreateNewStoneRouterTests(BaseStoneWalkerTestCase):
 
     def test_no_packs_creates_free_qr_before_threshold(self):
         """User with no packs before threshold gets a free QR and redirects to my-stones"""
-        response = self.client.get(reverse('create_stone'))
+        response = self.client.post(reverse('create_stone'))
         self.assertRedirects(response, reverse('my_stones'))
         # A new pack and unclaimed stone should have been created
         pack = QRPack.objects.filter(FK_user=self.user, pack_type='free_single').first()
@@ -227,7 +227,7 @@ class CreateNewStoneRouterTests(BaseStoneWalkerTestCase):
             FK_user=self.user,
             status='draft',
         )
-        response = self.client.get(reverse('create_stone'))
+        response = self.client.post(reverse('create_stone'))
         self.assertRedirects(response, reverse('my_stones'))
         # A new free pack should have been created
         self.assertEqual(
@@ -260,8 +260,9 @@ class CreateNewStoneRouterTests(BaseStoneWalkerTestCase):
             FK_user=None,
             status='unclaimed',
         )
+        # Within the allowance a GET shows the confirm page (minting is POST-only)
         response = self.client.get(reverse('create_stone'))
-        self.assertRedirects(response, reverse('my_stones'))
+        self.assertTemplateUsed(response, 'main/create_stone_confirm.html')
 
     def test_multiple_packs_with_unclaimed_redirects_to_my_stones(self):
         """With multiple packs, unclaimed stone redirects to my-stones"""
@@ -283,8 +284,9 @@ class CreateNewStoneRouterTests(BaseStoneWalkerTestCase):
             PK_stone='UNCLAIMED-B', FK_pack=pack2,
             FK_user=None, status='unclaimed',
         )
+        # Within the allowance a GET shows the confirm page (minting is POST-only)
         response = self.client.get(reverse('create_stone'))
-        self.assertRedirects(response, reverse('my_stones'))
+        self.assertTemplateUsed(response, 'main/create_stone_confirm.html')
 
     def test_requires_login(self):
         """Anonymous users should be redirected to login"""
@@ -371,7 +373,7 @@ class ShopFlowEndToEndTests(BaseStoneWalkerTestCase):
     def test_full_flow_create_stone_before_threshold(self):
         """Full flow before threshold: create-stone creates free QR → my-stones → claim"""
         # Step 1: No unclaimed QR, before threshold → creates free QR → my-stones
-        response = self.client.get(reverse('create_stone'))
+        response = self.client.post(reverse('create_stone'))
         self.assertRedirects(response, reverse('my_stones'))
 
         # Verify pack and unclaimed stone were created
@@ -380,8 +382,9 @@ class ShopFlowEndToEndTests(BaseStoneWalkerTestCase):
         self.assertIsNotNone(unclaimed)
 
         # Step 2: Now create-stone should redirect to my-stones with message (unclaimed exists)
+        # Within the allowance a GET shows the confirm page (minting is POST-only)
         response = self.client.get(reverse('create_stone'))
-        self.assertRedirects(response, reverse('my_stones'))
+        self.assertTemplateUsed(response, 'main/create_stone_confirm.html')
 
     def test_full_flow_at_allowance_to_shop(self):
         """Once the free allowance is used up, create-stone routes to the shop."""

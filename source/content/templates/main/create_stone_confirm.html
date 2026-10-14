@@ -1,0 +1,22 @@
+{% extends 'layouts/default/page.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% trans 'Create New Stone' %}{% endblock %}
+
+{% block content %}
+<div class="avant-section avant-bg-right flex-center min-h-70vh overflow-auto">
+  <div class="avant-card max-w-600 m-2-5-auto text-center">
+    <img src="{% static 'hold_stone.png' %}" alt="" aria-hidden="true" class="mb-1" style="width: 72px; height: auto;">
+    <div class="avant-header mb-1-2">{% trans 'Create New Stone' %}</div>
+    <p class="mb-2">{% trans 'Get your free QR code. Then name your stone, paint it, attach the code and hide it for someone to find.' %}</p>
+    <form method="post" action="{% url 'create_stone' %}">
+      {% csrf_token %}
+      <button type="submit" class="avant-btn w-full">{% trans 'Get my free QR code' %}</button>
+    </form>
+    <div class="mt-1-5">
+      <a href="{% url 'my_stones' %}" class="fs-0-95 text-accent underline">{% trans 'Not now — go to My Stones' %}</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

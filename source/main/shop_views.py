@@ -13,7 +13,6 @@ from django.utils import timezone
 from django.conf import settings
 from django.urls import reverse
 from django.db import transaction
-import re
 import logging
 
 from .models import Stone, QRPack
@@ -35,18 +34,27 @@ def _require_confirmed_email(request):
 
 
 class CreateNewStoneView(LoginRequiredMixin, View):
-    """Smart router: checks for unclaimed QR codes and directs user accordingly.
+    """Smart router for the "Create New Stone" button.
 
-    Before 1000 users (early phase):
-    - If user has unclaimed QR → redirect to my-stones with message
-    - If no unclaimed QR → create a free QR, redirect to my-stones
+    - Within the free allowance (or premium) → POST mints a free QR, redirect to my-stones
+    - Beyond it → redirect to shop
 
-    After 1000 users:
-    - If user has unclaimed QR → redirect to my-stones with message
-    - If no unclaimed QR → redirect to shop
+    Minting is POST-only (CSRF-protected) so a cross-site link or <img> cannot
+    burn a user's free allowance. GET (old bookmarks, and where a logged-out
+    visitor lands after logging in) routes to the shop when beyond the
+    allowance, otherwise shows a one-button confirm page that POSTs here.
     """
 
     def get(self, request):
+        guard = _require_confirmed_email(request)
+        if guard:
+            return guard
+        if not Stone.pack_is_free_for_user(request.user, 1):
+            messages.info(request, _('You have used your free QR allowance. Visit the shop to get more codes.'))
+            return redirect('shop')
+        return render(request, 'main/create_stone_confirm.html')
+
+    def post(self, request):
         guard = _require_confirmed_email(request)
         if guard:
             return guard
@@ -193,16 +201,16 @@ class ClaimStoneView(LoginRequiredMixin, View):
             })
 
         # Validate stone name
+        from .validators import validate_stone_name
         errors = []
 
-        if not stone_name:
-            errors.append(_('Please enter a name for your stone.'))
-        elif len(stone_name) > 10:
-            errors.append(_('Stone name must be 10 characters or less.'))
-        elif re.search(r'\s', stone_name):
-            errors.append(_('Stone name cannot contain spaces.'))
-        elif Stone.objects.filter(PK_stone=stone_name).exists():
-            errors.append(_('This stone name is already taken. Please choose another.'))
+        try:
+            validate_stone_name(stone_name)
+        except DjangoValidationError as e:
+            errors.append(e.message)
+        else:
+            if Stone.objects.filter(PK_stone=stone_name).exists():
+                errors.append(_('This stone name is already taken. Please choose another.'))
 
         if errors:
             for error in errors:
@@ -301,6 +309,10 @@ class ShopView(TemplateView):
         # Enhance products with user-specific info
         enhanced_products = []
         for product in products:
+            # Subscriptions are sold via /premium/ (recurring billing), never as
+            # a one-time "Buy Now" pack.
+            if product.get('is_subscription'):
+                continue
             enhanced = product.copy()
 
             # In dev mode, remove limit on free_single so devs can checkout repeatedly
@@ -386,6 +398,11 @@ class CheckoutView(LoginRequiredMixin, View):
         if not product.get('enabled', True):
             messages.error(request, _('This product is not available.'))
             return redirect('shop')
+
+        # Subscriptions go through PremiumCheckoutView; buying one here would be
+        # a one-time payment that creates an empty pack and no Subscription.
+        if product.get('is_subscription'):
+            return redirect('premium')
 
         dev_mode = getattr(settings, 'DEBUG', False)
 
@@ -477,9 +494,12 @@ class CheckoutView(LoginRequiredMixin, View):
 
 
 class FreeQRView(LoginRequiredMixin, View):
-    """Generate a free single QR code (legacy endpoint)"""
+    """Generate a free single QR code (legacy endpoint). Minting is POST-only."""
 
     def get(self, request):
+        return redirect('shop')
+
+    def post(self, request):
         guard = _require_confirmed_email(request)
         if guard:
             return guard
@@ -567,8 +587,11 @@ class DownloadStoneQRView(LoginRequiredMixin, View):
             messages.error(request, _('Stone not found.'))
             return redirect('shop')
 
-        # Check if user owns the pack this stone belongs to
-        if stone.FK_pack and stone.FK_pack.FK_user != request.user:
+        # Only the stone's owner or the owner of its pack may download the QR
+        # (the URL uses sequential numbers and the QR embeds the stone's key).
+        is_owner = stone.FK_user_id is not None and stone.FK_user_id == request.user.id
+        is_pack_owner = stone.FK_pack is not None and stone.FK_pack.FK_user_id == request.user.id
+        if not (is_owner or is_pack_owner):
             messages.error(request, _('You do not have access to this QR code.'))
             return redirect('shop')
 
@@ -607,12 +630,20 @@ class CheckoutSuccessView(LoginRequiredMixin, TemplateView):
         # For free packs, it's already fulfilled
         # Give a brief grace period for webhook processing
         if pack.status == 'pending':
-            # Check if payment was actually completed via Stripe
-            messages.info(request, _('Payment processing. Please refresh in a moment.'))
+            # Don't depend on the webhook alone: ask Stripe whether the session
+            # was paid and, if so, fulfil now (locked; safe alongside the webhook).
+            from .stripe_service import StripeService
+            if StripeService.fulfill_pack_from_session(pack):
+                pack.refresh_from_db()
+            else:
+                messages.info(request, _('Payment processing. Please refresh in a moment.'))
 
-        # If paid but not yet fulfilled by webhook, fulfill now as fallback
-        if pack.status == 'paid' and not pack.pdf_generated:
-            self._generate_pack_pdf(pack)
+        # If paid but not yet fulfilled by webhook, fulfill now as fallback.
+        # The pack is locked during fulfilment, so this never runs alongside
+        # the webhook and never duplicates or truncates the set of stones.
+        if pack.status == 'paid':
+            from .stripe_service import StripeService
+            StripeService.fulfill_paid_pack_fallback(pack.id)
 
         return super().get(request, *args, **kwargs)
 
@@ -628,36 +659,3 @@ class CheckoutSuccessView(LoginRequiredMixin, TemplateView):
             pass
 
         return context
-
-    def _generate_pack_pdf(self, pack):
-        """Generate the PDF with QR codes for the pack (fallback if webhook didn't)"""
-        from .pdf_service import PDFService
-        from .shop_utils import get_product_config
-
-        # Get pack size from config
-        product = get_product_config(pack.pack_type)
-        pack_size = product.get('pack_size', 10) if product else 10
-
-        # Create unclaimed stones if none exist
-        existing_stones = list(pack.stones.all())
-        if not existing_stones:
-            stones = []
-            for i in range(pack_size):
-                temp_name = f'UNCLAIMED-{uuid_lib.uuid4().hex[:8].upper()}'
-                stone = Stone.objects.create(
-                    PK_stone=temp_name,
-                    FK_pack=pack,
-                    FK_user=None,
-                    status='unclaimed',
-                )
-                QRCodeService.generate_qr_for_stone(stone)
-                stones.append(stone)
-        else:
-            stones = existing_stones
-
-        # Generate PDF
-        PDFService.generate_pack_pdf(pack, stones)
-        pack.pdf_generated = True
-        pack.status = 'fulfilled'
-        pack.fulfilled_at = timezone.now()
-        pack.save()

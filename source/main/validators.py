@@ -40,3 +40,28 @@ def validate_no_contact_info(text):
         raise ValidationError(CONTACT_INFO_ERROR)
     if PHONE_RE.search(text):
         raise ValidationError(CONTACT_INFO_ERROR)
+
+
+# Stone names end up in URLs (/stone/<name>/edit/) and QR file paths, so only
+# URL- and filename-safe characters are allowed.
+STONE_NAME_MAX_LENGTH = 10
+STONE_NAME_RE = re.compile(r'^[A-Za-z0-9_-]{1,%d}$' % STONE_NAME_MAX_LENGTH)
+
+
+def validate_stone_name(name):
+    """Raise ValidationError if name is not a valid stone name.
+
+    The error's ``code`` ('empty', 'too_long', 'whitespace', 'invalid_chars')
+    is a stable reason for API callers. Uniqueness is not checked here.
+    """
+    if not name:
+        raise ValidationError(_('Please enter a name for your stone.'), code='empty')
+    if re.search(r'\s', name):
+        raise ValidationError(_('Stone name cannot contain spaces.'), code='whitespace')
+    if len(name) > STONE_NAME_MAX_LENGTH:
+        raise ValidationError(_('Stone name must be 10 characters or less.'), code='too_long')
+    if not STONE_NAME_RE.match(name):
+        raise ValidationError(
+            _('Stone name can only contain letters, numbers, hyphens and underscores.'),
+            code='invalid_chars',
+        )

@@ -11,6 +11,7 @@ from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django.utils import timezone
+from django.db import transaction
 
 from .models import QRPack, Stone
 from .qr_service import QRCodeService
@@ -106,31 +107,40 @@ class StripeService:
             logger.error("No pack_id in session metadata")
             return
 
-        try:
-            pack = QRPack.objects.get(id=pack_id)
-        except QRPack.DoesNotExist:
-            logger.error(f"Pack {pack_id} not found")
-            return
+        # The row lock serialises this with webhook retries and the success-page
+        # fallback (CheckoutSuccessView), so a pack is fulfilled exactly once.
+        # Marking paid and creating stones commit together: a crash rolls back
+        # to 'pending' and Stripe's retry starts over cleanly.
+        with transaction.atomic():
+            try:
+                pack = QRPack.objects.select_for_update().get(id=pack_id)
+            except QRPack.DoesNotExist:
+                logger.error(f"Pack {pack_id} not found")
+                return
 
-        # Idempotency check - don't fulfill twice
-        if pack.status in ['paid', 'fulfilled']:
-            logger.info(f"Pack {pack_id} already processed, skipping")
-            return
+            # Idempotency check - don't fulfill twice
+            if pack.status == 'fulfilled':
+                logger.info(f"Pack {pack_id} already fulfilled, skipping")
+                return
 
-        # Update pack status
-        pack.status = 'paid'
-        pack.paid_at = timezone.now()
-        pack.save(update_fields=['status', 'paid_at'])
+            if pack.status != 'paid':
+                pack.status = 'paid'
+                pack.paid_at = timezone.now()
+                pack.save(update_fields=['status', 'paid_at'])
 
-        logger.info(f"Pack {pack_id} marked as paid, starting fulfillment")
+            logger.info(f"Pack {pack_id} marked as paid, starting fulfillment")
 
-        # Fulfill the order (create stones and PDF)
-        cls._fulfill_pack(pack)
+            # Fulfill the order (create stones and PDF)
+            cls._fulfill_pack(pack)
 
     @classmethod
     def _fulfill_pack(cls, pack):
         """
         Create stones and generate PDF for the pack.
+
+        Tops up to the configured pack size, so a pack left partial by an
+        interrupted fulfilment is completed rather than accepted as-is.
+        Callers must hold a select_for_update lock on the pack.
 
         Args:
             pack: QRPack instance
@@ -143,8 +153,8 @@ class StripeService:
         pack_size = product.get('pack_size', 10) if product else 10
 
         # Create unclaimed stones
-        stones = []
-        for i in range(pack_size):
+        stones = list(pack.stones.order_by('stone_number'))
+        for i in range(pack_size - len(stones)):
             temp_name = f'UNCLAIMED-{uuid_lib.uuid4().hex[:8].upper()}'
             stone = Stone.objects.create(
                 PK_stone=temp_name,
@@ -173,6 +183,52 @@ class StripeService:
         logger.info(f"Fulfilled pack {pack.id} with {len(stones)} stones")
 
     @classmethod
+    def fulfill_pack_from_session(cls, pack):
+        """
+        Success-page check for a still-pending pack: retrieve its Checkout
+        Session from Stripe and fulfil the pack if the session is paid.
+
+        Returns:
+            bool: True if the pack is now fulfilled
+        """
+        session_id = pack.stripe_payment_intent_id
+        if not session_id or not settings.STRIPE_SECRET_KEY:
+            return False
+        cls._init_stripe()
+        try:
+            session = stripe.checkout.Session.retrieve(session_id)
+        except Exception as e:
+            logger.warning(f"Could not retrieve checkout session {session_id} for pack {pack.id}: {e}")
+            return False
+
+        if session.get('metadata', {}).get('pack_id') != str(pack.id):
+            logger.error(f"Checkout session {session_id} does not belong to pack {pack.id}")
+            return False
+        if session.get('payment_status') != 'paid':
+            return False
+
+        cls.handle_checkout_completed(session)
+        return QRPack.objects.filter(id=pack.id, status='fulfilled').exists()
+
+    @classmethod
+    def fulfill_paid_pack_fallback(cls, pack_id):
+        """
+        Success-page fallback: fulfil a pack the webhook marked paid but did not
+        finish. Skips if the webhook currently holds the pack (it will finish)
+        or the pack is not in 'paid' state.
+
+        Returns:
+            bool: True if this call fulfilled the pack
+        """
+        with transaction.atomic():
+            pack = (QRPack.objects.select_for_update(skip_locked=True)
+                    .filter(id=pack_id, status='paid').first())
+            if pack is None:
+                return False
+            cls._fulfill_pack(pack)
+            return True
+
+    @classmethod
     def _get_or_create_stripe_customer(cls, user):
         """Get or create a Stripe Customer for the user."""
         from accounts.models import Subscription
@@ -185,6 +241,16 @@ class StripeService:
                 return sub.stripe_customer_id
         except Subscription.DoesNotExist:
             pass
+
+        # Reuse a Customer from an earlier (e.g. abandoned) checkout
+        try:
+            existing = stripe.Customer.search(
+                query=f"metadata['user_id']:'{user.id}'", limit=1,
+            )
+            if existing.data:
+                return existing.data[0].id
+        except Exception as e:
+            logger.warning(f"Stripe customer search failed for user {user.id}: {e}")
 
         # Create new Stripe Customer
         customer = stripe.Customer.create(
@@ -220,20 +286,25 @@ class StripeService:
             )
 
         customer_id = cls._get_or_create_stripe_customer(user)
+        metadata = {
+            'user_id': str(user.id),
+            'product_id': product['id'],
+            'plan': 'yearly' if billing_interval == 'year' else 'monthly',
+        }
 
+        # Stripe does not copy Session metadata onto the Subscription, so it is
+        # passed via subscription_data too; the subscription.* webhooks rely on it.
         session = stripe.checkout.Session.create(
             customer=customer_id,
+            client_reference_id=str(user.id),
             payment_method_types=['card'],
             line_items=[{'price': price_id, 'quantity': 1}],
             mode='subscription',
             allow_promotion_codes=True,
             success_url=success_url + f'?subscription=1',
             cancel_url=cancel_url,
-            metadata={
-                'user_id': str(user.id),
-                'product_id': product['id'],
-                'plan': 'yearly' if billing_interval == 'year' else 'monthly',
-            },
+            metadata=metadata,
+            subscription_data={'metadata': metadata},
         )
 
         logger.info(f"Created subscription checkout {session.id} for user {user.id}")
@@ -306,7 +377,9 @@ class StripeService:
 
         # Find user by customer ID (check existing subs) or by metadata
         user = None
-        existing_sub = Subscription.objects.filter(stripe_customer_id=customer_id).first()
+        existing_sub = None
+        if customer_id:  # '' would match every sub without a customer (e.g. lifetime)
+            existing_sub = Subscription.objects.filter(stripe_customer_id=customer_id).first()
         if existing_sub:
             user = existing_sub.user
         else:
@@ -337,6 +410,53 @@ class StripeService:
             }
         )
         logger.info(f"{'Created' if created else 'Updated'} subscription for user {user.id}: {status}")
+
+    @classmethod
+    def handle_subscription_checkout_completed(cls, session):
+        """Link the customer and subscription from a completed subscription
+        checkout to the user who started it."""
+        from accounts.models import Subscription
+        from django.contrib.auth.models import User
+
+        user_id = session.get('metadata', {}).get('user_id') or session.get('client_reference_id')
+        try:
+            user = User.objects.get(id=int(user_id))
+        except (User.DoesNotExist, TypeError, ValueError):
+            logger.error(f"Cannot find user for subscription checkout {session.get('id')}")
+            return
+
+        customer_id = session.get('customer') or ''
+        stripe_sub_id = session.get('subscription') or ''
+        if isinstance(stripe_sub_id, dict):  # expanded object
+            stripe_sub_id = stripe_sub_id.get('id', '')
+        plan = session.get('metadata', {}).get('plan')
+        if plan not in ('monthly', 'yearly'):
+            plan = None
+        if session.get('payment_status') == 'no_payment_required':
+            status = 'trialing'
+        elif session.get('payment_status') == 'paid':
+            status = 'active'
+        else:
+            status = 'incomplete'
+
+        with transaction.atomic():
+            sub, created = Subscription.objects.select_for_update().get_or_create(
+                user=user,
+                defaults={'stripe_customer_id': customer_id, 'stripe_subscription_id': stripe_sub_id,
+                          'plan': plan or 'monthly', 'status': status},
+            )
+            if not created:
+                # If customer.subscription.* already recorded this subscription,
+                # its status is authoritative; only fill in the linkage.
+                if sub.stripe_subscription_id != stripe_sub_id:
+                    sub.status = status
+                    sub.canceled_at = None
+                    if plan:
+                        sub.plan = plan
+                sub.stripe_customer_id = customer_id
+                sub.stripe_subscription_id = stripe_sub_id
+                sub.save()
+        logger.info(f"Linked subscription {stripe_sub_id} to user {user.id}")
 
     @classmethod
     def _handle_subscription_updated(cls, stripe_sub):
@@ -444,6 +564,9 @@ def stripe_webhook(request):
 
     # In development without webhook secret, allow unverified requests
     if not webhook_secret:
+        if not settings.DEBUG:
+            logger.error("STRIPE_WEBHOOK_SECRET not set - rejecting unverified webhook")
+            return HttpResponse(status=400)
         logger.warning("STRIPE_WEBHOOK_SECRET not set - webhook verification disabled")
         try:
             import json
@@ -470,9 +593,7 @@ def stripe_webhook(request):
     if event_type == 'checkout.session.completed':
         # Check if this is a subscription or one-time payment
         if event_object.get('mode') == 'subscription':
-            # Subscription checkout completed — the actual subscription is handled
-            # by customer.subscription.created event
-            logger.info(f"Subscription checkout completed: {event_object.get('id')}")
+            StripeService.handle_subscription_checkout_completed(event_object)
         else:
             StripeService.handle_checkout_completed(event_object)
     elif event_type == 'checkout.session.expired':

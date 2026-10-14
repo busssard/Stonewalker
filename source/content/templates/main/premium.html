@@ -8,13 +8,7 @@
     <div class="avant-card-title mb-0-5 fs-2-1 text-center">{% trans 'Premium Supporter' %}</div>
     <p class="text-center text-muted mb-2">{% trans 'Support StoneWalker and unlock exclusive features' %}</p>
 
-    {% if messages %}
-      {% for message in messages %}
-        <div class="text-center mb-1 p-1 border-radius-8 {% if message.tags == 'error' %}bg-error-light text-error{% elif message.tags == 'success' %}bg-success-light text-success{% else %}bg-info-light text-info{% endif %}">
-          {{ message }}
-        </div>
-      {% endfor %}
-    {% endif %}
+    {# Flash messages are rendered once by layouts/default/page.html #}
 
     {% if is_early_user and is_premium %}
     <div class="text-center mb-2 p-1-5 border-radius-8" style="background: #e8f5e9; border: 2px solid #4CAF50;">

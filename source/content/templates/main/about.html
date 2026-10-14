@@ -79,7 +79,7 @@
       {% if shop_visible %}
       <a href="{% url 'shop' %}" class="avant-btn">{% trans 'Get Your First QR Code' %}</a>
       {% else %}
-      <a href="{% url 'create_stone' %}" class="avant-btn">{% trans 'Get Your First QR Code' %}</a>
+      <form method="post" action="{% url 'create_stone' %}" class="display-inline-block">{% csrf_token %}<button type="submit" class="avant-btn">{% trans 'Get Your First QR Code' %}</button></form>
       {% endif %}
       <a href="{% url 'stonewalker_start' %}" class="avant-btn">{% trans 'Start Your Journey' %}</a>
       {% if shop_visible %}
