@@ -51,6 +51,16 @@ export function openStoneModal(pk, color, stonesData) {
   
   modalBody = document.getElementById('stone-gallery-body');
   const closeBtn = document.getElementById('stone-gallery-close');
+  // Long stones (description + comments) are taller than the screen; the page
+  // behind is scroll-locked, so the card itself must scroll.
+  const content = document.getElementById('stone-gallery-content');
+  if (content) {
+    content.style.maxHeight = '90vh';
+    content.style.overflowY = 'auto';
+    content.style.overscrollBehavior = 'contain';
+    content.style.boxSizing = 'border-box';
+    content.scrollTop = 0;
+  }
   closeBtn.onclick = () => { modal.style.display = 'none'; };
   window.onclick = (e) => { if (e.target === modal) modal.style.display = 'none'; };
 
