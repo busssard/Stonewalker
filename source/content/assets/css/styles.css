@@ -1146,7 +1146,7 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
 
 /* Welcome Modal Enhanced Styling */
 #welcome-modal-content {
-  background: #ffffff;
+  background: var(--modal-bg);
 
 
   border: 1px solid rgba(255, 255, 255, 0.5);
@@ -1211,6 +1211,19 @@ button:hover, input[type="submit"]:hover, .modal button:hover {
   font-size: 1.1rem;
   font-weight: 400;
   line-height: 1.6;
+}
+
+/* Dark mode: the card used a hardcoded white background (ID rule beat the
+   theme), leaving the light dark-mode text near-invisible. */
+[data-theme="dark"] #welcome-modal-content {
+  border-color: var(--border-color);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.45);
+}
+[data-theme="dark"] #welcome-modal-content .avant-header.accent {
+  color: #8ea8ff; /* brand blue lifted for contrast on navy */
+}
+[data-theme="dark"] #welcome-modal-content .avant-header.secondary {
+  color: var(--text-primary);
 }
 
 #welcome-modal-content .avant-card-btns {
