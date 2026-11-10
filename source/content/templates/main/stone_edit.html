@@ -89,6 +89,27 @@
       {% endif %}
     </form>
 
+    {% if held_finds %}
+    <!-- Held finds: the finder hasn't confirmed their email yet -->
+    <div class="stone-edit-section mt-2 bg-orange p-2 border-radius-8">
+      <h4 class="avant-label fs-1-1 mb-0-5">{% trans "Finds waiting for confirmation" %}</h4>
+      <p class="fs-0-9 mb-1">{% trans "Someone found your stone but hasn't confirmed their email yet, so the find isn't on the map. If it looks genuine, you can approve it." %}</p>
+      {% for move in held_finds %}
+      <div class="mb-1">
+        <p class="stone-found-info-line mb-0-3">
+          <strong>{{ move.timestamp|date:"M d, Y" }}</strong> ·
+          {{ move.latitude|floatformat:4 }}, {{ move.longitude|floatformat:4 }}
+          {% if move.comment %}<br><em>“{{ move.comment }}”</em>{% endif %}
+        </p>
+        <form method="post" action="{% url 'stone_approve_find' stone.PK_stone move.pk %}">
+          {% csrf_token %}
+          <button type="submit" class="avant-btn bg-accent text-white">{% trans "Approve & show on map" %}</button>
+        </form>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
     <!-- Downloads Section -->
     <div class="stone-edit-section mt-2">
       <h4 class="avant-label fs-1-1 mb-0-5">{% trans "Downloads" %}</h4>

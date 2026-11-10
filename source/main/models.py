@@ -426,6 +426,20 @@ def calculate_stone_distance(stone):
     return round(total_distance, 1)
 
 
+def approve_held_find(move):
+    """Owner-approved release of one held find (the finder never confirmed
+    their email): put it on the map and recompute the stone's distance.
+    No owner notification — the owner is the one approving."""
+    if move.is_confirmed:
+        return False
+    move.is_confirmed = True
+    move.save(update_fields=['is_confirmed'])
+    stone = move.FK_stone
+    stone.distance_km = calculate_stone_distance(stone)
+    stone.save(update_fields=['distance_km'])
+    return True
+
+
 def confirm_pending_finds(user):
     """Release a user's held (email-first) finds once they confirm their email:
     flip their pending moves to confirmed and recompute each affected stone's

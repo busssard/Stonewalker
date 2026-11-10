@@ -230,6 +230,10 @@ class MyStonesView(LoginRequiredMixin, TemplateView):
         for stone in my_stones:
             stone.distance_km = round(stone.distance_km, 1)
         context['my_stones'] = my_stones
+        # Owned stones with finds waiting on the finder's email confirmation
+        context['stones_with_held_finds'] = Stone.objects.filter(
+            FK_user=user, moves__is_confirmed=False
+        ).distinct()
 
         # Unclaimed QR codes from user's packs
         unclaimed_stones = Stone.objects.filter(
@@ -335,6 +339,9 @@ class StoneEditView(LoginRequiredMixin, TemplateView):
                 'stone': stone,
                 'last_minute': last_minute,
                 'editable': stone.can_be_edited() or last_minute,
+                # Finds waiting on the finder's email confirmation; the owner
+                # can approve them (StoneApproveFindView).
+                'held_finds': stone.moves.filter(is_confirmed=False).select_related('FK_user').order_by('timestamp'),
             })
         except Stone.DoesNotExist:
             messages.error(request, 'Stone not found or you do not have permission to edit it.')
@@ -395,6 +402,20 @@ class StoneEditView(LoginRequiredMixin, TemplateView):
         except Exception as e:
             messages.error(request, f'Error updating stone: {str(e)}')
             return redirect(_stone_edit_url(pk))
+
+
+class StoneApproveFindView(LoginRequiredMixin, View):
+    """Owner approves a held find whose finder never confirmed their email,
+    so it goes on the map (POST only)."""
+
+    def post(self, request, pk, move_id):
+        from .models import approve_held_find
+        stone = get_object_or_404(Stone, PK_stone=pk, FK_user=request.user)
+        move = get_object_or_404(StoneMove, pk=move_id, FK_stone=stone, is_confirmed=False)
+        with transaction.atomic():
+            approve_held_find(move)
+        messages.success(request, gettext('Find approved — your stone is on the map.'))
+        return redirect(_map_focus_url(stone.PK_stone))
 
 
 class StoneQRCodeView(View):

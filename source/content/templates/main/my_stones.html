@@ -4,6 +4,14 @@
 {% load l10n %}
 
 {% block content %}
+{% if stones_with_held_finds %}
+<div class="bg-orange p-2 border-radius-8 mb-2 text-center" role="status">
+  <strong>{% trans 'Your stone was found! A find is waiting for your approval:' %}</strong>
+  <p class="mb-0 fs-0-95">
+    {% for s in stones_with_held_finds %}<a href="{% url 'stone_edit' s.PK_stone %}" class="text-accent underline">{{ s.PK_stone }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}
+  </p>
+</div>
+{% endif %}
 {% if not email_confirmed %}
 <div class="bg-orange p-2 border-radius-8 mb-2 text-center">
   <strong>{% trans 'Confirm your email to unlock everything.' %}</strong>

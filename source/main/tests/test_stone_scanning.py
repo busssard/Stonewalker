@@ -669,3 +669,38 @@ class ReviewRegressionTests(BaseStoneWalkerTestCase):
         })
         stone.refresh_from_db()
         self.assertEqual(stone.stone_type, 'hidden')
+
+
+class OwnerApprovesHeldFindTests(BaseStoneWalkerTestCase):
+    """Owner can release a find whose finder never confirmed their email."""
+
+    def setUp(self):
+        super().setUp()
+        self.stone = self.create_stone('APPROVEME', status='wandering')
+        finder = self.create_user('heldfinder', 'pw', email='hf@example.com')
+        self.move = self.create_stone_move(stone=self.stone, user=finder, is_confirmed=False)
+
+    def test_owner_sees_held_find_and_banner(self):
+        self.assertContains(self.client.get('/my-stones/'), 'waiting for your approval')
+        self.assertContains(self.client.get(f'/stone/{self.stone.PK_stone}/edit/'), 'Approve & show on map')
+
+    def test_owner_approves_and_stone_appears_on_map(self):
+        self.assertNotContains(self.client.get('/stonewalker/'), 'APPROVEME')
+        response = self.client.post(f'/stone/{self.stone.PK_stone}/approve-find/{self.move.pk}/')
+        self.assertEqual(response.status_code, 302)
+        self.move.refresh_from_db()
+        self.assertTrue(self.move.is_confirmed)
+        self.assertContains(self.client.get('/stonewalker/'), 'APPROVEME')
+
+    def test_non_owner_cannot_approve(self):
+        other = self.create_user('notowner', 'pw', email='no@example.com')
+        self.client.force_login(other)
+        response = self.client.post(f'/stone/{self.stone.PK_stone}/approve-find/{self.move.pk}/')
+        self.assertEqual(response.status_code, 404)
+        self.move.refresh_from_db()
+        self.assertFalse(self.move.is_confirmed)
+
+    def test_get_does_not_approve(self):
+        self.client.get(f'/stone/{self.stone.PK_stone}/approve-find/{self.move.pk}/')
+        self.move.refresh_from_db()
+        self.assertFalse(self.move.is_confirmed)

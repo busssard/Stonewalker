@@ -10,7 +10,7 @@ from main.views import StoneWalkerStartPageView
 from main.views import MyStonesView
 from accounts.views import TermsView
 from main.views import add_stone, check_stone_name
-from main.views import StoneQRCodeView, StoneLinkView, StoneLinkLegacyRedirectView, check_stone_uuid, StoneEditView, StoneSendOffView, StoneCertificateView, generate_qr_code_api, download_enhanced_qr_code, StoneShareView
+from main.views import StoneQRCodeView, StoneLinkView, StoneLinkLegacyRedirectView, check_stone_uuid, StoneEditView, StoneSendOffView, StoneCertificateView, generate_qr_code_api, download_enhanced_qr_code, StoneShareView, StoneApproveFindView
 
 # Shop views
 from main.shop_views import (
@@ -76,6 +76,7 @@ urlpatterns += i18n_patterns(
     path('stone/<str:pk>/certificate/', StoneCertificateView.as_view(), name='stone_certificate'),
     path('stone/<str:pk>/send-off/', StoneSendOffView.as_view(), name='stone_send_off'),
     path('stone/<str:pk>/share/', StoneShareView.as_view(), name='stone_share'),
+    path('stone/<str:pk>/approve-find/<int:move_id>/', StoneApproveFindView.as_view(), name='stone_approve_find'),
 
     # Stone-link functionality
     path('stone-link/<int:stone_number>/', StoneLinkView.as_view(), name='stone_link'),
