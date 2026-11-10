@@ -148,7 +148,8 @@ class StoneWalkerStartPageView(TemplateView):
         ).prefetch_related(
             Prefetch(
                 'moves',
-                # Public map: only confirmed finds (held email-first finds stay hidden).
+                # Public map: confirmed finds only (new finds are confirmed at
+                # once; is_confirmed=False remains only for legacy held finds).
                 queryset=StoneMove.objects.filter(is_confirmed=True).order_by('timestamp').select_related(
                     'FK_user', 'FK_user__profile'
                 ),
@@ -627,8 +628,8 @@ class StoneLinkView(View):
             })
 
         # Wandering stone — show the find form. Anonymous finders get an email
-        # field (email-first signup): they can record the find now; it's held
-        # until they confirm their email.
+        # field (email-first signup): the find goes on the map right away and
+        # they confirm their account by email afterwards.
         is_first_stone = False
         is_owner = False
         if request.user.is_authenticated:
@@ -705,14 +706,14 @@ class StoneLinkView(View):
             return None, redirect_to_login(next=next_url, login_url='accounts:log_in')
 
         if existing:
-            # Earlier unconfirmed provisional account: attach the held find to
-            # it, but don't log in — typing an email proves nothing. The
-            # confirmation link emailed to that address is what releases it.
+            # Earlier unconfirmed provisional account: attach the find to it,
+            # but don't log in — typing an email proves nothing.
             return existing, None
         else:
             # Lenient per-IP backstop against bot floods. Set high enough that a
-            # classroom finding stones from one school network won't hit it; the
-            # real anti-fraud gate is that held finds stay hidden until confirmed.
+            # classroom finding stones from one school network won't hit it.
+            # Finds also need the stone's QR key, which limits abuse to people
+            # who actually had the stone in hand.
             from .models import client_ip
             ip = client_ip(request)
             limit = getattr(settings, 'ANONYMOUS_FIND_IP_HOURLY_LIMIT', 100)
@@ -770,10 +771,11 @@ class StoneLinkView(View):
         else:
             user = request.user
 
-        # Held until email confirmation: anonymous finds, and later finds by a
-        # still-provisional account (soft session, no password, unconfirmed).
+        # Finds on sent-off stones go on the map immediately (owner's choice,
+        # 2026-11-10: waiting on the finder's email hid real finds). Finders
+        # without a confirmed account still get the account-confirmation email.
         from accounts.models import is_email_confirmed
-        held = anonymous or (not is_email_confirmed(user) and not user.has_usable_password())
+        unconfirmed_finder = anonymous or (not is_email_confirmed(user) and not user.has_usable_password())
 
         # Check one-week blackout period (per finder, based on recorded finds)
         if StoneMove.found_recently(stone, user):
@@ -810,8 +812,6 @@ class StoneLinkView(View):
         try:
             # Create the stone move and record the attempt together, so a
             # failed save can't leave the finder locked out without a find.
-            # Held finds (is_confirmed=False) stay off the map until the
-            # finder confirms their email.
             with transaction.atomic():
                 stone_move = StoneMove.objects.create(
                     FK_stone=stone,
@@ -820,14 +820,12 @@ class StoneLinkView(View):
                     comment=comment,
                     latitude=lat,
                     longitude=lng,
-                    is_confirmed=not held,
+                    is_confirmed=True,
                 )
                 StoneScanAttempt.record_scan_attempt(stone, user, request)
 
-            # Update stone distance (only confirmed finds count; skip for held)
-            if not held:
-                stone.distance_km = calculate_stone_distance(stone)
-                stone.save()
+            stone.distance_km = calculate_stone_distance(stone)
+            stone.save(update_fields=['distance_km'])
 
             # For hunted stones, store the new location for next week
             if stone.stone_type == 'hunted' and new_latitude and new_longitude:
@@ -844,15 +842,12 @@ class StoneLinkView(View):
                     messages.error(request, 'Please provide valid coordinates for the new location.')
                     return redirect('stone_link', stone_number=stone.stone_number)
 
-            if held:
+            if unconfirmed_finder:
                 if self._send_find_confirmation(request, user, stone):
-                    messages.success(request, 'Find recorded! Check your email to confirm it and put it on the map.')
+                    messages.success(request, 'Your find is on the map! Check your email to confirm your StoneWalker account.')
                 else:
-                    messages.warning(request, "Find recorded, but we couldn't send the confirmation email right now. "
-                                              "You can resend it later from your profile (Resend activation code).")
-                if request.user.is_authenticated:
-                    return redirect('my_stones')
-                return redirect('stone_link', stone_number=stone.stone_number)
+                    messages.success(request, 'Your find is on the map!')
+                return redirect(_map_focus_url(stone.PK_stone))
 
             messages.success(request, 'Your stone find has been recorded!')
             return redirect(_map_focus_url(stone.PK_stone))

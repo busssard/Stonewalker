@@ -365,7 +365,7 @@ class LastMinuteEditTests(BaseStoneWalkerTestCase):
 
 
 class DeferredFindTests(BaseStoneWalkerTestCase):
-    """Phase 2: anonymous email-first find creates a held submission + provisional user."""
+    """Anonymous email-first find: provisional user, find public immediately."""
 
     def test_anonymous_find_creates_pending_move_and_user(self):
         from django.contrib.auth.models import User
@@ -380,33 +380,28 @@ class DeferredFindTests(BaseStoneWalkerTestCase):
             'comment': 'found on a walk',
             'latitude': '48.2', 'longitude': '16.3',
         })
-        self.assertEqual(resp.status_code, 302)  # -> my_stones
+        self.assertRedirects(resp, f'/stonewalker/?focus={stone.PK_stone}', fetch_redirect_response=False)
 
         user = User.objects.get(email='newfinder@example.com')
         self.assertTrue(user.is_active)
         self.assertFalse(user.has_usable_password())
         self.assertFalse(is_email_confirmed(user))
         move = StoneMove.objects.get(FK_stone=stone, FK_user=user)
-        self.assertFalse(move.is_confirmed)  # held
+        self.assertTrue(move.is_confirmed)  # on the map right away
         # soft-logged-in
         self.assertEqual(str(self.client.session.get('_auth_user_id')), str(user.id))
 
-    def test_pending_find_hidden_from_public_map(self):
-        from django.contrib.auth.models import User
+    def test_anonymous_find_on_public_map_without_email_leak(self):
         self.client.logout()
-        stone = self.create_stone('HELDMAP', status='wandering')
+        stone = self.create_stone('ANONMAP', status='wandering')
         self.client.post(f'/stone-link/{stone.stone_number}/', {
-            'stone_uuid': str(stone.uuid), 'finder_email': 'hidden@example.com',
+            'stone_uuid': str(stone.uuid), 'finder_email': 'finder@example.com',
             'accept_terms': 'on', 'comment': 'x', 'latitude': '1.0', 'longitude': '2.0',
         })
-        # public map JSON must not include this stone's held find location
         self.client.logout()
         resp = self.client.get('/stonewalker/')
-        self.assertNotContains(resp, 'hidden@example.com')  # sanity: no email leak
-        # the stone has no confirmed moves, so it should not be a marker
-        stone.refresh_from_db()
-        confirmed = stone.moves.filter(is_confirmed=True).count()
-        self.assertEqual(confirmed, 0)
+        self.assertContains(resp, 'ANONMAP')
+        self.assertNotContains(resp, 'finder@example.com')
 
     def test_existing_confirmed_email_redirected_to_login(self):
         self.client.logout()
@@ -487,9 +482,8 @@ class AnonymousFindAccountSafetyTests(BaseStoneWalkerTestCase):
         self._anon_find(stone, 'prov@example.com')
 
         self.assertIsNone(self.client.session.get('_auth_user_id'))
-        # The find is still recorded, held, under that account
-        move = StoneMove.objects.get(FK_stone=stone, FK_user=victim)
-        self.assertFalse(move.is_confirmed)
+        # The find is still recorded under that account
+        self.assertTrue(StoneMove.objects.filter(FK_stone=stone, FK_user=victim).exists())
 
     def test_account_with_pending_email_change_not_logged_in(self):
         from django.contrib.auth.models import User
@@ -540,11 +534,10 @@ class HeldFindNotificationTests(BaseStoneWalkerTestCase):
         self.assertTrue([m for m in mail.outbox if 'owner@example.com' in m.to])
 
 
-class ProvisionalFinderHoldTests(BaseStoneWalkerTestCase):
-    """Every find by a still-unconfirmed email-first account stays held,
-    not just the first one."""
+class ProvisionalFinderTests(BaseStoneWalkerTestCase):
+    """Repeat finds by a still-unconfirmed email-first account are public too."""
 
-    def test_second_find_with_soft_session_is_held(self):
+    def test_second_find_with_soft_session_is_public(self):
         from django.contrib.auth.models import User
         self.client.logout()
         first = self.create_stone('HOLDA', status='wandering')
@@ -555,8 +548,7 @@ class ProvisionalFinderHoldTests(BaseStoneWalkerTestCase):
                 'accept_terms': 'on', 'comment': 'x', 'latitude': '1.0', 'longitude': '2.0',
             })
         finder = User.objects.get(email='soft@example.com')
-        self.assertEqual(StoneMove.objects.filter(FK_user=finder).count(), 2)
-        self.assertFalse(StoneMove.objects.filter(FK_user=finder, is_confirmed=True).exists())
+        self.assertEqual(StoneMove.objects.filter(FK_user=finder, is_confirmed=True).count(), 2)
 
     def test_email_pending_on_other_account_does_not_500(self):
         from django.contrib.auth.models import User
